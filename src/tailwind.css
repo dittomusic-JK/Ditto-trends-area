@@ -1,0 +1,123 @@
+/* Satoshi Font */
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi-Variable.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi-Medium.woff') format('woff');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi-Bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: 'Satoshi', Helvetica, Arial, sans-serif;
+  }
+  
+  button,
+  input,
+  select,
+  textarea {
+    @apply appearance-none bg-transparent border-0 outline-none;
+  }
+}
+
+:root {
+  /* Ditto Framework Colors */
+  --pink: #ff006e;
+  --mint: #12c1ae;
+  --blue: #101f3c;
+  --blue-alternate: #287ef7;
+  --dark-indigo: #080727;
+  --indigo: #3a1bb9;
+  --light-indigo: #5f1fff;
+  --soft-red: #d92121;
+  --purple: #8640f4;
+  --ditto-purple: #5f1fff;
+  --light-purple: #d9c1ff;
+  --ditto-black: #111;
+  --ditto-grey: #626984;
+  --ditto-starter: #955fff;
+  --ditto-pro: #0f9;
+  --ditto-label: #f6c443;
+  --white: #fff;
+  --darker-grey: #44444c;
+  --dark-grey: #9595a7;
+  --darkening-grey: #c7c4d6;
+  --faded-grey: #d2d2e3;
+  --medium-grey: #dddde7;
+  --light-grey: #efeffc;
+  --lighter-grey: #f9f9ff;
+  --error: #ee404c;
+  --warning: #ffb100;
+  --success: #00e785;
+  --info: #287ef7;
+  --strong-warning: #de6a3f;
+
+  /* Typography */
+  --brand-font-body: "Satoshi", Helvetica, Arial, sans-serif;
+  --brand-font-heading: "Poppins", Helvetica, Arial, sans-serif;
+  --brand-body: #111;
+  --brand-body-light: #626984;
+  --brand-border: #d2d2e3;
+  --brand-inactive: #aac;
+  --brand-primary: #6c5ce7;
+  --brand-secondary: #287ef7;
+
+  /* Legacy Anima tokens (mapped to framework) */
+  --ditto-colors-light-dark-active-green: rgba(0, 211, 70, 1);
+  --ditto-colors-light-dark-ditto-background-white: rgba(255, 255, 255, 1);
+  --ditto-colors-light-dark-ditto-border-grey: rgba(210, 210, 227, 1);
+  --ditto-colors-light-dark-ditto-inactive-variant: rgba(170, 170, 204, 1);
+  --ditto-colors-light-dark-ditto-labels-yellow: rgba(246, 196, 67, 1);
+  --ditto-colors-light-dark-ditto-light-blue: rgba(38, 128, 235, 1);
+  --ditto-colors-light-dark-ditto-light-grey: rgba(249, 249, 255, 1);
+  --ditto-colors-light-dark-ditto-mid-button-grey: rgba(242, 242, 253, 1);
+  --ditto-colors-light-dark-ditto-orange: rgba(255, 177, 0, 1);
+  --ditto-colors-light-dark-ditto-pro-green: rgba(0, 255, 153, 1);
+  --ditto-colors-light-dark-ditto-purple: rgba(95, 31, 255, 1);
+  --ditto-colors-light-dark-ditto-red: rgba(236, 5, 21, 1);
+  --ditto-colors-light-dark-ditto-starter-puple: rgba(149, 95, 255, 1);
+  --ditto-colors-light-dark-ditto-subtext-grey: rgba(98, 105, 132, 1);
+  --ditto-colors-light-dark-ditto-text-fill: rgba(16, 31, 60, 1);
+  --ditto-colors-light-dark-ditto-text-prompt: rgba(177, 177, 195, 1);
+}
+
+[data-ditto-colors-light-dark-mode="light"] {
+  --ditto-colors-light-dark-ditto-background-white: rgba(255, 255, 255, 1);
+  --ditto-colors-light-dark-ditto-border-grey: rgba(210, 210, 227, 1);
+  --ditto-colors-light-dark-ditto-inactive-variant: rgba(170, 170, 204, 1);
+  --ditto-colors-light-dark-ditto-light-blue: rgba(38, 128, 235, 1);
+  --ditto-colors-light-dark-ditto-light-grey: rgba(249, 249, 255, 1);
+  --ditto-colors-light-dark-ditto-purple: rgba(95, 31, 255, 1);
+  --ditto-colors-light-dark-ditto-red: rgba(236, 5, 21, 1);
+  --ditto-colors-light-dark-ditto-starter-puple: rgba(149, 95, 255, 1);
+  --ditto-colors-light-dark-ditto-subtext-grey: rgba(98, 105, 132, 1);
+  --ditto-colors-light-dark-ditto-text-fill: rgba(16, 31, 60, 1);
+}
