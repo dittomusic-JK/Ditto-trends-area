@@ -47,20 +47,7 @@ const filteredPerformance = computed<PerformanceDataPoint[]>(() => {
   
   const store = selectedStoreData.value
   
-  // Use actual series data if available
-  if (store.series && store.series.length > 0) {
-    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-    return store.series.map(point => {
-      const d = new Date(point.date)
-      return {
-        day: dayNames[d.getDay()],
-        current: point.total,
-        previous: Math.round(point.total * 0.95) // Estimate ~5% less for previous period
-      }
-    })
-  }
-  
-  // Fallback: scale the data based on the store's proportion
+  // Scale the performance data based on the store's proportion
   const proportion = store.proportion / 100
   return props.data.performance.map(point => ({
     day: point.day,
