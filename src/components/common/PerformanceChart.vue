@@ -1,22 +1,22 @@
 <template>
-  <div class="bg-[#f9f9ff] rounded-xl sm:rounded-2xl p-4 sm:p-6 overflow-visible">
-    <div class="flex items-center justify-between mb-3 sm:mb-4">
-      <h3 class="font-poppins font-bold text-lg sm:text-xl text-ditto-text">Performance Data</h3>
+  <div class="bg-[#f9f9ff] rounded-xl sm:rounded-2xl p-3 sm:p-6 overflow-visible">
+    <div class="flex items-center justify-between mb-2 sm:mb-4">
+      <h3 class="font-poppins font-bold text-base sm:text-xl text-ditto-text">Performance Data</h3>
     </div>
     
-    <div class="h-[200px] sm:h-[320px] relative overflow-visible">
+    <div class="h-[180px] sm:h-[320px] relative overflow-visible">
       <Line ref="chartRef" :data="chartData" :options="chartOptions" :plugins="[dataLabelsPlugin]" />
     </div>
     
     <!-- Legend -->
-    <div class="flex items-center justify-center gap-4 sm:gap-6 mt-3 sm:mt-4">
-      <div class="flex items-center gap-2">
-        <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#5f1fff]"></span>
-        <span class="text-xs sm:text-sm font-medium text-ditto-text">Current period</span>
+    <div class="flex items-center justify-center gap-4 sm:gap-6 mt-2 sm:mt-4">
+      <div class="flex items-center gap-1.5 sm:gap-2">
+        <span class="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-[#5f1fff]"></span>
+        <span class="text-[10px] sm:text-sm font-medium text-ditto-text">Current</span>
       </div>
-      <div class="flex items-center gap-2">
-        <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#d9c1ff]"></span>
-        <span class="text-xs sm:text-sm text-ditto-subtext">Previous period</span>
+      <div class="flex items-center gap-1.5 sm:gap-2">
+        <span class="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-[#d9c1ff]"></span>
+        <span class="text-[10px] sm:text-sm text-ditto-subtext">Previous</span>
       </div>
     </div>
   </div>
@@ -78,17 +78,28 @@ const dataLabelsPlugin = {
   }
 }
 
+// Format number to abbreviated form (10K, 1.2M, etc.)
+function formatShortNumber(num: number): string {
+  if (num >= 1000000) {
+    return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M'
+  }
+  if (num >= 1000) {
+    return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K'
+  }
+  return num.toString()
+}
+
 function drawLabel(ctx: CanvasRenderingContext2D, x: number, y: number, value: number, color: string, isLast: boolean = false, chartWidth: number = 0) {
-  const text = value.toLocaleString()
+  const text = formatShortNumber(value)
   ctx.save()
   
   // Measure text
-  ctx.font = 'bold 12px Satoshi, sans-serif'
+  ctx.font = 'bold 11px Satoshi, sans-serif'
   const textWidth = ctx.measureText(text).width
-  const padding = 8
+  const padding = 6
   const boxWidth = textWidth + padding * 2
-  const boxHeight = 24
-  const radius = 6
+  const boxHeight = 20
+  const radius = 5
   
   // Position above point, but adjust for edge cases
   let boxX = x - boxWidth / 2
@@ -178,8 +189,9 @@ const chartOptions = computed(() => ({
   maintainAspectRatio: false,
   layout: {
     padding: {
-      left: 10,
-      right: 50
+      left: 0,
+      right: 40,
+      top: 30
     }
   },
   interaction: {
@@ -197,17 +209,17 @@ const chartOptions = computed(() => ({
       bodyColor: '#101f3c',
       borderColor: '#e5e5e5',
       borderWidth: 1,
-      padding: 16,
-      cornerRadius: 12,
+      padding: 12,
+      cornerRadius: 8,
       displayColors: true,
       usePointStyle: true,
       titleFont: {
-        size: 14,
+        size: 12,
         weight: 'bold' as const,
         family: 'Satoshi, sans-serif',
       },
       bodyFont: {
-        size: 13,
+        size: 11,
         family: 'Satoshi, sans-serif',
       },
       callbacks: {
@@ -215,7 +227,7 @@ const chartOptions = computed(() => ({
           return items[0]?.label || ''
         },
         label: (item: any) => {
-          return `  ${item.dataset.label}: ${item.raw.toLocaleString()}`
+          return `  ${item.dataset.label}: ${formatShortNumber(item.raw)}`
         },
       },
     },
@@ -231,13 +243,13 @@ const chartOptions = computed(() => ({
       ticks: {
         color: '#626984',
         font: {
-          size: 13,
+          size: 10,
           family: 'Satoshi, sans-serif',
         },
-        padding: 8,
+        padding: 4,
         maxRotation: 0,
         autoSkip: true,
-        maxTicksLimit: 10,
+        maxTicksLimit: 7,
       },
     },
     y: {
@@ -253,13 +265,14 @@ const chartOptions = computed(() => ({
       ticks: {
         color: '#626984',
         font: {
-          size: 13,
+          size: 10,
           family: 'Satoshi, sans-serif',
         },
-        padding: 12,
+        padding: 8,
+        maxTicksLimit: 5,
         callback: (value: string | number) => {
           if (typeof value === 'number') {
-            return value.toLocaleString()
+            return formatShortNumber(value)
           }
           return value
         },
