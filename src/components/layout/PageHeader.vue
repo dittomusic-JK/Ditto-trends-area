@@ -1,10 +1,10 @@
 <template>
-  <div class="flex items-center justify-between mb-6">
-    <h1 class="font-poppins font-bold text-[42px] tracking-tight text-ditto-text">
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4 sm:mb-6">
+    <h1 class="font-poppins font-bold text-2xl sm:text-3xl lg:text-[42px] tracking-tight text-ditto-text">
       Analytics & Trends <span>📈</span>
     </h1>
     
-    <div class="flex items-center gap-3">
+    <div class="flex flex-wrap items-center gap-2 sm:gap-3">
       <!-- Date Range Picker -->
       <DateRangePicker 
         :model-value="dateRange" 
@@ -15,9 +15,9 @@
       <div class="relative">
         <button 
           @click="showTypeDropdown = !showTypeDropdown"
-          class="flex items-center gap-2 px-4 py-2 border border-ditto-border-grey rounded-lg text-sm hover:bg-ditto-light-grey transition-colors"
+          class="flex items-center gap-2 px-3 py-2 sm:px-4 border border-ditto-border-grey rounded-lg text-sm hover:bg-ditto-light-grey transition-colors"
         >
-          <span class="text-ditto-subtext">Type:</span>
+          <span class="text-ditto-subtext hidden sm:inline">Type:</span>
           <span class="font-medium text-ditto-text">{{ typeLabels[trendsType] }}</span>
           <IconChevronDown class="w-4 h-4 text-ditto-subtext" />
         </button>
@@ -46,10 +46,10 @@
       <!-- Filters Button -->
       <button 
         @click="$emit('openFilters')"
-        class="flex items-center gap-2 px-4 py-2 border border-ditto-border-grey rounded-lg text-sm text-ditto-text hover:bg-ditto-light-grey transition-colors"
+        class="flex items-center gap-2 px-3 py-2 sm:px-4 border border-ditto-border-grey rounded-lg text-sm text-ditto-text hover:bg-ditto-light-grey transition-colors"
       >
         <IconFilter class="w-4 h-4" />
-        <span>Filters</span>
+        <span class="hidden sm:inline">Filters</span>
       </button>
     </div>
   </div>

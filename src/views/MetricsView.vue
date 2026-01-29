@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- Stats Cards -->
-    <div class="flex gap-4 mb-6">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-6">
       <StatsCard v-for="stat in displayStats" :key="stat.id" :stat="stat" />
     </div>
     

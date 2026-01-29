@@ -1,8 +1,9 @@
 <template>
   <div>
-    <h3 class="font-poppins font-bold text-xl text-ditto-text mb-4">Stores</h3>
+    <h3 class="font-poppins font-bold text-lg sm:text-xl text-ditto-text mb-3 sm:mb-4">Stores</h3>
     
-    <table class="w-full">
+    <div class="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
+    <table class="w-full min-w-[400px]">
       <thead>
         <tr class="text-xs text-ditto-subtext">
           <th class="text-left font-normal pb-3 pl-4">Platform</th>
@@ -35,6 +36,7 @@
         </tr>
       </tbody>
     </table>
+    </div>
   </div>
 </template>
 

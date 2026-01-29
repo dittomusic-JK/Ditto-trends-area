@@ -1,12 +1,13 @@
 <template>
-  <aside class="w-[180px] py-4 flex-shrink-0">
-    <nav class="flex flex-col gap-1">
+  <aside class="w-full lg:w-[180px] flex-shrink-0">
+    <!-- Mobile: Horizontal scrollable tabs -->
+    <nav class="flex lg:flex-col gap-1 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0 lg:py-4 -mx-4 px-4 lg:mx-0 lg:px-0">
       <button
         v-for="item in sidebarItems"
         :key="item.id"
         @click="$emit('navigate', item.id)"
         :class="[
-          'flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors',
+          'flex items-center gap-2 lg:gap-3 px-3 lg:px-4 py-2 lg:py-3 rounded-lg text-left transition-colors whitespace-nowrap flex-shrink-0',
           activeView === item.id 
             ? 'bg-ditto-light-grey text-ditto-purple' 
             : 'text-ditto-text hover:bg-ditto-light-grey/50'

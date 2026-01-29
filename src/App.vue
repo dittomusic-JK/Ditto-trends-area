@@ -4,7 +4,7 @@
     <TopNavbar />
     
     <!-- Main Content -->
-    <div class="px-16 py-8">
+    <div class="px-4 py-4 sm:px-6 sm:py-6 lg:px-16 lg:py-8">
       <!-- Page Header -->
       <PageHeader 
         :date-range="dateRange" 
@@ -15,7 +15,7 @@
       />
       
       <!-- Active Filters -->
-      <div v-if="activeFilters.length > 0" class="flex gap-2 mb-6">
+      <div v-if="activeFilters.length > 0" class="flex flex-wrap gap-2 mb-4 sm:mb-6">
         <FilterChip 
           v-for="filter in activeFilters" 
           :key="filter.id"
@@ -26,7 +26,7 @@
       </div>
       
       <!-- Main Layout with Sidebar -->
-      <div class="flex gap-6">
+      <div class="flex flex-col lg:flex-row gap-4 lg:gap-6">
         <!-- Left Sidebar -->
         <LeftSidebar 
           :active-view="activeView" 

@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <div class="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
     <!-- Table Header -->
-    <div class="grid grid-cols-[40px_1fr_120px_100px] gap-4 px-4 py-3 text-xs text-ditto-subtext">
+    <div class="hidden sm:grid grid-cols-[40px_1fr_120px_100px] gap-4 px-4 py-3 text-xs text-ditto-subtext">
       <div></div>
       <div>Source</div>
       <div class="text-center">Streams</div>
@@ -12,35 +12,38 @@
     <div 
       v-for="(source, index) in data.sources" 
       :key="source.id"
-      class="grid grid-cols-[40px_1fr_120px_100px] gap-4 px-4 py-4 items-center hover:bg-ditto-light-grey rounded-2xl transition-colors cursor-pointer"
+      class="sm:grid sm:grid-cols-[40px_1fr_120px_100px] gap-4 px-4 py-4 items-center hover:bg-ditto-light-grey rounded-2xl transition-colors cursor-pointer flex"
     >
-      <!-- Rank -->
-      <div class="text-lg text-ditto-text">{{ index + 1 }}</div>
-      
-      <!-- Source -->
-      <div class="flex items-center gap-4">
-        <div 
-          class="w-12 h-12 rounded-xl flex items-center justify-center"
-          :style="{ backgroundColor: sourceColors[index] + '15' }"
-        >
-          <component 
-            :is="getSourceIcon(source.icon)" 
-            class="w-6 h-6" 
-            :style="{ color: sourceColors[index] }" 
-          />
-        </div>
-        <div>
-          <p class="text-base font-medium text-ditto-text">{{ source.name }}</p>
+      <!-- Mobile: Card Layout -->
+      <div class="flex items-center gap-3 sm:gap-4 w-full sm:contents">
+        <!-- Rank -->
+        <div class="text-lg text-ditto-text">{{ index + 1 }}</div>
+        
+        <!-- Source -->
+        <div class="flex items-center gap-3 sm:gap-4 flex-1">
+          <div 
+            class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+            :style="{ backgroundColor: sourceColors[index] + '15' }"
+          >
+            <component 
+              :is="getSourceIcon(source.icon)" 
+              class="w-5 h-5 sm:w-6 sm:h-6" 
+              :style="{ color: sourceColors[index] }" 
+            />
+          </div>
+          <div class="min-w-0">
+            <p class="text-sm sm:text-base font-medium text-ditto-text">{{ source.name }}</p>
+            <p class="text-xs text-ditto-subtext sm:hidden">{{ source.streams.toLocaleString() }} · {{ source.proportion }}%</p>
+          </div>
         </div>
       </div>
       
-      <!-- Streams -->
-      <div class="text-center text-base font-medium text-ditto-text">
+      <!-- Desktop only columns -->
+      <div class="hidden sm:block text-center text-base font-medium text-ditto-text">
         {{ source.streams.toLocaleString() }}
       </div>
       
-      <!-- Proportion -->
-      <div class="text-center text-base text-ditto-text">
+      <div class="hidden sm:block text-center text-base text-ditto-text">
         {{ source.proportion }}%
       </div>
     </div>
