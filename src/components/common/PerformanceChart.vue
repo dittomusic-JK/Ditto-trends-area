@@ -1,10 +1,10 @@
 <template>
-  <div class="bg-[#f9f9ff] rounded-xl sm:rounded-2xl p-3 sm:p-6 overflow-visible">
+  <div class="bg-[#f9f9ff] rounded-xl sm:rounded-2xl p-3 sm:p-6 overflow-hidden">
     <div class="flex items-center justify-between mb-2 sm:mb-4">
       <h3 class="font-poppins font-bold text-base sm:text-xl text-ditto-text">Performance Data</h3>
     </div>
     
-    <div class="h-[180px] sm:h-[320px] relative overflow-visible">
+    <div class="h-[180px] sm:h-[320px] relative">
       <Line ref="chartRef" :data="chartData" :options="chartOptions" :plugins="[dataLabelsPlugin]" />
     </div>
     
