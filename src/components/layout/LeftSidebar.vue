@@ -1,7 +1,7 @@
 <template>
-  <aside class="w-full lg:w-[180px] flex-shrink-0 overflow-hidden lg:overflow-visible">
+  <aside class="w-full lg:w-[180px] flex-shrink-0">
     <!-- Mobile: Horizontal scrollable tabs -->
-    <nav class="flex lg:flex-col gap-2 lg:gap-1 overflow-x-auto lg:overflow-visible pb-3 lg:pb-0 lg:py-4 scrollbar-hide">
+    <nav class="flex lg:flex-col gap-2 lg:gap-1 overflow-x-auto lg:overflow-visible pb-3 lg:pb-0 lg:py-4 scrollbar-hide -mx-4 px-4 lg:mx-0 lg:px-0">
       <button
         v-for="item in sidebarItems"
         :key="item.id"

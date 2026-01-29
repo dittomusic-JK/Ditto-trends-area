@@ -1,6 +1,6 @@
 <template>
-  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4 sm:mb-6">
-    <h1 class="font-poppins font-bold text-2xl sm:text-3xl lg:text-[42px] tracking-tight text-ditto-text">
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4 sm:mb-6 w-full max-w-full">
+    <h1 class="font-poppins font-bold text-xl sm:text-3xl lg:text-[42px] tracking-tight text-ditto-text truncate">
       Analytics & Trends <span>📈</span>
     </h1>
     

@@ -1,10 +1,10 @@
 <template>
-  <div class="min-h-screen bg-white overflow-x-hidden" data-ditto-colors-light-dark-mode="light">
+  <div class="min-h-screen bg-white overflow-hidden w-full max-w-full" data-ditto-colors-light-dark-mode="light">
     <!-- Top Navigation -->
     <TopNavbar />
     
     <!-- Main Content -->
-    <div class="px-4 py-4 sm:px-6 sm:py-6 lg:px-16 lg:py-8">
+    <div class="px-4 py-4 sm:px-6 sm:py-6 lg:px-16 lg:py-8 w-full max-w-full box-border">
       <!-- Page Header -->
       <PageHeader 
         :date-range="dateRange" 
