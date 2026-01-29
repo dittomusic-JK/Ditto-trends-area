@@ -1,10 +1,10 @@
 <template>
-  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4 sm:mb-6 w-full max-w-full">
-    <h1 class="font-poppins font-bold text-xl sm:text-3xl lg:text-[42px] tracking-tight text-ditto-text truncate">
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4 sm:mb-6 w-full max-w-full">
+    <h1 class="font-poppins font-bold text-xl sm:text-3xl lg:text-[42px] tracking-tight text-ditto-text text-center sm:text-left">
       Analytics & Trends <span>📈</span>
     </h1>
     
-    <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+    <div class="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
       <!-- Date Range Picker -->
       <DateRangePicker 
         :model-value="dateRange" 

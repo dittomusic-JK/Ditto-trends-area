@@ -16,26 +16,24 @@
           :key="store.id"
           @click="handleClick(store.icon)"
           :class="[
-            'border-t border-ditto-border-grey/50 cursor-pointer transition-colors block sm:table-row',
+            'border-t border-ditto-border-grey/50 cursor-pointer transition-colors',
             selectedStore === store.icon ? 'bg-ditto-purple/5' : 'hover:bg-ditto-light-grey'
           ]"
         >
-          <td class="py-3 sm:py-4 px-2 sm:pl-4 block sm:table-cell">
-            <div class="flex items-center gap-3">
+          <td class="py-3 sm:py-4 px-2 sm:pl-4">
+            <div class="flex items-center gap-2 sm:gap-3">
               <StoreIcon :store="store.icon" />
-              <div class="flex-1 min-w-0">
-                <span :class="['text-sm', selectedStore === store.icon ? 'text-ditto-purple font-medium' : 'text-ditto-text']">{{ store.name }}</span>
-                <div class="sm:hidden text-xs text-ditto-subtext mt-0.5">
-                  {{ store.streams.toLocaleString() }} · <span class="text-ditto-purple font-medium">{{ store.proportion }}%</span>
-                </div>
-              </div>
+              <span :class="['text-sm', selectedStore === store.icon ? 'text-ditto-purple font-medium' : 'text-ditto-text']">{{ store.name }}</span>
             </div>
           </td>
-          <td class="text-center py-4 hidden sm:table-cell">
+          <td class="text-center py-3 sm:py-4 hidden sm:table-cell">
             <span class="text-sm font-medium text-ditto-purple">{{ store.proportion }}%</span>
           </td>
-          <td class="text-right py-4 pr-4 hidden sm:table-cell">
-            <span class="text-sm text-ditto-text">{{ store.streams.toLocaleString() }}</span>
+          <td class="text-right py-3 sm:py-4 pr-2 sm:pr-4">
+            <div class="flex items-center justify-end gap-2">
+              <span class="text-xs text-ditto-purple font-medium sm:hidden">{{ store.proportion }}%</span>
+              <span class="text-xs sm:text-sm text-ditto-subtext sm:text-ditto-text">{{ formatStreams(store.streams) }}</span>
+            </div>
           </td>
         </tr>
       </tbody>
@@ -46,6 +44,17 @@
 <script setup lang="ts">
 import type { Store } from '../../types'
 import StoreIcon from './StoreIcon.vue'
+
+// Format streams to abbreviated form on mobile
+const formatStreams = (num: number): string => {
+  if (num >= 1000000) {
+    return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M'
+  }
+  if (num >= 1000) {
+    return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K'
+  }
+  return num.toLocaleString()
+}
 
 const props = defineProps<{
   stores: Store[]
