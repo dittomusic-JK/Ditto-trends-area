@@ -142,16 +142,22 @@ const rightMonth = ref({ month: today.getMonth(), year: today.getFullYear() })
 
 const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec']
 
+// Analytics data has a 3-day delay (including current date)
+const latestDataDate = new Date(today)
+latestDataDate.setDate(today.getDate() - 3)
+
 const presets = [
   { id: 'last7days', label: 'Last 7 Days', getDates: () => {
-    const start = new Date(today)
-    start.setDate(today.getDate() - 6)
-    return { start, end: today }
+    const end = new Date(latestDataDate)
+    const start = new Date(latestDataDate)
+    start.setDate(latestDataDate.getDate() - 6)
+    return { start, end }
   }},
   { id: 'last28days', label: 'Last 28 Days', getDates: () => {
-    const start = new Date(today)
-    start.setDate(today.getDate() - 27)
-    return { start, end: today }
+    const end = new Date(latestDataDate)
+    const start = new Date(latestDataDate)
+    start.setDate(latestDataDate.getDate() - 27)
+    return { start, end }
   }},
   { id: 'lastMonth', label: 'Last Month', getDates: () => {
     const start = new Date(today.getFullYear(), today.getMonth() - 1, 1)
@@ -160,17 +166,20 @@ const presets = [
   }},
   { id: 'thisMonth', label: 'This Month', getDates: () => {
     const start = new Date(today.getFullYear(), today.getMonth(), 1)
-    return { start, end: today }
+    const end = new Date(latestDataDate)
+    return { start, end }
   }},
   { id: 'last3months', label: 'Last 3 Months', getDates: () => {
-    const start = new Date(today)
-    start.setMonth(today.getMonth() - 3)
-    return { start, end: today }
+    const end = new Date(latestDataDate)
+    const start = new Date(latestDataDate)
+    start.setMonth(latestDataDate.getMonth() - 3)
+    return { start, end }
   }},
   { id: 'last12months', label: 'Last 12 Months', getDates: () => {
-    const start = new Date(today)
-    start.setFullYear(today.getFullYear() - 1)
-    return { start, end: today }
+    const end = new Date(latestDataDate)
+    const start = new Date(latestDataDate)
+    start.setFullYear(latestDataDate.getFullYear() - 1)
+    return { start, end }
   }},
 ]
 

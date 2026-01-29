@@ -109,9 +109,12 @@ const activeView = ref<ViewType>('metrics')
 const showFiltersModal = ref(false)
 
 // Date range - default to last 7 days
+// Analytics data has a 3-day delay (including current date)
 const today = new Date()
-const lastWeek = new Date(today)
-lastWeek.setDate(today.getDate() - 6)
+const latestDataDate = new Date(today)
+latestDataDate.setDate(today.getDate() - 3)
+const lastWeek = new Date(latestDataDate)
+lastWeek.setDate(latestDataDate.getDate() - 6)
 
 const formatDate = (d: Date) => {
   const day = String(d.getDate()).padStart(2, '0')
@@ -122,7 +125,7 @@ const formatDate = (d: Date) => {
 
 const dateRange = ref<DateRange>({
   start: formatDate(lastWeek),
-  end: formatDate(today)
+  end: formatDate(latestDataDate)
 })
 
 const activeFilters = ref<Filter[]>([])
