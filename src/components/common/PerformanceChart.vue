@@ -1,22 +1,22 @@
 <template>
-  <div class="bg-[#f9f9ff] rounded-2xl p-6 overflow-visible">
-    <div class="flex items-center justify-between mb-4">
-      <h3 class="font-poppins font-bold text-xl text-ditto-text">Performance Data</h3>
+  <div class="bg-[#f9f9ff] rounded-xl sm:rounded-2xl p-4 sm:p-6 overflow-visible">
+    <div class="flex items-center justify-between mb-3 sm:mb-4">
+      <h3 class="font-poppins font-bold text-lg sm:text-xl text-ditto-text">Performance Data</h3>
     </div>
     
-    <div class="h-[320px] relative overflow-visible">
+    <div class="h-[200px] sm:h-[320px] relative overflow-visible">
       <Line ref="chartRef" :data="chartData" :options="chartOptions" :plugins="[dataLabelsPlugin]" />
     </div>
     
     <!-- Legend -->
-    <div class="flex items-center justify-center gap-6 mt-4">
+    <div class="flex items-center justify-center gap-4 sm:gap-6 mt-3 sm:mt-4">
       <div class="flex items-center gap-2">
-        <span class="w-3 h-3 rounded-full bg-[#5f1fff]"></span>
-        <span class="text-sm font-medium text-ditto-text">Current period</span>
+        <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#5f1fff]"></span>
+        <span class="text-xs sm:text-sm font-medium text-ditto-text">Current period</span>
       </div>
       <div class="flex items-center gap-2">
-        <span class="w-3 h-3 rounded-full bg-[#d9c1ff]"></span>
-        <span class="text-sm text-ditto-subtext">Previous period</span>
+        <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#d9c1ff]"></span>
+        <span class="text-xs sm:text-sm text-ditto-subtext">Previous period</span>
       </div>
     </div>
   </div>

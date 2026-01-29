@@ -3,29 +3,29 @@
     <!-- Trigger Button -->
     <button 
       @click="isOpen = !isOpen"
-      class="flex items-center gap-2 px-4 py-2 border border-ditto-border-grey rounded-lg text-sm text-ditto-text hover:bg-ditto-light-grey transition-colors bg-white"
+      class="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-2 border border-ditto-border-grey rounded-lg text-xs sm:text-sm text-ditto-text hover:bg-ditto-light-grey transition-colors bg-white"
     >
       <IconCalendar class="w-4 h-4 text-ditto-subtext" />
-      <span>{{ formatDate(selectedRange.start) }}</span>
-      <span class="text-ditto-subtext">to</span>
-      <span>{{ formatDate(selectedRange.end) }}</span>
+      <span>{{ formatDateShort(selectedRange.start) }}</span>
+      <span class="text-ditto-subtext">-</span>
+      <span>{{ formatDateShort(selectedRange.end) }}</span>
     </button>
     
     <!-- Dropdown -->
     <div 
       v-if="isOpen"
-      class="absolute top-full right-0 mt-2 bg-white rounded-2xl shadow-xl border border-ditto-border-grey z-50 flex"
+      class="fixed sm:absolute inset-x-4 sm:inset-x-auto top-20 sm:top-full sm:right-0 sm:mt-2 bg-white rounded-2xl shadow-xl border border-ditto-border-grey z-50 flex flex-col sm:flex-row max-h-[80vh] overflow-auto"
     >
-      <!-- Presets Sidebar -->
-      <div class="w-28 border-r border-ditto-border-grey py-3 px-2">
+      <!-- Presets -->
+      <div class="flex sm:flex-col sm:w-28 border-b sm:border-b-0 sm:border-r border-ditto-border-grey py-2 sm:py-3 px-2 gap-1 overflow-x-auto sm:overflow-visible">
         <button
           v-for="preset in presets"
           :key="preset.id"
           @click="applyPreset(preset)"
           :class="[
-            'block w-full text-left px-2 py-1.5 text-xs rounded-lg transition-colors',
+            'sm:block sm:w-full text-left px-3 sm:px-2 py-1.5 text-xs rounded-lg transition-colors whitespace-nowrap flex-shrink-0',
             activePreset === preset.id 
-              ? 'text-ditto-purple font-medium' 
+              ? 'text-ditto-purple font-medium bg-ditto-purple/10' 
               : 'text-ditto-text hover:bg-ditto-light-grey'
           ]"
         >
@@ -34,9 +34,9 @@
       </div>
       
       <!-- Calendars -->
-      <div class="flex p-3 gap-3">
+      <div class="flex flex-col sm:flex-row p-3 gap-3">
         <!-- Left Calendar (Previous Month) -->
-        <div class="w-48">
+        <div class="w-full sm:w-48">
           <div class="flex items-center justify-between mb-2">
             <button @click="prevMonth" class="p-0.5 hover:bg-ditto-light-grey rounded">
               <IconChevronLeft class="w-4 h-4 text-ditto-text" />
@@ -56,7 +56,7 @@
         </div>
         
         <!-- Right Calendar (Current Month) -->
-        <div class="w-48">
+        <div class="w-full sm:w-48">
           <div class="flex items-center justify-between mb-2">
             <div class="w-4"></div>
             <span class="font-semibold text-ditto-text text-sm">{{ monthNames[rightMonth.month] }} {{ rightMonth.year }}</span>
@@ -80,7 +80,7 @@
     <!-- Backdrop -->
     <div 
       v-if="isOpen" 
-      class="fixed inset-0 z-40" 
+      class="fixed inset-0 z-40 bg-black/20 sm:bg-transparent" 
       @click="closePicker"
     ></div>
   </div>
@@ -188,6 +188,12 @@ const formatDate = (date: Date): string => {
   const month = (date.getMonth() + 1).toString().padStart(2, '0')
   const year = date.getFullYear()
   return `${day}/${month}/${year}`
+}
+
+const formatDateShort = (date: Date): string => {
+  const day = date.getDate()
+  const month = monthNames[date.getMonth()]
+  return `${day} ${month}`
 }
 
 const prevMonth = () => {

@@ -1,12 +1,11 @@
 <template>
-  <header class="h-[74px] flex items-center justify-between px-6 border-b border-ditto-border-grey bg-white">
-    <!-- Logo and Nav -->
-    <div class="flex items-center gap-8">
-      <!-- Ditto Logo -->
-      <img src="/img/logo-2048-black.svg" alt="Ditto" class="h-6" />
+  <header class="h-14 sm:h-[74px] flex items-center justify-between px-4 sm:px-6 border-b border-ditto-border-grey bg-white">
+    <!-- Logo -->
+    <div class="flex items-center gap-4 sm:gap-8">
+      <img src="/img/logo-2048-black.svg" alt="Ditto" class="h-5 sm:h-6" />
       
-      <!-- Nav Items -->
-      <nav class="flex items-center gap-6">
+      <!-- Nav Items - Hidden on mobile -->
+      <nav class="hidden md:flex items-center gap-6">
         <a 
           v-for="item in navItems" 
           :key="item.id"
@@ -22,26 +21,26 @@
     </div>
     
     <!-- Right side actions -->
-    <div class="flex items-center gap-4">
-      <button class="px-4 py-1.5 bg-success text-ditto-black text-sm font-medium rounded-full hover:opacity-90 transition-opacity">
+    <div class="flex items-center gap-2 sm:gap-4">
+      <button class="hidden sm:block px-4 py-1.5 bg-success text-ditto-black text-sm font-medium rounded-full hover:opacity-90 transition-opacity">
         Upgrade
       </button>
       
-      <button class="w-9 h-9 flex items-center justify-center text-ditto-subtext hover:text-ditto-text transition-colors">
+      <button class="hidden sm:flex w-9 h-9 items-center justify-center text-ditto-subtext hover:text-ditto-text transition-colors">
         <IconHelp />
       </button>
       
-      <button class="w-9 h-9 flex items-center justify-center text-ditto-subtext hover:text-ditto-text transition-colors">
+      <button class="hidden sm:flex w-9 h-9 items-center justify-center text-ditto-subtext hover:text-ditto-text transition-colors">
         <IconCalendar />
       </button>
       
-      <button class="px-4 py-1.5 bg-ditto-purple text-white text-sm font-medium rounded-full flex items-center gap-2 hover:opacity-90 transition-opacity">
+      <button class="px-3 py-1.5 sm:px-4 bg-ditto-purple text-white text-sm font-medium rounded-full flex items-center gap-2 hover:opacity-90 transition-opacity">
         <span>🎵</span>
-        Create
+        <span class="hidden sm:inline">Create</span>
       </button>
       
       <!-- User Avatar -->
-      <button class="w-9 h-9 rounded-full bg-ditto-light-grey overflow-hidden flex items-center justify-center">
+      <button class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-ditto-light-grey overflow-hidden flex items-center justify-center">
         <img src="/img/avatar.jpg" alt="User" class="w-full h-full object-cover" />
       </button>
     </div>

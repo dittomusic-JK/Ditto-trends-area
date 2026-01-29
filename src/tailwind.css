@@ -121,3 +121,12 @@
   --ditto-colors-light-dark-ditto-subtext-grey: rgba(98, 105, 132, 1);
   --ditto-colors-light-dark-ditto-text-fill: rgba(16, 31, 60, 1);
 }
+
+/* Hide scrollbar utility */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
