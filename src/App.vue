@@ -68,8 +68,10 @@
     <FiltersPanel 
       :is-open="showFiltersModal"
       :current-filters="activeFilters"
+      :current-data-type="trendsType"
       @close="showFiltersModal = false"
       @apply="applyFilters"
+      @update:data-type="updateTrendsType"
     />
   </div>
 </template>

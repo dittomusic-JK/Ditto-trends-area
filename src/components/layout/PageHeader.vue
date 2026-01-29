@@ -11,13 +11,13 @@
         @update:model-value="$emit('update:dateRange', $event)"
       />
       
-      <!-- Type Dropdown -->
-      <div class="relative">
+      <!-- Type Dropdown - hidden on mobile, shown in filters instead -->
+      <div class="relative hidden sm:block">
         <button 
           @click="showTypeDropdown = !showTypeDropdown"
-          class="flex items-center gap-2 px-3 py-2 sm:px-4 border border-ditto-border-grey rounded-lg text-sm hover:bg-ditto-light-grey transition-colors"
+          class="flex items-center gap-2 px-4 border border-ditto-border-grey rounded-lg text-sm hover:bg-ditto-light-grey transition-colors h-10"
         >
-          <span class="text-ditto-subtext hidden sm:inline">Type:</span>
+          <span class="text-ditto-subtext">Type:</span>
           <span class="font-medium text-ditto-text">{{ typeLabels[trendsType] }}</span>
           <IconChevronDown class="w-4 h-4 text-ditto-subtext" />
         </button>
