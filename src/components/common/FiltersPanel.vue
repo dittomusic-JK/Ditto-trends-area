@@ -56,7 +56,7 @@
               <button 
                 v-for="(label, type) in dataTypeOptions" 
                 :key="type"
-                @click="selectDataType(type)"
+                @click="selectDataType(type as TrendsType)"
                 class="w-full flex items-center justify-between py-2 text-left hover:text-ditto-purple transition-colors"
               >
                 <div class="flex items-center gap-3">
@@ -314,19 +314,18 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
-import type { TrendsType } from '../../types'
-import type { Filter } from '../../types'
+import type { Filter, TrendsType } from '../../types'
 
 const props = defineProps<{
   isOpen: boolean
   currentFilters: Filter[]
-  currentDataType?: string
+  currentDataType?: TrendsType
 }>()
 
 const emit = defineEmits<{
   (e: 'close'): void
   (e: 'apply', filters: Filter[]): void
-  (e: 'update:dataType', type: string): void
+  (e: 'update:dataType', type: TrendsType): void
 }>()
 
 // Filter options (mock data)
@@ -384,7 +383,7 @@ const filterOptions = {
 const expandedSection = ref<string | null>(null)
 
 // Data type options for mobile
-const dataTypeOptions: Record<string, string> = {
+const dataTypeOptions: Record<TrendsType, string> = {
   streaming: 'Streaming',
   download: 'Download',
   fingerprint: 'Fingerprint',
@@ -392,10 +391,10 @@ const dataTypeOptions: Record<string, string> = {
   preorder: 'Pre-order'
 }
 
-const selectedDataType = ref(props.currentDataType || 'streaming')
+const selectedDataType = ref<TrendsType>(props.currentDataType || 'streaming')
 const selectedDataTypeLabel = computed(() => dataTypeOptions[selectedDataType.value] || 'Streaming')
 
-const selectDataType = (type: string) => {
+const selectDataType = (type: TrendsType) => {
   selectedDataType.value = type
   emit('update:dataType', type)
 }
