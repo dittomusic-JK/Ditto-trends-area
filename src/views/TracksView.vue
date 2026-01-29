@@ -1,6 +1,6 @@
 <template>
-  <div class="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
-    <!-- Table Header -->
+  <div>
+    <!-- Table Header (Desktop only) -->
     <div class="hidden sm:grid grid-cols-[40px_1fr_140px_100px_120px_120px] gap-4 px-4 py-3 text-xs text-ditto-subtext">
       <div></div>
       <div>Details</div>
@@ -14,24 +14,24 @@
     <div 
       v-for="track in tracks" 
       :key="track.id"
-      class="sm:grid sm:grid-cols-[40px_1fr_140px_100px_120px_120px] gap-4 px-4 py-4 items-center hover:bg-ditto-light-grey rounded-2xl transition-colors cursor-pointer flex"
+      class="sm:grid sm:grid-cols-[40px_1fr_140px_100px_120px_120px] gap-4 px-2 sm:px-4 py-3 sm:py-4 items-center hover:bg-ditto-light-grey rounded-2xl transition-colors cursor-pointer"
     >
       <!-- Mobile: Card Layout -->
-      <div class="flex items-center gap-4 w-full sm:contents">
+      <div class="flex items-center gap-3 w-full sm:contents">
         <!-- Rank -->
-        <div class="text-lg text-ditto-text">{{ track.rank }}</div>
+        <div class="text-base sm:text-lg text-ditto-text flex-shrink-0 w-6">{{ track.rank }}</div>
         
         <!-- Details -->
-        <div class="flex items-center gap-3 sm:gap-4 flex-1">
+        <div class="flex items-center gap-3 flex-1 min-w-0">
           <img 
             :src="track.artwork" 
             :alt="track.title"
-            class="w-12 h-12 sm:w-16 sm:h-16 rounded-lg object-cover"
+            class="w-11 h-11 sm:w-16 sm:h-16 rounded-lg object-cover flex-shrink-0"
           />
-          <div class="min-w-0">
-            <p class="text-sm sm:text-base font-medium text-ditto-text truncate max-w-[180px] sm:max-w-[240px]">{{ track.title }}</p>
-            <p class="text-xs text-ditto-subtext">{{ track.releaseName }}</p>
-            <p class="text-xs text-ditto-subtext sm:hidden mt-1">{{ track.streams.toLocaleString() }} streams</p>
+          <div class="min-w-0 flex-1">
+            <p class="text-sm sm:text-base font-medium text-ditto-text truncate">{{ track.title }}</p>
+            <p class="text-xs text-ditto-subtext truncate">{{ track.releaseName }}</p>
+            <p class="text-xs text-ditto-subtext sm:hidden mt-0.5">{{ track.streams.toLocaleString() }} streams</p>
           </div>
         </div>
       </div>

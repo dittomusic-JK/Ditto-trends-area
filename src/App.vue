@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-white" data-ditto-colors-light-dark-mode="light">
+  <div class="min-h-screen bg-white overflow-x-hidden" data-ditto-colors-light-dark-mode="light">
     <!-- Top Navigation -->
     <TopNavbar />
     

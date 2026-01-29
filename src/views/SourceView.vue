@@ -1,6 +1,6 @@
 <template>
-  <div class="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
-    <!-- Table Header -->
+  <div>
+    <!-- Table Header (Desktop only) -->
     <div class="hidden sm:grid grid-cols-[40px_1fr_120px_100px] gap-4 px-4 py-3 text-xs text-ditto-subtext">
       <div></div>
       <div>Source</div>
@@ -12,15 +12,15 @@
     <div 
       v-for="(source, index) in data.sources" 
       :key="source.id"
-      class="sm:grid sm:grid-cols-[40px_1fr_120px_100px] gap-4 px-4 py-4 items-center hover:bg-ditto-light-grey rounded-2xl transition-colors cursor-pointer flex"
+      class="sm:grid sm:grid-cols-[40px_1fr_120px_100px] gap-4 px-2 sm:px-4 py-3 sm:py-4 items-center hover:bg-ditto-light-grey rounded-2xl transition-colors cursor-pointer"
     >
       <!-- Mobile: Card Layout -->
-      <div class="flex items-center gap-3 sm:gap-4 w-full sm:contents">
+      <div class="flex items-center gap-3 w-full sm:contents">
         <!-- Rank -->
-        <div class="text-lg text-ditto-text">{{ index + 1 }}</div>
+        <div class="text-base sm:text-lg text-ditto-text flex-shrink-0 w-6">{{ index + 1 }}</div>
         
         <!-- Source -->
-        <div class="flex items-center gap-3 sm:gap-4 flex-1">
+        <div class="flex items-center gap-3 flex-1 min-w-0">
           <div 
             class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center flex-shrink-0"
             :style="{ backgroundColor: sourceColors[index] + '15' }"
@@ -31,7 +31,7 @@
               :style="{ color: sourceColors[index] }" 
             />
           </div>
-          <div class="min-w-0">
+          <div class="min-w-0 flex-1">
             <p class="text-sm sm:text-base font-medium text-ditto-text">{{ source.name }}</p>
             <p class="text-xs text-ditto-subtext sm:hidden">{{ source.streams.toLocaleString() }} · {{ source.proportion }}%</p>
           </div>
