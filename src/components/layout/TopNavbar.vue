@@ -1,6 +1,6 @@
 <template>
   <!-- Mobile Header -->
-  <header class="md:hidden h-14 flex items-center justify-between px-4 border-b border-ditto-border-grey bg-white">
+  <header class="md:hidden h-16 flex items-center justify-between px-4 border-b border-ditto-border-grey bg-white">
     <!-- Shop Icon -->
     <button class="w-10 h-10 flex items-center justify-center text-ditto-text">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
