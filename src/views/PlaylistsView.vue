@@ -1,7 +1,7 @@
 <template>
   <div>
-    <!-- Table Header -->
-    <div class="grid grid-cols-[40px_1fr_100px_100px_140px_80px] gap-4 px-4 py-3 text-xs text-ditto-subtext">
+    <!-- Desktop Table Header -->
+    <div class="hidden lg:grid grid-cols-[40px_1fr_100px_100px_140px_80px] gap-4 px-4 py-3 text-xs text-ditto-subtext">
       <div></div>
       <div>Details</div>
       <div class="text-center">Streams</div>
@@ -12,25 +12,18 @@
     
     <!-- Table Rows -->
     <div v-for="playlist in localPlaylists" :key="playlist.id" class="mb-1">
-      <!-- Main Row -->
+      <!-- Desktop Row -->
       <div 
         @click="toggleExpand(playlist.id)"
         :class="[
-          'grid grid-cols-[40px_1fr_100px_100px_140px_80px] gap-4 px-4 py-4 items-center transition-colors',
+          'hidden lg:grid grid-cols-[40px_1fr_100px_100px_140px_80px] gap-4 px-4 py-4 items-center transition-colors',
           playlist.tracks && playlist.tracks.length > 0 ? 'cursor-pointer' : '',
           playlist.isExpanded ? 'bg-[#f8f8fc]' : 'hover:bg-ditto-light-grey rounded-2xl'
         ]"
       >
-        <!-- Rank -->
         <div class="text-lg text-ditto-text">{{ playlist.rank }}</div>
-        
-        <!-- Details -->
         <div class="flex items-center gap-4">
-          <img 
-            :src="playlist.artwork" 
-            :alt="playlist.name"
-            class="w-16 h-16 rounded-lg object-cover"
-          />
+          <img :src="playlist.artwork" :alt="playlist.name" class="w-16 h-16 rounded-lg object-cover" />
           <div class="flex items-center gap-2">
             <img src="/img/spotify-icon.svg" alt="Spotify" class="w-5 h-5 flex-shrink-0" />
             <div>
@@ -39,23 +32,9 @@
             </div>
           </div>
         </div>
-        
-        <!-- Streams -->
-        <div class="text-center text-base font-medium text-ditto-text">
-          {{ playlist.streams.toLocaleString() }}
-        </div>
-        
-        <!-- Followers -->
-        <div class="text-center text-base text-ditto-text">
-          {{ playlist.followers ? playlist.followers.toLocaleString() : '-' }}
-        </div>
-        
-        <!-- Curator -->
-        <div class="text-center text-sm text-ditto-subtext">
-          {{ playlist.curator }}
-        </div>
-        
-        <!-- Skip Rate with Chevron -->
+        <div class="text-center text-base font-medium text-ditto-text">{{ playlist.streams.toLocaleString() }}</div>
+        <div class="text-center text-base text-ditto-text">{{ playlist.followers ? playlist.followers.toLocaleString() : '-' }}</div>
+        <div class="text-center text-sm text-ditto-subtext">{{ playlist.curator }}</div>
         <div class="flex items-center justify-end gap-3 text-base text-ditto-text">
           <span>{{ playlist.skipRate }}%</span>
           <template v-if="playlist.tracks && playlist.tracks.length > 0">
@@ -65,12 +44,45 @@
         </div>
       </div>
       
-      <!-- Expanded Tracks Section -->
+      <!-- Mobile Row -->
+      <div 
+        @click="toggleExpand(playlist.id)"
+        :class="[
+          'lg:hidden flex items-center gap-3 px-2 py-3 transition-colors',
+          playlist.tracks && playlist.tracks.length > 0 ? 'cursor-pointer' : '',
+          playlist.isExpanded ? 'bg-[#f8f8fc] rounded-t-xl' : 'hover:bg-ditto-light-grey rounded-xl'
+        ]"
+      >
+        <!-- Rank -->
+        <span class="text-base font-medium text-ditto-subtext w-6 text-center flex-shrink-0">{{ playlist.rank }}</span>
+        
+        <!-- Artwork -->
+        <img :src="playlist.artwork" :alt="playlist.name" class="w-12 h-12 rounded-lg object-cover flex-shrink-0" />
+        
+        <!-- Info -->
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-1.5">
+            <img src="/img/spotify-icon.svg" alt="Spotify" class="w-4 h-4 flex-shrink-0" />
+            <p class="text-sm font-medium text-ditto-text truncate">{{ playlist.name }}</p>
+          </div>
+          <p class="text-xs text-ditto-purple mt-0.5">{{ playlist.trackCount }} Tracks</p>
+        </div>
+        
+        <!-- Streams + Chevron -->
+        <div class="flex items-center gap-1.5 flex-shrink-0">
+          <span class="text-sm font-medium text-ditto-text">{{ formatShort(playlist.streams) }}</span>
+          <template v-if="playlist.tracks && playlist.tracks.length > 0">
+            <IconChevronUp v-if="playlist.isExpanded" class="w-4 h-4 text-ditto-subtext" />
+            <IconChevronDown v-else class="w-4 h-4 text-ditto-subtext" />
+          </template>
+        </div>
+      </div>
+      
+      <!-- Expanded Tracks Section - Desktop -->
       <div 
         v-if="playlist.isExpanded && playlist.tracks && playlist.tracks.length > 0"
-        class="bg-[#f8f8fc] px-8 pb-4 -mt-1"
+        class="hidden lg:block bg-[#f8f8fc] px-8 pb-4 -mt-1"
       >
-        <!-- Sub-table Header - Purple background -->
         <div class="grid grid-cols-[1fr_140px_100px_160px_80px] gap-4 py-2.5 text-xs font-medium text-ditto-purple bg-ditto-purple/10 rounded-lg px-4 mb-1">
           <div>Name</div>
           <div class="text-center">Artist</div>
@@ -78,8 +90,6 @@
           <div class="text-center">Add Date</div>
           <div class="text-center">Skip Rate</div>
         </div>
-        
-        <!-- Sub-table Rows -->
         <div 
           v-for="track in playlist.tracks" 
           :key="track.id"
@@ -90,11 +100,30 @@
           <div class="text-center text-ditto-text font-medium">{{ track.streams.toLocaleString() }}</div>
           <div class="text-center">
             <div class="text-ditto-text">{{ track.addDate }}</div>
-            <div v-if="track.streamsSince" class="text-xs text-ditto-purple">
-              streams since: {{ track.streamsSince.toLocaleString() }}
-            </div>
+            <div v-if="track.streamsSince" class="text-xs text-ditto-purple">streams since: {{ track.streamsSince.toLocaleString() }}</div>
           </div>
           <div class="text-center text-ditto-text">{{ track.skipRate }}%</div>
+        </div>
+      </div>
+      
+      <!-- Expanded Tracks Section - Mobile -->
+      <div 
+        v-if="playlist.isExpanded && playlist.tracks && playlist.tracks.length > 0"
+        class="lg:hidden bg-[#f8f8fc] rounded-b-xl px-3 pb-3"
+      >
+        <div 
+          v-for="track in playlist.tracks" 
+          :key="track.id"
+          class="flex items-center justify-between py-2.5 border-b border-ditto-border-grey/30 last:border-b-0"
+        >
+          <div class="min-w-0 flex-1">
+            <p class="text-sm font-medium text-ditto-text truncate">{{ track.name }}</p>
+            <p class="text-xs text-ditto-subtext">{{ track.artist }}</p>
+          </div>
+          <div class="text-right flex-shrink-0 pl-3">
+            <p class="text-sm font-medium text-ditto-text">{{ formatShort(track.streams) }}</p>
+            <p class="text-xs text-ditto-subtext">{{ track.skipRate }}% skip</p>
+          </div>
         </div>
       </div>
     </div>
@@ -115,6 +144,12 @@ const localPlaylists = ref<Playlist[]>([])
 watch(() => props.playlists, (newVal) => {
   localPlaylists.value = newVal.map(p => ({ ...p, isExpanded: false }))
 }, { immediate: true })
+
+const formatShort = (num: number): string => {
+  if (num >= 1000000) return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M'
+  if (num >= 1000) return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K'
+  return num.toLocaleString()
+}
 
 const toggleExpand = (id: string) => {
   const playlist = localPlaylists.value.find(p => p.id === id)
