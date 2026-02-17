@@ -1,7 +1,7 @@
 <template>
   <div>
-    <!-- Table Header (Desktop only) -->
-    <div class="hidden sm:grid grid-cols-[40px_1fr_120px_100px] gap-4 px-4 py-3 text-xs text-ditto-subtext">
+    <!-- Desktop Table Header -->
+    <div class="hidden lg:grid grid-cols-[40px_1fr_120px_100px] gap-4 px-4 py-3 text-xs text-ditto-subtext">
       <div></div>
       <div>Source</div>
       <div class="text-center">Streams</div>
@@ -9,42 +9,52 @@
     </div>
     
     <!-- Table Rows -->
-    <div 
-      v-for="(source, index) in data.sources" 
-      :key="source.id"
-      class="sm:grid sm:grid-cols-[40px_1fr_120px_100px] gap-4 px-2 sm:px-4 py-3 sm:py-4 items-center hover:bg-ditto-light-grey rounded-2xl transition-colors cursor-pointer"
-    >
-      <!-- Mobile: Card Layout -->
-      <div class="flex items-center gap-3 w-full sm:contents">
-        <!-- Rank -->
-        <div class="text-base sm:text-lg text-ditto-text flex-shrink-0 w-6">{{ index + 1 }}</div>
-        
-        <!-- Source -->
-        <div class="flex items-center gap-3 flex-1 min-w-0">
+    <div v-for="(source, index) in data.sources" :key="source.id" class="mb-1">
+      <!-- Desktop Row -->
+      <div class="hidden lg:grid grid-cols-[40px_1fr_120px_100px] gap-4 px-4 py-4 items-center hover:bg-ditto-light-grey rounded-2xl transition-colors cursor-pointer">
+        <div class="text-lg text-ditto-text">{{ index + 1 }}</div>
+        <div class="flex items-center gap-3">
           <div 
-            class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+            class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
             :style="{ backgroundColor: sourceColors[index] + '15' }"
           >
             <component 
               :is="getSourceIcon(source.icon)" 
-              class="w-5 h-5 sm:w-6 sm:h-6" 
+              class="w-6 h-6" 
               :style="{ color: sourceColors[index] }" 
             />
           </div>
-          <div class="min-w-0 flex-1">
-            <p class="text-sm sm:text-base font-medium text-ditto-text">{{ source.name }}</p>
-            <p class="text-xs text-ditto-subtext sm:hidden">{{ source.streams.toLocaleString() }} · {{ source.proportion }}%</p>
-          </div>
+          <p class="text-base font-medium text-ditto-text">{{ source.name }}</p>
         </div>
+        <div class="text-center text-base font-medium text-ditto-text">{{ source.streams.toLocaleString() }}</div>
+        <div class="text-center text-base text-ditto-text">{{ source.proportion }}%</div>
       </div>
       
-      <!-- Desktop only columns -->
-      <div class="hidden sm:block text-center text-base font-medium text-ditto-text">
-        {{ source.streams.toLocaleString() }}
-      </div>
-      
-      <div class="hidden sm:block text-center text-base text-ditto-text">
-        {{ source.proportion }}%
+      <!-- Mobile Row -->
+      <div class="lg:hidden flex items-center gap-3 px-2 py-3 hover:bg-ditto-light-grey rounded-xl transition-colors cursor-pointer">
+        <!-- Rank -->
+        <span class="text-base font-medium text-ditto-subtext w-6 text-center flex-shrink-0">{{ index + 1 }}</span>
+        
+        <!-- Icon -->
+        <div 
+          class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+          :style="{ backgroundColor: sourceColors[index] + '15' }"
+        >
+          <component 
+            :is="getSourceIcon(source.icon)" 
+            class="w-5 h-5" 
+            :style="{ color: sourceColors[index] }" 
+          />
+        </div>
+        
+        <!-- Info -->
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-medium text-ditto-text">{{ source.name }}</p>
+          <p class="text-xs text-ditto-subtext mt-0.5">{{ source.proportion }}%</p>
+        </div>
+        
+        <!-- Streams -->
+        <span class="text-sm font-medium text-ditto-text flex-shrink-0">{{ formatShort(source.streams) }}</span>
       </div>
     </div>
   </div>
@@ -57,6 +67,12 @@ import type { SourceViewData } from '../types'
 defineProps<{
   data: SourceViewData
 }>()
+
+const formatShort = (num: number): string => {
+  if (num >= 1000000) return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M'
+  if (num >= 1000) return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K'
+  return num.toLocaleString()
+}
 
 // Colors for each source
 const sourceColors = ['#8640f4', '#F87171', '#34D399', '#FBBF24', '#60A5FA']
