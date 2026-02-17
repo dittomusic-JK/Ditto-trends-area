@@ -20,7 +20,7 @@
         @mouseenter="day.date && $emit('hover', day.date)"
         @mouseleave="$emit('hover', null)"
         :class="[
-          'relative aspect-square flex items-center justify-center text-xs rounded-full transition-all cursor-pointer',
+          'relative aspect-square flex items-center justify-center text-xs transition-all cursor-pointer',
           getDayClasses(day)
         ]"
       >
@@ -142,7 +142,7 @@ const getDayClasses = (day: CalendarDay): string => {
   const classes: string[] = []
   
   if (!day.date || !day.isCurrentMonth) {
-    return 'text-ditto-subtext/30'
+    return 'rounded-full text-ditto-subtext/30'
   }
   
   const isStart = isRangeStart(day.date)
@@ -152,21 +152,20 @@ const getDayClasses = (day: CalendarDay): string => {
   if (isStart || isEnd) {
     classes.push('bg-ditto-purple text-white font-medium z-10')
   } else if (inRange) {
-    classes.push('bg-ditto-purple/15 text-ditto-text')
+    classes.push('bg-ditto-purple/20 text-ditto-text')
   } else {
-    classes.push('text-ditto-text hover:bg-ditto-light-grey')
+    classes.push('rounded-full text-ditto-text hover:bg-ditto-light-grey')
   }
   
-  // Add range background styling
-  if (inRange || isStart || isEnd) {
-    if (isStart && !isEnd) {
-      classes.push('rounded-l-full rounded-r-none')
-    } else if (isEnd && !isStart) {
-      classes.push('rounded-r-full rounded-l-none')
-    } else if (inRange) {
-      classes.push('rounded-none')
-    }
+  // Range shape: connected band with rounded caps
+  if (isStart && isEnd) {
+    classes.push('rounded-full')
+  } else if (isStart) {
+    classes.push('rounded-l-full')
+  } else if (isEnd) {
+    classes.push('rounded-r-full')
   }
+  // inRange cells get no rounding (rectangular) to form a continuous band
   
   return classes.join(' ')
 }
