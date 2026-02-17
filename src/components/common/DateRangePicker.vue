@@ -3,7 +3,7 @@
     <!-- Trigger Button -->
     <button 
       @click="isOpen = !isOpen"
-      class="flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 border border-ditto-border-grey rounded-lg text-xs sm:text-sm text-ditto-text hover:bg-ditto-light-grey transition-colors bg-white flex-1 sm:flex-none"
+      class="w-full flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 border border-ditto-border-grey rounded-lg text-xs sm:text-sm text-ditto-text hover:bg-ditto-light-grey transition-colors bg-white sm:w-auto"
     >
       <IconCalendar class="w-4 h-4 text-ditto-subtext" />
       <span>{{ formatDateShort(selectedRange.start) }}</span>

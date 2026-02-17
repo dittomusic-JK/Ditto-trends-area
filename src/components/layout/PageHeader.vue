@@ -46,7 +46,7 @@
       <!-- Filters Button -->
       <button 
         @click="$emit('openFilters')"
-        class="flex items-center gap-2 px-3 py-2 sm:px-4 border border-ditto-border-grey rounded-lg text-sm text-ditto-text hover:bg-ditto-light-grey transition-colors"
+        class="flex items-center justify-center gap-2 px-3 py-2 sm:px-4 border border-ditto-border-grey rounded-lg text-sm text-ditto-text hover:bg-ditto-light-grey transition-colors flex-shrink-0"
       >
         <IconFilter class="w-4 h-4" />
         <span class="hidden sm:inline">Filters</span>
