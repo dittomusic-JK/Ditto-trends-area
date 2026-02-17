@@ -100,7 +100,7 @@
             </div>
             
             <!-- Presets -->
-            <div class="flex gap-1.5 px-4 pb-3 overflow-x-auto">
+            <div class="flex gap-1.5 px-4 pb-3 overflow-x-auto scrollbar-hide">
               <button
                 v-for="preset in presets"
                 :key="preset.id"
@@ -453,5 +453,12 @@ const cancelMobile = () => {
 .sheet-enter-from > div:last-child,
 .sheet-leave-to > div:last-child {
   transform: translateY(100%);
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }
 </style>

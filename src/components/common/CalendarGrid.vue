@@ -152,7 +152,7 @@ const getDayClasses = (day: CalendarDay): string => {
   if (isStart || isEnd) {
     classes.push('bg-ditto-purple text-white font-medium z-10')
   } else if (inRange) {
-    classes.push('bg-chart-purple/20 text-ditto-text')
+    classes.push('bg-chart-purple/15 text-ditto-text')
   } else {
     classes.push('rounded-full text-ditto-text hover:bg-ditto-light-grey')
   }
