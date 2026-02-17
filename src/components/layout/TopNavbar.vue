@@ -11,7 +11,7 @@
     </button>
     
     <!-- Centered Logo -->
-    <img src="/img/logo-2048-black.svg" alt="Ditto" class="h-5" />
+    <img src="/img/logo-2048-black.svg" alt="Ditto" class="h-7" />
     
     <!-- Hamburger Menu -->
     <button class="w-10 h-10 flex items-center justify-center text-ditto-text">

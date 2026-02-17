@@ -1,5 +1,5 @@
 <template>
-  <div class="relative">
+  <div class="relative flex-1 sm:flex-none">
     <!-- Trigger Button -->
     <button 
       @click="isOpen = !isOpen"

@@ -1,18 +1,18 @@
 <template>
   <div>
     <!-- Day Headers -->
-    <div class="grid grid-cols-7 gap-0.5 mb-1">
+    <div class="grid grid-cols-7">
       <div 
         v-for="day in dayNames" 
         :key="day"
-        class="text-center text-[10px] font-medium text-ditto-subtext py-0.5"
+        class="text-center text-[10px] font-medium text-ditto-subtext py-1"
       >
         {{ day }}
       </div>
     </div>
     
     <!-- Calendar Days -->
-    <div class="grid grid-cols-7 gap-0.5">
+    <div class="grid grid-cols-7">
       <div
         v-for="(day, index) in calendarDays"
         :key="index"
@@ -20,7 +20,7 @@
         @mouseenter="day.date && $emit('hover', day.date)"
         @mouseleave="$emit('hover', null)"
         :class="[
-          'relative h-6 w-6 flex items-center justify-center text-xs rounded-full transition-all cursor-pointer',
+          'relative aspect-square flex items-center justify-center text-xs rounded-full transition-all cursor-pointer',
           getDayClasses(day)
         ]"
       >
