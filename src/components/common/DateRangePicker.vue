@@ -133,11 +133,15 @@
             <div class="px-6 pb-3">
               <div class="flex items-center justify-between mb-3">
                 <button @click="prevMobileMonth" class="p-1.5 hover:bg-ditto-light-grey rounded-lg">
-                  <IconChevronLeft class="w-5 h-5 text-ditto-text" />
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" class="w-5 h-5 text-ditto-text">
+                    <path d="M12 15L7 10L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
                 </button>
                 <span class="font-semibold text-ditto-text text-base">{{ monthNames[mobileMonth.month] }} {{ mobileMonth.year }}</span>
                 <button @click="nextMobileMonth" class="p-1.5 hover:bg-ditto-light-grey rounded-lg">
-                  <IconChevronRight class="w-5 h-5 text-ditto-text" />
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" class="w-5 h-5 text-ditto-text">
+                    <path d="M8 5L13 10L8 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
                 </button>
               </div>
               <CalendarGrid 
