@@ -37,7 +37,7 @@
         
         <!-- Icon -->
         <div 
-          class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+          class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
           :style="{ backgroundColor: sourceColors[index] + '15' }"
         >
           <component 

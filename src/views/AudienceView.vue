@@ -1,34 +1,34 @@
 <template>
-  <div class="space-y-8">
+  <div class="space-y-4 lg:space-y-8">
     <!-- Top Row: Gender + Age Range -->
-    <div class="grid grid-cols-2 gap-8">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8">
       <!-- Gender Section -->
-      <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-        <h3 class="font-poppins font-bold text-xl text-ditto-text mb-4">Gender</h3>
+      <div class="bg-white rounded-2xl p-4 lg:p-6 shadow-sm border border-gray-100">
+        <h3 class="font-poppins font-bold text-lg lg:text-xl text-ditto-text mb-4">Gender</h3>
         <div class="flex flex-col items-center">
           <!-- Donut Chart -->
-          <div class="relative w-[200px] h-[200px]">
+          <div class="relative w-[160px] h-[160px] lg:w-[200px] lg:h-[200px]">
             <Doughnut :data="genderChartData" :options="donutOptions" />
             <div class="absolute inset-0 flex flex-col items-center justify-center">
-              <span class="text-3xl font-bold text-ditto-text">{{ totalListeners }}</span>
-              <span class="text-sm text-ditto-subtext">listeners</span>
+              <span class="text-2xl lg:text-3xl font-bold text-ditto-text">{{ totalListeners }}</span>
+              <span class="text-xs lg:text-sm text-ditto-subtext">listeners</span>
             </div>
           </div>
           
           <!-- Legend Below -->
-          <div class="flex items-center justify-center gap-8 mt-6 w-full">
-            <div class="flex items-center gap-3">
-              <span class="w-4 h-4 rounded-sm bg-gradient-to-br from-ditto-purple to-[#6B2FD9]"></span>
+          <div class="flex items-center justify-center gap-6 lg:gap-8 mt-4 lg:mt-6 w-full">
+            <div class="flex items-center gap-2 lg:gap-3">
+              <span class="w-3 h-3 lg:w-4 lg:h-4 rounded-sm bg-gradient-to-br from-ditto-purple to-[#6B2FD9]"></span>
               <div>
-                <span class="text-sm text-ditto-subtext">Male</span>
-                <span class="text-lg font-semibold text-ditto-text ml-2">{{ data.gender.male }}%</span>
+                <span class="text-xs lg:text-sm text-ditto-subtext">Male</span>
+                <span class="text-base lg:text-lg font-semibold text-ditto-text ml-1.5 lg:ml-2">{{ data.gender.male }}%</span>
               </div>
             </div>
-            <div class="flex items-center gap-3">
-              <span class="w-4 h-4 rounded-sm bg-gradient-to-br from-chart-coral to-[#DC2626]"></span>
+            <div class="flex items-center gap-2 lg:gap-3">
+              <span class="w-3 h-3 lg:w-4 lg:h-4 rounded-sm bg-gradient-to-br from-chart-coral to-[#DC2626]"></span>
               <div>
-                <span class="text-sm text-ditto-subtext">Female</span>
-                <span class="text-lg font-semibold text-ditto-text ml-2">{{ data.gender.female }}%</span>
+                <span class="text-xs lg:text-sm text-ditto-subtext">Female</span>
+                <span class="text-base lg:text-lg font-semibold text-ditto-text ml-1.5 lg:ml-2">{{ data.gender.female }}%</span>
               </div>
             </div>
           </div>
@@ -36,8 +36,8 @@
       </div>
       
       <!-- Age Range Section -->
-      <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-        <h3 class="font-poppins font-bold text-xl text-ditto-text mb-6">Age Range</h3>
+      <div class="bg-white rounded-2xl p-4 lg:p-6 shadow-sm border border-gray-100">
+        <h3 class="font-poppins font-bold text-lg lg:text-xl text-ditto-text mb-4 lg:mb-6">Age Range</h3>
         <div class="space-y-4">
           <div 
             v-for="(ageRange, index) in data.ageRanges" 
@@ -83,8 +83,8 @@
       </div>
     </div>
     
-    <!-- World Map Section -->
-    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+    <!-- World Map Section (hidden on mobile - not touch-friendly) -->
+    <div class="hidden lg:block bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
       <div class="flex items-center justify-between mb-6">
         <h3 class="font-poppins font-bold text-xl text-ditto-text">Geographic Distribution</h3>
         <div class="flex items-center gap-3 text-xs text-ditto-subtext">
@@ -129,11 +129,11 @@
     </div>
     
     <!-- Bottom Row: Countries + Cities -->
-    <div class="grid grid-cols-2 gap-8">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8">
       <!-- Country Ranking -->
-      <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+      <div class="bg-white rounded-2xl p-4 lg:p-6 shadow-sm border border-gray-100">
         <div class="flex items-center justify-between mb-4">
-          <h3 class="font-poppins font-bold text-xl text-ditto-text">Top Countries</h3>
+          <h3 class="font-poppins font-bold text-lg lg:text-xl text-ditto-text">Top Countries</h3>
           <button 
             @click="showAllLocations = !showAllLocations"
             class="text-sm font-medium text-ditto-purple hover:text-ditto-purple/80 transition-colors"
@@ -166,15 +166,15 @@
             <span class="flex-1 text-sm font-medium text-ditto-text">{{ country.country }}</span>
             
             <!-- Streams -->
-            <span class="text-sm font-medium text-ditto-text">{{ country.streams.toLocaleString() }}</span>
+            <span class="text-sm font-medium text-ditto-text">{{ formatShort(country.streams) }}</span>
           </div>
         </div>
       </div>
       
       <!-- City Ranking -->
-      <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+      <div class="bg-white rounded-2xl p-4 lg:p-6 shadow-sm border border-gray-100">
         <div class="flex items-center justify-between mb-4">
-          <h3 class="font-poppins font-bold text-xl text-ditto-text">Top Cities</h3>
+          <h3 class="font-poppins font-bold text-lg lg:text-xl text-ditto-text">Top Cities</h3>
           <button 
             @click="showAllLocations = !showAllLocations"
             class="text-sm font-medium text-ditto-purple hover:text-ditto-purple/80 transition-colors"
@@ -198,7 +198,7 @@
             </div>
             
             <!-- Streams -->
-            <span class="text-sm font-medium text-ditto-text">{{ city.streams.toLocaleString() }}</span>
+            <span class="text-sm font-medium text-ditto-text">{{ formatShort(city.streams) }}</span>
           </div>
         </div>
       </div>
@@ -229,6 +229,12 @@ ChartJS.register(ArcElement, LineElement, PointElement, LinearScale, CategorySca
 const props = defineProps<{
   data: AudienceData
 }>()
+
+const formatShort = (num: number): string => {
+  if (num >= 1000000) return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M'
+  if (num >= 1000) return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K'
+  return num.toLocaleString()
+}
 
 const animatedBars = ref(false)
 const mapSvg = ref<SVGSVGElement | null>(null)
