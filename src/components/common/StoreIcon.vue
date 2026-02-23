@@ -1,8 +1,8 @@
 <template>
-  <img 
-    :src="iconSrc" 
-    :alt="store" 
-    class="w-6 h-6 rounded"
+  <img
+    :src="iconSrc"
+    :alt="store"
+    class="store-icon"
     v-if="iconSrc"
   />
 </template>
@@ -32,3 +32,11 @@ const storeIconMap: Record<string, string> = {
 
 const iconSrc = computed(() => storeIconMap[props.store] || null)
 </script>
+
+<style lang="scss" scoped>
+.store-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 0.25rem;
+}
+</style>

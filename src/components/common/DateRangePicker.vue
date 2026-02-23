@@ -1,51 +1,51 @@
 <template>
-  <div class="relative flex-1 lg:flex-none">
+  <div class="date-range-picker">
     <!-- Trigger Button -->
-    <button 
+    <button
       @click="openPicker"
-      class="w-full flex items-center justify-center gap-1.5 lg:gap-2 px-3 lg:px-4 py-2 border border-ditto-border-grey rounded-lg text-xs lg:text-sm text-ditto-text hover:bg-ditto-light-grey transition-colors bg-white lg:w-auto"
+      class="trigger-btn"
     >
-      <IconCalendar class="w-4 h-4 text-ditto-subtext" />
+      <IconCalendar class="trigger-btn__icon" />
       <span>{{ formatDateShort(selectedRange.start) }}</span>
-      <span class="text-ditto-subtext">-</span>
+      <span class="trigger-btn__separator">-</span>
       <span>{{ formatDateShort(selectedRange.end) }}</span>
     </button>
-    
+
     <!-- Desktop Dropdown -->
-    <div 
+    <div
       v-if="isOpen"
-      class="hidden lg:flex absolute top-full right-0 mt-2 bg-white rounded-2xl shadow-xl border border-ditto-border-grey z-50 flex-row"
+      class="desktop-dropdown"
     >
       <!-- Presets -->
-      <div class="flex flex-col w-28 border-r border-ditto-border-grey py-3 px-2 gap-1">
+      <div class="desktop-presets">
         <button
           v-for="preset in presets"
           :key="preset.id"
           @click="applyPreset(preset)"
           :class="[
-            'block w-full text-left px-2 py-1.5 text-xs rounded-lg transition-colors whitespace-nowrap',
-            activePreset === preset.id 
-              ? 'text-ditto-purple font-medium bg-ditto-purple/10' 
-              : 'text-ditto-text hover:bg-ditto-light-grey'
+            'desktop-presets__item',
+            activePreset === preset.id
+              ? 'desktop-presets__item--active'
+              : 'desktop-presets__item--inactive'
           ]"
         >
           {{ preset.label }}
         </button>
       </div>
-      
+
       <!-- Calendars -->
-      <div class="flex flex-row p-3 gap-3">
+      <div class="desktop-calendars">
         <!-- Left Calendar (Previous Month) -->
-        <div class="w-48">
-          <div class="flex items-center justify-between mb-2">
-            <button @click="prevMonth" class="p-0.5 hover:bg-ditto-light-grey rounded">
-              <IconChevronLeft class="w-4 h-4 text-ditto-text" />
+        <div class="calendar-panel">
+          <div class="calendar-panel__header">
+            <button @click="prevMonth" class="calendar-nav-btn">
+              <IconChevronLeft class="calendar-nav-btn__icon" />
             </button>
-            <span class="font-semibold text-ditto-text text-sm">{{ monthNames[leftMonth.month] }} {{ leftMonth.year }}</span>
-            <div class="w-4"></div>
+            <span class="calendar-panel__title">{{ monthNames[leftMonth.month] }} {{ leftMonth.year }}</span>
+            <div class="calendar-nav-btn__spacer"></div>
           </div>
-          <CalendarGrid 
-            :month="leftMonth.month" 
+          <CalendarGrid
+            :month="leftMonth.month"
             :year="leftMonth.year"
             :selected-start="tempStart"
             :selected-end="tempEnd"
@@ -54,18 +54,18 @@
             @hover="hoverDate = $event"
           />
         </div>
-        
+
         <!-- Right Calendar (Current Month) -->
-        <div class="w-48">
-          <div class="flex items-center justify-between mb-2">
-            <div class="w-4"></div>
-            <span class="font-semibold text-ditto-text text-sm">{{ monthNames[rightMonth.month] }} {{ rightMonth.year }}</span>
-            <button @click="nextMonth" class="p-0.5 hover:bg-ditto-light-grey rounded">
-              <IconChevronRight class="w-4 h-4 text-ditto-text" />
+        <div class="calendar-panel">
+          <div class="calendar-panel__header">
+            <div class="calendar-nav-btn__spacer"></div>
+            <span class="calendar-panel__title">{{ monthNames[rightMonth.month] }} {{ rightMonth.year }}</span>
+            <button @click="nextMonth" class="calendar-nav-btn">
+              <IconChevronRight class="calendar-nav-btn__icon" />
             </button>
           </div>
-          <CalendarGrid 
-            :month="rightMonth.month" 
+          <CalendarGrid
+            :month="rightMonth.month"
             :year="rightMonth.year"
             :selected-start="tempStart"
             :selected-end="tempEnd"
@@ -76,76 +76,76 @@
         </div>
       </div>
     </div>
-    
+
     <!-- Mobile Bottom Sheet -->
     <Teleport to="body">
       <transition name="sheet">
-        <div v-if="isOpen" class="lg:hidden fixed inset-0 z-50">
+        <div v-if="isOpen" class="mobile-sheet-overlay">
           <!-- Backdrop -->
-          <div class="absolute inset-0 bg-black/30" @click="cancelMobile"></div>
-          
+          <div class="mobile-sheet-overlay__backdrop" @click="cancelMobile"></div>
+
           <!-- Sheet -->
-          <div class="absolute bottom-0 inset-x-0 bg-white rounded-t-2xl max-h-[85vh] flex flex-col">
+          <div class="mobile-sheet">
             <!-- Drag handle -->
-            <div class="flex justify-center pt-3 pb-1">
-              <div class="w-10 h-1 rounded-full bg-gray-300"></div>
+            <div class="mobile-sheet__handle-wrapper">
+              <div class="mobile-sheet__handle"></div>
             </div>
-            
+
             <!-- Header -->
-            <div class="flex items-center justify-between px-4 pb-3">
-              <h3 class="text-base font-semibold text-ditto-text">Select Date Range</h3>
-              <button @click="cancelMobile" class="p-1 hover:bg-ditto-light-grey rounded-lg">
-                <IconClose class="w-5 h-5 text-ditto-subtext" />
+            <div class="mobile-sheet__header">
+              <h3 class="mobile-sheet__title">Select Date Range</h3>
+              <button @click="cancelMobile" class="mobile-sheet__close-btn">
+                <IconClose class="mobile-sheet__close-icon" />
               </button>
             </div>
-            
+
             <!-- Presets -->
-            <div class="flex gap-1.5 px-4 pb-3 overflow-x-auto scrollbar-hide">
+            <div class="mobile-presets scrollbar-hide">
               <button
                 v-for="preset in presets"
                 :key="preset.id"
                 @click="applyPresetMobile(preset)"
                 :class="[
-                  'px-3 py-1.5 text-xs rounded-full transition-colors whitespace-nowrap flex-shrink-0 border',
-                  activePreset === preset.id 
-                    ? 'text-ditto-purple font-medium bg-ditto-purple/10 border-ditto-purple/30' 
-                    : 'text-ditto-text border-ditto-border-grey hover:bg-ditto-light-grey'
+                  'mobile-presets__item',
+                  activePreset === preset.id
+                    ? 'mobile-presets__item--active'
+                    : 'mobile-presets__item--inactive'
                 ]"
               >
                 {{ preset.label }}
               </button>
             </div>
-            
+
             <!-- Selected range display -->
-            <div class="flex items-center justify-center gap-3 px-4 pb-3">
-              <div class="flex-1 text-center py-2 rounded-lg bg-ditto-light-grey">
-                <p class="text-[10px] text-ditto-subtext">From</p>
-                <p class="text-sm font-medium text-ditto-text">{{ tempStart ? formatDateShort(tempStart) : '–' }}</p>
+            <div class="mobile-range-display">
+              <div class="mobile-range-display__date-box">
+                <p class="mobile-range-display__label">From</p>
+                <p class="mobile-range-display__value">{{ tempStart ? formatDateShort(tempStart) : '–' }}</p>
               </div>
-              <span class="text-ditto-subtext text-sm">→</span>
-              <div class="flex-1 text-center py-2 rounded-lg bg-ditto-light-grey">
-                <p class="text-[10px] text-ditto-subtext">To</p>
-                <p class="text-sm font-medium text-ditto-text">{{ tempEnd ? formatDateShort(tempEnd) : '–' }}</p>
+              <span class="mobile-range-display__arrow">→</span>
+              <div class="mobile-range-display__date-box">
+                <p class="mobile-range-display__label">To</p>
+                <p class="mobile-range-display__value">{{ tempEnd ? formatDateShort(tempEnd) : '–' }}</p>
               </div>
             </div>
-            
+
             <!-- Single Calendar -->
-            <div class="px-6 pb-3">
-              <div class="flex items-center justify-between mb-3">
-                <button @click="prevMobileMonth" class="p-1.5 hover:bg-ditto-light-grey rounded-lg">
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" class="w-5 h-5 text-ditto-text">
+            <div class="mobile-calendar">
+              <div class="mobile-calendar__header">
+                <button @click="prevMobileMonth" class="mobile-calendar__nav-btn">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" class="mobile-calendar__nav-icon">
                     <path d="M12 15L7 10L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                 </button>
-                <span class="font-semibold text-ditto-text text-base">{{ monthNames[mobileMonth.month] }} {{ mobileMonth.year }}</span>
-                <button @click="nextMobileMonth" class="p-1.5 hover:bg-ditto-light-grey rounded-lg">
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" class="w-5 h-5 text-ditto-text">
+                <span class="mobile-calendar__title">{{ monthNames[mobileMonth.month] }} {{ mobileMonth.year }}</span>
+                <button @click="nextMobileMonth" class="mobile-calendar__nav-btn">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" class="mobile-calendar__nav-icon">
                     <path d="M8 5L13 10L8 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                 </button>
               </div>
-              <CalendarGrid 
-                :month="mobileMonth.month" 
+              <CalendarGrid
+                :month="mobileMonth.month"
                 :year="mobileMonth.year"
                 :selected-start="tempStart"
                 :selected-end="tempEnd"
@@ -154,23 +154,23 @@
                 @hover="() => {}"
               />
             </div>
-            
+
             <!-- Footer buttons -->
-            <div class="flex gap-3 px-4 py-3 border-t border-ditto-border-grey">
-              <button 
+            <div class="mobile-sheet__footer">
+              <button
                 @click="cancelMobile"
-                class="flex-1 py-2.5 text-sm font-medium text-ditto-text border border-ditto-border-grey rounded-xl hover:bg-ditto-light-grey transition-colors"
+                class="mobile-sheet__cancel-btn"
               >
                 Cancel
               </button>
-              <button 
+              <button
                 @click="applyMobile"
                 :disabled="!tempStart || !tempEnd"
                 :class="[
-                  'flex-1 py-2.5 text-sm font-medium rounded-xl transition-colors',
-                  tempStart && tempEnd 
-                    ? 'bg-ditto-purple text-white hover:bg-ditto-purple/90'
-                    : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                  'mobile-sheet__apply-btn',
+                  tempStart && tempEnd
+                    ? 'mobile-sheet__apply-btn--enabled'
+                    : 'mobile-sheet__apply-btn--disabled'
                 ]"
               >
                 Apply
@@ -180,11 +180,11 @@
         </div>
       </transition>
     </Teleport>
-    
+
     <!-- Desktop Backdrop -->
-    <div 
-      v-if="isOpen" 
-      class="hidden lg:block fixed inset-0 z-40" 
+    <div
+      v-if="isOpen"
+      class="desktop-backdrop"
       @click="closePicker"
     ></div>
   </div>
@@ -437,28 +437,434 @@ const cancelMobile = () => {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+// ─── Transition (preserved from original) ───
 .sheet-enter-active,
 .sheet-leave-active {
   transition: opacity 0.25s ease;
 }
+
 .sheet-enter-active > div:last-child,
 .sheet-leave-active > div:last-child {
   transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
+
 .sheet-enter-from,
 .sheet-leave-to {
   opacity: 0;
 }
+
 .sheet-enter-from > div:last-child,
 .sheet-leave-to > div:last-child {
   transform: translateY(100%);
 }
-.scrollbar-hide {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+
+// ─── Root ───
+.date-range-picker {
+  position: relative;
+  flex: 1;
+
+  @include lg {
+    flex: none;
+  }
 }
-.scrollbar-hide::-webkit-scrollbar {
+
+// ─── Trigger Button ───
+.trigger-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px; // 1.5 * 4
+  padding: 8px 12px; // py-2 px-3
+  border: 1px solid var(--brand-border);
+  border-radius: 8px; // rounded-lg
+  font-size: 12px; // text-xs
+  color: var(--blue);
+  background-color: white;
+  transition-property: color, background-color, border-color;
+  transition-timing-function: ease;
+  transition-duration: 150ms;
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--lighter-grey);
+  }
+
+  @include lg {
+    width: auto;
+    gap: 8px; // lg:gap-2
+    padding: 8px 16px; // lg:px-4 py-2
+    font-size: 14px; // lg:text-sm
+  }
+
+  &__icon {
+    width: 16px;
+    height: 16px;
+    color: var(--ditto-grey);
+  }
+
+  &__separator {
+    color: var(--ditto-grey);
+  }
+}
+
+// ─── Desktop Dropdown ───
+.desktop-dropdown {
   display: none;
+
+  @include lg {
+    display: flex;
+    flex-direction: row;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 8px;
+    background-color: white;
+    border-radius: 16px; // rounded-2xl
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+                0 8px 10px -6px rgba(0, 0, 0, 0.1); // shadow-xl
+    border: 1px solid var(--brand-border);
+    z-index: 50;
+  }
+}
+
+// ─── Desktop Presets ───
+.desktop-presets {
+  display: flex;
+  flex-direction: column;
+  width: 112px; // w-28
+  border-right: 1px solid var(--brand-border);
+  padding: 12px 8px; // py-3 px-2
+  gap: 4px;
+
+  &__item {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 6px 8px; // px-2 py-1.5
+    font-size: 12px; // text-xs
+    border-radius: 8px; // rounded-lg
+    transition-property: color, background-color;
+    transition-timing-function: ease;
+    transition-duration: 150ms;
+    white-space: nowrap;
+    cursor: pointer;
+    border: none;
+    background: none;
+
+    &--active {
+      color: var(--brand-primary);
+      font-weight: 500;
+      background-color: rgba(95, 31, 255, 0.1);
+    }
+
+    &--inactive {
+      color: var(--blue);
+
+      &:hover {
+        background-color: var(--lighter-grey);
+      }
+    }
+  }
+}
+
+// ─── Desktop Calendars ───
+.desktop-calendars {
+  display: flex;
+  flex-direction: row;
+  padding: 12px;
+  gap: 12px;
+}
+
+// ─── Calendar Panel (shared between left/right desktop calendars) ───
+.calendar-panel {
+  width: 192px; // w-48
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+
+  &__title {
+    font-weight: 600;
+    color: var(--blue);
+    font-size: 14px; // text-sm
+  }
+}
+
+// ─── Calendar Nav Button ───
+.calendar-nav-btn {
+  padding: 2px; // p-0.5
+  border-radius: 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--lighter-grey);
+  }
+
+  &__icon {
+    width: 16px;
+    height: 16px;
+    color: var(--blue);
+  }
+
+  &__spacer {
+    width: 16px;
+  }
+}
+
+// ─── Mobile Bottom Sheet Overlay ───
+.mobile-sheet-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+
+  @include lg {
+    display: none;
+  }
+
+  &__backdrop {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.3);
+  }
+}
+
+// ─── Mobile Sheet ───
+.mobile-sheet {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: white;
+  border-radius: 16px 16px 0 0; // rounded-t-2xl
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+
+  &__handle-wrapper {
+    display: flex;
+    justify-content: center;
+    padding-top: 12px;
+    padding-bottom: 4px;
+  }
+
+  &__handle {
+    width: 40px; // w-10
+    height: 4px;
+    border-radius: 9999px;
+    background-color: #d1d5db; // gray-300
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px 12px; // px-4 pb-3
+  }
+
+  &__title {
+    font-size: 16px; // text-base
+    font-weight: 600;
+    color: var(--blue);
+    margin: 0;
+  }
+
+  &__close-btn {
+    padding: 4px;
+    border-radius: 8px;
+    background: none;
+    border: none;
+    cursor: pointer;
+
+    &:hover {
+      background-color: var(--lighter-grey);
+    }
+  }
+
+  &__close-icon {
+    width: 20px;
+    height: 20px;
+    color: var(--ditto-grey);
+  }
+
+  &__footer {
+    display: flex;
+    gap: 12px;
+    padding: 12px 16px; // px-4 py-3
+    border-top: 1px solid var(--brand-border);
+  }
+
+  &__cancel-btn {
+    flex: 1;
+    padding: 10px 0; // py-2.5
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--blue);
+    border: 1px solid var(--brand-border);
+    border-radius: 12px; // rounded-xl
+    background: none;
+    cursor: pointer;
+    transition-property: background-color;
+    transition-timing-function: ease;
+    transition-duration: 150ms;
+
+    &:hover {
+      background-color: var(--lighter-grey);
+    }
+  }
+
+  &__apply-btn {
+    flex: 1;
+    padding: 10px 0; // py-2.5
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 12px; // rounded-xl
+    border: none;
+    cursor: pointer;
+    transition-property: color, background-color;
+    transition-timing-function: ease;
+    transition-duration: 150ms;
+
+    &--enabled {
+      background-color: var(--brand-primary);
+      color: white;
+
+      &:hover {
+        background-color: rgba(95, 31, 255, 0.9);
+      }
+    }
+
+    &--disabled {
+      background-color: #e5e7eb; // gray-200
+      color: #9ca3af; // gray-400
+      cursor: not-allowed;
+    }
+  }
+}
+
+// ─── Mobile Presets ───
+.mobile-presets {
+  display: flex;
+  gap: 6px;
+  padding: 0 16px 12px; // px-4 pb-3
+  overflow-x: auto;
+
+  &__item {
+    padding: 6px 12px; // px-3 py-1.5
+    font-size: 12px;
+    border-radius: 9999px; // rounded-full
+    transition-property: color, background-color, border-color;
+    transition-timing-function: ease;
+    transition-duration: 150ms;
+    white-space: nowrap;
+    flex-shrink: 0;
+    cursor: pointer;
+    background: none;
+
+    &--active {
+      color: var(--brand-primary);
+      font-weight: 500;
+      background-color: rgba(95, 31, 255, 0.1);
+      border: 1px solid rgba(95, 31, 255, 0.3);
+    }
+
+    &--inactive {
+      color: var(--blue);
+      border: 1px solid var(--brand-border);
+
+      &:hover {
+        background-color: var(--lighter-grey);
+      }
+    }
+  }
+}
+
+// ─── Mobile Range Display ───
+.mobile-range-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 0 16px 12px; // px-4 pb-3
+
+  &__date-box {
+    flex: 1;
+    text-align: center;
+    padding: 8px 0; // py-2
+    border-radius: 8px;
+    background-color: var(--lighter-grey);
+  }
+
+  &__label {
+    font-size: 10px;
+    color: var(--ditto-grey);
+    margin: 0;
+  }
+
+  &__value {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--blue);
+    margin: 0;
+  }
+
+  &__arrow {
+    color: var(--ditto-grey);
+    font-size: 14px;
+  }
+}
+
+// ─── Mobile Calendar ───
+.mobile-calendar {
+  padding: 0 24px 12px; // px-6 pb-3
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  &__title {
+    font-weight: 600;
+    color: var(--blue);
+    font-size: 16px; // text-base
+  }
+
+  &__nav-btn {
+    padding: 6px; // p-1.5
+    border-radius: 8px;
+    background: none;
+    border: none;
+    cursor: pointer;
+
+    &:hover {
+      background-color: var(--lighter-grey);
+    }
+  }
+
+  &__nav-icon {
+    width: 20px;
+    height: 20px;
+    color: var(--blue);
+  }
+}
+
+// ─── Desktop Backdrop ───
+.desktop-backdrop {
+  display: none;
+
+  @include lg {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+  }
 }
 </style>

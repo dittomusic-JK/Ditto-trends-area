@@ -2,304 +2,304 @@
   <div>
     <!-- Backdrop -->
     <Transition name="fade">
-      <div 
-        v-if="isOpen" 
-        class="fixed inset-0 bg-black/30 z-40"
+      <div
+        v-if="isOpen"
+        class="filters-backdrop"
         @click="$emit('close')"
       ></div>
     </Transition>
-    
+
     <!-- Panel -->
     <Transition name="slide">
-      <div 
+      <div
         v-if="isOpen"
-        class="fixed top-0 right-0 h-full w-full sm:w-96 bg-white shadow-2xl z-50 flex flex-col"
+        class="filters-panel"
       >
         <!-- Header -->
-        <div class="flex items-center justify-between px-4 sm:px-6 py-5 border-b border-ditto-border-grey">
-          <h2 class="text-2xl font-bold text-ditto-text">Filter</h2>
-          <div class="flex items-center gap-4">
-            <button 
+        <div class="filters-header">
+          <h2 class="filters-header__title">Filter</h2>
+          <div class="filters-header__actions">
+            <button
               @click="clearAll"
-              class="text-sm font-medium text-ditto-text underline hover:text-ditto-purple"
+              class="filters-header__clear-btn"
             >
               CLEAR ALL
             </button>
-            <button @click="$emit('close')" class="text-ditto-subtext hover:text-ditto-text">
+            <button @click="$emit('close')" class="filters-header__close-btn">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </button>
           </div>
         </div>
-        
+
         <!-- Filter Sections -->
-        <div class="flex-1 overflow-y-auto">
+        <div class="filters-body">
           <!-- Data Type (mobile only) -->
-          <div class="border-b border-ditto-border-grey/50 sm:hidden">
-            <button 
+          <div class="filter-section filter-section--mobile-only">
+            <button
               @click="toggleSection('dataType')"
-              class="w-full flex items-center justify-between px-4 py-4 hover:bg-ditto-light-grey/50 transition-colors"
+              class="filter-section__toggle filter-section__toggle--mobile"
             >
-              <span class="font-semibold text-ditto-text">Data Type</span>
-              <div class="flex items-center gap-2">
-                <span class="text-sm text-ditto-purple">{{ selectedDataTypeLabel }}</span>
-                <svg 
-                  :class="['w-5 h-5 text-ditto-subtext transition-transform', expandedSection === 'dataType' ? 'rotate-180' : '']" 
+              <span class="filter-section__label">Data Type</span>
+              <div class="filter-section__toggle-right">
+                <span class="filter-section__selected-value">{{ selectedDataTypeLabel }}</span>
+                <svg
+                  :class="['filter-section__chevron', expandedSection === 'dataType' ? 'filter-section__chevron--expanded' : '']"
                   viewBox="0 0 20 20" fill="none"
                 >
                   <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
               </div>
             </button>
-            <div v-if="expandedSection === 'dataType'" class="px-4 pb-4">
-              <button 
-                v-for="(label, type) in dataTypeOptions" 
+            <div v-if="expandedSection === 'dataType'" class="filter-section__content filter-section__content--mobile">
+              <button
+                v-for="(label, type) in dataTypeOptions"
                 :key="type"
                 @click="selectDataType(type as TrendsType)"
-                class="w-full flex items-center justify-between py-2 text-left hover:text-ditto-purple transition-colors"
+                class="filter-option"
               >
-                <div class="flex items-center gap-3">
+                <div class="filter-option__left">
                   <span :class="[
-                    'w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors',
-                    selectedDataType === type ? 'border-ditto-purple bg-ditto-purple' : 'border-ditto-border-grey'
+                    'filter-option__radio',
+                    selectedDataType === type ? 'filter-option__radio--selected' : ''
                   ]">
-                    <svg v-if="selectedDataType === type" class="w-3 h-3 text-white" viewBox="0 0 12 12" fill="none">
+                    <svg v-if="selectedDataType === type" class="filter-option__check-icon" viewBox="0 0 12 12" fill="none">
                       <path d="M2 6L5 9L10 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                   </span>
-                  <span :class="['text-sm', selectedDataType === type ? 'text-ditto-purple font-medium' : 'text-ditto-text']">{{ label }}</span>
+                  <span :class="['filter-option__name', selectedDataType === type ? 'filter-option__name--selected' : '']">{{ label }}</span>
                 </div>
               </button>
             </div>
           </div>
-          
+
           <!-- Label -->
-          <div class="border-b border-ditto-border-grey/50">
-            <button 
+          <div class="filter-section">
+            <button
               @click="toggleSection('label')"
-              class="w-full flex items-center justify-between px-4 sm:px-6 py-4 hover:bg-ditto-light-grey/50 transition-colors"
+              class="filter-section__toggle"
             >
-              <span class="font-semibold text-ditto-text">Label</span>
-              <svg 
-                :class="['w-5 h-5 text-ditto-subtext transition-transform', expandedSection === 'label' ? 'rotate-180' : '']" 
+              <span class="filter-section__label">Label</span>
+              <svg
+                :class="['filter-section__chevron', expandedSection === 'label' ? 'filter-section__chevron--expanded' : '']"
                 viewBox="0 0 20 20" fill="none"
               >
                 <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </button>
-            <div v-if="expandedSection === 'label'" class="px-4 sm:px-6 pb-4">
-              <button 
-                v-for="label in filterOptions.labels" 
+            <div v-if="expandedSection === 'label'" class="filter-section__content">
+              <button
+                v-for="label in filterOptions.labels"
                 :key="label.id"
                 @click="toggleFilter('label', label.id, label.name)"
-                class="w-full flex items-center justify-between py-2 text-left hover:text-ditto-purple transition-colors"
+                class="filter-option"
               >
-                <div class="flex items-center gap-3">
+                <div class="filter-option__left">
                   <span :class="[
-                    'w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors',
-                    isSelected('label', label.id) ? 'border-ditto-purple bg-ditto-purple' : 'border-ditto-border-grey'
+                    'filter-option__radio',
+                    isSelected('label', label.id) ? 'filter-option__radio--selected' : ''
                   ]">
-                    <svg v-if="isSelected('label', label.id)" class="w-3 h-3 text-white" viewBox="0 0 12 12" fill="none">
+                    <svg v-if="isSelected('label', label.id)" class="filter-option__check-icon" viewBox="0 0 12 12" fill="none">
                       <path d="M2 6L5 9L10 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                   </span>
-                  <span :class="['text-sm', isSelected('label', label.id) ? 'text-ditto-purple font-medium' : 'text-ditto-text']">{{ label.name }}</span>
+                  <span :class="['filter-option__name', isSelected('label', label.id) ? 'filter-option__name--selected' : '']">{{ label.name }}</span>
                 </div>
-                <span class="text-sm text-ditto-subtext">[{{ label.count }}]</span>
+                <span class="filter-option__count">[{{ label.count }}]</span>
               </button>
             </div>
           </div>
-          
+
           <!-- Artists -->
-          <div class="border-b border-ditto-border-grey/50">
-            <button 
+          <div class="filter-section">
+            <button
               @click="toggleSection('artist')"
-              class="w-full flex items-center justify-between px-4 sm:px-6 py-4 hover:bg-ditto-light-grey/50 transition-colors"
+              class="filter-section__toggle"
             >
-              <span class="font-semibold text-ditto-text">Artists</span>
-              <svg 
-                :class="['w-5 h-5 text-ditto-subtext transition-transform', expandedSection === 'artist' ? 'rotate-180' : '']" 
+              <span class="filter-section__label">Artists</span>
+              <svg
+                :class="['filter-section__chevron', expandedSection === 'artist' ? 'filter-section__chevron--expanded' : '']"
                 viewBox="0 0 20 20" fill="none"
               >
                 <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </button>
-            <div v-if="expandedSection === 'artist'" class="px-4 sm:px-6 pb-4">
-              <button 
-                v-for="artist in filterOptions.artists" 
+            <div v-if="expandedSection === 'artist'" class="filter-section__content">
+              <button
+                v-for="artist in filterOptions.artists"
                 :key="artist.id"
                 @click="toggleFilter('artist', artist.id, artist.name)"
-                class="w-full flex items-center justify-between py-2 text-left hover:text-ditto-purple transition-colors"
+                class="filter-option"
               >
-                <div class="flex items-center gap-3">
+                <div class="filter-option__left">
                   <span :class="[
-                    'w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors',
-                    isSelected('artist', artist.id) ? 'border-ditto-purple bg-ditto-purple' : 'border-ditto-border-grey'
+                    'filter-option__radio',
+                    isSelected('artist', artist.id) ? 'filter-option__radio--selected' : ''
                   ]">
-                    <svg v-if="isSelected('artist', artist.id)" class="w-3 h-3 text-white" viewBox="0 0 12 12" fill="none">
+                    <svg v-if="isSelected('artist', artist.id)" class="filter-option__check-icon" viewBox="0 0 12 12" fill="none">
                       <path d="M2 6L5 9L10 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                   </span>
-                  <span :class="['text-sm', isSelected('artist', artist.id) ? 'text-ditto-purple font-medium' : 'text-ditto-text']">{{ artist.name }}</span>
+                  <span :class="['filter-option__name', isSelected('artist', artist.id) ? 'filter-option__name--selected' : '']">{{ artist.name }}</span>
                 </div>
-                <span class="text-sm text-ditto-subtext">[{{ artist.count }}]</span>
+                <span class="filter-option__count">[{{ artist.count }}]</span>
               </button>
             </div>
           </div>
-          
+
           <!-- Release -->
-          <div class="border-b border-ditto-border-grey/50">
-            <button 
+          <div class="filter-section">
+            <button
               @click="toggleSection('release')"
-              class="w-full flex items-center justify-between px-4 sm:px-6 py-4 hover:bg-ditto-light-grey/50 transition-colors"
+              class="filter-section__toggle"
             >
-              <span class="font-semibold text-ditto-text">Release</span>
-              <svg 
-                :class="['w-5 h-5 text-ditto-subtext transition-transform', expandedSection === 'release' ? 'rotate-180' : '']" 
+              <span class="filter-section__label">Release</span>
+              <svg
+                :class="['filter-section__chevron', expandedSection === 'release' ? 'filter-section__chevron--expanded' : '']"
                 viewBox="0 0 20 20" fill="none"
               >
                 <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </button>
-            <div v-if="expandedSection === 'release'" class="px-4 sm:px-6 pb-4">
-              <button 
-                v-for="release in filterOptions.releases" 
+            <div v-if="expandedSection === 'release'" class="filter-section__content">
+              <button
+                v-for="release in filterOptions.releases"
                 :key="release.id"
                 @click="toggleFilter('release', release.id, release.name)"
-                class="w-full flex items-center justify-between py-2 text-left hover:text-ditto-purple transition-colors"
+                class="filter-option"
               >
-                <div class="flex items-center gap-3">
+                <div class="filter-option__left">
                   <span :class="[
-                    'w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors',
-                    isSelected('release', release.id) ? 'border-ditto-purple bg-ditto-purple' : 'border-ditto-border-grey'
+                    'filter-option__radio',
+                    isSelected('release', release.id) ? 'filter-option__radio--selected' : ''
                   ]">
-                    <svg v-if="isSelected('release', release.id)" class="w-3 h-3 text-white" viewBox="0 0 12 12" fill="none">
+                    <svg v-if="isSelected('release', release.id)" class="filter-option__check-icon" viewBox="0 0 12 12" fill="none">
                       <path d="M2 6L5 9L10 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                   </span>
-                  <span :class="['text-sm', isSelected('release', release.id) ? 'text-ditto-purple font-medium' : 'text-ditto-text']">{{ release.name }}</span>
+                  <span :class="['filter-option__name', isSelected('release', release.id) ? 'filter-option__name--selected' : '']">{{ release.name }}</span>
                 </div>
-                <span class="text-sm text-ditto-subtext">[{{ release.count }}]</span>
+                <span class="filter-option__count">[{{ release.count }}]</span>
               </button>
             </div>
           </div>
-          
+
           <!-- Track -->
-          <div class="border-b border-ditto-border-grey/50">
-            <button 
+          <div class="filter-section">
+            <button
               @click="toggleSection('track')"
-              class="w-full flex items-center justify-between px-4 sm:px-6 py-4 hover:bg-ditto-light-grey/50 transition-colors"
+              class="filter-section__toggle"
             >
-              <span class="font-semibold text-ditto-text">Track</span>
-              <svg 
-                :class="['w-5 h-5 text-ditto-subtext transition-transform', expandedSection === 'track' ? 'rotate-180' : '']" 
+              <span class="filter-section__label">Track</span>
+              <svg
+                :class="['filter-section__chevron', expandedSection === 'track' ? 'filter-section__chevron--expanded' : '']"
                 viewBox="0 0 20 20" fill="none"
               >
                 <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </button>
-            <div v-if="expandedSection === 'track'" class="px-4 sm:px-6 pb-4">
-              <button 
-                v-for="track in filterOptions.tracks" 
+            <div v-if="expandedSection === 'track'" class="filter-section__content">
+              <button
+                v-for="track in filterOptions.tracks"
                 :key="track.id"
                 @click="toggleFilter('track', track.id, track.name)"
-                class="w-full flex items-center justify-between py-2 text-left hover:text-ditto-purple transition-colors"
+                class="filter-option"
               >
-                <div class="flex items-center gap-3">
+                <div class="filter-option__left">
                   <span :class="[
-                    'w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors',
-                    isSelected('track', track.id) ? 'border-ditto-purple bg-ditto-purple' : 'border-ditto-border-grey'
+                    'filter-option__radio',
+                    isSelected('track', track.id) ? 'filter-option__radio--selected' : ''
                   ]">
-                    <svg v-if="isSelected('track', track.id)" class="w-3 h-3 text-white" viewBox="0 0 12 12" fill="none">
+                    <svg v-if="isSelected('track', track.id)" class="filter-option__check-icon" viewBox="0 0 12 12" fill="none">
                       <path d="M2 6L5 9L10 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                   </span>
-                  <span :class="['text-sm', isSelected('track', track.id) ? 'text-ditto-purple font-medium' : 'text-ditto-text']">{{ track.name }}</span>
+                  <span :class="['filter-option__name', isSelected('track', track.id) ? 'filter-option__name--selected' : '']">{{ track.name }}</span>
                 </div>
               </button>
             </div>
           </div>
-          
+
           <!-- Country -->
-          <div class="border-b border-ditto-border-grey/50">
-            <button 
+          <div class="filter-section">
+            <button
               @click="toggleSection('country')"
-              class="w-full flex items-center justify-between px-4 sm:px-6 py-4 hover:bg-ditto-light-grey/50 transition-colors"
+              class="filter-section__toggle"
             >
-              <span class="font-semibold text-ditto-text">Country</span>
-              <svg 
-                :class="['w-5 h-5 text-ditto-subtext transition-transform', expandedSection === 'country' ? 'rotate-180' : '']" 
+              <span class="filter-section__label">Country</span>
+              <svg
+                :class="['filter-section__chevron', expandedSection === 'country' ? 'filter-section__chevron--expanded' : '']"
                 viewBox="0 0 20 20" fill="none"
               >
                 <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </button>
-            <div v-if="expandedSection === 'country'" class="px-4 sm:px-6 pb-4">
-              <button 
-                v-for="country in filterOptions.countries" 
+            <div v-if="expandedSection === 'country'" class="filter-section__content">
+              <button
+                v-for="country in filterOptions.countries"
                 :key="country.id"
                 @click="toggleFilter('country', country.id, country.name)"
-                class="w-full flex items-center justify-between py-2 text-left hover:text-ditto-purple transition-colors"
+                class="filter-option"
               >
-                <div class="flex items-center gap-3">
+                <div class="filter-option__left">
                   <span :class="[
-                    'w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors',
-                    isSelected('country', country.id) ? 'border-ditto-purple bg-ditto-purple' : 'border-ditto-border-grey'
+                    'filter-option__radio',
+                    isSelected('country', country.id) ? 'filter-option__radio--selected' : ''
                   ]">
-                    <svg v-if="isSelected('country', country.id)" class="w-3 h-3 text-white" viewBox="0 0 12 12" fill="none">
+                    <svg v-if="isSelected('country', country.id)" class="filter-option__check-icon" viewBox="0 0 12 12" fill="none">
                       <path d="M2 6L5 9L10 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                   </span>
-                  <span :class="['text-sm', isSelected('country', country.id) ? 'text-ditto-purple font-medium' : 'text-ditto-text']">{{ country.name }}</span>
+                  <span :class="['filter-option__name', isSelected('country', country.id) ? 'filter-option__name--selected' : '']">{{ country.name }}</span>
                 </div>
-                <span class="text-sm text-ditto-subtext">[{{ country.count }}]</span>
+                <span class="filter-option__count">[{{ country.count }}]</span>
               </button>
             </div>
           </div>
-          
+
           <!-- Store -->
-          <div class="border-b border-ditto-border-grey/50">
-            <button 
+          <div class="filter-section">
+            <button
               @click="toggleSection('store')"
-              class="w-full flex items-center justify-between px-4 sm:px-6 py-4 hover:bg-ditto-light-grey/50 transition-colors"
+              class="filter-section__toggle"
             >
-              <span class="font-semibold text-ditto-text">Store</span>
-              <svg 
-                :class="['w-5 h-5 text-ditto-subtext transition-transform', expandedSection === 'store' ? 'rotate-180' : '']" 
+              <span class="filter-section__label">Store</span>
+              <svg
+                :class="['filter-section__chevron', expandedSection === 'store' ? 'filter-section__chevron--expanded' : '']"
                 viewBox="0 0 20 20" fill="none"
               >
                 <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </button>
-            <div v-if="expandedSection === 'store'" class="px-4 sm:px-6 pb-4">
-              <button 
-                v-for="store in filterOptions.stores" 
+            <div v-if="expandedSection === 'store'" class="filter-section__content">
+              <button
+                v-for="store in filterOptions.stores"
                 :key="store.id"
                 @click="toggleFilter('store', store.id, store.name)"
-                class="w-full flex items-center justify-between py-2 text-left hover:text-ditto-purple transition-colors"
+                class="filter-option"
               >
-                <div class="flex items-center gap-3">
+                <div class="filter-option__left">
                   <span :class="[
-                    'w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors',
-                    isSelected('store', store.id) ? 'border-ditto-purple bg-ditto-purple' : 'border-ditto-border-grey'
+                    'filter-option__radio',
+                    isSelected('store', store.id) ? 'filter-option__radio--selected' : ''
                   ]">
-                    <svg v-if="isSelected('store', store.id)" class="w-3 h-3 text-white" viewBox="0 0 12 12" fill="none">
+                    <svg v-if="isSelected('store', store.id)" class="filter-option__check-icon" viewBox="0 0 12 12" fill="none">
                       <path d="M2 6L5 9L10 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                   </span>
-                  <span :class="['text-sm', isSelected('store', store.id) ? 'text-ditto-purple font-medium' : 'text-ditto-text']">{{ store.name }}</span>
+                  <span :class="['filter-option__name', isSelected('store', store.id) ? 'filter-option__name--selected' : '']">{{ store.name }}</span>
                 </div>
               </button>
             </div>
           </div>
         </div>
-        
+
         <!-- Footer -->
-        <div class="px-4 sm:px-6 py-4 border-t border-ditto-border-grey bg-white">
-          <button 
+        <div class="filters-footer">
+          <button
             @click="applyFilters"
-            class="w-full flex items-center justify-between px-6 py-3 bg-ditto-text text-white rounded-full font-medium hover:bg-ditto-text/90 transition-colors"
+            class="filters-footer__apply-btn"
           >
             <span>Apply ({{ selectedCount }})</span>
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -446,7 +446,10 @@ const applyFilters = () => {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+// -----------------------------
+// Transitions (preserved)
+// -----------------------------
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.2s ease;
@@ -465,5 +468,259 @@ const applyFilters = () => {
 .slide-enter-from,
 .slide-leave-to {
   transform: translateX(100%);
+}
+
+// -----------------------------
+// Backdrop
+// -----------------------------
+.filters-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 40;
+}
+
+// -----------------------------
+// Panel
+// -----------------------------
+.filters-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 100%;
+  background: white;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+
+  @include sm {
+    width: 24rem; // 384px, equivalent to w-96
+  }
+}
+
+// -----------------------------
+// Header
+// -----------------------------
+.filters-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1rem;
+  border-bottom: 1px solid var(--brand-border);
+
+  @include sm {
+    padding: 1.25rem 1.5rem;
+  }
+
+  &__title {
+    font-size: 1.5rem;
+    line-height: 2rem;
+    font-weight: 700;
+    color: var(--blue);
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  &__clear-btn {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 500;
+    color: var(--blue);
+    text-decoration: underline;
+
+    &:hover {
+      color: var(--brand-primary);
+    }
+  }
+
+  &__close-btn {
+    color: var(--ditto-grey);
+
+    &:hover {
+      color: var(--blue);
+    }
+  }
+}
+
+// -----------------------------
+// Body (scrollable area)
+// -----------------------------
+.filters-body {
+  flex: 1;
+  overflow-y: auto;
+}
+
+// -----------------------------
+// Filter Section
+// -----------------------------
+.filter-section {
+  border-bottom: 1px solid rgba(210, 210, 227, 0.5);
+
+  &--mobile-only {
+    @include sm {
+      display: none;
+    }
+  }
+
+  &__toggle {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1rem;
+    transition: background-color 0.15s ease;
+
+    @include sm {
+      padding: 1rem 1.5rem;
+    }
+
+    &:hover {
+      background-color: rgba(249, 249, 255, 0.5);
+    }
+
+    &--mobile {
+      padding: 1rem;
+
+      // Override sm padding — mobile-only section never shows at sm+
+    }
+  }
+
+  &__toggle-right {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  &__label {
+    font-weight: 600;
+    color: var(--blue);
+  }
+
+  &__selected-value {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: var(--brand-primary);
+  }
+
+  &__chevron {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: var(--ditto-grey);
+    transition: transform 0.15s ease;
+
+    &--expanded {
+      transform: rotate(180deg);
+    }
+  }
+
+  &__content {
+    padding: 0 1rem 1rem;
+
+    @include sm {
+      padding: 0 1.5rem 1rem;
+    }
+
+    &--mobile {
+      padding: 0 1rem 1rem;
+    }
+  }
+}
+
+// -----------------------------
+// Filter Option (radio row)
+// -----------------------------
+.filter-option {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  text-align: left;
+  transition: color 0.15s ease;
+
+  &:hover {
+    color: var(--brand-primary);
+  }
+
+  &__left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  &__radio {
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 9999px;
+    border: 2px solid var(--brand-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+
+    &--selected {
+      border-color: var(--brand-primary);
+      background-color: var(--brand-primary);
+    }
+  }
+
+  &__check-icon {
+    width: 0.75rem;
+    height: 0.75rem;
+    color: white;
+  }
+
+  &__name {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: var(--blue);
+
+    &--selected {
+      color: var(--brand-primary);
+      font-weight: 500;
+    }
+  }
+
+  &__count {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: var(--ditto-grey);
+  }
+}
+
+// -----------------------------
+// Footer
+// -----------------------------
+.filters-footer {
+  padding: 1rem;
+  border-top: 1px solid var(--brand-border);
+  background: white;
+
+  @include sm {
+    padding: 1rem 1.5rem;
+  }
+
+  &__apply-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1.5rem;
+    background-color: var(--blue);
+    color: white;
+    border-radius: 9999px;
+    font-weight: 500;
+    transition: background-color 0.15s ease;
+
+    &:hover {
+      background-color: rgba(16, 31, 60, 0.9);
+    }
+  }
 }
 </style>

@@ -1,60 +1,60 @@
 <template>
   <div>
     <!-- Desktop Table Header -->
-    <div class="hidden lg:grid grid-cols-[40px_1fr_120px_100px] gap-4 px-4 py-3 text-xs text-ditto-subtext">
+    <div class="table-header">
       <div></div>
       <div>Source</div>
       <div class="text-center">Streams</div>
       <div class="text-center">Proportion</div>
     </div>
-    
+
     <!-- Table Rows -->
-    <div v-for="(source, index) in data.sources" :key="source.id" class="mb-1">
+    <div v-for="(source, index) in data.sources" :key="source.id" class="table-row-wrapper">
       <!-- Desktop Row -->
-      <div class="hidden lg:grid grid-cols-[40px_1fr_120px_100px] gap-4 px-4 py-4 items-center hover:bg-ditto-light-grey rounded-2xl transition-colors cursor-pointer">
-        <div class="text-lg text-ditto-text">{{ index + 1 }}</div>
-        <div class="flex items-center gap-3">
-          <div 
-            class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+      <div class="desktop-row">
+        <div class="rank-number">{{ index + 1 }}</div>
+        <div class="source-info">
+          <div
+            class="source-icon-wrapper"
             :style="{ backgroundColor: sourceColors[index] + '15' }"
           >
-            <component 
-              :is="getSourceIcon(source.icon)" 
-              class="w-6 h-6" 
-              :style="{ color: sourceColors[index] }" 
+            <component
+              :is="getSourceIcon(source.icon)"
+              class="source-icon"
+              :style="{ color: sourceColors[index] }"
             />
           </div>
-          <p class="text-base font-medium text-ditto-text">{{ source.name }}</p>
+          <p class="source-name">{{ source.name }}</p>
         </div>
-        <div class="text-center text-base font-medium text-ditto-text">{{ source.streams.toLocaleString() }}</div>
-        <div class="text-center text-base text-ditto-text">{{ source.proportion }}%</div>
+        <div class="streams-value">{{ source.streams.toLocaleString() }}</div>
+        <div class="proportion-value">{{ source.proportion }}%</div>
       </div>
-      
+
       <!-- Mobile Row -->
-      <div class="lg:hidden flex items-center gap-3 px-2 py-3 hover:bg-ditto-light-grey rounded-xl transition-colors cursor-pointer">
+      <div class="mobile-row">
         <!-- Rank -->
-        <span class="text-base font-medium text-ditto-subtext w-6 text-center flex-shrink-0">{{ index + 1 }}</span>
-        
+        <span class="mobile-rank">{{ index + 1 }}</span>
+
         <!-- Icon -->
-        <div 
-          class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+        <div
+          class="source-icon-wrapper"
           :style="{ backgroundColor: sourceColors[index] + '15' }"
         >
-          <component 
-            :is="getSourceIcon(source.icon)" 
-            class="w-5 h-5" 
-            :style="{ color: sourceColors[index] }" 
+          <component
+            :is="getSourceIcon(source.icon)"
+            class="source-icon source-icon--small"
+            :style="{ color: sourceColors[index] }"
           />
         </div>
-        
+
         <!-- Info -->
-        <div class="flex-1 min-w-0">
-          <p class="text-sm font-medium text-ditto-text">{{ source.name }}</p>
-          <p class="text-xs text-ditto-subtext mt-0.5">{{ source.proportion }}%</p>
+        <div class="mobile-info">
+          <p class="mobile-source-name">{{ source.name }}</p>
+          <p class="mobile-proportion">{{ source.proportion }}%</p>
         </div>
-        
+
         <!-- Streams -->
-        <span class="text-sm font-medium text-ditto-text flex-shrink-0">{{ formatShort(source.streams) }}</span>
+        <span class="mobile-streams">{{ formatShort(source.streams) }}</span>
       </div>
     </div>
   </div>
@@ -119,3 +119,155 @@ const getSourceIcon = (iconType: string) => {
   return icons[iconType] || icons.playlist
 }
 </script>
+
+<style lang="scss" scoped>
+.text-center {
+  text-align: center;
+}
+
+.table-header {
+  display: none;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  color: var(--ditto-grey);
+  padding: 0.75rem 1rem;
+
+  @include lg {
+    display: grid;
+    grid-template-columns: 40px 1fr 120px 100px;
+    gap: 1rem;
+  }
+}
+
+.table-row-wrapper {
+  margin-bottom: 0.25rem;
+}
+
+.desktop-row {
+  display: none;
+  align-items: center;
+  padding: 1rem;
+  border-radius: 1rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+
+  @include lg {
+    display: grid;
+    grid-template-columns: 40px 1fr 120px 100px;
+    gap: 1rem;
+  }
+
+  &:hover {
+    background-color: var(--lighter-grey);
+  }
+}
+
+.rank-number {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  color: var(--blue);
+}
+
+.source-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.source-icon-wrapper {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.source-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+
+  &--small {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+}
+
+.source-name {
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 500;
+  color: var(--blue);
+}
+
+.streams-value {
+  text-align: center;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 500;
+  color: var(--blue);
+}
+
+.proportion-value {
+  text-align: center;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  color: var(--blue);
+}
+
+.mobile-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0.5rem;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+
+  @include lg {
+    display: none;
+  }
+
+  &:hover {
+    background-color: var(--lighter-grey);
+  }
+}
+
+.mobile-rank {
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 500;
+  color: var(--ditto-grey);
+  width: 1.5rem;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.mobile-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.mobile-source-name {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  color: var(--blue);
+}
+
+.mobile-proportion {
+  font-size: 0.75rem;
+  line-height: 1rem;
+  color: var(--ditto-grey);
+  margin-top: 0.125rem;
+}
+
+.mobile-streams {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  color: var(--blue);
+  flex-shrink: 0;
+}
+</style>

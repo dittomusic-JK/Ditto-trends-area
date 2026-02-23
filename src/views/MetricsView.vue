@@ -1,18 +1,18 @@
 <template>
   <div>
     <!-- Stats Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-6">
+    <div class="stats-grid">
       <StatsCard v-for="stat in displayStats" :key="stat.id" :stat="stat" />
     </div>
-    
+
     <!-- Performance Chart -->
-    <div class="mb-8">
+    <div class="chart-section">
       <PerformanceChart :data="filteredPerformance" />
     </div>
-    
+
     <!-- Stores Table -->
-    <StoresTable 
-      :stores="data.stores" 
+    <StoresTable
+      :stores="data.stores"
       :selected-store="selectedStore"
       @select="selectedStore = $event"
     />
@@ -44,9 +44,9 @@ const filteredPerformance = computed<PerformanceDataPoint[]>(() => {
   if (!selectedStore.value || !selectedStoreData.value) {
     return props.data.performance
   }
-  
+
   const store = selectedStoreData.value
-  
+
   // Scale the performance data based on the store's proportion
   const proportion = store.proportion / 100
   return props.data.performance.map(point => ({
@@ -61,10 +61,10 @@ const displayStats = computed(() => {
   if (!selectedStore.value || !selectedStoreData.value) {
     return props.data.stats
   }
-  
+
   const store = selectedStoreData.value
   const proportion = store.proportion / 100
-  
+
   return props.data.stats.map(stat => {
     if (stat.iconType === 'broadcast') {
       // Total streams for this store
@@ -93,3 +93,22 @@ const displayStats = computed(() => {
   })
 })
 </script>
+
+<style lang="scss" scoped>
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+
+  @include sm {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+}
+
+.chart-section {
+  margin-bottom: 2rem;
+}
+</style>

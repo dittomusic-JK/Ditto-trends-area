@@ -1,71 +1,71 @@
 <template>
-  <div class="min-h-screen bg-white overflow-hidden w-full max-w-full" data-ditto-colors-light-dark-mode="light">
+  <div class="app-root" data-ditto-colors-light-dark-mode="light">
     <!-- Top Navigation -->
     <TopNavbar />
-    
+
     <!-- Main Content -->
-    <div class="px-4 py-4 sm:px-6 sm:py-6 lg:px-16 lg:py-8 w-full max-w-full box-border">
+    <div class="app-content">
       <!-- Page Header -->
-      <PageHeader 
-        :date-range="dateRange" 
+      <PageHeader
+        :date-range="dateRange"
         :trends-type="trendsType"
         @open-filters="showFiltersModal = true"
         @update:date-range="updateDateRange"
         @update:trends-type="updateTrendsType"
       />
-      
+
       <!-- Active Filters -->
-      <div v-if="activeFilters.length > 0" class="flex flex-wrap gap-2 mb-4 sm:mb-6">
-        <FilterChip 
-          v-for="filter in activeFilters" 
+      <div v-if="activeFilters.length > 0" class="active-filters">
+        <FilterChip
+          v-for="filter in activeFilters"
           :key="filter.id"
           :label="filter.label"
           :value="filter.value"
           @remove="removeFilter(filter.id)"
         />
       </div>
-      
+
       <!-- Main Layout with Sidebar -->
-      <div class="flex flex-col lg:flex-row gap-4 lg:gap-6">
+      <div class="main-layout">
         <!-- Left Sidebar -->
-        <LeftSidebar 
-          :active-view="activeView" 
+        <LeftSidebar
+          :active-view="activeView"
           @navigate="setActiveView"
         />
-        
+
         <!-- Content Area -->
-        <div class="flex-1 min-w-0">
-          <MetricsView 
-            v-if="activeView === 'metrics'" 
-            :data="metricsData" 
+        <div class="content-area">
+          <MetricsView
+            v-if="activeView === 'metrics'"
+            :data="metricsData"
             :show-dropdown="true"
           />
-          <ReleasesView 
-            v-else-if="activeView === 'releases'" 
-            :releases="releasesData" 
+          <ReleasesView
+            v-else-if="activeView === 'releases'"
+            :releases="releasesData"
           />
-          <TracksView 
-            v-else-if="activeView === 'tracks'" 
-            :tracks="tracksData" 
+          <TracksView
+            v-else-if="activeView === 'tracks'"
+            :tracks="tracksData"
           />
-          <PlaylistsView 
-            v-else-if="activeView === 'playlists'" 
-            :playlists="playlistsData" 
+          <PlaylistsView
+            v-else-if="activeView === 'playlists'"
+            :playlists="playlistsData"
           />
-          <AudienceView 
-            v-else-if="activeView === 'audience'" 
-            :data="audienceData" 
+          <AudienceView
+            v-else-if="activeView === 'audience'"
+            :data="audienceData"
           />
-          <SourceView 
-            v-else-if="activeView === 'source'" 
-            :data="sourceData" 
+          <SourceView
+            v-else-if="activeView === 'source'"
+            :data="sourceData"
           />
         </div>
       </div>
     </div>
-    
+
     <!-- Filters Panel -->
-    <FiltersPanel 
+    <FiltersPanel
       :is-open="showFiltersModal"
       :current-filters="activeFilters"
       :current-data-type="trendsType"
@@ -96,10 +96,10 @@ import AudienceView from './views/AudienceView.vue'
 import SourceView from './views/SourceView.vue'
 
 // Mock Data - using real Ditto API data
-import { 
-  releasesData, 
-  tracksData, 
-  playlistsData, 
+import {
+  releasesData,
+  tracksData,
+  playlistsData,
   audienceData,
   sourceData,
   getMetricsForDateRange,
@@ -174,3 +174,55 @@ const updateTrendsType = (type: TrendsType) => {
   trendsType.value = type
 }
 </script>
+
+<style lang="scss" scoped>
+.app-root {
+  min-height: 100vh;
+  background-color: #fff;
+  overflow: hidden;
+  width: 100%;
+  max-width: 100%;
+}
+
+.app-content {
+  padding: 1rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+
+  @include sm {
+    padding: 1.5rem;
+  }
+
+  @include lg {
+    padding: 2rem 4rem;
+  }
+}
+
+.active-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+
+  @include sm {
+    margin-bottom: 1.5rem;
+  }
+}
+
+.main-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  @include lg {
+    flex-direction: row;
+    gap: 1.5rem;
+  }
+}
+
+.content-area {
+  flex: 1;
+  min-width: 0;
+}
+</style>

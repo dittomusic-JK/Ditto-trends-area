@@ -1,66 +1,66 @@
 <template>
-  <div class="space-y-4 lg:space-y-8">
+  <div class="audience">
     <!-- Top Row: Gender + Age Range -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8">
+    <div class="audience__top-row">
       <!-- Gender Section -->
-      <div class="bg-white rounded-2xl p-4 lg:p-6 shadow-sm border border-gray-100">
-        <h3 class="font-poppins font-bold text-lg lg:text-xl text-ditto-text mb-4">Gender</h3>
-        <div class="flex flex-col items-center">
+      <div class="audience__card">
+        <h3 class="audience__card-title">Gender</h3>
+        <div class="audience__gender-content">
           <!-- Donut Chart -->
-          <div class="relative w-[160px] h-[160px] lg:w-[200px] lg:h-[200px]">
+          <div class="audience__donut-wrapper">
             <Doughnut :data="genderChartData" :options="donutOptions" />
-            <div class="absolute inset-0 flex flex-col items-center justify-center">
-              <span class="text-2xl lg:text-3xl font-bold text-ditto-text">{{ totalListeners }}</span>
-              <span class="text-xs lg:text-sm text-ditto-subtext">listeners</span>
+            <div class="audience__donut-center">
+              <span class="audience__donut-value">{{ totalListeners }}</span>
+              <span class="audience__donut-label">listeners</span>
             </div>
           </div>
-          
+
           <!-- Legend Below -->
-          <div class="flex items-center justify-center gap-6 lg:gap-8 mt-4 lg:mt-6 w-full">
-            <div class="flex items-center gap-2 lg:gap-3">
-              <span class="w-3 h-3 lg:w-4 lg:h-4 rounded-sm bg-gradient-to-br from-ditto-purple to-[#6B2FD9]"></span>
+          <div class="audience__gender-legend">
+            <div class="audience__gender-legend-item">
+              <span class="audience__legend-swatch audience__legend-swatch--purple"></span>
               <div>
-                <span class="text-xs lg:text-sm text-ditto-subtext">Male</span>
-                <span class="text-base lg:text-lg font-semibold text-ditto-text ml-1.5 lg:ml-2">{{ data.gender.male }}%</span>
+                <span class="audience__legend-label">Male</span>
+                <span class="audience__legend-value">{{ data.gender.male }}%</span>
               </div>
             </div>
-            <div class="flex items-center gap-2 lg:gap-3">
-              <span class="w-3 h-3 lg:w-4 lg:h-4 rounded-sm bg-gradient-to-br from-chart-coral to-[#DC2626]"></span>
+            <div class="audience__gender-legend-item">
+              <span class="audience__legend-swatch audience__legend-swatch--coral"></span>
               <div>
-                <span class="text-xs lg:text-sm text-ditto-subtext">Female</span>
-                <span class="text-base lg:text-lg font-semibold text-ditto-text ml-1.5 lg:ml-2">{{ data.gender.female }}%</span>
+                <span class="audience__legend-label">Female</span>
+                <span class="audience__legend-value">{{ data.gender.female }}%</span>
               </div>
             </div>
           </div>
         </div>
       </div>
-      
+
       <!-- Age Range Section -->
-      <div class="bg-white rounded-2xl p-4 lg:p-6 shadow-sm border border-gray-100">
-        <h3 class="font-poppins font-bold text-lg lg:text-xl text-ditto-text mb-4 lg:mb-6">Age Range</h3>
-        <div class="space-y-4">
-          <div 
-            v-for="(ageRange, index) in data.ageRanges" 
+      <div class="audience__card">
+        <h3 class="audience__card-title audience__card-title--age">Age Range</h3>
+        <div class="audience__age-bars">
+          <div
+            v-for="(ageRange, index) in data.ageRanges"
             :key="ageRange.range"
-            class="group"
+            class="audience__age-group"
           >
-            <div class="flex items-center justify-between mb-1.5">
-              <span class="text-sm font-medium text-ditto-text">{{ ageRange.range }}</span>
-              <span class="text-sm font-semibold text-ditto-purple">{{ ageRange.total }}%</span>
+            <div class="audience__age-header">
+              <span class="audience__age-range">{{ ageRange.range }}</span>
+              <span class="audience__age-total">{{ ageRange.total }}%</span>
             </div>
-            <div class="relative h-2.5 bg-gray-100 rounded-full overflow-hidden">
+            <div class="audience__age-track">
               <!-- Male portion -->
-              <div 
-                class="absolute left-0 top-0 h-full bg-ditto-purple rounded-l-full transition-all duration-700 ease-out"
-                :style="{ 
+              <div
+                class="audience__age-bar audience__age-bar--male"
+                :style="{
                   width: animatedBars ? `${(ageRange.male / Math.max(...data.ageRanges.map(a => a.total))) * 100}%` : '0%',
                   transitionDelay: `${index * 100}ms`
                 }"
               ></div>
               <!-- Female portion -->
-              <div 
-                class="absolute top-0 h-full bg-chart-coral rounded-r-full transition-all duration-700 ease-out"
-                :style="{ 
+              <div
+                class="audience__age-bar audience__age-bar--female"
+                :style="{
                   left: animatedBars ? `${(ageRange.male / Math.max(...data.ageRanges.map(a => a.total))) * 100}%` : '0%',
                   width: animatedBars ? `${(ageRange.female / Math.max(...data.ageRanges.map(a => a.total))) * 100}%` : '0%',
                   transitionDelay: `${index * 100}ms`
@@ -70,135 +70,135 @@
           </div>
         </div>
         <!-- Age Legend -->
-        <div class="flex items-center gap-6 mt-6 pt-4 border-t border-gray-100">
-          <div class="flex items-center gap-2">
-            <span class="w-3 h-3 rounded-full bg-ditto-purple"></span>
-            <span class="text-xs text-ditto-subtext">Male</span>
+        <div class="audience__age-legend">
+          <div class="audience__age-legend-item">
+            <span class="audience__age-legend-dot audience__age-legend-dot--male"></span>
+            <span class="audience__age-legend-label">Male</span>
           </div>
-          <div class="flex items-center gap-2">
-            <span class="w-3 h-3 rounded-full bg-chart-coral"></span>
-            <span class="text-xs text-ditto-subtext">Female</span>
+          <div class="audience__age-legend-item">
+            <span class="audience__age-legend-dot audience__age-legend-dot--female"></span>
+            <span class="audience__age-legend-label">Female</span>
           </div>
         </div>
       </div>
     </div>
-    
+
     <!-- World Map Section (hidden on mobile - not touch-friendly) -->
-    <div class="hidden lg:block bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-      <div class="flex items-center justify-between mb-6">
-        <h3 class="font-poppins font-bold text-xl text-ditto-text">Geographic Distribution</h3>
-        <div class="flex items-center gap-3 text-xs text-ditto-subtext">
-          <div class="flex items-center gap-1.5">
-            <span class="w-3 h-3 rounded" style="background-color: rgba(134, 64, 244, 0.2)"></span>
+    <div class="audience__card audience__card--map">
+      <div class="audience__map-header">
+        <h3 class="audience__card-title audience__card-title--no-margin">Geographic Distribution</h3>
+        <div class="audience__map-legend">
+          <div class="audience__map-legend-item">
+            <span class="audience__map-legend-swatch audience__map-legend-swatch--low"></span>
             <span>Low</span>
           </div>
-          <div class="flex items-center gap-1.5">
-            <span class="w-3 h-3 rounded" style="background-color: rgba(134, 64, 244, 0.5)"></span>
+          <div class="audience__map-legend-item">
+            <span class="audience__map-legend-swatch audience__map-legend-swatch--medium"></span>
             <span>Medium</span>
           </div>
-          <div class="flex items-center gap-1.5">
-            <span class="w-3 h-3 rounded" style="background-color: rgba(134, 64, 244, 1)"></span>
+          <div class="audience__map-legend-item">
+            <span class="audience__map-legend-swatch audience__map-legend-swatch--high"></span>
             <span>High</span>
           </div>
         </div>
       </div>
-      
-      <div class="relative">
+
+      <div class="audience__map-container">
         <!-- SVG World Map -->
-        <svg 
+        <svg
           ref="mapSvg"
-          viewBox="0 0 1000 500" 
-          class="w-full h-[300px]"
+          viewBox="0 0 1000 500"
+          class="audience__map-svg"
           @mousemove="handleMapHover"
           @mouseleave="hoveredCountry = null"
         >
           <g ref="mapGroup"></g>
         </svg>
-        
+
         <!-- Tooltip -->
-        <div 
+        <div
           v-if="hoveredCountry"
-          class="absolute pointer-events-none bg-ditto-text text-white px-3 py-2 rounded-lg text-sm shadow-lg z-10"
+          class="audience__map-tooltip"
           :style="{ left: `${tooltipX}px`, top: `${tooltipY}px`, transform: 'translate(-50%, -100%)' }"
         >
-          <div class="font-semibold">{{ hoveredCountry.country }}</div>
-          <div class="text-white/80">{{ hoveredCountry.streams.toLocaleString() }} streams</div>
-          <div class="text-white/60 text-xs">{{ hoveredCountry.ratio }}% of total</div>
+          <div class="audience__map-tooltip-name">{{ hoveredCountry.country }}</div>
+          <div class="audience__map-tooltip-streams">{{ hoveredCountry.streams.toLocaleString() }} streams</div>
+          <div class="audience__map-tooltip-ratio">{{ hoveredCountry.ratio }}% of total</div>
         </div>
       </div>
     </div>
-    
+
     <!-- Bottom Row: Countries + Cities -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8">
+    <div class="audience__bottom-row">
       <!-- Country Ranking -->
-      <div class="bg-white rounded-2xl p-4 lg:p-6 shadow-sm border border-gray-100">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="font-poppins font-bold text-lg lg:text-xl text-ditto-text">Top Countries</h3>
-          <button 
+      <div class="audience__card">
+        <div class="audience__ranking-header">
+          <h3 class="audience__card-title audience__card-title--no-margin">Top Countries</h3>
+          <button
             @click="showAllLocations = !showAllLocations"
-            class="text-sm font-medium text-ditto-purple hover:text-ditto-purple/80 transition-colors"
+            class="audience__see-all-btn"
           >
             {{ showAllLocations ? 'Show Less' : 'See All' }}
           </button>
         </div>
-        <div class="space-y-1">
-          <div 
+        <div class="audience__ranking-list">
+          <div
             v-for="country in data.countries.slice(0, showAllLocations ? 15 : 5)"
             :key="country.rank"
-            class="flex items-center gap-3 py-2 border-b border-gray-100 last:border-0 group cursor-pointer hover:bg-gray-50 -mx-2 px-2 rounded-lg transition-colors"
+            class="audience__ranking-row"
             @mouseenter="highlightCountry(country)"
             @mouseleave="highlightedCountry = null"
           >
             <!-- Rank -->
-            <span class="text-xl font-light text-ditto-subtext w-6">{{ country.rank }}</span>
-            
+            <span class="audience__rank-number">{{ country.rank }}</span>
+
             <!-- Round Flag -->
-            <div class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 shadow-sm border border-gray-100">
-              <img 
-                :src="getFlagUrl(country.code)" 
+            <div class="audience__flag-wrapper">
+              <img
+                :src="getFlagUrl(country.code)"
                 :alt="country.country"
-                class="w-full h-full object-cover"
+                class="audience__flag-img"
                 @error="handleFlagError"
               />
             </div>
-            
+
             <!-- Country Name -->
-            <span class="flex-1 text-sm font-medium text-ditto-text">{{ country.country }}</span>
-            
+            <span class="audience__ranking-name">{{ country.country }}</span>
+
             <!-- Streams -->
-            <span class="text-sm font-medium text-ditto-text">{{ formatShort(country.streams) }}</span>
+            <span class="audience__ranking-streams">{{ formatShort(country.streams) }}</span>
           </div>
         </div>
       </div>
-      
+
       <!-- City Ranking -->
-      <div class="bg-white rounded-2xl p-4 lg:p-6 shadow-sm border border-gray-100">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="font-poppins font-bold text-lg lg:text-xl text-ditto-text">Top Cities</h3>
-          <button 
+      <div class="audience__card">
+        <div class="audience__ranking-header">
+          <h3 class="audience__card-title audience__card-title--no-margin">Top Cities</h3>
+          <button
             @click="showAllLocations = !showAllLocations"
-            class="text-sm font-medium text-ditto-purple hover:text-ditto-purple/80 transition-colors"
+            class="audience__see-all-btn"
           >
             {{ showAllLocations ? 'Show Less' : 'See All' }}
           </button>
         </div>
-        <div class="space-y-1">
-          <div 
+        <div class="audience__ranking-list">
+          <div
             v-for="city in data.cities.slice(0, showAllLocations ? 15 : 5)"
             :key="city.rank"
-            class="flex items-center gap-3 py-2 border-b border-gray-100 last:border-0 hover:bg-gray-50 -mx-2 px-2 rounded-lg transition-colors"
+            class="audience__ranking-row"
           >
             <!-- Rank -->
-            <span class="text-xl font-light text-ditto-subtext w-6">{{ city.rank }}</span>
-            
+            <span class="audience__rank-number">{{ city.rank }}</span>
+
             <!-- City + Country -->
-            <div class="flex-1 min-w-0">
-              <div class="text-sm font-medium text-ditto-text">{{ city.city }}</div>
-              <div v-if="city.country" class="text-xs text-ditto-subtext">{{ city.country }}</div>
+            <div class="audience__city-info">
+              <div class="audience__city-name">{{ city.city }}</div>
+              <div v-if="city.country" class="audience__city-country">{{ city.country }}</div>
             </div>
-            
+
             <!-- Streams -->
-            <span class="text-sm font-medium text-ditto-text">{{ formatShort(city.streams) }}</span>
+            <span class="audience__ranking-streams">{{ formatShort(city.streams) }}</span>
           </div>
         </div>
       </div>
@@ -309,42 +309,42 @@ const donutOptions = {
 // Map rendering
 const renderMap = async () => {
   if (!mapGroup.value) return
-  
+
   try {
     // Fetch world topology
     const response = await fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
     const world = await response.json()
-    
+
     // Convert to GeoJSON
     const countries = feature(world, world.objects.countries) as any
-    
+
     // Create projection and path generator
     const projection = geoNaturalEarth1()
       .scale(180)
       .translate([500, 280])
-    
+
     const pathGenerator = geoPath().projection(projection)
-    
+
     // Clear existing paths
     mapGroup.value.innerHTML = ''
-    
+
     // Country name mapping (numeric id -> ISO code)
     const idToCode: Record<string, string> = {
       '404': 'KE', '840': 'US', '826': 'GB', '36': 'AU', '124': 'CA',
       '276': 'DE', '834': 'TZ', '800': 'UG', '784': 'AE', '528': 'NL',
       '634': 'QA', '250': 'FR', '566': 'NG', '710': 'ZA', '682': 'SA'
     }
-    
+
     // Draw each country
     countries.features.forEach((country: any) => {
       const path = document.createElementNS('http://www.w3.org/2000/svg', 'path')
       const d = pathGenerator(country)
       if (d) {
         path.setAttribute('d', d)
-        
+
         const code = idToCode[country.id]
         const countryData = code ? countryDataMap.value.get(code) : null
-        
+
         // Color based on stream intensity
         let fill = '#E5E7EB' // Default gray
         if (countryData) {
@@ -352,13 +352,13 @@ const renderMap = async () => {
           const alpha = 0.2 + intensity * 0.8
           fill = `rgba(134, 64, 244, ${alpha})`
         }
-        
+
         path.setAttribute('fill', fill)
         path.setAttribute('stroke', '#fff')
         path.setAttribute('stroke-width', '0.5')
         path.setAttribute('data-code', code || '')
         path.style.transition = 'fill 0.2s ease'
-        
+
         // Hover effects
         path.addEventListener('mouseenter', () => {
           if (countryData) {
@@ -367,11 +367,11 @@ const renderMap = async () => {
             path.setAttribute('fill', '#D1D5DB')
           }
         })
-        
+
         path.addEventListener('mouseleave', () => {
           path.setAttribute('fill', fill)
         })
-        
+
         mapGroup.value?.appendChild(path)
       }
     })
@@ -383,10 +383,10 @@ const renderMap = async () => {
 const handleMapHover = (event: MouseEvent) => {
   const target = event.target as SVGPathElement
   const code = target.getAttribute('data-code')
-  
+
   if (code && countryDataMap.value.has(code)) {
     hoveredCountry.value = countryDataMap.value.get(code) || null
-    
+
     const rect = mapSvg.value?.getBoundingClientRect()
     if (rect) {
       tooltipX.value = event.clientX - rect.left
@@ -399,7 +399,7 @@ const handleMapHover = (event: MouseEvent) => {
 
 const highlightCountry = (country: CountryData) => {
   highlightedCountry.value = country
-  
+
   // Find and highlight the map path
   if (mapGroup.value && country.code) {
     const paths = mapGroup.value.querySelectorAll('path')
@@ -417,7 +417,7 @@ onMounted(() => {
   setTimeout(() => {
     animatedBars.value = true
   }, 100)
-  
+
   nextTick(() => {
     renderMap()
   })
@@ -429,7 +429,455 @@ watch(() => props.data.countries, () => {
 }, { deep: true })
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+.audience {
+  > * + * {
+    margin-top: 1rem;
+  }
+
+  @include lg {
+    > * + * {
+      margin-top: 2rem;
+    }
+  }
+}
+
+// ── Shared card style ──
+.audience__card {
+  background-color: #fff;
+  border-radius: 1rem;
+  padding: 1rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  border: 1px solid #f3f4f6;
+
+  @include lg {
+    padding: 1.5rem;
+  }
+}
+
+.audience__card-title {
+  font-family: $font-poppins;
+  font-weight: 700;
+  font-size: 1.125rem;
+  color: var(--blue);
+  margin-bottom: 1rem;
+
+  @include lg {
+    font-size: 1.25rem;
+  }
+
+  &--age {
+    @include lg {
+      margin-bottom: 1.5rem;
+    }
+  }
+
+  &--no-margin {
+    margin-bottom: 0;
+  }
+}
+
+// ── Layout grids ──
+.audience__top-row,
+.audience__bottom-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+
+  @include lg {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+  }
+}
+
+// ── Gender section ──
+.audience__gender-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.audience__donut-wrapper {
+  position: relative;
+  width: 160px;
+  height: 160px;
+
+  @include lg {
+    width: 200px;
+    height: 200px;
+  }
+}
+
+.audience__donut-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.audience__donut-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--blue);
+
+  @include lg {
+    font-size: 1.875rem;
+  }
+}
+
+.audience__donut-label {
+  font-size: $text-xs;
+  color: var(--ditto-grey);
+
+  @include lg {
+    font-size: $text-sm;
+  }
+}
+
+.audience__gender-legend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 1rem;
+  width: 100%;
+
+  @include lg {
+    gap: 2rem;
+    margin-top: 1.5rem;
+  }
+}
+
+.audience__gender-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  @include lg {
+    gap: 0.75rem;
+  }
+}
+
+.audience__legend-swatch {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 2px;
+
+  @include lg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  &--purple {
+    background: linear-gradient(to bottom right, var(--brand-primary), #6B2FD9);
+  }
+
+  &--coral {
+    background: linear-gradient(to bottom right, $chart-coral, #DC2626);
+  }
+}
+
+.audience__legend-label {
+  font-size: $text-xs;
+  color: var(--ditto-grey);
+
+  @include lg {
+    font-size: $text-sm;
+  }
+}
+
+.audience__legend-value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--blue);
+  margin-left: 0.375rem;
+
+  @include lg {
+    font-size: 1.125rem;
+    margin-left: 0.5rem;
+  }
+}
+
+// ── Age Range section ──
+.audience__age-bars {
+  > * + * {
+    margin-top: 1rem;
+  }
+}
+
+.audience__age-group {
+  // individual group wrapper
+}
+
+.audience__age-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.375rem;
+}
+
+.audience__age-range {
+  font-size: $text-sm;
+  font-weight: 500;
+  color: var(--blue);
+}
+
+.audience__age-total {
+  font-size: $text-sm;
+  font-weight: 600;
+  color: var(--brand-primary);
+}
+
+.audience__age-track {
+  position: relative;
+  height: 0.625rem;
+  background-color: #f3f4f6;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.audience__age-bar {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  transition: all 700ms ease-out;
+
+  &--male {
+    left: 0;
+    background-color: var(--brand-primary);
+    border-radius: 9999px 0 0 9999px;
+  }
+
+  &--female {
+    background-color: $chart-coral;
+    border-radius: 0 9999px 9999px 0;
+  }
+}
+
+.audience__age-legend {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #f3f4f6;
+}
+
+.audience__age-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.audience__age-legend-dot {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 9999px;
+
+  &--male {
+    background-color: var(--brand-primary);
+  }
+
+  &--female {
+    background-color: $chart-coral;
+  }
+}
+
+.audience__age-legend-label {
+  font-size: $text-xs;
+  color: var(--ditto-grey);
+}
+
+// ── Map section ──
+.audience__card--map {
+  display: none;
+
+  @include lg {
+    display: block;
+    padding: 1.5rem;
+  }
+}
+
+.audience__map-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.audience__map-legend {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: $text-xs;
+  color: var(--ditto-grey);
+}
+
+.audience__map-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.audience__map-legend-swatch {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 0.25rem;
+
+  &--low {
+    background-color: rgba(134, 64, 244, 0.2);
+  }
+
+  &--medium {
+    background-color: rgba(134, 64, 244, 0.5);
+  }
+
+  &--high {
+    background-color: rgba(134, 64, 244, 1);
+  }
+}
+
+.audience__map-container {
+  position: relative;
+}
+
+.audience__map-svg {
+  width: 100%;
+  height: 300px;
+}
+
+.audience__map-tooltip {
+  position: absolute;
+  pointer-events: none;
+  background-color: var(--blue);
+  color: #fff;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: $text-sm;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+}
+
+.audience__map-tooltip-name {
+  font-weight: 600;
+}
+
+.audience__map-tooltip-streams {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.audience__map-tooltip-ratio {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: $text-xs;
+}
+
+// ── Ranking sections (Countries & Cities) ──
+.audience__ranking-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.audience__see-all-btn {
+  font-size: $text-sm;
+  font-weight: 500;
+  color: var(--brand-primary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: opacity 0.15s ease;
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+.audience__ranking-list {
+  > * + * {
+    // space-y-1 equivalent (0.25rem) — but the rows have their own vertical padding,
+    // so we rely on border-bottom spacing instead
+  }
+}
+
+.audience__ranking-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem;
+  margin-left: -0.5rem;
+  margin-right: -0.5rem;
+  border-bottom: 1px solid #f3f4f6;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background-color: #f9fafb;
+  }
+}
+
+.audience__rank-number {
+  font-size: 1.25rem;
+  font-weight: 300;
+  color: var(--ditto-grey);
+  width: 1.5rem;
+}
+
+.audience__flag-wrapper {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 9999px;
+  overflow: hidden;
+  flex-shrink: 0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  border: 1px solid #f3f4f6;
+}
+
+.audience__flag-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.audience__ranking-name {
+  flex: 1;
+  font-size: $text-sm;
+  font-weight: 500;
+  color: var(--blue);
+}
+
+.audience__ranking-streams {
+  font-size: $text-sm;
+  font-weight: 500;
+  color: var(--blue);
+}
+
+// ── City-specific ──
+.audience__city-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.audience__city-name {
+  font-size: $text-sm;
+  font-weight: 500;
+  color: var(--blue);
+}
+
+.audience__city-country {
+  font-size: $text-xs;
+  color: var(--ditto-grey);
+}
+
+// ── Legacy preserved class ──
 .chart-coral {
   background-color: #F87171;
 }

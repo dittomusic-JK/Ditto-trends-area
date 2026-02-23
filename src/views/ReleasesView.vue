@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <div class="releases">
     <!-- Desktop Table Header -->
-    <div class="hidden lg:grid grid-cols-[40px_1fr_140px_100px_120px_120px] gap-4 px-4 py-3 text-xs text-ditto-subtext">
+    <div class="table-header">
       <div></div>
       <div>Details</div>
       <div class="text-center">Artist</div>
@@ -9,47 +9,47 @@
       <div class="text-center">Unique Listeners</div>
       <div class="text-center">Streams per listener</div>
     </div>
-    
+
     <!-- Table Rows -->
-    <div v-for="release in releases" :key="release.id" class="mb-1">
+    <div v-for="release in releases" :key="release.id" class="table-row">
       <!-- Desktop Row -->
-      <div class="hidden lg:grid grid-cols-[40px_1fr_140px_100px_120px_120px] gap-4 px-4 py-4 items-center hover:bg-ditto-light-grey rounded-2xl transition-colors cursor-pointer">
-        <div class="text-lg text-ditto-text">{{ release.rank }}</div>
-        <div class="flex items-center gap-4">
-          <img :src="release.artwork" :alt="release.title" class="w-16 h-16 rounded-lg object-cover" />
+      <div class="desktop-row">
+        <div class="rank-number">{{ release.rank }}</div>
+        <div class="release-details">
+          <img :src="release.artwork" :alt="release.title" class="artwork" />
           <div>
-            <p class="text-base font-medium text-ditto-text truncate max-w-[220px]">{{ release.title }}</p>
-            <p class="text-xs text-ditto-purple">{{ release.trackCount }} Tracks</p>
+            <p class="release-title">{{ release.title }}</p>
+            <p class="track-count">{{ release.trackCount }} Tracks</p>
           </div>
         </div>
-        <div class="text-center text-sm text-ditto-subtext">
+        <div class="artist-cell">
           <template v-if="release.artists && release.artists.length > 1">
             {{ release.artists.slice(0, 2).join(', ') }}
-            <span v-if="release.artists.length > 2" class="text-ditto-purple">(+{{ release.artists.length - 2 }} more)</span>
+            <span v-if="release.artists.length > 2" class="artist-overflow">(+{{ release.artists.length - 2 }} more)</span>
           </template>
           <template v-else>{{ release.artist }}</template>
         </div>
-        <div class="text-center text-base font-medium text-ditto-text">{{ release.streams.toLocaleString() }}</div>
-        <div class="text-center text-base text-ditto-text">{{ release.uniqueListeners.toLocaleString() }}</div>
-        <div class="text-center text-base text-ditto-text">{{ release.streamsPerListener }}</div>
+        <div class="stat-cell stat-cell--primary">{{ release.streams.toLocaleString() }}</div>
+        <div class="stat-cell">{{ release.uniqueListeners.toLocaleString() }}</div>
+        <div class="stat-cell">{{ release.streamsPerListener }}</div>
       </div>
-      
+
       <!-- Mobile Row -->
-      <div class="lg:hidden flex items-center gap-3 px-2 py-3 hover:bg-ditto-light-grey rounded-xl transition-colors cursor-pointer">
+      <div class="mobile-row">
         <!-- Rank -->
-        <span class="text-base font-medium text-ditto-subtext w-6 text-center flex-shrink-0">{{ release.rank }}</span>
-        
+        <span class="mobile-rank">{{ release.rank }}</span>
+
         <!-- Artwork -->
-        <img :src="release.artwork" :alt="release.title" class="w-12 h-12 rounded-lg object-cover flex-shrink-0" />
-        
+        <img :src="release.artwork" :alt="release.title" class="mobile-artwork" />
+
         <!-- Info -->
-        <div class="flex-1 min-w-0">
-          <p class="text-sm font-medium text-ditto-text truncate">{{ release.title }}</p>
-          <p class="text-xs text-ditto-purple mt-0.5">{{ release.trackCount }} Tracks</p>
+        <div class="mobile-info">
+          <p class="mobile-title">{{ release.title }}</p>
+          <p class="mobile-track-count">{{ release.trackCount }} Tracks</p>
         </div>
-        
+
         <!-- Streams -->
-        <span class="text-sm font-medium text-ditto-text flex-shrink-0">{{ formatShort(release.streams) }}</span>
+        <span class="mobile-streams">{{ formatShort(release.streams) }}</span>
       </div>
     </div>
   </div>
@@ -68,3 +68,170 @@ const formatShort = (num: number): string => {
   return num.toLocaleString()
 }
 </script>
+
+<style lang="scss" scoped>
+.text-center {
+  text-align: center;
+}
+
+.table-header {
+  display: none;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  color: var(--ditto-grey);
+  padding: 0.75rem 1rem;
+
+  @include lg {
+    display: grid;
+    grid-template-columns: 40px 1fr 140px 100px 120px 120px;
+    gap: 1rem;
+  }
+}
+
+.table-row {
+  margin-bottom: 0.25rem;
+}
+
+.desktop-row {
+  display: none;
+  align-items: center;
+  padding: 1rem;
+  gap: 1rem;
+  border-radius: 1rem;
+  transition: background-color 150ms ease;
+  cursor: pointer;
+
+  @include lg {
+    display: grid;
+    grid-template-columns: 40px 1fr 140px 100px 120px 120px;
+  }
+
+  &:hover {
+    background-color: var(--lighter-grey);
+  }
+}
+
+.rank-number {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  color: var(--blue);
+}
+
+.release-details {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.artwork {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 0.5rem;
+  object-fit: cover;
+}
+
+.release-title {
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 500;
+  color: var(--blue);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 220px;
+}
+
+.track-count {
+  font-size: 0.75rem;
+  line-height: 1rem;
+  color: var(--brand-primary);
+}
+
+.artist-cell {
+  text-align: center;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--ditto-grey);
+}
+
+.artist-overflow {
+  color: var(--brand-primary);
+}
+
+.stat-cell {
+  text-align: center;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  color: var(--blue);
+
+  &--primary {
+    font-weight: 500;
+  }
+}
+
+.mobile-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0.5rem;
+  border-radius: 0.75rem;
+  transition: background-color 150ms ease;
+  cursor: pointer;
+
+  @include lg {
+    display: none;
+  }
+
+  &:hover {
+    background-color: var(--lighter-grey);
+  }
+}
+
+.mobile-rank {
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 500;
+  color: var(--ditto-grey);
+  width: 1.5rem;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.mobile-artwork {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.5rem;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.mobile-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.mobile-title {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  color: var(--blue);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mobile-track-count {
+  font-size: 0.75rem;
+  line-height: 1rem;
+  color: var(--brand-primary);
+  margin-top: 0.125rem;
+}
+
+.mobile-streams {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  color: var(--blue);
+  flex-shrink: 0;
+}
+</style>

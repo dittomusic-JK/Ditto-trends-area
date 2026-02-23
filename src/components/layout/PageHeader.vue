@@ -1,55 +1,53 @@
 <template>
-  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4 sm:mb-6 w-full max-w-full">
-    <h1 class="font-poppins font-bold text-xl sm:text-3xl lg:text-[42px] tracking-tight text-ditto-text text-center sm:text-left">
+  <div class="page-header">
+    <h1 class="page-header__title">
       Analytics & Trends <span>📈</span>
     </h1>
-    
-    <div class="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
+
+    <div class="page-header__actions">
       <!-- Date Range Picker -->
-      <DateRangePicker 
-        :model-value="dateRange" 
+      <DateRangePicker
+        :model-value="dateRange"
         @update:model-value="$emit('update:dateRange', $event)"
       />
-      
+
       <!-- Type Dropdown - hidden on mobile, shown in filters instead -->
-      <div class="relative hidden sm:block">
-        <button 
+      <div class="type-dropdown">
+        <button
           @click="showTypeDropdown = !showTypeDropdown"
-          class="flex items-center gap-2 px-4 border border-ditto-border-grey rounded-lg text-sm hover:bg-ditto-light-grey transition-colors h-10"
+          class="type-dropdown__trigger"
         >
-          <span class="text-ditto-subtext">Type:</span>
-          <span class="font-medium text-ditto-text">{{ typeLabels[trendsType] }}</span>
-          <IconChevronDown class="w-4 h-4 text-ditto-subtext" />
+          <span class="type-dropdown__label">Type:</span>
+          <span class="type-dropdown__value">{{ typeLabels[trendsType] }}</span>
+          <IconChevronDown class="type-dropdown__icon" />
         </button>
-        
+
         <!-- Dropdown Menu -->
-        <div 
+        <div
           v-if="showTypeDropdown"
-          class="absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-ditto-border-grey py-1 z-50"
+          class="type-dropdown__menu"
         >
           <button
             v-for="(label, type) in typeLabels"
             :key="type"
             @click="selectType(type as TrendsType)"
             :class="[
-              'w-full px-4 py-2 text-left text-sm transition-colors',
-              trendsType === type 
-                ? 'bg-ditto-light-grey text-ditto-purple font-medium' 
-                : 'text-ditto-text hover:bg-ditto-light-grey'
+              'type-dropdown__option',
+              { 'type-dropdown__option--active': trendsType === type }
             ]"
           >
             {{ label }}
           </button>
         </div>
       </div>
-      
+
       <!-- Filters Button -->
-      <button 
+      <button
         @click="$emit('openFilters')"
-        class="flex items-center justify-center gap-2 px-3 py-2 sm:px-4 border border-ditto-border-grey rounded-lg text-sm text-ditto-text hover:bg-ditto-light-grey transition-colors flex-shrink-0"
+        class="filters-button"
       >
-        <IconFilter class="w-4 h-4" />
-        <span class="hidden sm:inline">Filters</span>
+        <IconFilter class="filters-button__icon" />
+        <span class="filters-button__text">Filters</span>
       </button>
     </div>
   </div>
@@ -88,3 +86,161 @@ const selectType = (type: TrendsType) => {
   showTypeDropdown.value = false
 }
 </script>
+
+<style lang="scss" scoped>
+.page-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  width: 100%;
+  max-width: 100%;
+
+  @include sm {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+  }
+
+  &__title {
+    font-family: $font-poppins;
+    font-weight: 700;
+    font-size: 1.25rem;
+    letter-spacing: -0.025em;
+    color: var(--blue);
+    text-align: center;
+
+    @include sm {
+      font-size: 1.875rem;
+      text-align: left;
+    }
+
+    @include lg {
+      font-size: 42px;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+
+    @include sm {
+      gap: 0.75rem;
+      width: auto;
+    }
+  }
+}
+
+.type-dropdown {
+  position: relative;
+  display: none;
+
+  @include sm {
+    display: block;
+  }
+
+  &__trigger {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    height: 2.5rem;
+    border: 1px solid var(--brand-border);
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    transition: background-color 0.15s ease;
+
+    &:hover {
+      background-color: var(--lighter-grey);
+    }
+  }
+
+  &__label {
+    color: var(--ditto-grey);
+  }
+
+  &__value {
+    font-weight: 500;
+    color: var(--blue);
+  }
+
+  &__icon {
+    width: 1rem;
+    height: 1rem;
+    color: var(--ditto-grey);
+  }
+
+  &__menu {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    margin-top: 0.25rem;
+    width: 12rem;
+    background-color: #fff;
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--brand-border);
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+    z-index: 50;
+  }
+
+  &__option {
+    width: 100%;
+    padding: 0.5rem 1rem;
+    text-align: left;
+    font-size: 0.875rem;
+    color: var(--blue);
+    transition: background-color 0.15s ease;
+
+    &:hover {
+      background-color: var(--lighter-grey);
+    }
+
+    &--active {
+      background-color: var(--lighter-grey);
+      color: var(--brand-primary);
+      font-weight: 500;
+    }
+  }
+}
+
+.filters-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--brand-border);
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--blue);
+  flex-shrink: 0;
+  transition: background-color 0.15s ease;
+
+  @include sm {
+    padding: 0.5rem 1rem;
+  }
+
+  &:hover {
+    background-color: var(--lighter-grey);
+  }
+
+  &__icon {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  &__text {
+    display: none;
+
+    @include sm {
+      display: inline;
+    }
+  }
+}
+</style>

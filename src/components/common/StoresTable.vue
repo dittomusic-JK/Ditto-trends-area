@@ -1,38 +1,38 @@
 <template>
-  <div>
-    <h3 class="font-poppins font-bold text-lg sm:text-xl text-ditto-text mb-3 sm:mb-4">Stores</h3>
-    
-    <table class="w-full">
-      <thead class="hidden sm:table-header-group">
-        <tr class="text-xs text-ditto-subtext">
-          <th class="text-left font-normal pb-3 pl-4">Platform</th>
-          <th class="text-center font-normal pb-3">Proportion</th>
-          <th class="text-right font-normal pb-3 pr-4">Streams</th>
+  <div class="stores-table">
+    <h3 class="stores-table__title">Stores</h3>
+
+    <table class="stores-table__table">
+      <thead class="stores-table__thead">
+        <tr class="stores-table__header-row">
+          <th class="stores-table__header-cell stores-table__header-cell--platform">Platform</th>
+          <th class="stores-table__header-cell stores-table__header-cell--proportion">Proportion</th>
+          <th class="stores-table__header-cell stores-table__header-cell--streams">Streams</th>
         </tr>
       </thead>
       <tbody>
-        <tr 
-          v-for="store in stores" 
+        <tr
+          v-for="store in stores"
           :key="store.id"
           @click="handleClick(store.icon)"
           :class="[
-            'border-t border-ditto-border-grey/50 cursor-pointer transition-colors',
-            selectedStore === store.icon ? 'bg-ditto-purple/5' : 'hover:bg-ditto-light-grey'
+            'stores-table__row',
+            { 'stores-table__row--selected': selectedStore === store.icon }
           ]"
         >
-          <td class="py-3 sm:py-4 px-2 sm:pl-4">
-            <div class="flex items-center gap-2 sm:gap-3">
+          <td class="stores-table__cell stores-table__cell--name">
+            <div class="stores-table__store-info">
               <StoreIcon :store="store.icon" />
-              <span :class="['text-sm', selectedStore === store.icon ? 'text-ditto-purple font-medium' : 'text-ditto-text']">{{ store.name }}</span>
+              <span :class="['stores-table__store-name', { 'stores-table__store-name--selected': selectedStore === store.icon }]">{{ store.name }}</span>
             </div>
           </td>
-          <td class="text-center py-3 sm:py-4 hidden sm:table-cell">
-            <span class="text-sm font-medium text-ditto-purple">{{ store.proportion }}%</span>
+          <td class="stores-table__cell stores-table__cell--proportion">
+            <span class="stores-table__proportion-value">{{ store.proportion }}%</span>
           </td>
-          <td class="text-right py-3 sm:py-4 pr-2 sm:pr-4">
-            <div class="flex items-center justify-end gap-2">
-              <span class="text-xs text-ditto-purple font-medium sm:hidden">{{ store.proportion }}%</span>
-              <span class="text-xs sm:text-sm text-ditto-subtext sm:text-ditto-text">{{ formatStreams(store.streams) }}</span>
+          <td class="stores-table__cell stores-table__cell--streams">
+            <div class="stores-table__streams-info">
+              <span class="stores-table__proportion-mobile">{{ store.proportion }}%</span>
+              <span class="stores-table__streams-value">{{ formatStreams(store.streams) }}</span>
             </div>
           </td>
         </tr>
@@ -74,3 +74,153 @@ const handleClick = (storeIcon: string) => {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.stores-table {
+  &__title {
+    font-family: $font-poppins;
+    font-weight: 700;
+    font-size: 1.125rem; // text-lg
+    color: var(--blue);
+    margin-bottom: 0.75rem;
+
+    @include sm {
+      font-size: 1.25rem; // text-xl
+      margin-bottom: 1rem;
+    }
+  }
+
+  &__table {
+    width: 100%;
+  }
+
+  &__thead {
+    display: none;
+
+    @include sm {
+      display: table-header-group;
+    }
+  }
+
+  &__header-row {
+    font-size: 0.75rem;
+    color: var(--ditto-grey);
+  }
+
+  &__header-cell {
+    font-weight: 400;
+    padding-bottom: 0.75rem;
+
+    &--platform {
+      text-align: left;
+      padding-left: 1rem;
+    }
+
+    &--proportion {
+      text-align: center;
+    }
+
+    &--streams {
+      text-align: right;
+      padding-right: 1rem;
+    }
+  }
+
+  &__row {
+    border-top: 1px solid rgba(210, 210, 227, 0.5);
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+
+    &:hover:not(&--selected) {
+      background-color: var(--lighter-grey);
+    }
+
+    &--selected {
+      background-color: rgba(95, 31, 255, 0.05);
+    }
+  }
+
+  &__cell {
+    &--name {
+      padding: 0.75rem 0.5rem;
+
+      @include sm {
+        padding: 1rem 0.5rem 1rem 1rem;
+      }
+    }
+
+    &--proportion {
+      text-align: center;
+      padding: 0.75rem 0;
+      display: none;
+
+      @include sm {
+        display: table-cell;
+        padding: 1rem 0;
+      }
+    }
+
+    &--streams {
+      text-align: right;
+      padding: 0.75rem 0.5rem 0.75rem 0;
+
+      @include sm {
+        padding: 1rem 1rem 1rem 0;
+      }
+    }
+  }
+
+  &__store-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    @include sm {
+      gap: 0.75rem;
+    }
+  }
+
+  &__store-name {
+    font-size: 0.875rem;
+    color: var(--blue);
+
+    &--selected {
+      color: var(--brand-primary);
+      font-weight: 500;
+    }
+  }
+
+  &__proportion-value {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--brand-primary);
+  }
+
+  &__streams-info {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+  }
+
+  &__proportion-mobile {
+    font-size: 0.75rem;
+    color: var(--brand-primary);
+    font-weight: 500;
+
+    @include sm {
+      display: none;
+    }
+  }
+
+  &__streams-value {
+    font-size: 0.75rem;
+    color: var(--ditto-grey);
+
+    @include sm {
+      font-size: 0.875rem;
+      color: var(--blue);
+    }
+  }
+}
+</style>

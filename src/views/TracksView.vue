@@ -1,54 +1,54 @@
 <template>
-  <div>
+  <div class="tracks-view">
     <!-- Desktop Table Header -->
-    <div class="hidden lg:grid grid-cols-[40px_1fr_140px_100px_120px_120px] gap-4 px-4 py-3 text-xs text-ditto-subtext">
+    <div class="tracks-view__header">
       <div></div>
       <div>Details</div>
-      <div class="text-center">Artist</div>
-      <div class="text-center">Streams</div>
-      <div class="text-center">Unique Listeners</div>
-      <div class="text-center">Streams per listener</div>
+      <div class="tracks-view__header-center">Artist</div>
+      <div class="tracks-view__header-center">Streams</div>
+      <div class="tracks-view__header-center">Unique Listeners</div>
+      <div class="tracks-view__header-center">Streams per listener</div>
     </div>
-    
+
     <!-- Table Rows -->
-    <div v-for="track in tracks" :key="track.id" class="mb-1">
+    <div v-for="track in tracks" :key="track.id" class="tracks-view__row-wrapper">
       <!-- Desktop Row -->
-      <div class="hidden lg:grid grid-cols-[40px_1fr_140px_100px_120px_120px] gap-4 px-4 py-4 items-center hover:bg-ditto-light-grey rounded-2xl transition-colors cursor-pointer">
-        <div class="text-lg text-ditto-text">{{ track.rank }}</div>
-        <div class="flex items-center gap-4">
-          <img :src="track.artwork" :alt="track.title" class="w-16 h-16 rounded-lg object-cover" />
+      <div class="tracks-view__desktop-row">
+        <div class="tracks-view__rank">{{ track.rank }}</div>
+        <div class="tracks-view__details">
+          <img :src="track.artwork" :alt="track.title" class="tracks-view__artwork" />
           <div>
-            <p class="text-base font-medium text-ditto-text truncate max-w-[220px]">{{ track.title }}</p>
-            <p class="text-xs text-ditto-subtext truncate">{{ track.releaseName }}</p>
+            <p class="tracks-view__title">{{ track.title }}</p>
+            <p class="tracks-view__release">{{ track.releaseName }}</p>
           </div>
         </div>
-        <div class="text-center text-sm text-ditto-subtext">
+        <div class="tracks-view__artist">
           <template v-if="track.artists && track.artists.length > 1">
             {{ track.artists.slice(0, 2).join(', ') }}
           </template>
           <template v-else>{{ track.artist }}</template>
         </div>
-        <div class="text-center text-base font-medium text-ditto-text">{{ track.streams.toLocaleString() }}</div>
-        <div class="text-center text-base text-ditto-text">{{ track.uniqueListeners.toLocaleString() }}</div>
-        <div class="text-center text-base text-ditto-text">{{ track.streamsPerListener }}</div>
+        <div class="tracks-view__stat tracks-view__stat--bold">{{ track.streams.toLocaleString() }}</div>
+        <div class="tracks-view__stat">{{ track.uniqueListeners.toLocaleString() }}</div>
+        <div class="tracks-view__stat">{{ track.streamsPerListener }}</div>
       </div>
-      
+
       <!-- Mobile Row -->
-      <div class="lg:hidden flex items-center gap-3 px-2 py-3 hover:bg-ditto-light-grey rounded-xl transition-colors cursor-pointer">
+      <div class="tracks-view__mobile-row">
         <!-- Rank -->
-        <span class="text-base font-medium text-ditto-subtext w-6 text-center flex-shrink-0">{{ track.rank }}</span>
-        
+        <span class="tracks-view__mobile-rank">{{ track.rank }}</span>
+
         <!-- Artwork -->
-        <img :src="track.artwork" :alt="track.title" class="w-12 h-12 rounded-lg object-cover flex-shrink-0" />
-        
+        <img :src="track.artwork" :alt="track.title" class="tracks-view__mobile-artwork" />
+
         <!-- Info -->
-        <div class="flex-1 min-w-0">
-          <p class="text-sm font-medium text-ditto-text truncate">{{ track.title }}</p>
-          <p class="text-xs text-ditto-subtext truncate mt-0.5">{{ track.artist }}</p>
+        <div class="tracks-view__mobile-info">
+          <p class="tracks-view__mobile-title">{{ track.title }}</p>
+          <p class="tracks-view__mobile-artist">{{ track.artist }}</p>
         </div>
-        
+
         <!-- Streams -->
-        <span class="text-sm font-medium text-ditto-text flex-shrink-0">{{ formatShort(track.streams) }}</span>
+        <span class="tracks-view__mobile-streams">{{ formatShort(track.streams) }}</span>
       </div>
     </div>
   </div>
@@ -67,3 +67,165 @@ const formatShort = (num: number): string => {
   return num.toLocaleString()
 }
 </script>
+
+<style lang="scss" scoped>
+.tracks-view {
+  &__header {
+    display: none;
+    font-size: 0.75rem;
+    color: var(--ditto-grey);
+    padding: 0.75rem 1rem;
+
+    @include lg {
+      display: grid;
+      grid-template-columns: 40px 1fr 140px 100px 120px 120px;
+      gap: 1rem;
+    }
+  }
+
+  &__header-center {
+    text-align: center;
+  }
+
+  &__row-wrapper {
+    margin-bottom: 0.25rem;
+  }
+
+  &__desktop-row {
+    display: none;
+    align-items: center;
+    padding: 1rem;
+    gap: 1rem;
+    border-radius: 1rem;
+    transition: background-color 0.15s ease;
+    cursor: pointer;
+
+    &:hover {
+      background-color: var(--lighter-grey);
+    }
+
+    @include lg {
+      display: grid;
+      grid-template-columns: 40px 1fr 140px 100px 120px 120px;
+    }
+  }
+
+  &__rank {
+    font-size: 1.125rem;
+    color: var(--blue);
+  }
+
+  &__details {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  &__artwork {
+    width: 4rem;
+    height: 4rem;
+    border-radius: 0.5rem;
+    object-fit: cover;
+  }
+
+  &__title {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--blue);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 220px;
+  }
+
+  &__release {
+    font-size: 0.75rem;
+    color: var(--ditto-grey);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__artist {
+    text-align: center;
+    font-size: 0.875rem;
+    color: var(--ditto-grey);
+  }
+
+  &__stat {
+    text-align: center;
+    font-size: 1rem;
+    color: var(--blue);
+
+    &--bold {
+      font-weight: 500;
+    }
+  }
+
+  // Mobile row
+  &__mobile-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 0.5rem;
+    border-radius: 0.75rem;
+    transition: background-color 0.15s ease;
+    cursor: pointer;
+
+    &:hover {
+      background-color: var(--lighter-grey);
+    }
+
+    @include lg {
+      display: none;
+    }
+  }
+
+  &__mobile-rank {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--ditto-grey);
+    width: 1.5rem;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  &__mobile-artwork {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 0.5rem;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+
+  &__mobile-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__mobile-title {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--blue);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__mobile-artist {
+    font-size: 0.75rem;
+    color: var(--ditto-grey);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-top: 0.125rem;
+  }
+
+  &__mobile-streams {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--blue);
+    flex-shrink: 0;
+  }
+}
+</style>

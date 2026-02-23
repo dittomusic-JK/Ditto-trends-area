@@ -1,36 +1,36 @@
 <template>
-  <div class="flex-1 px-6 py-4 border border-ditto-border-grey rounded-xl bg-white">
-    <div class="flex items-center gap-3">
+  <div class="stats-card">
+    <div class="stats-card__row">
       <!-- Icon -->
-      <div class="w-10 h-10 flex items-center justify-center">
-        <img 
-          v-if="stat.iconType === 'broadcast'" 
-          src="/img/totalstreams.svg" 
-          alt="Total Streams" 
-          class="w-8 h-auto"
+      <div class="stats-card__icon-wrapper">
+        <img
+          v-if="stat.iconType === 'broadcast'"
+          src="/img/totalstreams.svg"
+          alt="Total Streams"
+          class="stats-card__icon"
         />
-        <img 
-          v-else-if="stat.iconType === 'clock'" 
-          src="/img/dailyaverage.svg" 
-          alt="Daily Average" 
-          class="w-8 h-auto"
+        <img
+          v-else-if="stat.iconType === 'clock'"
+          src="/img/dailyaverage.svg"
+          alt="Daily Average"
+          class="stats-card__icon"
         />
-        <img 
-          v-else-if="stat.iconType === 'store' && stat.storeIcon" 
-          :src="getStoreIconSrc(stat.storeIcon)" 
+        <img
+          v-else-if="stat.iconType === 'store' && stat.storeIcon"
+          :src="getStoreIconSrc(stat.storeIcon)"
           :alt="stat.storeName || 'Store'"
-          class="w-8 h-8 rounded"
+          class="stats-card__icon stats-card__icon--store"
         />
       </div>
-      
+
       <!-- Content -->
-      <div class="flex-1">
-        <p class="text-xs text-ditto-subtext mb-0.5">{{ stat.title }}</p>
-        <div class="flex items-center gap-2">
-          <span class="text-2xl font-semibold text-ditto-text">{{ stat.value }}</span>
-          <span 
-            v-if="stat.change" 
-            class="text-xs font-medium px-1.5 py-0.5 rounded-full bg-success/20 text-success"
+      <div class="stats-card__content">
+        <p class="stats-card__title">{{ stat.title }}</p>
+        <div class="stats-card__value-row">
+          <span class="stats-card__value">{{ stat.value }}</span>
+          <span
+            v-if="stat.change"
+            class="stats-card__change"
           >
             +{{ stat.change }}%
           </span>
@@ -64,3 +64,71 @@ const getStoreIconSrc = (iconName: string): string => {
   return storeIconMap[iconName] || ''
 }
 </script>
+
+<style lang="scss" scoped>
+.stats-card {
+  flex: 1;
+  padding: 1rem 1.5rem;
+  border: 1px solid var(--brand-border);
+  border-radius: 0.75rem;
+  background-color: white;
+
+  &__row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  &__icon-wrapper {
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__icon {
+    width: 2rem;
+    height: auto;
+
+    &--store {
+      height: 2rem;
+      border-radius: 0.25rem;
+    }
+  }
+
+  &__content {
+    flex: 1;
+  }
+
+  &__title {
+    font-size: 0.75rem;
+    line-height: 1rem;
+    color: var(--ditto-grey);
+    margin-bottom: 0.125rem;
+  }
+
+  &__value-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  &__value {
+    font-size: 1.5rem;
+    line-height: 2rem;
+    font-weight: 600;
+    color: var(--blue);
+  }
+
+  &__change {
+    font-size: 0.75rem;
+    line-height: 1rem;
+    font-weight: 500;
+    padding: 0.125rem 0.375rem;
+    border-radius: 9999px;
+    background-color: rgba(0, 231, 133, 0.2);
+    color: var(--success);
+  }
+}
+</style>

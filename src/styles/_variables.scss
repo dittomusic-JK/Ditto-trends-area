@@ -1,0 +1,53 @@
+// ============================================
+// Breakpoints
+// Note: Ditto framework uses 601/961/1081/1261/1361
+// We use slightly different values for this app's layout
+// ============================================
+$breakpoint-sm: 640px;
+$breakpoint-md: 768px;
+$breakpoint-lg: 1024px;
+
+// ============================================
+// Font families (matching framework --brand-font-*)
+// ============================================
+$font-satoshi: 'Satoshi', Helvetica, Arial, sans-serif;
+$font-poppins: 'Poppins', Helvetica, Arial, sans-serif;
+
+// ============================================
+// Font sizes
+// ============================================
+$text-h1: 2.625rem;
+$text-h2: 1.75rem;
+$text-h3: 1.5rem;
+$text-h4: 1.125rem;
+$text-body: 1rem;
+$text-sm: 0.875rem;
+$text-xs: 0.75rem;
+
+// ============================================
+// Border radius (matching framework --button-border-radius)
+// ============================================
+$radius-button: 2rem;
+$radius-card: 1rem;
+$radius-lg: 0.75rem;
+
+// ============================================
+// Box shadow
+// ============================================
+$shadow-card: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.1);
+
+// ============================================
+// Chart colors (direct hex, not CSS vars)
+// ============================================
+$chart-purple: #8640f4;
+$chart-coral: #EF4444;
+
+// ============================================
+// Framework color SCSS helpers
+// Convenience aliases for use in rgba() calculations
+// where CSS var() can't be used
+// ============================================
+$color-brand-primary: #5f1fff;
+$color-purple: #8640f4;
+$color-text-fill: #101f3c;
+$color-border-grey: #d2d2e3;

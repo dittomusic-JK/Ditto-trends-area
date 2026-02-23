@@ -1,20 +1,20 @@
 <template>
   <!-- Mobile Header -->
-  <header class="md:hidden h-16 flex items-center justify-between px-4 border-b border-ditto-border-grey bg-white">
+  <header class="mobile-header">
     <!-- Shop Icon -->
-    <button class="w-10 h-10 flex items-center justify-center text-ditto-text">
+    <button class="mobile-header__icon-btn">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
         <line x1="3" y1="6" x2="21" y2="6"/>
         <path d="M16 10a4 4 0 01-8 0"/>
       </svg>
     </button>
-    
+
     <!-- Centered Logo -->
-    <img src="/img/logo-2048-black.svg" alt="Ditto" class="h-7" />
-    
+    <img src="/img/logo-2048-black.svg" alt="Ditto" class="mobile-header__logo" />
+
     <!-- Hamburger Menu -->
-    <button class="w-10 h-10 flex items-center justify-center text-ditto-text">
+    <button class="mobile-header__icon-btn">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <line x1="3" y1="6" x2="21" y2="6"/>
         <line x1="3" y1="12" x2="21" y2="12"/>
@@ -22,51 +22,51 @@
       </svg>
     </button>
   </header>
-  
+
   <!-- Desktop Header -->
-  <header class="hidden md:flex h-[74px] items-center justify-between px-6 border-b border-ditto-border-grey bg-white">
+  <header class="desktop-header">
     <!-- Logo and Nav -->
-    <div class="flex items-center gap-8">
-      <img src="/img/logo-2048-black.svg" alt="Ditto" class="h-6" />
-      
+    <div class="desktop-header__left">
+      <img src="/img/logo-2048-black.svg" alt="Ditto" class="desktop-header__logo" />
+
       <!-- Nav Items -->
-      <nav class="flex items-center gap-6">
-        <a 
-          v-for="item in navItems" 
+      <nav class="desktop-nav">
+        <a
+          v-for="item in navItems"
           :key="item.id"
           :href="item.href"
           :class="[
-            'text-sm font-medium transition-colors',
-            item.active ? 'text-ditto-purple' : 'text-ditto-text hover:text-ditto-purple'
+            'desktop-nav__link',
+            { 'desktop-nav__link--active': item.active }
           ]"
         >
           {{ item.label }}
         </a>
       </nav>
     </div>
-    
+
     <!-- Right side actions -->
-    <div class="flex items-center gap-4">
-      <button class="px-4 py-1.5 bg-success text-ditto-black text-sm font-medium rounded-full hover:opacity-90 transition-opacity">
+    <div class="desktop-header__actions">
+      <button class="btn-upgrade">
         Upgrade
       </button>
-      
-      <button class="w-9 h-9 flex items-center justify-center text-ditto-subtext hover:text-ditto-text transition-colors">
+
+      <button class="action-icon-btn">
         <IconHelp />
       </button>
-      
-      <button class="w-9 h-9 flex items-center justify-center text-ditto-subtext hover:text-ditto-text transition-colors">
+
+      <button class="action-icon-btn">
         <IconCalendar />
       </button>
-      
-      <button class="px-4 py-1.5 bg-ditto-purple text-white text-sm font-medium rounded-full flex items-center gap-2 hover:opacity-90 transition-opacity">
-        <span>🎵</span>
+
+      <button class="btn-create">
+        <span>&#127925;</span>
         Create
       </button>
-      
+
       <!-- User Avatar -->
-      <button class="w-9 h-9 rounded-full bg-ditto-light-grey overflow-hidden flex items-center justify-center">
-        <img src="/img/avatar.jpg" alt="User" class="w-full h-full object-cover" />
+      <button class="avatar-btn">
+        <img src="/img/avatar.jpg" alt="User" class="avatar-btn__img" />
       </button>
     </div>
   </header>
@@ -85,3 +85,173 @@ const navItems = [
   { id: 'publishing', label: 'Publishing', href: '#', active: false },
 ]
 </script>
+
+<style lang="scss" scoped>
+// ──────────────────────────────────────
+// Mobile Header
+// ──────────────────────────────────────
+.mobile-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 4rem; // h-16
+  padding: 0 1rem;
+  border-bottom: 1px solid var(--brand-border);
+  background-color: #fff;
+
+  @include md {
+    display: none;
+  }
+
+  &__icon-btn {
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--blue);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  &__logo {
+    height: 1.75rem; // h-7
+  }
+}
+
+// ──────────────────────────────────────
+// Desktop Header
+// ──────────────────────────────────────
+.desktop-header {
+  display: none;
+
+  @include md {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 74px;
+    padding: 0 1.5rem;
+    border-bottom: 1px solid var(--brand-border);
+    background-color: #fff;
+  }
+
+  &__left {
+    display: flex;
+    align-items: center;
+    gap: 2rem; // gap-8
+  }
+
+  &__logo {
+    height: 1.5rem; // h-6
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem; // gap-4
+  }
+}
+
+// ──────────────────────────────────────
+// Desktop Navigation Links
+// ──────────────────────────────────────
+.desktop-nav {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem; // gap-6
+
+  &__link {
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: color 0.15s ease;
+    color: var(--blue);
+    text-decoration: none;
+
+    &:hover {
+      color: var(--brand-primary);
+    }
+
+    &--active {
+      color: var(--brand-primary);
+    }
+  }
+}
+
+// ──────────────────────────────────────
+// Action Buttons (right side)
+// ──────────────────────────────────────
+.btn-upgrade {
+  padding: 0.375rem 1rem; // py-1.5 px-4
+  background-color: var(--success);
+  color: var(--ditto-black);
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 9999px;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+
+  &:hover {
+    opacity: 0.9;
+  }
+}
+
+.action-icon-btn {
+  width: 2.25rem; // w-9
+  height: 2.25rem; // h-9
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ditto-grey);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.15s ease;
+
+  &:hover {
+    color: var(--blue);
+  }
+}
+
+.btn-create {
+  padding: 0.375rem 1rem; // py-1.5 px-4
+  background-color: var(--brand-primary);
+  color: #fff;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 9999px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; // gap-2
+  transition: opacity 0.15s ease;
+
+  &:hover {
+    opacity: 0.9;
+  }
+}
+
+.avatar-btn {
+  width: 2.25rem; // w-9
+  height: 2.25rem; // h-9
+  border-radius: 9999px;
+  background-color: var(--lighter-grey);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+
+  &__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+</style>
