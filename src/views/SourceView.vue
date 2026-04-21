@@ -4,7 +4,7 @@
     <div class="hidden lg:grid grid-cols-[40px_1fr_120px_100px] gap-4 px-4 py-3 text-xs text-ditto-subtext">
       <div></div>
       <div>Source</div>
-      <div class="text-center">Streams</div>
+      <div class="text-center">{{ isDownloads ? 'Downloads' : 'Streams' }}</div>
       <div class="text-center">Proportion</div>
     </div>
     
@@ -26,7 +26,7 @@
           </div>
           <p class="text-base font-medium text-ditto-text">{{ source.name }}</p>
         </div>
-        <div class="text-center text-base font-medium text-ditto-text">{{ source.streams.toLocaleString() }}</div>
+        <div class="text-center text-base font-medium text-ditto-text">{{ isDownloads ? Math.round(source.streams * 0.03).toLocaleString() : source.streams.toLocaleString() }}</div>
         <div class="text-center text-base text-ditto-text">{{ source.proportion }}%</div>
       </div>
       
@@ -53,20 +53,23 @@
           <p class="text-xs text-ditto-subtext mt-0.5">{{ source.proportion }}%</p>
         </div>
         
-        <!-- Streams -->
-        <span class="text-sm font-medium text-ditto-text flex-shrink-0">{{ formatShort(source.streams) }}</span>
+        <!-- Streams/Downloads -->
+        <span class="text-sm font-medium text-ditto-text flex-shrink-0">{{ isDownloads ? formatShort(Math.round(source.streams * 0.03)) : formatShort(source.streams) }}</span>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { h } from 'vue'
-import type { SourceViewData } from '../types'
+import { h, computed } from 'vue'
+import type { SourceViewData, TrendsType } from '../types'
 
-defineProps<{
+const props = defineProps<{
   data: SourceViewData
+  trendsType?: TrendsType
 }>()
+
+const isDownloads = computed(() => props.trendsType === 'download')
 
 const formatShort = (num: number): string => {
   if (num >= 1000000) return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M'

@@ -44,10 +44,12 @@
           <ReleasesView 
             v-else-if="activeView === 'releases'" 
             :releases="releasesData" 
+            :trends-type="trendsType"
           />
           <TracksView 
             v-else-if="activeView === 'tracks'" 
             :tracks="tracksData" 
+            :trends-type="trendsType"
           />
           <PlaylistsView 
             v-else-if="activeView === 'playlists'" 
@@ -64,6 +66,7 @@
           <SourceView 
             v-else-if="activeView === 'source'" 
             :data="sourceData" 
+            :trends-type="trendsType"
           />
         </div>
       </div>
