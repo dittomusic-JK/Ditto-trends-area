@@ -167,3 +167,75 @@ export interface SourceViewData {
   sources: SourceData[]
   totalStreams: number
 }
+
+// Top-level app section
+export type AppSection = 'analytics' | 'royalties'
+
+// Royalties types
+export type RoyaltiesSectionType = 'sales' | 'collaborations' | 'reports' | 'payouts'
+export type RoyaltiesViewType = 'overview' | 'releases' | 'tracks' | 'stores' | 'countries'
+
+export interface RoyaltiesStatsCard {
+  id: string
+  title: string
+  value: string
+  change?: number
+  icon: 'earnings' | 'average' | 'store' | 'streams'
+  storeIcon?: string
+  storeName?: string
+}
+
+export interface EarningsDataPoint {
+  month: string
+  total: number
+  streams: number
+  downloads: number
+}
+
+export interface StoreEarnings {
+  id: string
+  name: string
+  icon: string
+  earnings: number
+  proportion: number
+  color: string
+}
+
+export interface CountryEarnings {
+  rank: number
+  country: string
+  code: string
+  earnings: number
+  proportion: number
+}
+
+export interface SalesBreakdown {
+  type: string
+  sales: number
+  earnings: number
+  icon: string
+}
+
+export interface ReleaseEarnings {
+  id: string
+  rank: number
+  title: string
+  artwork: string
+  artist: string
+  trackCount: number
+  streams: number
+  downloads: number
+  earnings: number
+}
+
+export interface TrackEarnings {
+  id: string
+  rank: number
+  title: string
+  artwork: string
+  artist: string
+  releaseName: string
+  streams: number
+  downloads: number
+  earnings: number
+}

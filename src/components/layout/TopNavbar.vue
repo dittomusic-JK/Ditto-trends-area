@@ -31,17 +31,17 @@
       
       <!-- Nav Items -->
       <nav class="flex items-center gap-6">
-        <a 
-          v-for="item in navItems" 
+        <button 
+          v-for="item in computedNavItems" 
           :key="item.id"
-          :href="item.href"
+          @click="item.action ? item.action() : null"
           :class="[
             'text-sm font-medium transition-colors',
             item.active ? 'text-ditto-purple' : 'text-ditto-text hover:text-ditto-purple'
           ]"
         >
           {{ item.label }}
-        </a>
+        </button>
       </nav>
     </div>
     
@@ -73,15 +73,25 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { IconHelp, IconCalendar } from '../icons'
+import type { AppSection } from '../../types'
 
-const navItems = [
-  { id: 'artists', label: 'Artists', href: '#', active: false },
-  { id: 'music', label: 'Music', href: '#', active: true },
-  { id: 'videos', label: 'Videos', href: '#', active: false },
-  { id: 'royalties', label: 'Royalties', href: '#', active: false },
-  { id: 'analytics', label: 'Analytics', href: '#', active: false },
-  { id: 'promotion', label: 'Promotion', href: '#', active: false },
-  { id: 'publishing', label: 'Publishing', href: '#', active: false },
-]
+const props = defineProps<{
+  activeSection?: AppSection
+}>()
+
+const emit = defineEmits<{
+  (e: 'navigate', section: AppSection): void
+}>()
+
+const computedNavItems = computed(() => [
+  { id: 'artists', label: 'Artists', active: false, action: null },
+  { id: 'music', label: 'Music', active: false, action: null },
+  { id: 'videos', label: 'Videos', active: false, action: null },
+  { id: 'royalties', label: 'Royalties', active: props.activeSection === 'royalties', action: () => emit('navigate', 'royalties') },
+  { id: 'analytics', label: 'Analytics', active: props.activeSection === 'analytics', action: () => emit('navigate', 'analytics') },
+  { id: 'promotion', label: 'Promotion', active: false, action: null },
+  { id: 'publishing', label: 'Publishing', active: false, action: null },
+])
 </script>

@@ -1,10 +1,10 @@
 <template>
   <div class="min-h-screen bg-white overflow-hidden w-full max-w-full" data-ditto-colors-light-dark-mode="light">
     <!-- Top Navigation -->
-    <TopNavbar />
+    <TopNavbar :active-section="appSection" @navigate="appSection = $event" />
     
-    <!-- Main Content -->
-    <div class="px-4 py-4 sm:px-6 sm:py-6 lg:px-16 lg:py-8 w-full max-w-full box-border">
+    <!-- Analytics Section -->
+    <div v-if="appSection === 'analytics'" class="px-4 py-4 sm:px-6 sm:py-6 lg:px-16 lg:py-8 w-full max-w-full box-border">
       <!-- Page Header -->
       <PageHeader 
         :date-range="dateRange" 
@@ -81,12 +81,15 @@
       @apply="applyFilters"
       @update:data-type="updateTrendsType"
     />
+
+    <!-- Royalties Section -->
+    <RoyaltiesDashboard v-if="appSection === 'royalties'" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import type { ViewType, Filter, DateRange, MetricsData, TrendsType } from './types'
+import type { ViewType, Filter, DateRange, MetricsData, TrendsType, AppSection } from './types'
 
 // Layout Components
 import TopNavbar from './components/layout/TopNavbar.vue'
@@ -94,6 +97,9 @@ import LeftSidebar from './components/layout/LeftSidebar.vue'
 import PageHeader from './components/layout/PageHeader.vue'
 import FilterChip from './components/layout/FilterChip.vue'
 import FiltersPanel from './components/common/FiltersPanel.vue'
+
+// Royalties Dashboard
+import RoyaltiesDashboard from './views/royalties/RoyaltiesDashboard.vue'
 
 // View Components
 import MetricsView from './views/MetricsView.vue'
@@ -115,6 +121,7 @@ import {
 } from './data/mockData'
 
 // State
+const appSection = ref<AppSection>('analytics')
 const activeView = ref<ViewType>('metrics')
 const showFiltersModal = ref(false)
 
