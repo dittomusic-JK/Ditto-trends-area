@@ -15,7 +15,12 @@
       <div class="relative hidden sm:block">
         <button 
           @click="showTypeDropdown = !showTypeDropdown"
-          class="flex items-center gap-2 px-4 border border-ditto-border-grey rounded-lg text-sm hover:bg-ditto-light-grey transition-colors h-10"
+          :class="[
+            'flex items-center gap-2 px-4 border rounded-lg text-sm hover:bg-ditto-light-grey transition-all h-10',
+            highlightTypeDropdown 
+              ? 'border-ditto-purple ring-2 ring-ditto-purple/30 animate-highlight-pulse' 
+              : 'border-ditto-border-grey'
+          ]"
         >
           <span class="text-ditto-subtext">Type:</span>
           <span class="font-medium text-ditto-text">{{ typeLabels[trendsType] }}</span>
@@ -65,6 +70,7 @@ defineProps<{
   dateRange: DateRange
   trendsType: TrendsType
   showStreamsDropdown?: boolean
+  highlightTypeDropdown?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -88,3 +94,13 @@ const selectType = (type: TrendsType) => {
   showTypeDropdown.value = false
 }
 </script>
+
+<style scoped>
+@keyframes highlight-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(124, 58, 237, 0.3); }
+  50% { box-shadow: 0 0 0 6px rgba(124, 58, 237, 0); }
+}
+.animate-highlight-pulse {
+  animation: highlight-pulse 2s ease-in-out infinite;
+}
+</style>

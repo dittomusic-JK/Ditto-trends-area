@@ -1,7 +1,28 @@
 <template>
   <div class="space-y-4 lg:space-y-8">
-    <!-- Top Row: Gender + Age Range -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8">
+    <!-- Downloads Unavailable Message -->
+    <div v-if="isDownloadsSelected" class="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 lg:p-12 flex flex-col items-center justify-center text-center">
+      <div class="w-14 h-14 rounded-full bg-ditto-purple/10 flex items-center justify-center mb-5">
+        <svg class="w-7 h-7 text-ditto-purple" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <p class="text-lg font-semibold text-ditto-text mb-2">Downloads data is not available for Audience</p>
+      <p class="text-sm text-ditto-subtext max-w-sm mb-5">Gender, Age Range and City analytics are only supported for Streams.</p>
+      <button 
+        @click="$emit('switchToStreams')"
+        class="inline-flex items-center gap-2 px-5 py-2.5 bg-ditto-purple text-white text-sm font-medium rounded-full hover:bg-ditto-purple/90 transition-colors"
+      >
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
+        </svg>
+        Switch to Streams
+      </button>
+    </div>
+
+    <!-- Top Row: Gender + Age Range (hidden for downloads) -->
+    <div v-if="!isDownloadsSelected" class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8">
       <!-- Gender Section -->
       <div class="bg-white rounded-2xl p-4 lg:p-6 shadow-sm border border-gray-100">
         <h3 class="font-poppins font-bold text-lg lg:text-xl text-ditto-text mb-4">Gender</h3>
@@ -83,8 +104,8 @@
       </div>
     </div>
     
-    <!-- World Map Section (hidden on mobile - not touch-friendly) -->
-    <div class="hidden lg:block bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+    <!-- World Map Section (hidden on mobile and hidden for downloads) -->
+    <div v-if="!isDownloadsSelected" class="hidden lg:block bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
       <div class="flex items-center justify-between mb-6">
         <h3 class="font-poppins font-bold text-xl text-ditto-text">Geographic Distribution</h3>
         <div class="flex items-center gap-3 text-xs text-ditto-subtext">
@@ -129,7 +150,7 @@
     </div>
     
     <!-- Bottom Row: Countries + Cities -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8">
+    <div :class="isDownloadsSelected ? '' : 'grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8'">
       <!-- Country Ranking -->
       <div class="bg-white rounded-2xl p-4 lg:p-6 shadow-sm border border-gray-100">
         <div class="flex items-center justify-between mb-4">
@@ -171,8 +192,8 @@
         </div>
       </div>
       
-      <!-- City Ranking -->
-      <div class="bg-white rounded-2xl p-4 lg:p-6 shadow-sm border border-gray-100">
+      <!-- City Ranking (hidden for downloads) -->
+      <div v-if="!isDownloadsSelected" class="bg-white rounded-2xl p-4 lg:p-6 shadow-sm border border-gray-100">
         <div class="flex items-center justify-between mb-4">
           <h3 class="font-poppins font-bold text-lg lg:text-xl text-ditto-text">Top Cities</h3>
           <button 
@@ -222,13 +243,20 @@ import {
 } from 'chart.js'
 import { feature } from 'topojson-client'
 import { geoNaturalEarth1, geoPath } from 'd3-geo'
-import type { AudienceData, CountryData } from '../types'
+import type { AudienceData, CountryData, TrendsType } from '../types'
 
 ChartJS.register(ArcElement, LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Legend, Filler)
 
 const props = defineProps<{
   data: AudienceData
+  trendsType?: TrendsType
 }>()
+
+defineEmits<{
+  (e: 'switchToStreams'): void
+}>()
+
+const isDownloadsSelected = computed(() => props.trendsType === 'download')
 
 const formatShort = (num: number): string => {
   if (num >= 1000000) return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M'

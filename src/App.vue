@@ -9,6 +9,7 @@
       <PageHeader 
         :date-range="dateRange" 
         :trends-type="trendsType"
+        :highlight-type-dropdown="showTypeHighlight"
         @open-filters="showFiltersModal = true"
         @update:date-range="updateDateRange"
         @update:trends-type="updateTrendsType"
@@ -51,10 +52,14 @@
           <PlaylistsView 
             v-else-if="activeView === 'playlists'" 
             :playlists="playlistsData" 
+            :trends-type="trendsType"
+            @switch-to-streams="updateTrendsType('streaming')"
           />
           <AudienceView 
             v-else-if="activeView === 'audience'" 
             :data="audienceData" 
+            :trends-type="trendsType"
+            @switch-to-streams="updateTrendsType('streaming')"
           />
           <SourceView 
             v-else-if="activeView === 'source'" 
@@ -134,6 +139,11 @@ const activeFilters = ref<Filter[]>([])
 
 // Trends type - controls data context across all views
 const trendsType = ref<TrendsType>('streaming')
+
+// Highlight the Type dropdown when downloads is selected on tabs that don't support it
+const showTypeHighlight = computed(() => {
+  return trendsType.value === 'download' && (activeView.value === 'playlists' || activeView.value === 'audience')
+})
 
 // Parse date string (DD/MM/YYYY) to Date object
 const parseDate = (dateStr: string): Date => {
