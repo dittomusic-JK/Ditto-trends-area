@@ -86,7 +86,7 @@
     <RoyaltiesDashboard v-if="appSection === 'royalties'" />
 
     <!-- Music Section -->
-    <MusicView v-if="appSection === 'music'" @navigate="appSection = $event" @navigate-view="handleNavigateView" />
+    <MusicView v-if="appSection === 'music'" @navigate="(s: string) => appSection = s as AppSection" @navigate-view="(s: string, v: string) => handleNavigateView(s as AppSection, v)" />
 
     <!-- Artists Section -->
     <ArtistsDashboard v-if="appSection === 'artists'" />
