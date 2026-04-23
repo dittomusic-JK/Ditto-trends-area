@@ -181,7 +181,7 @@
 
 <script setup lang="ts">
 import { computed, ref, reactive, onMounted, onUnmounted, watch, nextTick } from 'vue'
-import { IconHelp, IconCalendar } from '../icons'
+// Icons loaded as img tags from /img/nav-*.svg
 import type { AppSection } from '../../types'
 
 const props = defineProps<{
