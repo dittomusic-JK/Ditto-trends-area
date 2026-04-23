@@ -16,6 +16,18 @@
 
     <!-- Overview -->
     <div v-if="activeTab === 'overview'" class="space-y-6">
+      <!-- Upgrade Banner -->
+      <div class="rounded-2xl p-5 lg:p-6 border border-ditto-purple/20 bg-gradient-to-r from-ditto-purple/5 to-white flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <p class="text-sm font-semibold text-ditto-text mb-1">Claim up to 20% more royalties</p>
+          <p class="text-xs text-ditto-subtext">Register tracks from your release library to claim publishing royalties. Access exclusive sync opportunities to get your music on TV, movies and more.</p>
+        </div>
+        <div class="flex items-center gap-2 flex-shrink-0">
+          <button class="px-4 py-2 bg-ditto-purple text-white text-sm font-medium rounded-full hover:bg-ditto-purple/90 transition-colors">Pick a Plan</button>
+          <button class="px-4 py-2 text-sm font-medium text-ditto-purple hover:underline">Find out more</button>
+        </div>
+      </div>
+
       <!-- Stats -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div class="bg-white rounded-2xl border border-gray-200 p-5 relative overflow-hidden">
@@ -35,7 +47,7 @@
         <!-- Register New Work -->
         <div class="bg-white rounded-2xl border border-gray-200 p-6 hover:shadow-md transition-shadow cursor-pointer group">
           <img src="/img/pub-registernewwork.svg" alt="" class="w-12 h-12 mb-4" />
-          <h3 class="font-poppins font-bold text-base text-ditto-text mb-1">Register a new Song</h3>
+          <h3 class="font-poppins font-bold text-base text-ditto-text mb-1">Register a new<br/><span class="text-ditto-purple">Musical Work.</span></h3>
           <p class="text-xs text-ditto-subtext mb-4">Add & register tracks from your release library to claim publishing royalties.</p>
           <span class="text-sm font-medium text-ditto-purple group-hover:underline">Register Song →</span>
         </div>
@@ -59,8 +71,8 @@
 
       <!-- Learn More -->
       <div>
-        <h3 class="font-poppins font-bold text-lg text-ditto-text mb-4">Learn more about Publishing</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <h3 class="font-poppins font-bold text-lg text-ditto-text mb-4">Learn more about Music Publishing</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <a href="#" class="bg-white rounded-2xl border border-gray-200 p-5 hover:shadow-md transition-shadow group">
             <p class="text-sm font-semibold text-ditto-text group-hover:text-ditto-purple transition-colors">What is Sync Licensing? Get Your Music in Movies, TV & More</p>
             <p class="text-xs text-ditto-subtext mt-2">Get Your Music in Movies, TV & More with Sync Licensing.</p>
@@ -68,6 +80,10 @@
           <a href="#" class="bg-white rounded-2xl border border-gray-200 p-5 hover:shadow-md transition-shadow group">
             <p class="text-sm font-semibold text-ditto-text group-hover:text-ditto-purple transition-colors">What Are Mechanical Royalties? Explained for Musicians</p>
             <p class="text-xs text-ditto-subtext mt-2">Are you claiming all the mechanical royalties you're owed?</p>
+          </a>
+          <a href="#" class="bg-white rounded-2xl border border-gray-200 p-5 hover:shadow-md transition-shadow group">
+            <p class="text-sm font-semibold text-ditto-text group-hover:text-ditto-purple transition-colors">Music Publishing Explained for Musicians</p>
+            <p class="text-xs text-ditto-subtext mt-2">Just what exactly is music publishing? The collection and payment of royalties whenever a song is “used”.</p>
           </a>
         </div>
       </div>

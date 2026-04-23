@@ -62,10 +62,16 @@
         <RoyaltiesSidebar :active-view="activeView" @navigate="setActiveView" />
         <div class="flex-1 min-w-0">
           <OverviewView v-if="activeView === 'overview'" :stats="filteredStats" :earnings="filteredEarnings" :stores="storesData" :countries="countriesData" :breakdown="breakdownData" @navigate-to-countries="activeView = 'countries'" />
-          <ReleasesView v-else-if="activeView === 'releases'" :releases="filteredReleases" />
-          <TracksView v-else-if="activeView === 'tracks'" :tracks="filteredTracks" />
-          <StoresView v-else-if="activeView === 'stores'" :stores="storesData" />
-          <CountriesView v-else-if="activeView === 'countries'" :countries="countriesData" />
+          <template v-else>
+            <button @click="activeView = 'overview'" class="flex items-center gap-1.5 text-sm text-ditto-purple hover:text-ditto-purple/80 mb-4 transition-colors">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Back to Overview
+            </button>
+            <ReleasesView v-if="activeView === 'releases'" :releases="filteredReleases" />
+            <TracksView v-else-if="activeView === 'tracks'" :tracks="filteredTracks" />
+            <StoresView v-else-if="activeView === 'stores'" :stores="storesData" />
+            <CountriesView v-else-if="activeView === 'countries'" :countries="countriesData" />
+          </template>
         </div>
       </div>
     </template>

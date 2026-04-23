@@ -50,11 +50,11 @@
               <circle cx="12" cy="12" r="10"/>
               <path d="M12 16v-4M12 8h.01" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
-            Why am I only seeing up to January?
+            Why am I only seeing up to December?
           </button>
           <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-72 p-3 bg-ditto-text text-white text-xs leading-relaxed rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
             <p class="font-medium mb-1">Store reporting delay</p>
-            <p class="text-white/80">Stores like Spotify, Apple Music and others report royalty data with a 2–3 month delay. Your most recent earnings will appear once the stores have processed and sent us the data.</p>
+            <p class="text-white/80">Stores like Spotify, Apple Music and others report royalty data with a 2–3 month delay. Data shown is up to December 2025 — more recent months will appear once stores have reported.</p>
             <div class="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-[6px] border-r-[6px] border-t-[6px] border-l-transparent border-r-transparent border-t-ditto-text"></div>
           </div>
         </div>

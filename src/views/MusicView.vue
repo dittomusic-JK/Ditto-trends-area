@@ -86,7 +86,14 @@
     </div>
 
     <!-- Release Grid -->
-    <ul class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6 list-none p-0 px-4 sm:px-6 lg:px-16 pt-6">
+    <EmptyState
+      v-if="filteredReleases.length === 0"
+      type="no-results"
+      title="No releases found"
+      :message="searchQuery ? `No releases match '${searchQuery}'` : 'No releases in this category'"
+      class="px-4 sm:px-6 lg:px-16"
+    />
+    <ul v-else class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6 list-none p-0 px-4 sm:px-6 lg:px-16 pt-6">
       <!-- Release Cards -->
       <li v-for="release in filteredReleases" :key="release.title + release.artist + release.year">
         <div class="group cursor-pointer">
@@ -122,6 +129,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import EmptyState from '../components/common/EmptyState.vue'
 
 defineEmits<{
   (e: 'navigate', section: string): void
