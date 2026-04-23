@@ -16,8 +16,8 @@
       <div
         v-for="(day, index) in calendarDays"
         :key="index"
-        @click="day.date && $emit('select', day.date)"
-        @mouseenter="day.date && $emit('hover', day.date)"
+        @click="day.date && !isFuture(day.date) && $emit('select', day.date)"
+        @mouseenter="day.date && !isFuture(day.date) && $emit('hover', day.date)"
         @mouseleave="$emit('hover', null)"
         :class="[
           'relative aspect-square flex items-center justify-center text-xs transition-all cursor-pointer',
@@ -138,11 +138,28 @@ const isRangeEnd = (date: Date | null): boolean => {
   return isSameDay(date, endDate)
 }
 
+const today = new Date()
+today.setHours(0, 0, 0, 0)
+
+const isFuture = (date: Date): boolean => {
+  const d = new Date(date)
+  d.setHours(0, 0, 0, 0)
+  return d > today
+}
+
 const getDayClasses = (day: CalendarDay): string => {
   const classes: string[] = []
   
-  if (!day.date || !day.isCurrentMonth) {
-    return 'rounded-full text-ditto-subtext/30'
+  if (!day.date) {
+    return 'rounded-full text-gray-300'
+  }
+
+  if (isFuture(day.date)) {
+    return 'rounded-full text-gray-300 cursor-not-allowed'
+  }
+
+  if (!day.isCurrentMonth) {
+    return 'rounded-full text-gray-400'
   }
   
   const isStart = isRangeStart(day.date)

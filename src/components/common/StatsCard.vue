@@ -28,12 +28,6 @@
         <p class="text-xs text-ditto-subtext mb-0.5">{{ stat.title }}</p>
         <div class="flex items-center gap-2">
           <span class="text-2xl font-semibold text-ditto-text">{{ stat.value }}</span>
-          <span 
-            v-if="stat.change" 
-            class="text-xs font-medium px-1.5 py-0.5 rounded-full bg-success/15 text-success"
-          >
-            +{{ stat.change }}%
-          </span>
         </div>
       </div>
     </div>

@@ -30,12 +30,6 @@
           </svg>
           <span class="hidden sm:inline">Filters</span>
         </button>
-        <button v-if="activeSection !== 'payouts'" @click="activeSection = 'payouts'" class="flex items-center gap-2 px-5 py-2.5 bg-ditto-purple text-white text-sm font-medium rounded-full hover:bg-ditto-purple/90 transition-colors flex-shrink-0">
-          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          Request Payout
-        </button>
       </div>
     </div>
 
@@ -51,6 +45,15 @@
         @click="activeSection = tab.id"
         :class="['px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap flex-shrink-0', activeSection === tab.id ? 'bg-ditto-text text-white' : 'bg-ditto-light-grey text-ditto-text hover:bg-ditto-light-grey/80']"
       >{{ tab.label }}</button>
+
+      <div class="flex-1"></div>
+
+      <button v-if="activeSection !== 'payouts'" @click="activeSection = 'payouts'" class="flex items-center gap-2 px-6 py-2.5 bg-ditto-text text-white text-sm font-semibold rounded-full hover:bg-ditto-text/90 transition-colors flex-shrink-0">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Request Payout
+      </button>
     </div>
 
     <!-- Sales -->

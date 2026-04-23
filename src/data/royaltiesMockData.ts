@@ -5,14 +5,14 @@ export const statsData: StatsCard[] = [
     id: 'total-earnings',
     title: 'Lifetime Earnings',
     value: '£722,924.27',
-    change: 12.4,
+    
     icon: 'earnings',
   },
   {
     id: 'monthly-average',
     title: 'Monthly Average',
     value: '£15,540.87',
-    change: 8.2,
+    
     icon: 'average',
   },
   {

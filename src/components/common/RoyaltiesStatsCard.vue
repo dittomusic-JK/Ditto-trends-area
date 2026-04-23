@@ -21,18 +21,7 @@
 
     <!-- Content left-aligned -->
     <p class="text-xs text-ditto-subtext mb-1">{{ stat.title }}</p>
-    <div class="flex items-baseline gap-2 mb-1">
-      <span class="text-2xl font-bold text-ditto-text">{{ stat.value }}</span>
-      <span
-        v-if="stat.change"
-        :class="[
-          'text-xs font-medium px-1.5 py-0.5 rounded-full',
-          stat.change > 0 ? 'bg-success/15 text-success' : 'bg-error/15 text-error'
-        ]"
-      >
-        {{ stat.change > 0 ? '+' : '' }}{{ stat.change }}%
-      </span>
-    </div>
+    <p class="text-2xl font-bold text-ditto-text mb-1">{{ stat.value }}</p>
     <p v-if="stat.storeName" class="text-xs text-ditto-subtext">{{ stat.storeName }}</p>
   </div>
 </template>

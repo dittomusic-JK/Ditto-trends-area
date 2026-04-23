@@ -5,11 +5,7 @@
       <!-- Monthly Report - Hero Card -->
       <div class="lg:row-span-1 px-6 py-5 border border-ditto-purple/20 rounded-xl bg-gradient-to-br from-ditto-purple/5 to-white">
         <p class="text-xs text-ditto-subtext mb-1">This Month's Earnings</p>
-        <div class="flex items-baseline gap-3">
-          <span class="text-3xl lg:text-4xl font-bold text-ditto-text">£{{ thisMonth.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
-          <span v-if="monthChange > 0" class="text-xs font-medium px-1.5 py-0.5 rounded-full bg-success/15 text-success">+{{ monthChange }}%</span>
-          <span v-else-if="monthChange < 0" class="text-xs font-medium px-1.5 py-0.5 rounded-full bg-error/15 text-error">{{ monthChange }}%</span>
-        </div>
+        <p class="text-3xl lg:text-4xl font-bold text-ditto-text">£{{ thisMonth.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</p>
         <p class="text-xs text-ditto-subtext mt-1">vs £{{ lastMonth.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }} last month</p>
       </div>
       <StatsCard v-for="stat in stats.filter(s => s.id !== 'monthly-average')" :key="stat.id" :stat="stat" />
@@ -179,7 +175,6 @@ const crosshairPlugin = {
 
 const thisMonth = computed(() => props.earnings.length > 0 ? props.earnings[props.earnings.length - 1].total : 0)
 const lastMonth = computed(() => props.earnings.length > 1 ? props.earnings[props.earnings.length - 2].total : 0)
-const monthChange = computed(() => lastMonth.value > 0 ? Math.round(((thisMonth.value - lastMonth.value) / lastMonth.value) * 100) : 0)
 
 const chartTabs = [
   { key: 'total' as const, label: 'Total', color: '#8640f4' },
