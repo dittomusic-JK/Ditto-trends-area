@@ -47,7 +47,7 @@
     
     <!-- Right side actions -->
     <div class="flex items-center gap-4">
-      <button class="px-4 py-1.5 bg-success text-ditto-black text-sm font-medium rounded-full hover:opacity-90 transition-opacity">
+      <button class="px-4 py-1.5 bg-success/15 text-green-700 text-sm font-medium rounded-lg hover:bg-success/25 transition-colors">
         Upgrade
       </button>
       
