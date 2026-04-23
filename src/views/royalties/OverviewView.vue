@@ -6,11 +6,11 @@
       <div class="lg:row-span-1 px-6 py-5 border border-ditto-purple/20 rounded-xl bg-gradient-to-br from-ditto-purple/5 to-white">
         <p class="text-xs text-ditto-subtext mb-1">This Month's Earnings</p>
         <div class="flex items-baseline gap-3">
-          <span class="text-3xl lg:text-4xl font-bold text-ditto-text">£{{ thisMonth.toLocaleString() }}</span>
-          <span v-if="monthChange > 0" class="text-xs font-medium px-1.5 py-0.5 rounded-full bg-success/20 text-success">+{{ monthChange }}%</span>
-          <span v-else-if="monthChange < 0" class="text-xs font-medium px-1.5 py-0.5 rounded-full bg-error/20 text-error">{{ monthChange }}%</span>
+          <span class="text-3xl lg:text-4xl font-bold text-ditto-text">£{{ thisMonth.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
+          <span v-if="monthChange > 0" class="text-xs font-medium px-1.5 py-0.5 rounded-full bg-success/15 text-success">+{{ monthChange }}%</span>
+          <span v-else-if="monthChange < 0" class="text-xs font-medium px-1.5 py-0.5 rounded-full bg-error/15 text-error">{{ monthChange }}%</span>
         </div>
-        <p class="text-xs text-ditto-subtext mt-1">vs £{{ lastMonth.toLocaleString() }} last month</p>
+        <p class="text-xs text-ditto-subtext mt-1">vs £{{ lastMonth.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }} last month</p>
       </div>
       <StatsCard v-for="stat in stats.filter(s => s.id !== 'monthly-average')" :key="stat.id" :stat="stat" />
     </div>
@@ -19,7 +19,7 @@
     <div class="bg-[#f9f9ff] rounded-2xl p-4 lg:p-6">
       <div class="flex items-center justify-between mb-4">
         <h3 class="font-poppins font-bold text-lg lg:text-xl text-ditto-text">Earnings Over Time</h3>
-        <div class="flex items-center gap-1 bg-white rounded-lg p-1 border border-gray-100">
+        <div class="flex items-center gap-1 bg-white rounded-lg p-1 border border-gray-200">
           <button
             v-for="tab in chartTabs"
             :key="tab.key"
@@ -68,7 +68,7 @@
     <!-- Stores + Countries Row -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
       <!-- Top Stores -->
-      <div class="bg-white rounded-2xl p-4 lg:p-6 shadow-sm border border-gray-100">
+      <div class="bg-white rounded-2xl p-4 lg:p-6 shadow-sm border border-gray-200">
         <h3 class="font-poppins font-bold text-lg lg:text-xl text-ditto-text mb-4">Top Stores</h3>
         <div class="space-y-3">
           <div v-for="store in stores.slice(0, 10)" :key="store.id" class="flex items-center gap-3">
@@ -91,16 +91,16 @@
       </div>
 
       <!-- Top Countries -->
-      <div class="bg-white rounded-2xl p-4 lg:p-6 shadow-sm border border-gray-100">
+      <div class="bg-white rounded-2xl p-4 lg:p-6 shadow-sm border border-gray-200">
         <h3 class="font-poppins font-bold text-lg lg:text-xl text-ditto-text mb-4">Top Countries</h3>
         <div class="space-y-1">
           <div
             v-for="country in countries.slice(0, 10)"
             :key="country.rank"
-            class="flex items-center gap-3 py-2 border-b border-gray-100 last:border-0 hover:bg-gray-50 -mx-2 px-2 rounded-lg transition-colors"
+            class="flex items-center gap-3 py-2 border-b border-gray-100 last:border-0 hover:bg-ditto-light-grey -mx-2 px-2 rounded-lg transition-colors"
           >
             <span class="text-xl font-light text-ditto-subtext w-6">{{ country.rank }}</span>
-            <div class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 shadow-sm border border-gray-100">
+            <div class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 shadow-sm border border-gray-200">
               <img
                 :src="`https://flagcdn.com/w80/${country.code}.png`"
                 :alt="country.country"

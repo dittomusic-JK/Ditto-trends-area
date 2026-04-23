@@ -1,14 +1,14 @@
 <template>
-  <div class="bg-white rounded-2xl p-4 lg:p-6 shadow-sm border border-gray-100">
+  <div class="bg-white rounded-2xl p-4 lg:p-6 shadow-sm border border-gray-200">
     <h3 class="font-poppins font-bold text-lg lg:text-xl text-ditto-text mb-4">Earnings by Country</h3>
     <div class="space-y-1">
       <div
         v-for="country in countries"
         :key="country.rank"
-        class="flex items-center gap-3 py-3 border-b border-gray-100 last:border-0 hover:bg-gray-50 -mx-2 px-2 rounded-lg transition-colors"
+        class="flex items-center gap-3 py-3 border-b border-gray-100 last:border-0 hover:bg-ditto-light-grey -mx-2 px-2 rounded-lg transition-colors"
       >
         <span class="text-xl font-light text-ditto-subtext w-8">{{ country.rank }}</span>
-        <div class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 shadow-sm border border-gray-100">
+        <div class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 shadow-sm border border-gray-200">
           <img
             :src="`https://flagcdn.com/w80/${country.code}.png`"
             :alt="country.country"

@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-white overflow-hidden w-full max-w-full" data-ditto-colors-light-dark-mode="light">
+  <div class="min-h-screen bg-white w-full max-w-full" data-ditto-colors-light-dark-mode="light">
     <!-- Top Navigation -->
     <TopNavbar :active-section="appSection" @navigate="appSection = $event" />
     
@@ -84,6 +84,15 @@
 
     <!-- Royalties Section -->
     <RoyaltiesDashboard v-if="appSection === 'royalties'" />
+
+    <!-- Music Section -->
+    <MusicView v-if="appSection === 'music'" @navigate="appSection = $event" @navigate-view="handleNavigateView" />
+
+    <!-- Artists Section -->
+    <ArtistsDashboard v-if="appSection === 'artists'" />
+
+    <!-- Publishing Section -->
+    <PublishingDashboard v-if="appSection === 'publishing'" />
   </div>
 </template>
 
@@ -100,6 +109,15 @@ import FiltersPanel from './components/common/FiltersPanel.vue'
 
 // Royalties Dashboard
 import RoyaltiesDashboard from './views/royalties/RoyaltiesDashboard.vue'
+
+// Music page
+import MusicView from './views/MusicView.vue'
+
+// Artists dashboard
+import ArtistsDashboard from './views/artists/ArtistsDashboard.vue'
+
+// Publishing dashboard
+import PublishingDashboard from './views/publishing/PublishingDashboard.vue'
 
 // View Components
 import MetricsView from './views/MetricsView.vue'
@@ -192,5 +210,10 @@ const applyFilters = (filters: Filter[]) => {
 
 const updateTrendsType = (type: TrendsType) => {
   trendsType.value = type
+}
+
+const handleNavigateView = (section: AppSection, view: string) => {
+  appSection.value = section
+  if (section === 'analytics') activeView.value = view as ViewType
 }
 </script>

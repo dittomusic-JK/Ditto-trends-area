@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-4 lg:space-y-8">
     <!-- Downloads Unavailable Message -->
-    <div v-if="isDownloadsSelected" class="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 lg:p-12 flex flex-col items-center justify-center text-center">
+    <div v-if="isDownloadsSelected" class="bg-white rounded-2xl border border-gray-200 shadow-sm p-8 lg:p-12 flex flex-col items-center justify-center text-center">
       <div class="w-14 h-14 rounded-full bg-ditto-purple/10 flex items-center justify-center mb-5">
         <svg class="w-7 h-7 text-ditto-purple" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -24,7 +24,7 @@
     <!-- Top Row: Gender + Age Range (hidden for downloads) -->
     <div v-if="!isDownloadsSelected" class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8">
       <!-- Gender Section -->
-      <div class="bg-white rounded-2xl p-4 lg:p-6 shadow-sm border border-gray-100">
+      <div class="bg-white rounded-2xl p-4 lg:p-6 shadow-sm border border-gray-200">
         <h3 class="font-poppins font-bold text-lg lg:text-xl text-ditto-text mb-4">Gender</h3>
         <div class="flex flex-col items-center">
           <!-- Donut Chart -->
@@ -57,7 +57,7 @@
       </div>
       
       <!-- Age Range Section -->
-      <div class="bg-white rounded-2xl p-4 lg:p-6 shadow-sm border border-gray-100">
+      <div class="bg-white rounded-2xl p-4 lg:p-6 shadow-sm border border-gray-200">
         <h3 class="font-poppins font-bold text-lg lg:text-xl text-ditto-text mb-4 lg:mb-6">Age Range</h3>
         <div class="space-y-4">
           <div 
@@ -105,7 +105,7 @@
     </div>
     
     <!-- World Map Section (hidden on mobile and hidden for downloads) -->
-    <div v-if="!isDownloadsSelected" class="hidden lg:block bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+    <div v-if="!isDownloadsSelected" class="hidden lg:block bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
       <div class="flex items-center justify-between mb-6">
         <h3 class="font-poppins font-bold text-xl text-ditto-text">Geographic Distribution</h3>
         <div class="flex items-center gap-3 text-xs text-ditto-subtext">
@@ -152,7 +152,7 @@
     <!-- Bottom Row: Countries + Cities -->
     <div :class="isDownloadsSelected ? '' : 'grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8'">
       <!-- Country Ranking -->
-      <div class="bg-white rounded-2xl p-4 lg:p-6 shadow-sm border border-gray-100">
+      <div class="bg-white rounded-2xl p-4 lg:p-6 shadow-sm border border-gray-200">
         <div class="flex items-center justify-between mb-4">
           <h3 class="font-poppins font-bold text-lg lg:text-xl text-ditto-text">Top Countries</h3>
           <button 
@@ -166,7 +166,7 @@
           <div 
             v-for="country in data.countries.slice(0, showAllLocations ? 15 : 5)"
             :key="country.rank"
-            class="flex items-center gap-3 py-2 border-b border-gray-100 last:border-0 group cursor-pointer hover:bg-gray-50 -mx-2 px-2 rounded-lg transition-colors"
+            class="flex items-center gap-3 py-2 border-b border-gray-100 last:border-0 group cursor-pointer hover:bg-ditto-light-grey -mx-2 px-2 rounded-lg transition-colors"
             @mouseenter="highlightCountry(country)"
             @mouseleave="highlightedCountry = null"
           >
@@ -174,7 +174,7 @@
             <span class="text-xl font-light text-ditto-subtext w-6">{{ country.rank }}</span>
             
             <!-- Round Flag -->
-            <div class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 shadow-sm border border-gray-100">
+            <div class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 shadow-sm border border-gray-200">
               <img 
                 :src="getFlagUrl(country.code)" 
                 :alt="country.country"
@@ -193,7 +193,7 @@
       </div>
       
       <!-- City Ranking (hidden for downloads) -->
-      <div v-if="!isDownloadsSelected" class="bg-white rounded-2xl p-4 lg:p-6 shadow-sm border border-gray-100">
+      <div v-if="!isDownloadsSelected" class="bg-white rounded-2xl p-4 lg:p-6 shadow-sm border border-gray-200">
         <div class="flex items-center justify-between mb-4">
           <h3 class="font-poppins font-bold text-lg lg:text-xl text-ditto-text">Top Cities</h3>
           <button 
@@ -207,7 +207,7 @@
           <div 
             v-for="city in data.cities.slice(0, showAllLocations ? 15 : 5)"
             :key="city.rank"
-            class="flex items-center gap-3 py-2 border-b border-gray-100 last:border-0 hover:bg-gray-50 -mx-2 px-2 rounded-lg transition-colors"
+            class="flex items-center gap-3 py-2 border-b border-gray-100 last:border-0 hover:bg-ditto-light-grey -mx-2 px-2 rounded-lg transition-colors"
           >
             <!-- Rank -->
             <span class="text-xl font-light text-ditto-subtext w-6">{{ city.rank }}</span>

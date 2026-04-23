@@ -1,0 +1,9 @@
+<template>
+  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M10 2V6M10 14V18M18 10H14M6 10H2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    <circle cx="10" cy="10" r="4" stroke="currentColor" stroke-width="2"/>
+  </svg>
+</template>
+
+<script setup lang="ts">
+</script>

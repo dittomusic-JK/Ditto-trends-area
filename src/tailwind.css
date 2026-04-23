@@ -38,12 +38,10 @@
 @layer base {
   html, body {
     font-family: 'Satoshi', Helvetica, Arial, sans-serif;
-    overflow-x: hidden;
     max-width: 100vw;
   }
-  
+
   #app {
-    overflow-x: hidden;
     max-width: 100vw;
   }
   
@@ -130,6 +128,21 @@
 }
 
 /* Hide scrollbar utility */
+/* === Ditto Design Tokens === */
+
+/*
+ * === Ditto Design Tokens ===
+ *
+ * Status pills:     bg-{status}/15 text-{status} (success, error, warning, info)
+ * Cards:            rounded-2xl border border-gray-100 shadow-sm p-5 lg:p-6
+ * Pill buttons:     px-4 py-1.5 rounded-full text-xs font-medium
+ *   Active:         bg-ditto-text text-white
+ *   Inactive:       bg-ditto-light-grey text-ditto-text
+ * Status badges:    text-[10px] font-semibold px-2 py-0.5 rounded-full
+ * Page headers:     font-poppins font-bold text-xl sm:text-3xl lg:text-[42px] tracking-tight text-ditto-text
+ * Section headers:  font-poppins font-bold text-lg lg:text-xl text-ditto-text
+ */
+
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;

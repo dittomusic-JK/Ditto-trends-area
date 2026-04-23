@@ -3,7 +3,7 @@ import type { RoyaltiesStatsCard as StatsCard, EarningsDataPoint, StoreEarnings,
 export const statsData: StatsCard[] = [
   {
     id: 'total-earnings',
-    title: 'Total Earnings',
+    title: 'Lifetime Earnings',
     value: '£722,924.27',
     change: 12.4,
     icon: 'earnings',
@@ -18,7 +18,7 @@ export const statsData: StatsCard[] = [
   {
     id: 'best-store',
     title: 'Best Store',
-    value: '£305,689',
+    value: '£305,689.28',
     icon: 'store',
     storeIcon: 'spotify',
     storeName: 'Spotify',

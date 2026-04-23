@@ -1,5 +1,5 @@
 <template>
-  <div class="flex-1 px-6 py-4 border border-ditto-border-grey rounded-xl bg-white">
+  <div class="flex-1 px-6 py-4 border border-gray-200 rounded-xl bg-white">
     <div class="flex items-center gap-3">
       <!-- Icon -->
       <div class="w-10 h-10 flex items-center justify-center">
@@ -30,7 +30,7 @@
           <span class="text-2xl font-semibold text-ditto-text">{{ stat.value }}</span>
           <span 
             v-if="stat.change" 
-            class="text-xs font-medium px-1.5 py-0.5 rounded-full bg-success/20 text-success"
+            class="text-xs font-medium px-1.5 py-0.5 rounded-full bg-success/15 text-success"
           >
             +{{ stat.change }}%
           </span>

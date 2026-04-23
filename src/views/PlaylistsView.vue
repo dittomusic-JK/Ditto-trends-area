@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- Downloads Unavailable Message -->
-    <div v-if="isDownloadsSelected" class="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 lg:p-12 flex flex-col items-center justify-center text-center">
+    <div v-if="isDownloadsSelected" class="bg-white rounded-2xl border border-gray-200 shadow-sm p-8 lg:p-12 flex flex-col items-center justify-center text-center">
       <div class="w-14 h-14 rounded-full bg-ditto-purple/10 flex items-center justify-center mb-5">
         <svg class="w-7 h-7 text-ditto-purple" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>

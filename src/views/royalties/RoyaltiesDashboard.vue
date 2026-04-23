@@ -7,7 +7,7 @@
       </h1>
       <div class="flex items-center gap-2 sm:gap-3">
         <div class="relative group">
-          <span class="px-4 py-2.5 border border-ditto-border-grey rounded-lg text-sm text-ditto-subtext bg-white flex items-center gap-2 cursor-help">
+          <span class="px-4 py-2.5 border border-gray-200 rounded-lg text-sm text-ditto-subtext bg-white flex items-center gap-2 cursor-help">
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
             </svg>
@@ -20,7 +20,7 @@
         </div>
         <button
           @click="showFilters = true"
-          class="flex items-center justify-center gap-2 px-3 py-2.5 sm:px-4 border border-ditto-border-grey rounded-lg text-sm text-ditto-text hover:bg-ditto-light-grey transition-colors flex-shrink-0"
+          class="flex items-center justify-center gap-2 px-3 py-2.5 sm:px-4 border border-gray-200 rounded-lg text-sm text-ditto-text hover:bg-ditto-light-grey transition-colors flex-shrink-0"
         >
           <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/>

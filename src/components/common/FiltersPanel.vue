@@ -39,7 +39,7 @@
           <div class="border-b border-ditto-border-grey/50 sm:hidden">
             <button 
               @click="toggleSection('dataType')"
-              class="w-full flex items-center justify-between px-4 py-4 hover:bg-ditto-light-grey/50 transition-colors"
+              class="w-full flex items-center justify-between px-4 py-4 hover:bg-ditto-light-grey transition-colors"
             >
               <span class="font-semibold text-ditto-text">Data Type</span>
               <div class="flex items-center gap-2">
@@ -78,7 +78,7 @@
           <div class="border-b border-ditto-border-grey/50">
             <button 
               @click="toggleSection('label')"
-              class="w-full flex items-center justify-between px-4 sm:px-6 py-4 hover:bg-ditto-light-grey/50 transition-colors"
+              class="w-full flex items-center justify-between px-4 sm:px-6 py-4 hover:bg-ditto-light-grey transition-colors"
             >
               <span class="font-semibold text-ditto-text">Label</span>
               <svg 
@@ -115,7 +115,7 @@
           <div class="border-b border-ditto-border-grey/50">
             <button 
               @click="toggleSection('artist')"
-              class="w-full flex items-center justify-between px-4 sm:px-6 py-4 hover:bg-ditto-light-grey/50 transition-colors"
+              class="w-full flex items-center justify-between px-4 sm:px-6 py-4 hover:bg-ditto-light-grey transition-colors"
             >
               <span class="font-semibold text-ditto-text">Artists</span>
               <svg 
@@ -152,7 +152,7 @@
           <div class="border-b border-ditto-border-grey/50">
             <button 
               @click="toggleSection('release')"
-              class="w-full flex items-center justify-between px-4 sm:px-6 py-4 hover:bg-ditto-light-grey/50 transition-colors"
+              class="w-full flex items-center justify-between px-4 sm:px-6 py-4 hover:bg-ditto-light-grey transition-colors"
             >
               <span class="font-semibold text-ditto-text">Release</span>
               <svg 
@@ -189,7 +189,7 @@
           <div class="border-b border-ditto-border-grey/50">
             <button 
               @click="toggleSection('track')"
-              class="w-full flex items-center justify-between px-4 sm:px-6 py-4 hover:bg-ditto-light-grey/50 transition-colors"
+              class="w-full flex items-center justify-between px-4 sm:px-6 py-4 hover:bg-ditto-light-grey transition-colors"
             >
               <span class="font-semibold text-ditto-text">Track</span>
               <svg 
@@ -225,7 +225,7 @@
           <div class="border-b border-ditto-border-grey/50">
             <button 
               @click="toggleSection('country')"
-              class="w-full flex items-center justify-between px-4 sm:px-6 py-4 hover:bg-ditto-light-grey/50 transition-colors"
+              class="w-full flex items-center justify-between px-4 sm:px-6 py-4 hover:bg-ditto-light-grey transition-colors"
             >
               <span class="font-semibold text-ditto-text">Country</span>
               <svg 
@@ -262,7 +262,7 @@
           <div class="border-b border-ditto-border-grey/50">
             <button 
               @click="toggleSection('store')"
-              class="w-full flex items-center justify-between px-4 sm:px-6 py-4 hover:bg-ditto-light-grey/50 transition-colors"
+              class="w-full flex items-center justify-between px-4 sm:px-6 py-4 hover:bg-ditto-light-grey transition-colors"
             >
               <span class="font-semibold text-ditto-text">Store</span>
               <svg 

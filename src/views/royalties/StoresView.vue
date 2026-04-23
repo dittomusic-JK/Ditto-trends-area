@@ -21,7 +21,7 @@
       </div>
 
       <!-- Top Stores List -->
-      <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+      <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
         <h3 class="font-poppins font-bold text-xl text-ditto-text mb-5">Top Performing Stores</h3>
         <div class="space-y-4">
           <div v-for="store in stores.slice(0, 5)" :key="store.id" class="flex items-center gap-4">
@@ -45,7 +45,7 @@
     </div>
 
     <!-- All Stores Table -->
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-100">
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200">
       <div class="px-6 py-4 border-b border-gray-100">
         <h3 class="font-poppins font-bold text-lg text-ditto-text">All Stores</h3>
         <p class="text-xs text-ditto-subtext mt-0.5">{{ stores.length }} stores reporting earnings</p>
@@ -65,7 +65,7 @@
         <div
           v-for="(store, idx) in stores"
           :key="store.id"
-          class="flex items-center gap-4 px-6 py-3.5 hover:bg-ditto-light-grey/30 transition-colors lg:grid lg:grid-cols-[40px_1fr_120px_80px_120px]"
+          class="flex items-center gap-4 px-6 py-3.5 hover:bg-ditto-light-grey transition-colors lg:grid lg:grid-cols-[40px_1fr_120px_80px_120px]"
         >
           <!-- Rank -->
           <span class="text-sm text-ditto-subtext w-6 lg:w-auto">{{ idx + 1 }}</span>

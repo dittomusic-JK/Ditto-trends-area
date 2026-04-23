@@ -3,7 +3,7 @@
     <!-- Balance Section -->
     <div class="grid grid-cols-1 lg:grid-cols-[1fr_1fr] gap-6">
       <!-- Main Balance Card -->
-      <div class="bg-white rounded-2xl p-8 border border-ditto-border-grey flex flex-col">
+      <div class="bg-white rounded-2xl p-8 border border-gray-200 flex flex-col">
         <p class="text-sm text-ditto-subtext mb-2">Your balance</p>
         <p class="text-5xl font-bold text-ditto-text tracking-tight mb-6">£168,247.18</p>
 
@@ -42,14 +42,14 @@
       <!-- Right Column -->
       <div class="flex flex-col gap-4">
         <!-- Total Paid Out -->
-        <div class="bg-white rounded-2xl p-6 border border-ditto-border-grey flex-1 flex flex-col justify-center">
+        <div class="bg-white rounded-2xl p-6 border border-gray-200 flex-1 flex flex-col justify-center">
           <p class="text-sm text-ditto-subtext mb-1">Total paid out</p>
           <p class="text-3xl font-bold text-ditto-text">£135,762.48</p>
           <p class="text-xs text-ditto-subtext mt-1">across 7 payouts</p>
         </div>
 
         <!-- Payout Method -->
-        <div class="bg-white rounded-2xl p-6 border border-ditto-border-grey">
+        <div class="bg-white rounded-2xl p-6 border border-gray-200">
           <p class="text-xs text-ditto-subtext mb-3">Payout method</p>
           <div class="bg-ditto-light-grey/50 rounded-xl p-4 flex items-center gap-3">
             <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center flex-shrink-0 shadow-sm">
@@ -87,7 +87,7 @@
           class="flex items-center gap-4 px-4 py-4 hover:bg-ditto-light-grey rounded-2xl transition-colors cursor-pointer"
         >
           <!-- Icon -->
-          <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" :class="payout.type === 'Bank Transfer' ? 'bg-ditto-purple/10' : 'bg-info/10'">
+          <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" :class="payout.type === 'Bank Transfer' ? 'bg-ditto-purple/10' : 'bg-info/15'">
             <svg v-if="payout.type === 'Bank Transfer'" class="w-5 h-5 text-ditto-purple" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v3M12 14v3M16 14v3" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>

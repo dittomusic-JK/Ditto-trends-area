@@ -24,10 +24,10 @@
   </header>
   
   <!-- Desktop Header -->
-  <header class="hidden md:flex h-[74px] items-center justify-between px-6 border-b border-ditto-border-grey bg-white">
+  <header class="hidden md:flex h-[80px] items-center justify-between px-8 lg:px-12 border-b border-ditto-border-grey bg-white">
     <!-- Logo and Nav -->
     <div class="flex items-center gap-8">
-      <img src="/img/logo-2048-black.svg" alt="Ditto" class="h-6" />
+      <img src="/img/logo-2048-black.svg" alt="Ditto" class="h-8" />
       
       <!-- Nav Items -->
       <nav class="flex items-center gap-6">
@@ -60,7 +60,7 @@
       </button>
       
       <button class="px-4 py-1.5 bg-ditto-purple text-white text-sm font-medium rounded-full flex items-center gap-2 hover:opacity-90 transition-opacity">
-        <span>🎵</span>
+        <img src="/img/master-distro-icon.svg" alt="" class="w-4 h-4" />
         Create
       </button>
       
@@ -86,12 +86,12 @@ const emit = defineEmits<{
 }>()
 
 const computedNavItems = computed(() => [
-  { id: 'artists', label: 'Artists', active: false, action: null },
-  { id: 'music', label: 'Music', active: false, action: null },
+  { id: 'artists', label: 'Artists', active: props.activeSection === 'artists', action: () => emit('navigate', 'artists') },
+  { id: 'music', label: 'Music', active: props.activeSection === 'music', action: () => emit('navigate', 'music') },
   { id: 'videos', label: 'Videos', active: false, action: null },
   { id: 'royalties', label: 'Royalties', active: props.activeSection === 'royalties', action: () => emit('navigate', 'royalties') },
   { id: 'analytics', label: 'Analytics', active: props.activeSection === 'analytics', action: () => emit('navigate', 'analytics') },
   { id: 'promotion', label: 'Promotion', active: false, action: null },
-  { id: 'publishing', label: 'Publishing', active: false, action: null },
+  { id: 'publishing', label: 'Publishing', active: props.activeSection === 'publishing', action: () => emit('navigate', 'publishing') },
 ])
 </script>

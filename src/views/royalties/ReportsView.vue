@@ -9,7 +9,7 @@
     <!-- Report Cards Grid -->
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <!-- Net Revenue Report -->
-      <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 relative overflow-hidden">
+      <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-200 relative overflow-hidden">
         <span class="absolute top-3 right-3 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-ditto-purple/10 text-ditto-purple">Most Used</span>
         <div class="w-12 h-12 rounded-xl bg-ditto-purple/10 flex items-center justify-center mb-4">
           <svg class="w-6 h-6 text-ditto-purple" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -27,8 +27,8 @@
       </div>
 
       <!-- Summary Report -->
-      <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-        <div class="w-12 h-12 rounded-xl bg-info/10 flex items-center justify-center mb-4">
+      <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
+        <div class="w-12 h-12 rounded-xl bg-info/15 flex items-center justify-center mb-4">
           <svg class="w-6 h-6 text-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke-linecap="round" stroke-linejoin="round"/>
             <polyline points="14,2 14,8 20,8" stroke-linecap="round" stroke-linejoin="round"/>
@@ -45,11 +45,11 @@
     </div>
 
     <!-- Previous Downloads -->
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-100">
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200">
       <div class="px-6 py-4 border-b border-gray-100">
         <h3 class="font-poppins font-bold text-lg text-ditto-text">Recent Downloads</h3>
       </div>
-      <div v-for="report in recentReports" :key="report.id" class="flex items-center gap-4 px-6 py-4 border-t border-gray-50 first:border-t-0 hover:bg-ditto-light-grey/30 transition-colors">
+      <div v-for="report in recentReports" :key="report.id" class="flex items-center gap-4 px-6 py-4 border-t border-gray-50 first:border-t-0 hover:bg-ditto-light-grey transition-colors">
         <div class="w-10 h-10 rounded-lg bg-ditto-purple/10 flex items-center justify-center flex-shrink-0">
           <svg class="w-5 h-5 text-ditto-purple" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke-linecap="round" stroke-linejoin="round"/>

@@ -3,7 +3,7 @@
     <!-- Trigger Button -->
     <button 
       @click="openPicker"
-      class="w-full flex items-center justify-center gap-1.5 lg:gap-2 px-3 lg:px-4 py-2 border border-ditto-border-grey rounded-lg text-xs lg:text-sm text-ditto-text hover:bg-ditto-light-grey transition-colors bg-white lg:w-auto"
+      class="w-full flex items-center justify-center gap-1.5 lg:gap-2 px-3 lg:px-4 py-2 border border-gray-200 rounded-lg text-xs lg:text-sm text-ditto-text hover:bg-ditto-light-grey transition-colors bg-white lg:w-auto"
     >
       <IconCalendar class="w-4 h-4 text-ditto-subtext" />
       <span>{{ formatDateShort(selectedRange.start) }}</span>
@@ -14,7 +14,7 @@
     <!-- Desktop Dropdown -->
     <div 
       v-if="isOpen"
-      class="hidden lg:flex absolute top-full right-0 mt-2 bg-white rounded-2xl shadow-xl border border-ditto-border-grey z-50 flex-row"
+      class="hidden lg:flex absolute top-full right-0 mt-2 bg-white rounded-2xl shadow-xl border border-gray-200 z-50 flex-row"
     >
       <!-- Presets -->
       <div class="flex flex-col w-28 border-r border-ditto-border-grey py-3 px-2 gap-1">
@@ -159,7 +159,7 @@
             <div class="flex gap-3 px-4 py-3 border-t border-ditto-border-grey">
               <button 
                 @click="cancelMobile"
-                class="flex-1 py-2.5 text-sm font-medium text-ditto-text border border-ditto-border-grey rounded-xl hover:bg-ditto-light-grey transition-colors"
+                class="flex-1 py-2.5 text-sm font-medium text-ditto-text border border-gray-200 rounded-xl hover:bg-ditto-light-grey transition-colors"
               >
                 Cancel
               </button>

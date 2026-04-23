@@ -169,7 +169,7 @@ export interface SourceViewData {
 }
 
 // Top-level app section
-export type AppSection = 'analytics' | 'royalties'
+export type AppSection = 'analytics' | 'royalties' | 'music' | 'artists' | 'publishing'
 
 // Royalties types
 export type RoyaltiesSectionType = 'sales' | 'collaborations' | 'reports' | 'payouts'

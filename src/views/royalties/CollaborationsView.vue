@@ -2,22 +2,22 @@
   <div class="space-y-6">
     <!-- Summary Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-      <div class="px-6 py-4 border border-ditto-border-grey rounded-xl bg-white">
+      <div class="px-6 py-4 border border-gray-200 rounded-xl bg-white">
         <p class="text-xs text-ditto-subtext mb-0.5">Active Track Shares</p>
         <span class="text-2xl font-semibold text-ditto-text">{{ collaborations.length }}</span>
       </div>
-      <div class="px-6 py-4 border border-ditto-border-grey rounded-xl bg-white">
+      <div class="px-6 py-4 border border-gray-200 rounded-xl bg-white">
         <p class="text-xs text-ditto-subtext mb-0.5">Total Collaborators</p>
         <span class="text-2xl font-semibold text-ditto-text">{{ totalCollaborators }}</span>
       </div>
-      <div class="px-6 py-4 border border-ditto-border-grey rounded-xl bg-white">
+      <div class="px-6 py-4 border border-gray-200 rounded-xl bg-white">
         <p class="text-xs text-ditto-subtext mb-0.5">Total Collaboration Earnings</p>
         <span class="text-2xl font-semibold text-ditto-purple">{{ formatCurrency(totalEarnings) }}</span>
       </div>
     </div>
 
     <!-- Track Shares Table -->
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-100">
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200">
       <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
         <h3 class="font-poppins font-bold text-lg text-ditto-text">Track Shares</h3>
         <button class="px-4 py-2 bg-ditto-purple text-white text-sm font-medium rounded-full hover:bg-ditto-purple/90 transition-colors">
@@ -39,7 +39,7 @@
       <!-- Rows -->
       <div v-for="collab in collaborations" :key="collab.id" class="border-t border-gray-50">
         <!-- Desktop -->
-        <div class="hidden lg:grid grid-cols-[1fr_140px_80px_80px_100px_100px_100px] gap-4 px-6 py-4 items-center hover:bg-ditto-light-grey/30 transition-colors">
+        <div class="hidden lg:grid grid-cols-[1fr_140px_80px_80px_100px_100px_100px] gap-4 px-6 py-4 items-center hover:bg-ditto-light-grey transition-colors">
           <div>
             <p class="text-sm font-medium text-ditto-text truncate" :title="collab.title">{{ collab.title }}</p>
           </div>
