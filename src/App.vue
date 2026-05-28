@@ -93,6 +93,9 @@
 
     <!-- Publishing Section -->
     <PublishingDashboard v-if="appSection === 'publishing'" />
+
+    <!-- Videos Section -->
+    <VideosDashboard v-if="appSection === 'videos'" />
   </div>
 </template>
 
@@ -118,6 +121,9 @@ import ArtistsDashboard from './views/artists/ArtistsDashboard.vue'
 
 // Publishing dashboard
 import PublishingDashboard from './views/publishing/PublishingDashboard.vue'
+
+// Videos dashboard
+import VideosDashboard from './views/videos/VideosDashboard.vue'
 
 // View Components
 import MetricsView from './views/MetricsView.vue'

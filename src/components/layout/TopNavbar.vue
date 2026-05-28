@@ -242,7 +242,7 @@ const computedNavItems = computed(() => [
   { id: 'royalties', label: 'Royalties', active: props.activeSection === 'royalties', action: () => emit('navigate', 'royalties') },
   { id: 'publishing', label: 'Publishing', active: props.activeSection === 'publishing', action: () => emit('navigate', 'publishing') },
   { id: 'promotion', label: 'Promotion', active: false, action: null },
-  { id: 'videos', label: 'Videos', active: false, action: null },
+  { id: 'videos', label: 'Videos', active: props.activeSection === 'videos', action: () => emit('navigate', 'videos') },
 ])
 </script>
 
