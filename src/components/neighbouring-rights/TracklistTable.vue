@@ -141,7 +141,8 @@ const canRegister = (track: Track): boolean => {
   &__heading {
     font-family: $font-poppins;
     font-size: $text-h3;
-    font-weight: 700;
+    font-weight: 900;
+    letter-spacing: -0.03em;
     color: var(--blue);
     margin-bottom: 1.5rem;
   }
@@ -339,7 +340,8 @@ const canRegister = (track: Track): boolean => {
   &__section-title {
     font-family: $font-poppins;
     font-size: $text-h4;
-    font-weight: 700;
+    font-weight: 900;
+    letter-spacing: -0.03em;
     color: var(--blue);
     margin-bottom: 0.25rem;
   }

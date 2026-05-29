@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h3 class="font-poppins font-bold text-lg sm:text-xl text-ditto-text mb-3 sm:mb-4">Stores</h3>
+    <h3 class="font-satoshi font-black tracking-[-0.03em] text-lg sm:text-xl text-ditto-text mb-3 sm:mb-4">Stores</h3>
     
     <table class="w-full">
       <thead class="hidden sm:table-header-group">

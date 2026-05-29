@@ -19,7 +19,7 @@
     <!-- Track Shares Table -->
     <div class="bg-white rounded-2xl shadow-sm border border-gray-200">
       <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-        <h3 class="font-poppins font-bold text-lg text-ditto-text">Track Shares</h3>
+        <h3 class="font-satoshi font-black tracking-[-0.03em] text-lg text-ditto-text">Track Shares</h3>
         <button class="px-4 py-2 bg-ditto-purple text-white text-sm font-medium rounded-full hover:bg-ditto-purple/90 transition-colors">
           + New Split
         </button>

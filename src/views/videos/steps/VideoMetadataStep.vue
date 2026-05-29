@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2 class="font-poppins font-bold text-xl lg:text-2xl text-ditto-text mb-2">Add video metadata</h2>
+    <h2 class="font-satoshi font-black tracking-[-0.03em] text-xl lg:text-2xl text-ditto-text mb-2">Add video metadata</h2>
     <p class="text-sm text-ditto-subtext mb-6">Fill in the details about your video release.</p>
 
     <div class="space-y-5">

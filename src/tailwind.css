@@ -87,7 +87,7 @@
 
   /* Typography */
   --brand-font-body: "Satoshi", Helvetica, Arial, sans-serif;
-  --brand-font-heading: "Poppins", Helvetica, Arial, sans-serif;
+  --brand-font-heading: "Satoshi", Helvetica, Arial, sans-serif;
   --brand-body: #111;
   --brand-body-light: #626984;
   --brand-border: #d2d2e3;
@@ -139,8 +139,8 @@
  *   Active:         bg-ditto-text text-white
  *   Inactive:       bg-ditto-light-grey text-ditto-text
  * Status badges:    text-[10px] font-semibold px-2 py-0.5 rounded-full
- * Page headers:     font-poppins font-bold text-xl sm:text-3xl lg:text-[42px] tracking-tight text-ditto-text
- * Section headers:  font-poppins font-bold text-lg lg:text-xl text-ditto-text
+ * Page headers:     font-satoshi font-black text-xl sm:text-3xl lg:text-[42px] tracking-tight text-ditto-text
+ * Section headers:  font-satoshi font-black text-lg lg:text-xl text-ditto-text
  */
 
 .scrollbar-hide {

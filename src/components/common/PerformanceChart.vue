@@ -1,7 +1,7 @@
 <template>
   <div class="bg-[#f9f9ff] rounded-xl sm:rounded-2xl p-3 sm:p-6 overflow-hidden -mx-4 sm:mx-0">
     <div class="flex items-center justify-between mb-2 sm:mb-4 px-1 sm:px-0">
-      <h3 class="font-poppins font-bold text-base sm:text-xl text-ditto-text">Performance Data</h3>
+      <h3 class="font-satoshi font-black tracking-[-0.03em] text-base sm:text-xl text-ditto-text">Performance Data</h3>
     </div>
     
     <div class="h-[200px] sm:h-[320px] relative -mx-1 sm:mx-0">

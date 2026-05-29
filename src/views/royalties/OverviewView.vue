@@ -14,7 +14,7 @@
     <!-- Earnings Performance Chart -->
     <div class="bg-[#f9f9ff] rounded-2xl p-4 lg:p-6">
       <div class="flex items-center justify-between mb-4">
-        <h3 class="font-poppins font-bold text-lg lg:text-xl text-ditto-text">Earnings Over Time</h3>
+        <h3 class="font-satoshi font-black tracking-[-0.03em] text-lg lg:text-xl text-ditto-text">Earnings Over Time</h3>
         <div class="flex items-center gap-1 bg-white rounded-lg p-1 border border-gray-200">
           <button
             v-for="tab in chartTabs"
@@ -65,7 +65,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
       <!-- Top Stores -->
       <div class="bg-white rounded-2xl p-4 lg:p-6 shadow-sm border border-gray-200">
-        <h3 class="font-poppins font-bold text-lg lg:text-xl text-ditto-text mb-4">Top Stores</h3>
+        <h3 class="font-satoshi font-black tracking-[-0.03em] text-lg lg:text-xl text-ditto-text mb-4">Top Stores</h3>
         <div class="space-y-3">
           <div v-for="store in stores.slice(0, 10)" :key="store.id" class="flex items-center gap-3">
             <img :src="getStoreIcon(store.icon)" :alt="store.name" class="w-8 h-8 rounded-lg flex-shrink-0" />
@@ -88,7 +88,7 @@
 
       <!-- Top Countries -->
       <div class="bg-white rounded-2xl p-4 lg:p-6 shadow-sm border border-gray-200">
-        <h3 class="font-poppins font-bold text-lg lg:text-xl text-ditto-text mb-4">Top Countries</h3>
+        <h3 class="font-satoshi font-black tracking-[-0.03em] text-lg lg:text-xl text-ditto-text mb-4">Top Countries</h3>
         <div class="space-y-1">
           <div
             v-for="country in countries.slice(0, 10)"

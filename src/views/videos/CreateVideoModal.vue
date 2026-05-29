@@ -3,7 +3,7 @@
     <div class="bg-white rounded-2xl shadow-2xl w-[90vw] max-w-md p-6">
       <!-- Header -->
       <div class="flex items-center justify-between mb-6">
-        <h2 class="font-poppins font-bold text-lg text-ditto-text">Create a new video release</h2>
+        <h2 class="font-satoshi font-black tracking-[-0.03em] text-lg text-ditto-text">Create a new video release</h2>
         <button @click="$emit('close')" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-ditto-light-grey transition-colors">
           <svg class="w-4 h-4 text-ditto-subtext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>

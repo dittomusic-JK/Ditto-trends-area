@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2 class="font-poppins font-bold text-xl lg:text-2xl text-ditto-text mb-2">Upload your thumbnail</h2>
+    <h2 class="font-satoshi font-black tracking-[-0.03em] text-xl lg:text-2xl text-ditto-text mb-2">Upload your thumbnail</h2>
     <p class="text-sm text-ditto-subtext mb-6">
       Upload a thumbnail image or capture a frame from your video. 16:9 aspect ratio, 1920x1080 or higher.
     </p>

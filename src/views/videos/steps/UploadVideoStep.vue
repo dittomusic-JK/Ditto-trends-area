@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2 class="font-poppins font-bold text-xl lg:text-2xl text-ditto-text mb-2">Upload your video</h2>
+    <h2 class="font-satoshi font-black tracking-[-0.03em] text-xl lg:text-2xl text-ditto-text mb-2">Upload your video</h2>
     <p class="text-sm text-ditto-subtext mb-6">Upload a high-quality video file to get started.</p>
 
     <!-- Drop Zone (before upload) -->

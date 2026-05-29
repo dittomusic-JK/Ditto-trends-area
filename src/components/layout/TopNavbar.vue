@@ -321,10 +321,10 @@ const navEntries = computed<NavEntry[]>(() => [
   },
   {
     id: 'rights', type: 'dropdown', label: 'Rights Management',
-    active: props.activeSection === 'publishing' || props.activeSection === 'neighbouring-rights',
+    active: props.activeSection === 'publishing' || props.activeSection === 'neighbouring-rights' || props.activeSection === 'sync',
     items: [
       { label: 'Music Publishing', active: props.activeSection === 'publishing', action: () => emit('navigate', 'publishing') },
-      { label: 'Apply for Sync', action: null },
+      { label: 'Apply for Sync', active: props.activeSection === 'sync', action: () => emit('navigate', 'sync') },
       { label: 'Neighbouring Rights', active: props.activeSection === 'neighbouring-rights', action: () => emit('navigate', 'neighbouring-rights') },
       { label: 'Report Live Performance', action: null },
     ],

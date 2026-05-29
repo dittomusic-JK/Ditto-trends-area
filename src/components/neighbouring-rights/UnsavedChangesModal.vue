@@ -71,7 +71,8 @@ defineEmits<{
 
   &__title {
     font-size: $text-h4;
-    font-weight: 700;
+    font-weight: 900;
+    letter-spacing: -0.03em;
     color: var(--blue);
     font-family: $font-poppins;
     text-align: center;

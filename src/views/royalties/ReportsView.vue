@@ -2,7 +2,7 @@
   <div class="space-y-6">
     <!-- Header -->
     <div>
-      <h2 class="font-poppins font-bold text-2xl text-ditto-text mb-1">Royalty Reports</h2>
+      <h2 class="font-satoshi font-black tracking-[-0.03em] text-2xl text-ditto-text mb-1">Royalty Reports</h2>
       <p class="text-sm text-ditto-subtext">Download detailed royalty earnings and sales data in your preferred format.</p>
     </div>
 
@@ -19,7 +19,7 @@
             <line x1="16" y1="17" x2="8" y2="17" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </div>
-        <h3 class="font-poppins font-bold text-lg text-ditto-text mb-1">Net Revenue</h3>
+        <h3 class="font-satoshi font-black tracking-[-0.03em] text-lg text-ditto-text mb-1">Net Revenue</h3>
         <p class="text-sm text-ditto-subtext mb-5">Your total royalty earnings, broken down by track and store.</p>
         <button class="px-5 py-2.5 bg-ditto-purple text-white text-sm font-medium rounded-full hover:bg-ditto-purple/90 transition-colors">
           Generate Report
@@ -36,7 +36,7 @@
             <line x1="9" y1="15" x2="15" y2="15" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </div>
-        <h3 class="font-poppins font-bold text-lg text-ditto-text mb-1">Summary</h3>
+        <h3 class="font-satoshi font-black tracking-[-0.03em] text-lg text-ditto-text mb-1">Summary</h3>
         <p class="text-sm text-ditto-subtext mb-5">Your total royalty earnings, broken down by release, track and store.</p>
         <button class="px-5 py-2.5 border border-ditto-purple text-ditto-purple text-sm font-medium rounded-full hover:bg-ditto-purple/5 transition-colors">
           Generate Report
@@ -47,7 +47,7 @@
     <!-- Previous Downloads -->
     <div class="bg-white rounded-2xl shadow-sm border border-gray-200">
       <div class="px-6 py-4 border-b border-gray-100">
-        <h3 class="font-poppins font-bold text-lg text-ditto-text">Recent Downloads</h3>
+        <h3 class="font-satoshi font-black tracking-[-0.03em] text-lg text-ditto-text">Recent Downloads</h3>
       </div>
       <div v-for="report in recentReports" :key="report.id" class="flex items-center gap-4 px-6 py-4 border-t border-gray-50 first:border-t-0 hover:bg-ditto-light-grey transition-colors">
         <div class="w-10 h-10 rounded-lg bg-ditto-purple/10 flex items-center justify-center flex-shrink-0">

@@ -2,7 +2,7 @@
   <div>
     <!-- Header: Title + Complete Button -->
     <div class="flex items-start justify-between mb-6">
-      <h2 class="font-poppins font-bold text-2xl lg:text-3xl text-ditto-text">Review Your Release</h2>
+      <h2 class="font-satoshi font-black tracking-[-0.03em] text-2xl lg:text-3xl text-ditto-text">Review Your Release</h2>
       <button
         @click="$emit('complete')"
         :disabled="errorStages.length > 0"
@@ -61,7 +61,7 @@
 
         <!-- Title + Metadata Grid -->
         <div class="flex-1 min-w-0">
-          <h3 class="font-poppins font-bold text-xl text-ditto-text mb-0.5">
+          <h3 class="font-satoshi font-black tracking-[-0.03em] text-xl text-ditto-text mb-0.5">
             {{ formData.metadata.title || '[Untitled]' }}
           </h3>
           <p class="text-sm text-ditto-purple mb-4">
@@ -505,7 +505,7 @@ defineEmits<{
   (e: 'complete'): void
 }>()
 
-const stepNames = ['Stores', 'Upload', 'Details', 'Schedule', 'Review']
+const stepNames = ['Stores', 'Upload', 'Details', 'Schedule', 'Content Check', 'Review']
 
 const assetSourceLabel = computed(() => {
   const labels: Record<string, string> = {
@@ -548,12 +548,10 @@ const errorStages = computed(() => {
     errors.push({ index: 0, name: stepNames[0], message: 'no stores selected' })
   }
 
-  if (!props.formData.videoFile || !props.formData.thumbnailFile || !Object.values(props.formData.contentChecks).every(v => v) || !props.formData.assetSource.type) {
+  if (!props.formData.videoFile || !props.formData.thumbnailFile) {
     const issues = []
     if (!props.formData.videoFile) issues.push('video not uploaded')
     if (!props.formData.thumbnailFile) issues.push('thumbnail not uploaded')
-    if (!Object.values(props.formData.contentChecks).every(v => v)) issues.push('content checklist not complete')
-    if (!props.formData.assetSource.type) issues.push('video source not selected')
     errors.push({ index: 1, name: stepNames[1], message: issues.join(', ') })
   }
 
@@ -573,6 +571,13 @@ const errorStages = computed(() => {
     if (!props.formData.schedule.releaseDate) issues.push('release date not set')
     if (!props.formData.schedule.distributionType) issues.push('distribution type not selected')
     errors.push({ index: 3, name: stepNames[3], message: issues.join(', ') })
+  }
+
+  if (!Object.values(props.formData.contentChecks).every(v => v) || !props.formData.assetSource.type) {
+    const issues = []
+    if (!Object.values(props.formData.contentChecks).every(v => v)) issues.push('content checklist not complete')
+    if (!props.formData.assetSource.type) issues.push('video source not selected')
+    errors.push({ index: 4, name: stepNames[4], message: issues.join(', ') })
   }
 
   return errors

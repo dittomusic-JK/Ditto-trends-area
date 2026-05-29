@@ -25,7 +25,7 @@
     <div v-if="!isDownloadsSelected" class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8">
       <!-- Gender Section -->
       <div class="bg-white rounded-2xl p-4 lg:p-6 shadow-sm border border-gray-200">
-        <h3 class="font-poppins font-bold text-lg lg:text-xl text-ditto-text mb-4">Gender</h3>
+        <h3 class="font-satoshi font-black tracking-[-0.03em] text-lg lg:text-xl text-ditto-text mb-4">Gender</h3>
         <div class="flex flex-col items-center">
           <!-- Donut Chart -->
           <div class="relative w-[160px] h-[160px] lg:w-[200px] lg:h-[200px]">
@@ -58,7 +58,7 @@
       
       <!-- Age Range Section -->
       <div class="bg-white rounded-2xl p-4 lg:p-6 shadow-sm border border-gray-200">
-        <h3 class="font-poppins font-bold text-lg lg:text-xl text-ditto-text mb-4 lg:mb-6">Age Range</h3>
+        <h3 class="font-satoshi font-black tracking-[-0.03em] text-lg lg:text-xl text-ditto-text mb-4 lg:mb-6">Age Range</h3>
         <div class="space-y-4">
           <div 
             v-for="(ageRange, index) in data.ageRanges" 
@@ -107,7 +107,7 @@
     <!-- World Map Section (hidden on mobile and hidden for downloads) -->
     <div v-if="!isDownloadsSelected" class="hidden lg:block bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
       <div class="flex items-center justify-between mb-6">
-        <h3 class="font-poppins font-bold text-xl text-ditto-text">Geographic Distribution</h3>
+        <h3 class="font-satoshi font-black tracking-[-0.03em] text-xl text-ditto-text">Geographic Distribution</h3>
         <div class="flex items-center gap-3 text-xs text-ditto-subtext">
           <div class="flex items-center gap-1.5">
             <span class="w-3 h-3 rounded" style="background-color: rgba(134, 64, 244, 0.2)"></span>
@@ -154,7 +154,7 @@
       <!-- Country Ranking -->
       <div class="bg-white rounded-2xl p-4 lg:p-6 shadow-sm border border-gray-200">
         <div class="flex items-center justify-between mb-4">
-          <h3 class="font-poppins font-bold text-lg lg:text-xl text-ditto-text">Top Countries</h3>
+          <h3 class="font-satoshi font-black tracking-[-0.03em] text-lg lg:text-xl text-ditto-text">Top Countries</h3>
           <button 
             @click="showAllLocations = !showAllLocations"
             class="text-sm font-medium text-ditto-purple hover:text-ditto-purple/80 transition-colors"
@@ -195,7 +195,7 @@
       <!-- City Ranking (hidden for downloads) -->
       <div v-if="!isDownloadsSelected" class="bg-white rounded-2xl p-4 lg:p-6 shadow-sm border border-gray-200">
         <div class="flex items-center justify-between mb-4">
-          <h3 class="font-poppins font-bold text-lg lg:text-xl text-ditto-text">Top Cities</h3>
+          <h3 class="font-satoshi font-black tracking-[-0.03em] text-lg lg:text-xl text-ditto-text">Top Cities</h3>
           <button 
             @click="showAllLocations = !showAllLocations"
             class="text-sm font-medium text-ditto-purple hover:text-ditto-purple/80 transition-colors"

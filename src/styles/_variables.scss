@@ -5,7 +5,9 @@ $breakpoint-lg: 1024px;
 
 // Font families (matching framework --brand-font-*)
 $font-satoshi: 'Satoshi', Helvetica, Arial, sans-serif;
-$font-poppins: 'Poppins', Helvetica, Arial, sans-serif;
+// Headers now use Satoshi (900) instead of Poppins; kept the var name
+// so existing header rules resolve to Satoshi without churn.
+$font-poppins: 'Satoshi', Helvetica, Arial, sans-serif;
 
 // Font sizes
 $text-h1: 2.625rem;

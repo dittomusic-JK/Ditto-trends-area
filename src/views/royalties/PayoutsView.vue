@@ -5,7 +5,7 @@
       <!-- Main Balance Card -->
       <div class="bg-white rounded-2xl p-8 border border-gray-200 flex flex-col">
         <p class="text-sm text-ditto-subtext mb-2">Your balance</p>
-        <p class="text-5xl font-bold text-ditto-text tracking-tight mb-6">£168,247.18</p>
+        <p class="text-5xl font-bold text-ditto-text tracking-[-0.03em] mb-6">£168,247.18</p>
 
         <!-- Segmented Balance Bar -->
         <div class="flex h-3 rounded-full bg-gray-100 mb-3">
@@ -76,7 +76,7 @@
 
     <!-- Activity -->
     <div>
-      <h3 class="font-poppins font-bold text-lg text-ditto-text mb-1">Activity</h3>
+      <h3 class="font-satoshi font-black tracking-[-0.03em] text-lg text-ditto-text mb-1">Activity</h3>
       <p class="text-sm text-ditto-subtext mb-4">Recent payouts</p>
 
       <!-- Clean rows with dividers -->

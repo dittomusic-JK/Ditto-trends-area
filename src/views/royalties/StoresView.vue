@@ -22,7 +22,7 @@
 
       <!-- Top Stores List -->
       <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
-        <h3 class="font-poppins font-bold text-xl text-ditto-text mb-5">Top Performing Stores</h3>
+        <h3 class="font-satoshi font-black tracking-[-0.03em] text-xl text-ditto-text mb-5">Top Performing Stores</h3>
         <div class="space-y-4">
           <div v-for="store in stores.slice(0, 5)" :key="store.id" class="flex items-center gap-4">
             <img :src="getStoreIcon(store.icon)" :alt="store.name" class="w-10 h-10 rounded-xl flex-shrink-0" />
@@ -47,7 +47,7 @@
     <!-- All Stores Table -->
     <div class="bg-white rounded-2xl shadow-sm border border-gray-200">
       <div class="px-6 py-4 border-b border-gray-100">
-        <h3 class="font-poppins font-bold text-lg text-ditto-text">All Stores</h3>
+        <h3 class="font-satoshi font-black tracking-[-0.03em] text-lg text-ditto-text">All Stores</h3>
         <p class="text-xs text-ditto-subtext mt-0.5">{{ stores.length }} stores reporting earnings</p>
       </div>
 

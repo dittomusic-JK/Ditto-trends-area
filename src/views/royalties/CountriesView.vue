@@ -1,6 +1,6 @@
 <template>
   <div class="bg-white rounded-2xl p-4 lg:p-6 shadow-sm border border-gray-200">
-    <h3 class="font-poppins font-bold text-lg lg:text-xl text-ditto-text mb-4">Earnings by Country</h3>
+    <h3 class="font-satoshi font-black tracking-[-0.03em] text-lg lg:text-xl text-ditto-text mb-4">Earnings by Country</h3>
     <div class="space-y-1">
       <div
         v-for="country in countries"

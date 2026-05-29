@@ -3,7 +3,7 @@
     <div class="px-4 sm:px-6 lg:px-16 pt-4 sm:pt-6 lg:pt-8">
       <!-- Welcome Header -->
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
-        <h1 class="font-poppins font-bold text-xl sm:text-3xl lg:text-[42px] tracking-tight text-ditto-text">
+        <h1 class="font-satoshi font-black text-xl sm:text-3xl lg:text-[42px] tracking-[-0.03em] text-ditto-text">
           My Videos
         </h1>
         <button
@@ -71,7 +71,7 @@
     <!-- Sticky Filter Bar -->
     <div class="sticky top-0 z-20 bg-white px-4 sm:px-6 lg:px-16 pt-4 pb-3 shadow-[0_4px_12px_-2px_rgba(0,0,0,0.06)]">
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
-        <h2 class="font-poppins font-bold text-2xl lg:text-3xl text-ditto-text">Your Videos</h2>
+        <h2 class="font-satoshi font-black tracking-[-0.03em] text-2xl lg:text-3xl text-ditto-text">Your Videos</h2>
         <!-- Search -->
         <div class="relative">
           <svg class="w-4 h-4 text-ditto-subtext absolute left-3 top-1/2 -translate-y-1/2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

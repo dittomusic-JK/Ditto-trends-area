@@ -92,7 +92,10 @@
     <ArtistsDashboard v-if="appSection === 'artists'" />
 
     <!-- Publishing Section -->
-    <PublishingDashboard v-if="appSection === 'publishing'" />
+    <PublishingDashboard v-if="appSection === 'publishing'" @navigate="appSection = $event" />
+
+    <!-- Sync Section -->
+    <SyncView v-if="appSection === 'sync'" />
 
     <!-- Videos Section -->
     <VideosDashboard v-if="appSection === 'videos'" />
@@ -132,6 +135,9 @@ import VideosDashboard from './views/videos/VideosDashboard.vue'
 
 // Neighbouring Rights
 import NeighbouringRightsView from './views/NeighbouringRightsView.vue'
+
+// Sync
+import SyncView from './views/sync/SyncView.vue'
 
 // View Components
 import MetricsView from './views/MetricsView.vue'

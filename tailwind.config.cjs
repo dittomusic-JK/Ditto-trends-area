@@ -36,7 +36,9 @@ module.exports = {
       },
       fontFamily: {
         "satoshi": ["Satoshi", "Helvetica", "Arial", "sans-serif"],
-        "poppins": ["Poppins", "Helvetica", "Arial", "sans-serif"],
+        // Headers use Satoshi (900) now; poppins token aliases to Satoshi
+        // so any stray font-poppins usage stays on-brand.
+        "poppins": ["Satoshi", "Helvetica", "Arial", "sans-serif"],
       },
       fontSize: {
         "h1": ["2.625rem", { lineHeight: "3rem", letterSpacing: "-0.03em", fontWeight: "700" }],

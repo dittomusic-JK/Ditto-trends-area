@@ -1,7 +1,7 @@
 <template>
   <div class="px-4 py-4 sm:px-6 sm:py-6 lg:px-16 lg:py-8 w-full max-w-full box-border">
     <!-- Header -->
-    <h1 class="font-poppins font-bold text-xl sm:text-3xl lg:text-[42px] tracking-tight text-ditto-text mb-6">
+    <h1 class="font-satoshi font-black text-xl sm:text-3xl lg:text-[42px] tracking-[-0.03em] text-ditto-text mb-6">
       Publishing <span>📝</span>
     </h1>
 
@@ -47,15 +47,15 @@
         <!-- Register New Work -->
         <div class="bg-white rounded-2xl border border-gray-200 p-6 hover:shadow-md transition-shadow cursor-pointer group">
           <img src="/img/pub-registernewwork.svg" alt="" class="w-12 h-12 mb-4" />
-          <h3 class="font-poppins font-bold text-base text-ditto-text mb-1">Register a new<br/><span class="text-ditto-purple">Musical Work.</span></h3>
+          <h3 class="font-satoshi font-black tracking-[-0.03em] text-base text-ditto-text mb-1">Register a new<br/><span class="text-ditto-purple">Musical Work.</span></h3>
           <p class="text-xs text-ditto-subtext mb-4">Add & register tracks from your release library to claim publishing royalties.</p>
           <span class="text-sm font-medium text-ditto-purple group-hover:underline">Register Song →</span>
         </div>
 
         <!-- Sync Opportunities -->
-        <div class="bg-white rounded-2xl border border-gray-200 p-6 hover:shadow-md transition-shadow cursor-pointer group" @click="activeTab = 'sync'">
+        <div class="bg-white rounded-2xl border border-gray-200 p-6 hover:shadow-md transition-shadow cursor-pointer group" @click="emit('navigate', 'sync')">
           <img src="/img/pub-syncopportunity.svg" alt="" class="w-12 h-12 mb-4" />
-          <h3 class="font-poppins font-bold text-base text-ditto-text mb-1">Sync Opportunities</h3>
+          <h3 class="font-satoshi font-black tracking-[-0.03em] text-base text-ditto-text mb-1">Sync Opportunities</h3>
           <p class="text-xs text-ditto-subtext mb-4">Submit your tracks for the chance to be featured in movies, TV shows, ads, games and more.</p>
           <span class="text-sm font-medium text-ditto-purple group-hover:underline">Apply Now →</span>
         </div>
@@ -63,7 +63,7 @@
         <!-- View/Amend Works -->
         <div class="bg-white rounded-2xl border border-gray-200 p-6 hover:shadow-md transition-shadow cursor-pointer group" @click="activeTab = 'works'">
           <img src="/img/pub-viewamendworks.svg" alt="" class="w-12 h-12 mb-4" />
-          <h3 class="font-poppins font-bold text-base text-ditto-text mb-1">View/amend Your Works</h3>
+          <h3 class="font-satoshi font-black tracking-[-0.03em] text-base text-ditto-text mb-1">View/amend Your Works</h3>
           <p class="text-xs text-ditto-subtext mb-4">See the works you've already registered and the details that have been submitted.</p>
           <span class="text-sm font-medium text-ditto-purple group-hover:underline">View Works →</span>
         </div>
@@ -71,7 +71,7 @@
 
       <!-- Learn More -->
       <div>
-        <h3 class="font-poppins font-bold text-lg text-ditto-text mb-4">Learn more about Music Publishing</h3>
+        <h3 class="font-satoshi font-black tracking-[-0.03em] text-lg text-ditto-text mb-4">Learn more about Music Publishing</h3>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <a href="#" class="bg-white rounded-2xl border border-gray-200 p-5 hover:shadow-md transition-shadow group">
             <p class="text-sm font-semibold text-ditto-text group-hover:text-ditto-purple transition-colors">What is Sync Licensing? Get Your Music in Movies, TV & More</p>
@@ -92,7 +92,7 @@
     <!-- My Works -->
     <div v-else-if="activeTab === 'works'" class="space-y-6">
       <div class="flex items-center justify-between">
-        <h2 class="font-poppins font-bold text-xl text-ditto-text">My Works</h2>
+        <h2 class="font-satoshi font-black tracking-[-0.03em] text-xl text-ditto-text">My Works</h2>
         <button class="px-5 py-2.5 bg-ditto-purple text-white text-sm font-medium rounded-full hover:bg-ditto-purple/90 transition-colors">
           + Register New Work
         </button>
@@ -121,78 +121,21 @@
         </div>
       </div>
     </div>
-
-    <!-- Sync Opportunities -->
-    <div v-else-if="activeTab === 'sync'">
-      <div class="flex h-[calc(100vh-220px)] gap-0">
-        <!-- Sidebar List -->
-        <div class="w-full lg:w-[380px] flex-shrink-0 border-r border-gray-200 overflow-y-auto">
-          <div
-            v-for="opp in syncOpportunities" :key="opp.id"
-            @click="selectedOpp = opp"
-            :class="[
-              'px-4 py-4 border-b border-gray-200 cursor-pointer transition-colors',
-              selectedOpp?.id === opp.id ? 'bg-ditto-light-grey' : 'hover:bg-ditto-light-grey'
-            ]"
-          >
-            <p class="text-sm font-semibold text-ditto-text mb-1 truncate">{{ opp.title }}</p>
-            <p class="text-xs text-ditto-subtext mb-2">Deadline: {{ opp.deadline }}</p>
-            <p class="text-xs text-ditto-subtext line-clamp-2">{{ opp.description }}</p>
-            <div class="flex items-center gap-2 mt-2">
-              <span v-for="tag in opp.tags" :key="tag" class="text-[10px] px-2 py-0.5 rounded-full bg-ditto-light-grey text-ditto-subtext">{{ tag }}</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Detail Panel -->
-        <div class="hidden lg:flex flex-1 flex-col overflow-y-auto">
-          <div v-if="selectedOpp" class="p-6 lg:p-8">
-            <div class="flex items-center gap-2 mb-4">
-              <span :class="['text-[10px] font-semibold px-2 py-0.5 rounded-full', selectedOpp.urgent ? 'bg-error/15 text-error' : 'bg-info/15 text-info']">
-                {{ selectedOpp.urgent ? 'Closing Soon' : 'Open' }}
-              </span>
-              <span class="text-xs text-ditto-subtext">{{ selectedOpp.category }}</span>
-            </div>
-
-            <h2 class="font-poppins font-bold text-2xl text-ditto-text mb-2">{{ selectedOpp.title }}</h2>
-            <p class="text-sm text-ditto-subtext mb-6">Deadline: {{ selectedOpp.deadline }}</p>
-
-            <div class="mb-6">
-              <h3 class="text-sm font-semibold text-ditto-text mb-2">Details:</h3>
-              <p class="text-sm text-ditto-subtext leading-relaxed">{{ selectedOpp.description }}</p>
-              <p class="text-xs text-ditto-subtext mt-2 italic">We do not accept AI-generated music for sync opportunities.</p>
-            </div>
-
-            <div v-if="selectedOpp.reference" class="mb-6">
-              <h3 class="text-sm font-semibold text-ditto-text mb-2">Reference:</h3>
-              <p class="text-sm text-ditto-purple">{{ selectedOpp.reference }}</p>
-            </div>
-
-            <div class="flex items-center gap-2 mb-8">
-              <span v-for="tag in selectedOpp.tags" :key="tag" class="text-xs px-3 py-1 rounded-full bg-ditto-light-grey text-ditto-text">{{ tag }}</span>
-            </div>
-
-            <button class="px-6 py-3 bg-ditto-purple text-white text-sm font-semibold rounded-full hover:bg-ditto-purple/90 transition-colors">
-              Apply
-            </button>
-          </div>
-          <div v-else class="flex-1 flex items-center justify-center text-ditto-subtext text-sm">
-            Select an opportunity to view details
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import type { AppSection } from '../../types'
+
+const emit = defineEmits<{
+  (e: 'navigate', section: AppSection): void
+}>()
 
 const activeTab = ref('overview')
 const tabs = [
   { id: 'overview', label: 'Overview' },
   { id: 'works', label: 'My Works' },
-  { id: 'sync', label: 'Sync Opportunities' },
 ]
 
 const works = [
@@ -205,15 +148,4 @@ const works = [
   { id: 7, title: 'Focus On Me', artist: 'Darkoo', isrc: 'GBDHC2500073', writers: 1, status: 'Approved' },
   { id: 8, title: 'Right Now', artist: 'Darkoo, Davido & Rvssian', isrc: 'GBDHC2400203', writers: 4, status: 'Approved' },
 ]
-
-const syncOpportunities = [
-  { id: 1, title: 'Upbeat Instrumentals for Football Campaign', description: 'We\'re looking for upbeat, dynamic tracks to support a lighthearted, football campaign focused on ease and energy. We are open to genre as long as it feels fresh and engaging rather than overly polished.', category: 'Advertising', deadline: 'April 24, 2026', urgent: true, reference: 'Phoenix - Lisztomania', tags: ['football', 'upbeat', 'energetic'] },
-  { id: 2, title: 'Recognisable Anthem Tracks for Reimagined Campaign', description: 'We\'re looking for a recognisable track to be re-recorded and reimagined for a campaign film. The music needs to feel bold, iconic and emotionally resonant.', category: 'Advertising', deadline: 'April 28, 2026', urgent: true, reference: null, tags: ['recognisable', 'anthem', 'classic'] },
-  { id: 3, title: 'Bold UK Electronic & House Tracks for Women\'s Sport Film', description: 'We\'re looking for modern UK electronic or house tracks to drive a long-form film celebrating women\'s sport. Must feel empowering, bold, and cinematic.', category: 'Film', deadline: 'April 28, 2026', urgent: true, reference: null, tags: ['electronic', 'film', 'empowering'] },
-  { id: 4, title: 'Netflix Drama Series - Urban/Afrobeats', description: 'Looking for high-energy Afrobeats and urban tracks for a new Netflix original drama series. Must be upbeat with strong hooks and authentic production.', category: 'TV Series', deadline: 'May 15, 2026', urgent: false, reference: 'Burna Boy - Last Last', tags: ['afrobeats', 'urban', 'drama'] },
-  { id: 5, title: 'Sports Brand Campaign - Motivational', description: 'Major sports brand seeking motivational tracks with driving energy for their summer campaign. Instrumental or vocal accepted.', category: 'Advertising', deadline: 'May 20, 2026', urgent: false, reference: null, tags: ['motivational', 'sports', 'energy'] },
-  { id: 6, title: 'Indie Film Soundtrack - Emotional R&B', description: 'Independent film production looking for soulful R&B and emotional tracks for key scenes. Stripped-back production preferred with strong vocal performance.', category: 'Film', deadline: 'June 1, 2026', urgent: false, reference: 'SZA - Kill Bill', tags: ['R&B', 'emotional', 'indie'] },
-]
-
-const selectedOpp = ref(syncOpportunities[0] as typeof syncOpportunities[0] | null)
 </script>

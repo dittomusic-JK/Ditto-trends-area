@@ -288,12 +288,13 @@ const handleRegisterTrack = (trackId: string) => {
   &__title {
     font-family: $font-poppins;
     font-size: $text-h1;
-    font-weight: 400;
+    font-weight: 900;
+    letter-spacing: -0.03em;
     color: var(--blue);
     margin-bottom: 2rem;
     line-height: 1.2;
 
-    strong { font-weight: 700; }
+    strong { font-weight: 900; }
   }
 
   &__subtitle {
@@ -312,12 +313,13 @@ const handleRegisterTrack = (trackId: string) => {
   &__step-title {
     font-family: $font-poppins;
     font-size: $text-h2;
-    font-weight: 400;
+    font-weight: 900;
+    letter-spacing: -0.03em;
     color: var(--blue);
     margin-bottom: 0.25rem;
     line-height: 1.3;
 
-    strong { font-weight: 700; }
+    strong { font-weight: 900; }
   }
 
   &__step-desc {

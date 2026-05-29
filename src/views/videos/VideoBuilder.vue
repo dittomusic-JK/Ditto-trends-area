@@ -31,17 +31,6 @@
               </svg>
               <span>{{ step.label }}</span>
             </span>
-            <!-- Sub-step progress dots -->
-            <div v-if="step.subStepCount" class="flex items-center gap-1 mt-0.5">
-              <span
-                v-for="dot in step.subStepCount"
-                :key="dot"
-                :class="[
-                  'w-1.5 h-1.5 rounded-full transition-all',
-                  getSubStepDotClass(index, dot - 1)
-                ]"
-              ></span>
-            </div>
           </button>
         </div>
       </div>
@@ -49,45 +38,48 @@
 
     <!-- Step Content -->
     <div class="px-4 sm:px-6 lg:px-20 py-8 lg:py-10 max-w-5xl mx-auto">
+      <!-- Step 1: Stores -->
       <SelectStoresStep
         v-if="currentStep === 0"
         v-model:stores="formData.stores"
         @copy-metadata="handleCopyMetadata"
       />
-      <UploadVideoStep
-        v-else-if="currentStep === 1 && uploadSubStep === 0"
-        v-model:videoFile="formData.videoFile"
-        @uploaded="uploadSubStep = 1"
-      />
-      <UploadThumbnailStep
-        v-else-if="currentStep === 1 && uploadSubStep === 1"
-        v-model:thumbnailFile="formData.thumbnailFile"
-        :has-video="formData.videoFile !== null"
-        @uploaded="uploadSubStep = 2"
-      />
-      <CheckContentStep
-        v-else-if="currentStep === 1 && uploadSubStep === 2"
-        v-model:checks="formData.contentChecks"
-        v-model:assetSource="formData.assetSource"
-      />
-      <VideoMetadataStep
-        v-else-if="currentStep === 2 && detailsSubStep === 0"
-        v-model:metadata="formData.metadata"
-      />
-      <VideoArtistsStep
-        v-else-if="currentStep === 2 && detailsSubStep === 1"
-        v-model:artists="formData.artists"
-      />
-      <VideoCreditsStep
-        v-else-if="currentStep === 2 && detailsSubStep === 2"
-        v-model:credits="formData.credits"
-      />
+
+      <!-- Step 2: Upload (video + thumbnail) -->
+      <div v-else-if="currentStep === 1" class="space-y-10">
+        <UploadVideoStep v-model:videoFile="formData.videoFile" />
+        <div class="border-t border-gray-200"></div>
+        <UploadThumbnailStep
+          v-model:thumbnailFile="formData.thumbnailFile"
+          :has-video="formData.videoFile !== null"
+        />
+      </div>
+
+      <!-- Step 3: Details (metadata + artists + credits) -->
+      <div v-else-if="currentStep === 2" class="space-y-10">
+        <VideoMetadataStep v-model:metadata="formData.metadata" />
+        <div class="border-t border-gray-200"></div>
+        <VideoArtistsStep v-model:artists="formData.artists" />
+        <div class="border-t border-gray-200"></div>
+        <VideoCreditsStep v-model:credits="formData.credits" />
+      </div>
+
+      <!-- Step 4: Schedule -->
       <PlanReleaseStep
         v-else-if="currentStep === 3"
         v-model:schedule="formData.schedule"
       />
-      <ReviewStep
+
+      <!-- Step 5: Content Check -->
+      <CheckContentStep
         v-else-if="currentStep === 4"
+        v-model:checks="formData.contentChecks"
+        v-model:assetSource="formData.assetSource"
+      />
+
+      <!-- Step 6: Review -->
+      <ReviewStep
+        v-else-if="currentStep === 5"
         :form-data="formData"
         :step-errors="stepErrors"
         @go-to-step="navigateToStep"
@@ -104,12 +96,12 @@
           class="px-8 py-2.5 text-sm font-medium rounded-full border border-gray-200 text-ditto-text hover:bg-ditto-light-grey transition-colors"
         >Back</button>
         <button
-          v-if="currentStep < 4"
+          v-if="currentStep < 5"
           @click="handleNext"
           class="px-8 py-2.5 bg-ditto-purple text-white text-sm font-medium rounded-full hover:bg-ditto-purple/90 transition-colors"
         >Next</button>
         <button
-          v-if="currentStep === 4"
+          v-if="currentStep === 5"
           @click="handleComplete"
           :disabled="hasAnyErrors"
           :class="[
@@ -147,19 +139,14 @@ defineEmits<{
 }>()
 
 const currentStep = ref(0)
-const uploadSubStep = ref(0)
-const detailsSubStep = ref(0)
-
-// Track highest sub-step visited (so dots show progress even when navigating away)
-const uploadSubStepVisited = ref(0)
-const detailsSubStepVisited = ref(0)
 
 const steps = [
-  { id: 'stores', label: 'Stores', subStepCount: 0 },
-  { id: 'upload', label: 'Upload', subStepCount: 3 },
-  { id: 'details', label: 'Details', subStepCount: 3 },
-  { id: 'schedule', label: 'Schedule', subStepCount: 0 },
-  { id: 'review', label: 'Review', subStepCount: 0 },
+  { id: 'stores', label: 'Stores' },
+  { id: 'upload', label: 'Upload' },
+  { id: 'details', label: 'Details' },
+  { id: 'schedule', label: 'Schedule' },
+  { id: 'content', label: 'Content Check' },
+  { id: 'review', label: 'Review' },
 ]
 
 const currentYear = new Date().getFullYear()
@@ -261,9 +248,7 @@ const validateStep = (stepIndex: number): boolean => {
       return formData.stores.selected.length > 0
     case 1:
       return formData.videoFile !== null &&
-        formData.thumbnailFile !== null &&
-        Object.values(formData.contentChecks).every(v => v) &&
-        formData.assetSource.type !== ''
+        formData.thumbnailFile !== null
     case 2:
       return formData.metadata.title.length > 0 &&
         formData.metadata.copyrightHolder.length >= 2 &&
@@ -275,6 +260,9 @@ const validateStep = (stepIndex: number): boolean => {
       return formData.schedule.releaseDate !== null &&
         formData.schedule.distributionType !== ''
     case 4:
+      return Object.values(formData.contentChecks).every(v => v) &&
+        formData.assetSource.type !== ''
+    case 5:
       return !hasAnyErrors.value
     default:
       return false
@@ -295,7 +283,7 @@ const isStepComplete = (index: number): boolean => {
 }
 
 const hasAnyErrors = computed(() => {
-  return [0, 1, 2, 3].some(i => !validateStep(i))
+  return [0, 1, 2, 3, 4].some(i => !validateStep(i))
 })
 
 const getStepClasses = (index: number): string => {
@@ -312,63 +300,24 @@ const getStepNumberClasses = (index: number): string => {
   return 'text-ditto-subtext/60'
 }
 
-const getSubStepDotClass = (stepIndex: number, subIndex: number): string => {
-  const isCurrentStep = stepIndex === currentStep.value
-  const currentSub = stepIndex === 1 ? uploadSubStep.value : detailsSubStep.value
-  const visitedSub = stepIndex === 1 ? uploadSubStepVisited.value : detailsSubStepVisited.value
-
-  if (isCurrentStep && subIndex === currentSub) {
-    // Active sub-step dot
-    return 'bg-ditto-purple w-2.5 h-1.5 !rounded-full'
-  }
-  if (subIndex <= visitedSub) {
-    // Visited/completed sub-step
-    return 'bg-ditto-purple/40'
-  }
-  // Not yet visited
-  return 'bg-gray-300'
-}
-
-const canGoBack = computed(() => {
-  return currentStep.value > 0 || (currentStep.value === 1 && uploadSubStep.value > 0)
-})
+const canGoBack = computed(() => currentStep.value > 0)
 
 const navigateToStep = (index: number) => {
   currentStep.value = index
-  if (index === 1) uploadSubStep.value = 0
-  if (index === 2) detailsSubStep.value = 0
+  window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
 const handleBack = () => {
-  if (currentStep.value === 1 && uploadSubStep.value > 0) {
-    uploadSubStep.value--
-  } else if (currentStep.value === 2 && detailsSubStep.value > 0) {
-    detailsSubStep.value--
-  } else if (currentStep.value > 0) {
+  if (currentStep.value > 0) {
     currentStep.value--
-    // Go to last sub-step of previous step
-    if (currentStep.value === 1) {
-      uploadSubStep.value = 2
-      uploadSubStepVisited.value = 2
-    }
-    if (currentStep.value === 2) {
-      detailsSubStep.value = 2
-      detailsSubStepVisited.value = 2
-    }
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 }
 
 const handleNext = () => {
-  if (currentStep.value === 1 && uploadSubStep.value < 2) {
-    uploadSubStep.value++
-    uploadSubStepVisited.value = Math.max(uploadSubStepVisited.value, uploadSubStep.value)
-  } else if (currentStep.value === 2 && detailsSubStep.value < 2) {
-    detailsSubStep.value++
-    detailsSubStepVisited.value = Math.max(detailsSubStepVisited.value, detailsSubStep.value)
-  } else if (currentStep.value < 4) {
+  if (currentStep.value < 5) {
     currentStep.value++
-    if (currentStep.value === 1) uploadSubStep.value = 0
-    if (currentStep.value === 2) detailsSubStep.value = 0
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 }
 

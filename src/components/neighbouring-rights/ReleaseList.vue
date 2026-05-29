@@ -130,11 +130,12 @@ const ringOffset = (release: Release): number => {
   &__section-title {
     font-family: $font-poppins;
     font-size: $text-h3;
-    font-weight: 400;
+    font-weight: 900;
+    letter-spacing: -0.03em;
     color: var(--blue);
     line-height: 1.3;
 
-    strong { font-weight: 700; }
+    strong { font-weight: 900; }
   }
 
   &__filters {

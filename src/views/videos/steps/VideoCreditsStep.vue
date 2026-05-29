@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2 class="font-poppins font-bold text-xl lg:text-2xl text-ditto-text mb-2">Track Credits</h2>
+    <h2 class="font-satoshi font-black tracking-[-0.03em] text-xl lg:text-2xl text-ditto-text mb-2">Track Credits</h2>
     <p class="text-sm text-ditto-subtext mb-6">
       Add the credits for the people involved in creating this video. Mandatory roles are required.
     </p>

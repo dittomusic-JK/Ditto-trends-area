@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2 class="font-poppins font-bold text-xl lg:text-2xl text-ditto-text mb-2">Artists</h2>
+    <h2 class="font-satoshi font-black tracking-[-0.03em] text-xl lg:text-2xl text-ditto-text mb-2">Artists</h2>
     <p class="text-sm text-ditto-subtext mb-6">Add the artists involved in this video release.</p>
 
     <!-- Primary Artists -->
@@ -167,7 +167,7 @@
       <div class="bg-white rounded-2xl shadow-2xl w-[460px] max-w-[90vw] flex flex-col gap-4 p-6">
         <!-- Header -->
         <div class="flex items-start justify-between">
-          <h3 class="font-bold text-[22px] text-ditto-text tracking-tight leading-tight">Your Artists</h3>
+          <h3 class="font-bold text-[22px] text-ditto-text tracking-[-0.03em] leading-tight">Your Artists</h3>
           <button @click="showArtistModal = false" class="text-ditto-subtext hover:text-ditto-text p-1 -m-1 rounded-md transition-colors">
             <svg class="w-[18px] h-[18px]" viewBox="0 0 18 18" fill="none">
               <path d="M2 2L16 16M16 2L2 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -238,7 +238,7 @@
             ]"
           >
             <div
-              class="relative w-[84px] h-[84px] rounded-full flex items-center justify-center text-white font-bold text-[30px] tracking-tight transition-all"
+              class="relative w-[84px] h-[84px] rounded-full flex items-center justify-center text-white font-bold text-[30px] tracking-[-0.03em] transition-all"
               :style="{ backgroundColor: artist.color }"
               :class="[
                 isArtistSelected(artist.id) ? 'ring-[3px] ring-[#2680eb]' : '',
@@ -286,7 +286,7 @@
     <!-- Add New Artist Modal -->
     <div v-if="showAddNewModal" class="fixed inset-0 z-[60] flex items-center justify-center bg-black/10 backdrop-blur-[2px]" @click.self="showAddNewModal = false">
       <div class="bg-white rounded-[22px] shadow-2xl w-[460px] max-w-[90vw] overflow-hidden">
-        <h3 class="font-bold text-2xl text-ditto-text tracking-tight px-5 pt-5 pb-3.5">Add New Artist</h3>
+        <h3 class="font-bold text-2xl text-ditto-text tracking-[-0.03em] px-5 pt-5 pb-3.5">Add New Artist</h3>
 
         <!-- Artist image -->
         <div class="flex items-center gap-3.5 px-5 pb-4">

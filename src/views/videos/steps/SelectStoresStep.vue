@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2 class="font-poppins font-bold text-xl lg:text-2xl text-ditto-text mb-2">Select Your Stores</h2>
+    <h2 class="font-satoshi font-black tracking-[-0.03em] text-xl lg:text-2xl text-ditto-text mb-2">Select Your Stores</h2>
     <p class="text-sm text-ditto-subtext mb-6">Choose which stores and platforms you want to distribute your video to.</p>
 
     <!-- Store Tiles -->
