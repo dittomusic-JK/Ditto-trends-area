@@ -96,6 +96,11 @@
 
     <!-- Videos Section -->
     <VideosDashboard v-if="appSection === 'videos'" />
+
+    <!-- Neighbouring Rights Section -->
+    <div v-if="appSection === 'neighbouring-rights'" class="px-4 py-4 sm:px-6 sm:py-6 lg:px-16 lg:py-8 w-full max-w-full box-border">
+      <NeighbouringRightsView />
+    </div>
   </div>
 </template>
 
@@ -124,6 +129,9 @@ import PublishingDashboard from './views/publishing/PublishingDashboard.vue'
 
 // Videos dashboard
 import VideosDashboard from './views/videos/VideosDashboard.vue'
+
+// Neighbouring Rights
+import NeighbouringRightsView from './views/NeighbouringRightsView.vue'
 
 // View Components
 import MetricsView from './views/MetricsView.vue'

@@ -22,11 +22,21 @@
   <Transition name="slide">
     <div v-if="showMobileMenu" class="md:hidden fixed inset-0 top-16 z-40 bg-white overflow-y-auto">
       <nav class="px-4 py-4 space-y-1">
-        <button
-          v-for="item in computedNavItems" :key="item.id"
-          @click="item.action ? (item.action(), showMobileMenu = false) : null"
-          :class="['w-full text-left px-4 py-3 rounded-xl text-sm font-medium transition-colors', item.active ? 'bg-ditto-purple/10 text-ditto-purple' : 'text-ditto-text hover:bg-ditto-light-grey']"
-        >{{ item.label }}</button>
+        <template v-for="item in navEntries" :key="item.id">
+          <button
+            v-if="item.type === 'link'"
+            @click="item.action ? (item.action(), showMobileMenu = false) : null"
+            :class="['w-full text-left px-4 py-3 rounded-xl text-sm font-medium transition-colors', item.active ? 'bg-ditto-purple/10 text-ditto-purple' : 'text-ditto-text hover:bg-ditto-light-grey']"
+          >{{ item.label }}</button>
+          <div v-else class="pt-2">
+            <p class="px-4 py-2 text-[11px] font-semibold uppercase tracking-wide text-ditto-subtext">{{ item.label }}</p>
+            <button
+              v-for="sub in item.items || []" :key="sub.label"
+              @click="sub.action ? (sub.action(), showMobileMenu = false) : null"
+              :class="['w-full text-left px-4 py-3 rounded-xl text-sm transition-colors', sub.active ? 'bg-ditto-purple/10 text-ditto-purple font-medium' : 'text-ditto-text hover:bg-ditto-light-grey']"
+            >{{ sub.label }}</button>
+          </div>
+        </template>
       </nav>
       <div class="border-t border-gray-200 px-4 py-4 space-y-1">
         <button class="w-full text-left px-4 py-3 rounded-xl text-sm text-ditto-text hover:bg-ditto-light-grey">Account Settings</button>
@@ -44,20 +54,53 @@
       
       <!-- Nav Items -->
       <nav class="relative flex items-center gap-6" ref="navRef">
-        <button 
-          v-for="item in computedNavItems" 
-          :key="item.id"
-          :ref="(el) => { if (el) navItemRefs[item.id] = el as HTMLElement }"
-          @click="item.action ? item.action() : null"
-          :class="[
-            'text-sm font-medium transition-colors pb-1',
-            item.active ? 'text-ditto-purple' : 'text-ditto-text hover:text-ditto-purple'
-          ]"
-        >
-          {{ item.label }}
-        </button>
+        <template v-for="item in navEntries" :key="item.id">
+          <!-- Flat link -->
+          <button
+            v-if="item.type === 'link'"
+            :ref="(el) => { if (el) navItemRefs[item.id] = el as HTMLElement }"
+            @click="item.action ? item.action() : null"
+            :class="[
+              'text-sm font-medium transition-colors pb-1',
+              item.active ? 'text-ditto-purple' : 'text-ditto-text hover:text-ditto-purple'
+            ]"
+          >
+            {{ item.label }}
+          </button>
+
+          <!-- Dropdown -->
+          <div
+            v-else
+            class="relative"
+            :ref="(el) => { if (el) navDropdownRefs[item.id] = el as HTMLElement }"
+          >
+            <button
+              :ref="(el) => { if (el) navItemRefs[item.id] = el as HTMLElement }"
+              @click="toggleNavDropdown(item.id)"
+              :class="[
+                'text-sm font-medium transition-colors pb-1 flex items-center gap-1',
+                item.active ? 'text-ditto-purple' : 'text-ditto-text hover:text-ditto-purple'
+              ]"
+            >
+              {{ item.label }}
+              <svg class="w-3 h-3 transition-transform" :class="openNavDropdown === item.id ? 'rotate-180' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div v-if="openNavDropdown === item.id" class="absolute left-0 top-full mt-3 w-56 bg-white rounded-2xl shadow-xl border border-gray-200 py-1.5 z-50">
+              <button
+                v-for="sub in item.items || []" :key="sub.label"
+                @click="sub.action ? (sub.action(), openNavDropdown = null) : null"
+                :class="[
+                  'w-full px-4 py-2.5 text-sm transition-colors text-left',
+                  sub.active ? 'text-ditto-purple bg-ditto-purple/5 font-medium' : 'text-ditto-text hover:bg-ditto-light-grey'
+                ]"
+              >
+                {{ sub.label }}
+              </button>
+            </div>
+          </div>
+        </template>
         <!-- Animated underline indicator -->
-        <div 
+        <div
           class="absolute bottom-[-28px] h-[2px] bg-ditto-purple rounded-full transition-all duration-300 ease-out"
           :style="indicatorStyle"
         ></div>
@@ -194,10 +237,11 @@ const emit = defineEmits<{
 
 const navRef = ref<HTMLElement | null>(null)
 const navItemRefs: Record<string, HTMLElement> = {}
+const navDropdownRefs: Record<string, HTMLElement> = {}
 const indicatorStyle = reactive({ opacity: '0', left: '0px', width: '0px' })
 
 const updateIndicator = () => {
-  const activeItem = computedNavItems.value.find(i => i.active)
+  const activeItem = navEntries.value.find(i => i.active)
   if (!activeItem || !navItemRefs[activeItem.id] || !navRef.value) {
     indicatorStyle.opacity = '0'
     return
@@ -217,9 +261,14 @@ const showMobileMenu = ref(false)
 const showCreateMenu = ref(false)
 const showAvatarMenu = ref(false)
 const showHelpMenu = ref(false)
+const openNavDropdown = ref<string | null>(null)
 const createDropdownRef = ref<HTMLElement | null>(null)
 const avatarDropdownRef = ref<HTMLElement | null>(null)
 const helpDropdownRef = ref<HTMLElement | null>(null)
+
+const toggleNavDropdown = (id: string) => {
+  openNavDropdown.value = openNavDropdown.value === id ? null : id
+}
 
 const handleClickOutside = (e: MouseEvent) => {
   if (createDropdownRef.value && !createDropdownRef.value.contains(e.target as Node)) {
@@ -231,18 +280,55 @@ const handleClickOutside = (e: MouseEvent) => {
   if (helpDropdownRef.value && !helpDropdownRef.value.contains(e.target as Node)) {
     showHelpMenu.value = false
   }
+  if (openNavDropdown.value) {
+    const el = navDropdownRefs[openNavDropdown.value]
+    if (el && !el.contains(e.target as Node)) {
+      openNavDropdown.value = null
+    }
+  }
 }
 onMounted(() => document.addEventListener('click', handleClickOutside))
 onUnmounted(() => document.removeEventListener('click', handleClickOutside))
 
-const computedNavItems = computed(() => [
-  { id: 'music', label: 'Music', active: props.activeSection === 'music', action: () => emit('navigate', 'music') },
-  { id: 'artists', label: 'Artists', active: props.activeSection === 'artists', action: () => emit('navigate', 'artists') },
-  { id: 'analytics', label: 'Analytics', active: props.activeSection === 'analytics', action: () => emit('navigate', 'analytics') },
-  { id: 'royalties', label: 'Royalties', active: props.activeSection === 'royalties', action: () => emit('navigate', 'royalties') },
-  { id: 'publishing', label: 'Publishing', active: props.activeSection === 'publishing', action: () => emit('navigate', 'publishing') },
-  { id: 'promotion', label: 'Promotion', active: false, action: null },
-  { id: 'videos', label: 'Videos', active: props.activeSection === 'videos', action: () => emit('navigate', 'videos') },
+interface NavSub {
+  label: string
+  active?: boolean
+  action: (() => void) | null
+}
+interface NavEntry {
+  id: string
+  type: 'link' | 'dropdown'
+  label: string
+  active: boolean
+  action?: (() => void) | null
+  items?: NavSub[]
+}
+
+const navEntries = computed<NavEntry[]>(() => [
+  { id: 'artists', type: 'link', label: 'Artists', active: props.activeSection === 'artists', action: () => emit('navigate', 'artists') },
+  { id: 'music', type: 'link', label: 'Music', active: props.activeSection === 'music', action: () => emit('navigate', 'music') },
+  { id: 'videos', type: 'link', label: 'Videos', active: props.activeSection === 'videos', action: () => emit('navigate', 'videos') },
+  { id: 'royalties', type: 'link', label: 'Royalties', active: props.activeSection === 'royalties', action: () => emit('navigate', 'royalties') },
+  { id: 'analytics', type: 'link', label: 'Analytics', active: props.activeSection === 'analytics', action: () => emit('navigate', 'analytics') },
+  {
+    id: 'promotion', type: 'dropdown', label: 'Promotion', active: false,
+    items: [
+      { label: 'Promo Campaigns', action: null },
+      { label: 'Ad Launcher', action: null },
+      { label: 'Promo Cards', action: null },
+      { label: 'AI Artwork Generator', action: null },
+    ],
+  },
+  {
+    id: 'rights', type: 'dropdown', label: 'Rights Management',
+    active: props.activeSection === 'publishing' || props.activeSection === 'neighbouring-rights',
+    items: [
+      { label: 'Music Publishing', active: props.activeSection === 'publishing', action: () => emit('navigate', 'publishing') },
+      { label: 'Apply for Sync', action: null },
+      { label: 'Neighbouring Rights', active: props.activeSection === 'neighbouring-rights', action: () => emit('navigate', 'neighbouring-rights') },
+      { label: 'Report Live Performance', action: null },
+    ],
+  },
 ])
 </script>
 
