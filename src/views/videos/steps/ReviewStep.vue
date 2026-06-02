@@ -209,7 +209,7 @@
           <img src="/img/vevo-icon.svg" alt="VEVO" class="w-5 h-5 object-contain" />
           <p class="text-sm font-semibold text-ditto-text">VEVO Channel</p>
         </div>
-        <button @click="$emit('goToStep', 0)" class="text-xs text-ditto-purple hover:underline">Edit</button>
+        <button @click="$emit('goToStep', 2)" class="text-xs text-ditto-purple hover:underline">Edit</button>
       </div>
       <div class="px-6 py-4">
         <div class="grid grid-cols-2 gap-x-8 gap-y-2.5">
@@ -249,7 +249,7 @@
     <div class="rounded-2xl border border-gray-200 overflow-hidden mb-4">
       <div class="px-6 py-4 bg-ditto-light-grey/50 border-b border-gray-200 flex items-center justify-between">
         <p class="text-sm font-semibold text-ditto-text">Credits</p>
-        <button @click="$emit('goToStep', 2)" class="text-xs text-ditto-purple hover:underline">Edit</button>
+        <button @click="$emit('goToStep', 1)" class="text-xs text-ditto-purple hover:underline">Edit</button>
       </div>
       <div class="px-6 py-4">
         <div v-if="filledCredits.length > 0" class="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -270,7 +270,7 @@
     <div class="rounded-2xl border border-gray-200 overflow-hidden mb-6">
       <div class="px-6 py-4 bg-ditto-light-grey/50 border-b border-gray-200 flex items-center justify-between">
         <p class="text-sm font-semibold text-ditto-text">Artists</p>
-        <button @click="$emit('goToStep', 2)" class="text-xs text-ditto-purple hover:underline">Edit</button>
+        <button @click="$emit('goToStep', 1)" class="text-xs text-ditto-purple hover:underline">Edit</button>
       </div>
       <div class="px-6 py-4 space-y-3">
         <!-- Primary -->
@@ -505,7 +505,7 @@ defineEmits<{
   (e: 'complete'): void
 }>()
 
-const stepNames = ['Stores', 'Upload', 'Details', 'Schedule', 'Content Check', 'Review']
+const stepNames = ['Upload', 'Details', 'Stores', 'Schedule', 'Content Check', 'Review']
 
 const assetSourceLabel = computed(() => {
   const labels: Record<string, string> = {
@@ -544,15 +544,11 @@ const vevoChannelDisplayName = computed(() => {
 const errorStages = computed(() => {
   const errors: { index: number; name: string; message: string }[] = []
 
-  if (props.formData.stores.selected.length === 0) {
-    errors.push({ index: 0, name: stepNames[0], message: 'no stores selected' })
-  }
-
   if (!props.formData.videoFile || !props.formData.thumbnailFile) {
     const issues = []
     if (!props.formData.videoFile) issues.push('video not uploaded')
     if (!props.formData.thumbnailFile) issues.push('thumbnail not uploaded')
-    errors.push({ index: 1, name: stepNames[1], message: issues.join(', ') })
+    errors.push({ index: 0, name: stepNames[0], message: issues.join(', ') })
   }
 
   const metaIssues = []
@@ -563,7 +559,11 @@ const errorStages = computed(() => {
   if (props.formData.artists.primary.length === 0) metaIssues.push('no primary artists')
   if (props.formData.credits.slice(0, 4).some(c => !c.firstName.trim() || !c.lastName.trim())) metaIssues.push('required credits incomplete')
   if (metaIssues.length > 0) {
-    errors.push({ index: 2, name: stepNames[2], message: metaIssues.join(', ') })
+    errors.push({ index: 1, name: stepNames[1], message: metaIssues.join(', ') })
+  }
+
+  if (props.formData.stores.selected.length === 0) {
+    errors.push({ index: 2, name: stepNames[2], message: 'no stores selected' })
   }
 
   if (!props.formData.schedule.releaseDate || !props.formData.schedule.distributionType) {

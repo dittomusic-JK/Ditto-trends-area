@@ -30,7 +30,7 @@
           <!-- Name + More Info -->
           <div class="flex-1 min-w-0">
             <p class="text-sm font-semibold text-ditto-text">{{ store.name }}</p>
-            <p v-if="isStoreDisabled(store.id)" class="text-xs text-ditto-subtext">Requires a music release on Spotify</p>
+            <p v-if="isStoreDisabled(store.id)" class="text-xs text-ditto-subtext">{{ storeDisabledReason(store.id) }}</p>
             <span
               v-else
               @click.stop="toggleInfo(store.id)"
@@ -63,92 +63,32 @@
       </div>
     </div>
 
-    <!-- Spotify Music Release Picker -->
+    <!-- Spotify: linked music release (set in the Details step) -->
     <div v-if="isSelected('spotify')" class="mb-8 rounded-xl border border-ditto-purple/20 bg-ditto-purple/5 overflow-hidden">
       <div class="p-5">
         <div class="flex items-center gap-2 mb-1">
           <img src="/img/spotify-icon.svg" alt="Spotify" class="w-5 h-5 object-contain" />
-          <h3 class="text-sm font-semibold text-ditto-text">Link to Music Release</h3>
-        </div>
-        <p class="text-xs text-ditto-subtext mb-4">
-          Select a music release on Spotify to link this video to. Track metadata (artists, genre, copyrights, label) will be copied automatically.
-        </p>
-
-        <!-- Release Cards -->
-        <div class="space-y-2">
-          <button
-            v-for="release in spotifyReleases"
-            :key="release.id"
-            @click="selectRelease(release.id)"
-            :class="[
-              'w-full flex items-center gap-3 p-3 rounded-lg border transition-all text-left',
-              stores.spotifyReleaseId === release.id
-                ? 'border-ditto-purple bg-white shadow-sm'
-                : 'border-gray-200 bg-white/50 hover:border-gray-300'
-            ]"
-          >
-            <img
-              :src="release.artwork"
-              :alt="release.title"
-              class="w-12 h-12 rounded-lg object-cover flex-shrink-0"
-            />
-            <div class="flex-1 min-w-0">
-              <p class="text-sm font-medium text-ditto-text truncate">{{ release.title }}</p>
-              <p class="text-xs text-ditto-subtext">{{ release.artist }} &middot; {{ formatReleaseDate(release.releaseDate) }}</p>
-            </div>
-            <div :class="[
-              'w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all',
-              stores.spotifyReleaseId === release.id ? 'border-ditto-purple bg-ditto-purple' : 'border-gray-300'
-            ]">
-              <div v-if="stores.spotifyReleaseId === release.id" class="w-2 h-2 rounded-full bg-white"></div>
-            </div>
-          </button>
+          <h3 class="text-sm font-semibold text-ditto-text">Linked Music Release</h3>
         </div>
 
-        <!-- Track List -->
-        <div v-if="selectedRelease" class="border-t border-ditto-purple/10 mt-4 pt-4">
-          <p class="text-xs font-medium text-ditto-subtext uppercase tracking-wide mb-2">Select Track</p>
-          <div class="space-y-1.5">
-            <button
-              v-for="track in selectedRelease.tracks"
-              :key="track.id"
-              @click="selectTrack(track.id)"
-              :class="[
-                'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all text-left',
-                stores.spotifyTrackId === track.id
-                  ? 'bg-ditto-purple/10 border border-ditto-purple/20'
-                  : 'hover:bg-white/70 border border-transparent'
-              ]"
-            >
-              <span class="text-xs text-ditto-subtext w-5 text-center flex-shrink-0">{{ track.trackNumber }}</span>
-              <p class="text-sm text-ditto-text flex-1">{{ track.title }}</p>
-              <div v-if="track.featuredArtists.length > 0" class="text-xs text-ditto-subtext">
-                feat. {{ track.featuredArtists.map(a => a.name).join(', ') }}
-              </div>
-              <svg v-if="stores.spotifyTrackId === track.id" class="w-4 h-4 text-ditto-purple flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="20,6 9,17 4,12" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </button>
+        <!-- Linked -->
+        <div v-if="selectedTrack && selectedRelease" class="mt-3 flex items-center gap-3 p-3 rounded-lg bg-white border border-ditto-purple/10">
+          <img :src="selectedRelease.artwork" :alt="selectedRelease.title" class="w-11 h-11 rounded-lg object-cover flex-shrink-0" />
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium text-ditto-text truncate">{{ selectedRelease.title }} &middot; {{ selectedTrack.title }}</p>
+            <p class="text-xs text-ditto-subtext">{{ selectedRelease.artist }}</p>
           </div>
+          <span class="text-[10px] font-medium text-success bg-success/10 px-2 py-0.5 rounded-full flex-shrink-0">Linked</span>
+        </div>
 
-          <!-- Metadata Copy Confirmation -->
-          <div v-if="selectedTrack" class="mt-4 p-3 rounded-lg bg-white border border-ditto-purple/10">
-            <div class="flex items-center gap-2 mb-2">
-              <svg class="w-4 h-4 text-success" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M22 11.08V12a10 10 0 11-5.93-9.14" stroke-linecap="round" stroke-linejoin="round"/>
-                <polyline points="22,4 12,14.01 9,11.01" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-              <p class="text-xs font-medium text-success">Metadata will be copied from this track</p>
-            </div>
-            <div class="grid grid-cols-2 gap-x-4 gap-y-1">
-              <p class="text-[10px] text-ditto-subtext"><span class="font-medium">Artists:</span> {{ selectedTrack.primaryArtists.map(a => a.name).join(', ') }}{{ selectedTrack.featuredArtists.length ? ' feat. ' + selectedTrack.featuredArtists.map(a => a.name).join(', ') : '' }}</p>
-              <p class="text-[10px] text-ditto-subtext"><span class="font-medium">Genre:</span> {{ selectedTrack.primaryGenre }}{{ selectedTrack.secondaryGenre ? ' / ' + selectedTrack.secondaryGenre : '' }}</p>
-              <p class="text-[10px] text-ditto-subtext"><span class="font-medium">&copy; Copyright:</span> {{ selectedTrack.copyrightHolder }}</p>
-              <p class="text-[10px] text-ditto-subtext"><span class="font-medium">Label:</span> {{ selectedTrack.recordLabel }}</p>
-              <p class="text-[10px] text-ditto-subtext"><span class="font-medium">Language:</span> {{ selectedTrack.language }}</p>
-              <p class="text-[10px] text-ditto-subtext"><span class="font-medium">ISRC:</span> {{ selectedTrack.isrc }}</p>
-            </div>
-          </div>
+        <!-- Not linked -->
+        <div v-else class="mt-2 flex items-start gap-2">
+          <svg class="w-4 h-4 text-warning flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+          </svg>
+          <p class="text-xs text-ditto-subtext leading-relaxed">
+            No music release linked yet. Link your release in the <span class="font-medium text-ditto-text">Details</span> step so Spotify can match this video to your track.
+          </p>
         </div>
       </div>
     </div>
@@ -387,9 +327,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { videoStores, spotifyMusicReleases, userHasSpotifyReleases } from '../../../data/videoMockData'
-import type { SpotifyTrack } from '../../../data/videoMockData'
 
 interface StoresData {
   selected: string[]
@@ -406,15 +345,14 @@ interface StoresData {
 
 const props = defineProps<{
   stores: StoresData
+  isLyricVideo: boolean
 }>()
 
 const emit = defineEmits<{
   (e: 'update:stores', stores: StoresData): void
-  (e: 'copyMetadata', track: SpotifyTrack): void
 }>()
 
 const storeList = videoStores
-const spotifyReleases = spotifyMusicReleases
 const hasSpotifyReleases = userHasSpotifyReleases
 const expandedInfo = ref<string | null>(null)
 
@@ -432,8 +370,27 @@ const isSelected = (id: string) => props.stores.selected.includes(id)
 
 const isStoreDisabled = (id: string) => {
   if (id === 'spotify' && !hasSpotifyReleases) return true
+  if (id === 'spotify' && props.isLyricVideo) return true
   return false
 }
+
+const storeDisabledReason = (id: string) => {
+  if (id === 'spotify' && props.isLyricVideo) return 'Lyric videos are not eligible for Spotify'
+  if (id === 'spotify' && !hasSpotifyReleases) return 'Requires a music release on Spotify'
+  return ''
+}
+
+// If the video is marked as a lyric video, drop Spotify (and its link) automatically
+watch(() => props.isLyricVideo, (isLyric) => {
+  if (isLyric && isSelected('spotify')) {
+    emit('update:stores', {
+      ...props.stores,
+      selected: props.stores.selected.filter(s => s !== 'spotify'),
+      spotifyReleaseId: null,
+      spotifyTrackId: null,
+    })
+  }
+})
 
 const handleStoreClick = (id: string) => {
   if (isStoreDisabled(id)) return
@@ -462,25 +419,8 @@ const selectedTrack = computed(() =>
   selectedRelease.value?.tracks.find(t => t.id === props.stores.spotifyTrackId) || null
 )
 
-const selectRelease = (id: string) => {
-  emit('update:stores', { ...props.stores, spotifyReleaseId: id, spotifyTrackId: null })
-}
-
-const selectTrack = (id: string) => {
-  const track = selectedRelease.value?.tracks.find(t => t.id === id)
-  if (track) {
-    emit('update:stores', { ...props.stores, spotifyTrackId: id })
-    emit('copyMetadata', track)
-  }
-}
-
 const updateField = (key: keyof StoresData, value: any) => {
   emit('update:stores', { ...props.stores, [key]: value })
-}
-
-const formatReleaseDate = (dateStr: string) => {
-  const date = new Date(dateStr)
-  return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
 // VEVO file upload handling

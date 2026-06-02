@@ -38,15 +38,8 @@
 
     <!-- Step Content -->
     <div class="px-4 sm:px-6 lg:px-20 py-8 lg:py-10 max-w-5xl mx-auto">
-      <!-- Step 1: Stores -->
-      <SelectStoresStep
-        v-if="currentStep === 0"
-        v-model:stores="formData.stores"
-        @copy-metadata="handleCopyMetadata"
-      />
-
-      <!-- Step 2: Upload (video + thumbnail) -->
-      <div v-else-if="currentStep === 1" class="space-y-10">
+      <!-- Step 1: Upload (video + thumbnail) -->
+      <div v-if="currentStep === 0" class="space-y-10">
         <UploadVideoStep v-model:videoFile="formData.videoFile" />
         <div class="border-t border-gray-200"></div>
         <UploadThumbnailStep
@@ -55,14 +48,29 @@
         />
       </div>
 
-      <!-- Step 3: Details (metadata + artists + credits) -->
-      <div v-else-if="currentStep === 2" class="space-y-10">
+      <!-- Step 2: Details (link release + metadata + artists + credits) -->
+      <div v-else-if="currentStep === 1" class="space-y-10">
+        <LinkReleasePicker
+          :release-id="formData.stores.spotifyReleaseId"
+          :track-id="formData.stores.spotifyTrackId"
+          @update:release-id="formData.stores.spotifyReleaseId = $event"
+          @update:track-id="formData.stores.spotifyTrackId = $event"
+          @copy-metadata="handleCopyMetadata"
+        />
+        <div class="border-t border-gray-200"></div>
         <VideoMetadataStep v-model:metadata="formData.metadata" />
         <div class="border-t border-gray-200"></div>
         <VideoArtistsStep v-model:artists="formData.artists" />
         <div class="border-t border-gray-200"></div>
         <VideoCreditsStep v-model:credits="formData.credits" />
       </div>
+
+      <!-- Step 3: Stores -->
+      <SelectStoresStep
+        v-else-if="currentStep === 2"
+        v-model:stores="formData.stores"
+        :is-lyric-video="formData.metadata.isLyricVideo"
+      />
 
       <!-- Step 4: Schedule -->
       <PlanReleaseStep
@@ -122,6 +130,7 @@ import type { SpotifyTrack } from '../../data/videoMockData'
 
 import UploadVideoStep from './steps/UploadVideoStep.vue'
 import UploadThumbnailStep from './steps/UploadThumbnailStep.vue'
+import LinkReleasePicker from './steps/LinkReleasePicker.vue'
 import CheckContentStep from './steps/CheckContentStep.vue'
 import VideoMetadataStep from './steps/VideoMetadataStep.vue'
 import VideoArtistsStep from './steps/VideoArtistsStep.vue'
@@ -141,9 +150,9 @@ defineEmits<{
 const currentStep = ref(0)
 
 const steps = [
-  { id: 'stores', label: 'Stores' },
   { id: 'upload', label: 'Upload' },
   { id: 'details', label: 'Details' },
+  { id: 'stores', label: 'Stores' },
   { id: 'schedule', label: 'Schedule' },
   { id: 'content', label: 'Content Check' },
   { id: 'review', label: 'Review' },
@@ -245,17 +254,17 @@ const formData = reactive({
 const validateStep = (stepIndex: number): boolean => {
   switch (stepIndex) {
     case 0:
-      return formData.stores.selected.length > 0
-    case 1:
       return formData.videoFile !== null &&
         formData.thumbnailFile !== null
-    case 2:
+    case 1:
       return formData.metadata.title.length > 0 &&
         formData.metadata.copyrightHolder.length >= 2 &&
         formData.metadata.pCopyrightHolder.length >= 2 &&
         formData.metadata.primaryGenre.length > 0 &&
         formData.artists.primary.length > 0 &&
         formData.credits.slice(0, 4).every(c => c.firstName.trim() !== '' && c.lastName.trim() !== '')
+    case 2:
+      return formData.stores.selected.length > 0
     case 3:
       return formData.schedule.releaseDate !== null &&
         formData.schedule.distributionType !== ''
@@ -331,7 +340,7 @@ const handleCopyMetadata = (track: SpotifyTrack) => {
   formData.metadata.secondaryGenre = track.secondaryGenre
   formData.metadata.language = track.language
   formData.metadata.recordLabel = track.recordLabel
-  formData.metadata.isrc = track.isrc
+  // ISRC intentionally NOT copied — the video needs its own unique code
 
   // Copy artists
   formData.artists.primary = track.primaryArtists.map(a => ({ ...a }))
