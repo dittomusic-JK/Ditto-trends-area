@@ -2,99 +2,91 @@
   <div>
     <h2 class="font-satoshi font-black tracking-[-0.03em] text-xl lg:text-2xl text-ditto-text mb-2">Track Credits</h2>
     <p class="text-sm text-ditto-subtext mb-6">
-      Add the credits for the people involved in creating this video. Mandatory roles are required.
+      You need to add <span class="font-semibold text-ditto-text">at least one name for each category</span> of credits on this release.
     </p>
 
-    <div class="space-y-3">
+    <div class="space-y-5">
       <div
         v-for="(credit, index) in credits"
         :key="credit.id"
-        class="flex items-start gap-3 py-3"
+        class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-3 items-start"
       >
-        <div class="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <!-- First Name -->
+        <!-- Name -->
+        <div>
+          <label class="flex items-center gap-1 text-sm font-medium text-ditto-text mb-1">
+            {{ categoryLabel(credit) }}
+            <span v-if="index < 4" class="text-error">*</span>
+          </label>
           <input
-            :value="credit.firstName"
-            @input="updateCredit(index, 'firstName', ($event.target as HTMLInputElement).value)"
+            :value="credit.name"
+            @input="updateCredit(index, 'name', ($event.target as HTMLInputElement).value)"
+            @blur="touch(credit.id, 'name')"
             type="text"
             maxlength="255"
-            placeholder="First name"
-            class="w-full px-0 py-2 border-0 border-b border-gray-300 text-sm text-ditto-text bg-transparent focus:outline-none focus:border-ditto-purple transition-colors"
+            placeholder="Name"
+            :class="[
+              'w-full px-4 py-2.5 rounded-xl border text-sm text-ditto-text bg-white focus:outline-none transition-colors',
+              nameError(credit) ? 'border-error' : 'border-gray-200 hover:border-gray-300 focus:border-ditto-purple'
+            ]"
           />
-
-          <!-- Last Name -->
-          <input
-            :value="credit.lastName"
-            @input="updateCredit(index, 'lastName', ($event.target as HTMLInputElement).value)"
-            type="text"
-            maxlength="255"
-            placeholder="Last name"
-            class="w-full px-0 py-2 border-0 border-b border-gray-300 text-sm text-ditto-text bg-transparent focus:outline-none focus:border-ditto-purple transition-colors"
-          />
-
-          <!-- Role Dropdown -->
-          <div class="relative">
-            <select
-              :value="credit.role"
-              @change="updateCredit(index, 'role', ($event.target as HTMLSelectElement).value)"
-              class="w-full px-0 py-2 border-0 border-b border-gray-300 text-sm text-ditto-text bg-transparent focus:outline-none focus:border-ditto-purple transition-colors"
-            >
-              <option v-for="role in roleOptions" :key="role" :value="role">{{ role }}</option>
-            </select>
-          </div>
+          <p v-if="nameError(credit)" class="text-xs text-error mt-1">{{ nameError(credit) }}</p>
         </div>
 
-        <!-- Remove button (only for additional credits) -->
-        <button
-          v-if="index >= 4"
-          @click="removeCredit(index)"
-          class="w-8 h-8 rounded-full hover:bg-error/10 flex items-center justify-center transition-colors flex-shrink-0 mt-0.5"
-        >
-          <svg class="w-4 h-4 text-ditto-subtext hover:text-error" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-          </svg>
-        </button>
-        <!-- Required badge for mandatory credits -->
-        <div v-else class="w-8 flex-shrink-0 flex flex-col items-center">
-          <span class="text-[10px] text-ditto-subtext font-medium">Required</span>
-          <svg v-if="!credit.firstName.trim() || !credit.lastName.trim()" class="w-3 h-3 text-warning mt-0.5" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
-          </svg>
+        <!-- Role (every category except Composer) -->
+        <div v-if="credit.category !== 'composer'">
+          <label class="block text-sm font-medium text-ditto-text mb-1">Role</label>
+          <div class="flex items-center gap-2">
+            <SearchableSelect
+              class="flex-1"
+              :model-value="credit.role"
+              :options="roleOptionsFor(credit)"
+              :placeholder="rolePlaceholder(credit)"
+              :error="!!roleError(credit)"
+              @update:model-value="updateCredit(index, 'role', $event)"
+              @blur="touch(credit.id, 'role')"
+            />
+            <!-- Remove (additional credits only) -->
+            <button
+              v-if="index >= 4"
+              @click="removeCredit(index)"
+              class="w-8 h-8 rounded-full hover:bg-error/10 flex items-center justify-center transition-colors flex-shrink-0"
+              aria-label="Remove credit"
+            >
+              <svg class="w-4 h-4 text-ditto-subtext hover:text-error" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </button>
+          </div>
+          <p v-if="roleError(credit)" class="text-xs text-error mt-1">Please select a role for this credit.</p>
         </div>
       </div>
     </div>
 
-    <!-- Mandatory credit validation hint -->
-    <p v-if="hasMissingMandatory" class="mt-2 text-xs text-warning flex items-center gap-1.5">
-      <svg class="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
-      </svg>
-      Please add a first and last name for each required credit.
-    </p>
-
     <!-- Add More -->
     <button
-      v-if="credits.length < 24"
+      v-if="additionalCount < 20"
       @click="addCredit"
-      class="mt-4 flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium text-ditto-purple bg-ditto-light-grey hover:bg-ditto-purple/10 transition-colors"
+      class="mt-5 flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium text-ditto-purple bg-ditto-light-grey hover:bg-ditto-purple/10 transition-colors"
     >
       <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
       </svg>
       Add more
     </button>
-    <p v-if="credits.length >= 24" class="mt-3 text-xs text-ditto-subtext">Maximum of 24 credits reached (4 mandatory + 20 additional).</p>
+    <p v-else class="mt-3 text-xs text-ditto-subtext">Maximum of 20 additional credits reached.</p>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { creditRoles } from '../../../data/videoMockData'
+import { computed, reactive } from 'vue'
+import SearchableSelect from './SearchableSelect.vue'
+import { roleOptionsForCategory } from '../../../data/videoMockData'
+import type { CreditCategory } from '../../../data/videoMockData'
 
 interface Credit {
   id: string
-  firstName: string
-  lastName: string
+  category: CreditCategory
+  name: string
   role: string
 }
 
@@ -106,11 +98,50 @@ const emit = defineEmits<{
   (e: 'update:credits', credits: Credit[]): void
 }>()
 
-const roleOptions = creditRoles
+// Per-field touched state so validation only fires after the user leaves a field.
+const touched = reactive<Record<string, boolean>>({})
+const touch = (id: string, field: 'name' | 'role') => { touched[`${id}-${field}`] = true }
 
-const hasMissingMandatory = computed(() => {
-  return props.credits.slice(0, 4).some(c => !c.firstName.trim() || !c.lastName.trim())
-})
+const categoryLabels: Record<CreditCategory, string> = {
+  composer: 'Composer',
+  songwriter: 'Songwriter',
+  production: 'Production / Engineer',
+  performer: 'Performer',
+  additional: 'Additional Credit',
+}
+const categoryLabel = (credit: Credit) => categoryLabels[credit.category]
+
+const rolePlaceholders: Record<CreditCategory, string> = {
+  composer: '',
+  songwriter: 'e.g. Lyricist',
+  production: 'e.g. Producer',
+  performer: 'e.g. Lead Vocals',
+  additional: 'Select role',
+}
+const rolePlaceholder = (credit: Credit) => rolePlaceholders[credit.category]
+
+const roleOptionsFor = (credit: Credit) => roleOptionsForCategory(credit.category)
+
+const additionalCount = computed(() => props.credits.filter(c => c.category === 'additional').length)
+
+// Validation — mirrors the spec (name required + min 2 words, role required).
+const nameError = (credit: Credit): string | null => {
+  if (!touched[`${credit.id}-name`]) return null
+  const name = credit.name.trim()
+  if (!name) {
+    return credit.category === 'additional'
+      ? 'Credit name is required.'
+      : `${categoryLabels[credit.category]} is required.`
+  }
+  if (name.split(/\s+/).length < 2) return 'First name and last name are required.'
+  return null
+}
+
+const roleError = (credit: Credit): string | null => {
+  if (credit.category === 'composer') return null
+  if (!touched[`${credit.id}-role`]) return null
+  return credit.role ? null : 'Please select a role for this credit.'
+}
 
 let nextId = props.credits.length + 1
 
@@ -121,17 +152,18 @@ const updateCredit = (index: number, field: keyof Credit, value: string) => {
 }
 
 const addCredit = () => {
-  if (props.credits.length < 24) {
+  if (additionalCount.value < 20) {
     nextId++
-    const updated = [...props.credits, { id: `c${nextId}`, firstName: '', lastName: '', role: 'Composer' }]
-    emit('update:credits', updated)
+    emit('update:credits', [
+      ...props.credits,
+      { id: `c${nextId}`, category: 'additional' as CreditCategory, name: '', role: '' },
+    ])
   }
 }
 
 const removeCredit = (index: number) => {
   if (index >= 4) {
-    const updated = props.credits.filter((_, i) => i !== index)
-    emit('update:credits', updated)
+    emit('update:credits', props.credits.filter((_, i) => i !== index))
   }
 }
 </script>

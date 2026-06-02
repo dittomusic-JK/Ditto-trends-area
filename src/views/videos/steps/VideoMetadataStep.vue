@@ -262,12 +262,12 @@
               class="hidden"
             />
             <div :class="[
-              'w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors',
-              metadata.artistType === 'artist' ? 'border-ditto-purple' : 'border-gray-300'
+              'w-6 h-6 rounded-full flex items-center justify-center transition-colors',
+              metadata.artistType === 'artist' ? 'bg-ditto-purple' : 'border-2 border-gray-300'
             ]">
-              <div v-if="metadata.artistType === 'artist'" class="w-2 h-2 rounded-full bg-ditto-purple"></div>
+              <svg v-if="metadata.artistType === 'artist'" class="w-3.5 h-3.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </div>
-            <span class="text-sm text-ditto-text">Artist / Band</span>
+            <span class="text-sm font-medium text-ditto-text">Artist / Band</span>
           </label>
           <label class="flex items-center gap-2 cursor-pointer">
             <input
@@ -279,12 +279,12 @@
               class="hidden"
             />
             <div :class="[
-              'w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors',
-              metadata.artistType === 'compilation' ? 'border-ditto-purple' : 'border-gray-300'
+              'w-6 h-6 rounded-full flex items-center justify-center transition-colors',
+              metadata.artistType === 'compilation' ? 'bg-ditto-purple' : 'border-2 border-gray-300'
             ]">
-              <div v-if="metadata.artistType === 'compilation'" class="w-2 h-2 rounded-full bg-ditto-purple"></div>
+              <svg v-if="metadata.artistType === 'compilation'" class="w-3.5 h-3.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </div>
-            <span class="text-sm text-ditto-text">Compilation / Various Artists</span>
+            <span class="text-sm font-medium text-ditto-text">Compilation / Various Artists</span>
           </label>
         </div>
       </div>
@@ -357,12 +357,12 @@
               class="hidden"
             />
             <div :class="[
-              'w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors',
-              metadata.videoType === 'official' ? 'border-ditto-purple' : 'border-gray-300'
+              'w-6 h-6 rounded-full flex items-center justify-center transition-colors',
+              metadata.videoType === 'official' ? 'bg-ditto-purple' : 'border-2 border-gray-300'
             ]">
-              <div v-if="metadata.videoType === 'official'" class="w-2 h-2 rounded-full bg-ditto-purple"></div>
+              <svg v-if="metadata.videoType === 'official'" class="w-3.5 h-3.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </div>
-            <span class="text-sm text-ditto-text">Official Video</span>
+            <span class="text-sm font-medium text-ditto-text">Official Video</span>
           </label>
           <label class="flex items-center gap-2 cursor-pointer">
             <input
@@ -374,12 +374,12 @@
               class="hidden"
             />
             <div :class="[
-              'w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors',
-              metadata.videoType === 'live' ? 'border-ditto-purple' : 'border-gray-300'
+              'w-6 h-6 rounded-full flex items-center justify-center transition-colors',
+              metadata.videoType === 'live' ? 'bg-ditto-purple' : 'border-2 border-gray-300'
             ]">
-              <div v-if="metadata.videoType === 'live'" class="w-2 h-2 rounded-full bg-ditto-purple"></div>
+              <svg v-if="metadata.videoType === 'live'" class="w-3.5 h-3.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </div>
-            <span class="text-sm text-ditto-text">Live Performance</span>
+            <span class="text-sm font-medium text-ditto-text">Live Performance</span>
           </label>
         </div>
       </div>

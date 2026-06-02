@@ -258,7 +258,7 @@
             :key="credit.id"
             class="flex items-center justify-between py-1.5"
           >
-            <p class="text-sm text-ditto-text">{{ credit.firstName }} {{ credit.lastName }}</p>
+            <p class="text-sm text-ditto-text">{{ credit.name }}</p>
             <span class="text-xs text-ditto-subtext bg-ditto-light-grey px-2 py-0.5 rounded">{{ credit.role }}</span>
           </div>
         </div>
@@ -470,7 +470,7 @@ interface FormData {
     showFeatured: boolean
     showRemixer: boolean
   }
-  credits: { id: string; firstName: string; lastName: string; role: string }[]
+  credits: { id: string; category: string; name: string; role: string }[]
   schedule: {
     releaseDate: Date | null
     distributionType: '' | 'priority' | 'standard'
@@ -526,7 +526,7 @@ const artistNames = computed(() => {
 })
 
 const filledCredits = computed(() => {
-  return props.formData.credits.filter(c => c.firstName.trim() || c.lastName.trim())
+  return props.formData.credits.filter(c => c.name.trim())
 })
 
 const vevoChannelDisplayName = computed(() => {
@@ -557,7 +557,7 @@ const errorStages = computed(() => {
   if (props.formData.metadata.pCopyrightHolder.length < 2) metaIssues.push('production copyright not set')
   if (!props.formData.metadata.primaryGenre) metaIssues.push('primary genre not selected')
   if (props.formData.artists.primary.length === 0) metaIssues.push('no primary artists')
-  if (props.formData.credits.slice(0, 4).some(c => !c.firstName.trim() || !c.lastName.trim())) metaIssues.push('required credits incomplete')
+  if (props.formData.credits.slice(0, 4).some(c => !c.name.trim() || (c.category !== 'composer' && !c.role))) metaIssues.push('required credits incomplete')
   if (metaIssues.length > 0) {
     errors.push({ index: 1, name: stepNames[1], message: metaIssues.join(', ') })
   }

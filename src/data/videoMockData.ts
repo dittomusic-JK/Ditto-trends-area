@@ -136,31 +136,49 @@ export const videoLanguages = [
   'Yoruba', 'Igbo', 'Swahili', 'Turkish', 'Dutch', 'Russian', 'Polish'
 ]
 
-export const creditRoles = [
-  // Songwriter / Composition
-  'Composer', 'Songwriter', 'Lyricist', 'Arranger', 'Librettist', 'Author',
-  // Production & Engineering
-  'Producer', 'Assistant Producer', 'Engineer', 'Sound Engineer',
-  'Mixing Engineer', 'Mastering Engineer', 'Remixer',
-  // Performer
-  'Performer', 'Lead Vocals', 'Background Vocals', 'Harmony Vocals',
-  'Mezzo-soprano Vocals', 'Choir', 'Chorus',
-  // Instruments
-  'Acoustic Guitar', 'Bass Guitar', 'Classical Guitar', 'Electric Guitar',
-  'Lead Guitar', 'Rhythm Guitar', 'Guitar', 'Pedal Steel Guitar',
-  'Piano', 'Rhodes Piano', 'Keyboards', 'Hammond Organ', 'Organ', 'Harpsichord',
-  'Drums', 'Percussion', 'Bongos', 'Congas', 'Djembe', 'Tabla',
-  'Tambourine', 'Timbales', 'Timpani',
-  'Bass Clarinet', 'Clarinet', 'Flute', 'Piccolo', 'Oboe', 'Bassoon',
-  'Saxophone', 'Alto Saxophone', 'Baritone Saxophone', 'Sopranino Saxophone', 'Tenor Saxophone',
-  'Trumpet', 'Cornet', 'Flugelhorn', 'Trombone', 'Bass Trombone', 'Tuba',
-  'Violin', 'First Violin', 'Second Violin', 'Viola', 'Cello', 'Double Bass', 'Fiddle',
-  'Harp', 'Banjo', 'Bouzouki', 'Harmonica', 'Kora', 'Mandolin', 'Sitar', 'Ukulele',
-  // Other
-  'Conductor', 'Musical Director', 'DJ', 'Instrumentalist',
-  // Video-specific
-  'Director', 'Cinematographer', 'Editor', 'Choreographer', 'Art Director',
+// Role options per credit category (from the Add Video Credits spec).
+// Composer is its own mandatory category with a fixed role (no dropdown).
+export const songwriterRoles = [
+  'Arranger', 'Author', 'Conductor', 'Librettist', 'Lyricist',
 ]
+
+export const productionRoles = [
+  'Assistant Producer', 'Mastering Engineer', 'Mixing Engineer',
+  'Musical Director', 'Producer', 'Sound Engineer',
+]
+
+export const performerRoles = [
+  'Acoustic Guitar', 'Alto Saxophone', 'Background Vocals', 'Banjo',
+  'Baritone Saxophone', 'Bass Clarinet', 'Bass Guitar', 'Bass Trombone',
+  'Bassoon', 'Bongos', 'Bouzouki', 'Cello', 'Choir', 'Chorus', 'Clarinet',
+  'Classical Guitar', 'Congas', 'Cornet', 'DJ', 'Djembe', 'Double Bass',
+  'Drums', 'Electric Guitar', 'Fiddle', 'First Violin', 'Flugelhorn', 'Flute',
+  'Guitar', 'Hammond Organ', 'Harmonica', 'Harmony Vocals', 'Harp',
+  'Harpsichord', 'Keyboards', 'Kora', 'Lead Guitar', 'Lead Vocals', 'Mandolin',
+  'Mezzo-soprano Vocals', 'Oboe', 'Organ', 'Pedal Steel Guitar', 'Percussion',
+  'Performer', 'Piano', 'Piccolo', 'Remixer', 'Rhodes Piano', 'Rhythm Guitar',
+  'Saxophone', 'Second Violin', 'Sitar', 'Sopranino Saxophone', 'Tabla',
+  'Tambourine', 'Tenor Saxophone', 'Timbales', 'Timpani', 'Trombone',
+  'Trumpet', 'Tuba', 'Ukulele', 'Viola', 'Violin',
+]
+
+// Additional credits can use any role across every category.
+export const additionalCreditRoles = [
+  ...new Set([...performerRoles, ...songwriterRoles, ...productionRoles, 'Composer']),
+].sort((a, b) => a.localeCompare(b))
+
+export type CreditCategory = 'composer' | 'songwriter' | 'production' | 'performer' | 'additional'
+
+// Returns the role options available for a given credit category.
+export const roleOptionsForCategory = (category: CreditCategory): string[] => {
+  switch (category) {
+    case 'songwriter': return songwriterRoles
+    case 'production': return productionRoles
+    case 'performer': return performerRoles
+    case 'additional': return additionalCreditRoles
+    default: return []
+  }
+}
 
 export const mockArtists = [
   { id: 'a1', name: 'Darkoo', initials: 'DK', plan: true, color: '#5f1fff' },

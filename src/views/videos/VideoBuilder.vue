@@ -126,7 +126,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed } from 'vue'
-import type { SpotifyTrack } from '../../data/videoMockData'
+import type { SpotifyTrack, CreditCategory } from '../../data/videoMockData'
 
 import UploadVideoStep from './steps/UploadVideoStep.vue'
 import UploadThumbnailStep from './steps/UploadThumbnailStep.vue'
@@ -221,11 +221,11 @@ const formData = reactive({
     showRemixer: false,
   },
   credits: [
-    { id: 'c1', firstName: '', lastName: '', role: 'Composer' },
-    { id: 'c2', firstName: '', lastName: '', role: 'Songwriter' },
-    { id: 'c3', firstName: '', lastName: '', role: 'Engineer' },
-    { id: 'c4', firstName: '', lastName: '', role: 'Performer' },
-  ] as { id: string; firstName: string; lastName: string; role: string }[],
+    { id: 'c1', category: 'composer', name: '', role: 'Composer' },
+    { id: 'c2', category: 'songwriter', name: '', role: '' },
+    { id: 'c3', category: 'production', name: '', role: '' },
+    { id: 'c4', category: 'performer', name: '', role: '' },
+  ] as { id: string; category: CreditCategory; name: string; role: string }[],
   schedule: {
     releaseDate: null as Date | null,
     distributionType: '' as '' | 'priority' | 'standard',
@@ -262,7 +262,7 @@ const validateStep = (stepIndex: number): boolean => {
         formData.metadata.pCopyrightHolder.length >= 2 &&
         formData.metadata.primaryGenre.length > 0 &&
         formData.artists.primary.length > 0 &&
-        formData.credits.slice(0, 4).every(c => c.firstName.trim() !== '' && c.lastName.trim() !== '')
+        formData.credits.slice(0, 4).every(c => c.name.trim() !== '' && (c.category === 'composer' || c.role !== ''))
     case 2:
       return formData.stores.selected.length > 0
     case 3:

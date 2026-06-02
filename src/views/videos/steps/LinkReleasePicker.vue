@@ -46,10 +46,36 @@
         <div v-else class="rounded-xl border border-ditto-purple/20 bg-ditto-purple/5 p-5">
           <p class="text-xs text-ditto-subtext mb-4">Select a release, then choose the track you're making a video for.</p>
 
-          <!-- Release Cards -->
-          <div class="space-y-2">
+          <!-- Search -->
+          <div class="relative mb-3">
+            <svg class="w-4 h-4 text-ditto-subtext absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35" stroke-linecap="round"/>
+            </svg>
+            <input
+              v-model="query"
+              type="text"
+              placeholder="Search by track, release or artist"
+              class="w-full pl-9 pr-9 py-2.5 rounded-lg border border-gray-200 bg-white text-sm text-ditto-text placeholder:text-ditto-subtext focus:outline-none focus:border-ditto-purple transition-colors"
+            />
             <button
-              v-for="release in releases"
+              v-if="query"
+              @click="query = ''"
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-ditto-subtext hover:text-ditto-text"
+              aria-label="Clear search"
+            >
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+
+          <!-- No matches -->
+          <p v-if="filteredReleases.length === 0" class="text-sm text-ditto-subtext py-4 text-center">
+            No releases match &ldquo;{{ query }}&rdquo;.
+          </p>
+
+          <!-- Release Cards -->
+          <div v-else class="space-y-2">
+            <button
+              v-for="release in filteredReleases"
               :key="release.id"
               @click="selectRelease(release.id)"
               :class="[
@@ -117,6 +143,17 @@ const emit = defineEmits<{
 
 const releases = spotifyMusicReleases
 const open = ref(false)
+const query = ref('')
+
+const filteredReleases = computed(() => {
+  const q = query.value.trim().toLowerCase()
+  if (!q) return releases
+  return releases.filter(r =>
+    r.title.toLowerCase().includes(q) ||
+    r.artist.toLowerCase().includes(q) ||
+    r.tracks.some(t => t.title.toLowerCase().includes(q))
+  )
+})
 
 const selectedRelease = computed(() =>
   spotifyMusicReleases.find(r => r.id === props.releaseId) || null
