@@ -573,9 +573,11 @@ const errorStages = computed(() => {
     errors.push({ index: 3, name: stepNames[3], message: issues.join(', ') })
   }
 
-  if (!Object.values(props.formData.contentChecks).every(v => v) || !props.formData.assetSource.type) {
+  const c = props.formData.contentChecks
+  const contentConfirmed = c.video && c.thumbnail && (!props.formData.metadata.isLyricVideo || c.noLyrics)
+  if (!contentConfirmed || !props.formData.assetSource.type) {
     const issues = []
-    if (!Object.values(props.formData.contentChecks).every(v => v)) issues.push('content checklist not complete')
+    if (!contentConfirmed) issues.push('content not confirmed')
     if (!props.formData.assetSource.type) issues.push('video source not selected')
     errors.push({ index: 4, name: stepNames[4], message: issues.join(', ') })
   }

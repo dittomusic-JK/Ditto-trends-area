@@ -83,6 +83,7 @@
         v-else-if="currentStep === 4"
         v-model:checks="formData.contentChecks"
         v-model:assetSource="formData.assetSource"
+        :is-lyric-video="formData.metadata.isLyricVideo"
       />
 
       <!-- Step 6: Review -->
@@ -164,17 +165,9 @@ const formData = reactive({
   videoFile: null as File | null,
   thumbnailFile: null as File | null,
   contentChecks: {
-    original: false,
-    noWatermarks: false,
-    noSocialHandles: false,
-    noAdvertising: false,
-    noStillImages: false,
-    noPartialSongs: false,
-    noMedleys: false,
-    thumbOriginal: false,
-    thumbNoText: false,
-    thumbHighRes: false,
-    thumbAppropriate: false,
+    video: false,
+    thumbnail: false,
+    noLyrics: false,
   },
   assetSource: {
     type: '' as '' | 'original' | 'licensed' | 'previously-distributed' | 'commissioned',
@@ -269,7 +262,9 @@ const validateStep = (stepIndex: number): boolean => {
       return formData.schedule.releaseDate !== null &&
         formData.schedule.distributionType !== ''
     case 4:
-      return Object.values(formData.contentChecks).every(v => v) &&
+      return formData.contentChecks.video &&
+        formData.contentChecks.thumbnail &&
+        (!formData.metadata.isLyricVideo || formData.contentChecks.noLyrics) &&
         formData.assetSource.type !== ''
     case 5:
       return !hasAnyErrors.value

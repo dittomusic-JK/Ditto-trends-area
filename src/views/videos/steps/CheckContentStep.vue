@@ -2,80 +2,86 @@
   <div>
     <h2 class="font-satoshi font-black tracking-[-0.03em] text-xl lg:text-2xl text-ditto-text mb-2">Check your content</h2>
     <p class="text-sm text-ditto-subtext mb-6">
-      Please confirm your video and thumbnail meet the following content requirements. All items must be checked to proceed.
+      Confirm your video and thumbnail meet our content requirements, then tell us how the video was made.
     </p>
 
-    <!-- Video Content Requirements -->
+    <!-- Video Content -->
     <div class="flex items-center gap-2 mb-3">
       <svg class="w-4 h-4 text-ditto-subtext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
         <rect x="2" y="4" width="20" height="16" rx="2"/><polygon points="10,8 16,12 10,16"/>
       </svg>
       <h3 class="text-xs font-semibold text-ditto-subtext uppercase tracking-wide">Video Content</h3>
-      <span :class="[
-        'text-[10px] font-medium px-2 py-0.5 rounded-full',
-        videoChecksComplete ? 'bg-success/10 text-success' : 'bg-gray-100 text-ditto-subtext'
-      ]">{{ videoCheckedCount }}/{{ videoCheckItems.length }}</span>
     </div>
-    <div class="space-y-3 mb-8">
-      <label
-        v-for="item in videoCheckItems"
-        :key="item.key"
-        class="flex items-start gap-3 p-4 rounded-xl border border-gray-200 hover:border-ditto-purple/30 transition-colors cursor-pointer"
-        :class="checks[item.key] ? 'bg-ditto-purple/5 border-ditto-purple/20' : ''"
-      >
-        <div class="flex-shrink-0 mt-0.5">
-          <input type="checkbox" :checked="checks[item.key]" @change="toggleCheck(item.key)" class="hidden" />
-          <div :class="[
-            'w-5 h-5 rounded border-2 flex items-center justify-center transition-all',
-            checks[item.key] ? 'bg-ditto-purple border-ditto-purple' : 'border-gray-300 bg-white'
-          ]">
-            <svg v-if="checks[item.key]" class="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-              <polyline points="20,6 9,17 4,12"/>
-            </svg>
-          </div>
+    <label
+      class="block p-4 rounded-xl border transition-colors cursor-pointer mb-3"
+      :class="checks.video ? 'bg-ditto-purple/5 border-ditto-purple/20' : 'border-gray-200 hover:border-ditto-purple/30'"
+    >
+      <ul class="space-y-1.5 mb-4">
+        <li v-for="req in videoRequirements" :key="req" class="flex items-start gap-2 text-xs text-ditto-subtext">
+          <svg class="w-3.5 h-3.5 text-ditto-subtext/70 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20,6 9,17 4,12" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          {{ req }}
+        </li>
+      </ul>
+      <div class="flex items-start gap-3 pt-3 border-t border-gray-100">
+        <input type="checkbox" :checked="checks.video" @change="toggleCheck('video')" class="hidden" />
+        <div :class="[
+          'w-5 h-5 rounded border-2 flex items-center justify-center transition-all flex-shrink-0 mt-0.5',
+          checks.video ? 'bg-ditto-purple border-ditto-purple' : 'border-gray-300 bg-white'
+        ]">
+          <svg v-if="checks.video" class="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20,6 9,17 4,12"/></svg>
         </div>
-        <div>
-          <p class="text-sm font-medium text-ditto-text">{{ item.label }}</p>
-          <p class="text-xs text-ditto-subtext mt-0.5">{{ item.description }}</p>
-        </div>
-      </label>
-    </div>
+        <p class="text-sm font-medium text-ditto-text">I confirm my video meets all of the above requirements</p>
+      </div>
+    </label>
 
-    <!-- Thumbnail Content Requirements -->
+    <!-- No Lyrics (lyric videos only) -->
+    <label
+      v-if="isLyricVideo"
+      class="flex items-start gap-3 p-4 rounded-xl border transition-colors cursor-pointer mb-8"
+      :class="checks.noLyrics ? 'bg-ditto-purple/5 border-ditto-purple/20' : 'border-gray-200 hover:border-ditto-purple/30'"
+    >
+      <input type="checkbox" :checked="checks.noLyrics" @change="toggleCheck('noLyrics')" class="hidden" />
+      <div :class="[
+        'w-5 h-5 rounded border-2 flex items-center justify-center transition-all flex-shrink-0 mt-0.5',
+        checks.noLyrics ? 'bg-ditto-purple border-ditto-purple' : 'border-gray-300 bg-white'
+      ]">
+        <svg v-if="checks.noLyrics" class="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20,6 9,17 4,12"/></svg>
+      </div>
+      <div>
+        <p class="text-sm font-medium text-ditto-text">No lyrics</p>
+        <p class="text-xs text-ditto-subtext mt-0.5">Video contains NO lyrics overlaid on the visuals.</p>
+      </div>
+    </label>
+    <div v-else class="mb-8"></div>
+
+    <!-- Thumbnail Content -->
     <div class="flex items-center gap-2 mb-3">
       <svg class="w-4 h-4 text-ditto-subtext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
         <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/>
       </svg>
       <h3 class="text-xs font-semibold text-ditto-subtext uppercase tracking-wide">Thumbnail Content</h3>
-      <span :class="[
-        'text-[10px] font-medium px-2 py-0.5 rounded-full',
-        thumbChecksComplete ? 'bg-success/10 text-success' : 'bg-gray-100 text-ditto-subtext'
-      ]">{{ thumbCheckedCount }}/{{ thumbCheckItems.length }}</span>
     </div>
-    <div class="space-y-3">
-      <label
-        v-for="item in thumbCheckItems"
-        :key="item.key"
-        class="flex items-start gap-3 p-4 rounded-xl border border-gray-200 hover:border-ditto-purple/30 transition-colors cursor-pointer"
-        :class="checks[item.key] ? 'bg-ditto-purple/5 border-ditto-purple/20' : ''"
-      >
-        <div class="flex-shrink-0 mt-0.5">
-          <input type="checkbox" :checked="checks[item.key]" @change="toggleCheck(item.key)" class="hidden" />
-          <div :class="[
-            'w-5 h-5 rounded border-2 flex items-center justify-center transition-all',
-            checks[item.key] ? 'bg-ditto-purple border-ditto-purple' : 'border-gray-300 bg-white'
-          ]">
-            <svg v-if="checks[item.key]" class="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-              <polyline points="20,6 9,17 4,12"/>
-            </svg>
-          </div>
+    <label
+      class="block p-4 rounded-xl border transition-colors cursor-pointer"
+      :class="checks.thumbnail ? 'bg-ditto-purple/5 border-ditto-purple/20' : 'border-gray-200 hover:border-ditto-purple/30'"
+    >
+      <ul class="space-y-1.5 mb-4">
+        <li v-for="req in thumbnailRequirements" :key="req" class="flex items-start gap-2 text-xs text-ditto-subtext">
+          <svg class="w-3.5 h-3.5 text-ditto-subtext/70 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20,6 9,17 4,12" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          {{ req }}
+        </li>
+      </ul>
+      <div class="flex items-start gap-3 pt-3 border-t border-gray-100">
+        <input type="checkbox" :checked="checks.thumbnail" @change="toggleCheck('thumbnail')" class="hidden" />
+        <div :class="[
+          'w-5 h-5 rounded border-2 flex items-center justify-center transition-all flex-shrink-0 mt-0.5',
+          checks.thumbnail ? 'bg-ditto-purple border-ditto-purple' : 'border-gray-300 bg-white'
+        ]">
+          <svg v-if="checks.thumbnail" class="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20,6 9,17 4,12"/></svg>
         </div>
-        <div>
-          <p class="text-sm font-medium text-ditto-text">{{ item.label }}</p>
-          <p class="text-xs text-ditto-subtext mt-0.5">{{ item.description }}</p>
-        </div>
-      </label>
-    </div>
+        <p class="text-sm font-medium text-ditto-text">I confirm my thumbnail meets all of the above requirements</p>
+      </div>
+    </label>
 
     <!-- Video Asset Source Type -->
     <div class="mt-8 border-t border-gray-200 pt-6">
@@ -264,7 +270,7 @@
     </div>
 
     <!-- Status -->
-    <div v-if="allChecked && assetSource.type" class="mt-6 p-4 rounded-xl bg-success/10 border border-success/20 flex items-center gap-3">
+    <div v-if="allConfirmed && assetSource.type" class="mt-6 p-4 rounded-xl bg-success/10 border border-success/20 flex items-center gap-3">
       <svg class="w-5 h-5 text-success flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M22 11.08V12a10 10 0 11-5.93-9.14" stroke-linecap="round" stroke-linejoin="round"/>
         <polyline points="22,4 12,14.01 9,11.01" stroke-linecap="round" stroke-linejoin="round"/>
@@ -277,10 +283,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
-type CheckKeys =
-  | 'original' | 'noWatermarks' | 'noSocialHandles' | 'noAdvertising'
-  | 'noStillImages' | 'noPartialSongs' | 'noMedleys'
-  | 'thumbOriginal' | 'thumbNoText' | 'thumbHighRes' | 'thumbAppropriate'
+type CheckKeys = 'video' | 'thumbnail' | 'noLyrics'
 
 interface AssetSource {
   type: '' | 'original' | 'licensed' | 'previously-distributed' | 'commissioned'
@@ -300,6 +303,7 @@ interface AssetSource {
 const props = defineProps<{
   checks: Record<CheckKeys, boolean>
   assetSource: AssetSource
+  isLyricVideo: boolean
 }>()
 
 const emit = defineEmits<{
@@ -307,28 +311,24 @@ const emit = defineEmits<{
   (e: 'update:assetSource', source: AssetSource): void
 }>()
 
-const videoCheckItems: { key: CheckKeys; label: string; description: string }[] = [
-  { key: 'original', label: 'Original content', description: 'Video is 100% original content with no stock video footage.' },
-  { key: 'noWatermarks', label: 'No watermarks', description: 'Video does not contain any watermarks from editing software or stock providers.' },
-  { key: 'noSocialHandles', label: 'No social media handles/URLs/QR codes', description: 'Video does not display social media handles, website URLs, or QR codes.' },
-  { key: 'noAdvertising', label: 'No advertising or time-sensitive data', description: 'Video does not contain advertising, promotions, or time-sensitive information.' },
-  { key: 'noStillImages', label: 'No still images or promos', description: 'Video is not composed primarily of still images or promotional material.' },
-  { key: 'noPartialSongs', label: 'No partial songs', description: 'Video contains the complete song, not a partial or shortened version.' },
-  { key: 'noMedleys', label: 'No medleys, one song per video', description: 'Video contains only one song. Medleys or multi-song videos are not accepted.' },
+const videoRequirements = [
+  'Original content — no stock footage, watermarks, or editing-software logos',
+  'No social handles, website URLs, QR codes, advertising, or time-sensitive info',
+  'Not made up of still images or promotional material',
+  'The complete song — no partial versions, and one song per video (no medleys)',
 ]
 
-const thumbCheckItems: { key: CheckKeys; label: string; description: string }[] = [
-  { key: 'thumbOriginal', label: 'Original artwork', description: 'Thumbnail uses original imagery, not copyrighted photos or third-party artwork.' },
-  { key: 'thumbNoText', label: 'No excessive text overlays', description: 'Thumbnail does not contain large blocks of text, clickbait titles, or overlaid captions.' },
-  { key: 'thumbHighRes', label: 'High resolution', description: 'Thumbnail is at least 1920x1080 pixels with no visible pixelation or compression artifacts.' },
-  { key: 'thumbAppropriate', label: 'Appropriate imagery', description: 'Thumbnail imagery is appropriate and accurately represents the video content.' },
+const thumbnailRequirements = [
+  'Original artwork — no copyrighted photos or third-party imagery',
+  'No clickbait titles or large blocks of overlaid text',
+  'High resolution (min. 1920×1080) with appropriate imagery',
 ]
 
-const videoCheckedCount = computed(() => videoCheckItems.filter(i => props.checks[i.key]).length)
-const thumbCheckedCount = computed(() => thumbCheckItems.filter(i => props.checks[i.key]).length)
-const videoChecksComplete = computed(() => videoCheckedCount.value === videoCheckItems.length)
-const thumbChecksComplete = computed(() => thumbCheckedCount.value === thumbCheckItems.length)
-const allChecked = computed(() => Object.values(props.checks).every(v => v))
+const allConfirmed = computed(() =>
+  props.checks.video &&
+  props.checks.thumbnail &&
+  (!props.isLyricVideo || props.checks.noLyrics)
+)
 
 const toggleCheck = (key: CheckKeys) => {
   emit('update:checks', { ...props.checks, [key]: !props.checks[key] })
