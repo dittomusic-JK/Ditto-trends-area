@@ -169,11 +169,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import EmptyState from '../../components/common/EmptyState.vue'
 import CreateVideoModal from './CreateVideoModal.vue'
 import VideoBuilder from './VideoBuilder.vue'
 import { videoReleases } from '../../data/videoMockData'
+
+const props = defineProps<{
+  autoOpenCreate?: boolean
+}>()
+
+const emit = defineEmits<{
+  (e: 'create-consumed'): void
+}>()
 
 const searchQuery = ref('')
 const activeStatus = ref('all')
@@ -211,4 +219,15 @@ const handleCreateVideo = (title: string) => {
   builderTitle.value = title
   currentView.value = 'builder'
 }
+
+// Launch the create modal when requested from the global nav (any page).
+// `immediate` covers both a fresh mount (navigated in from another section)
+// and the already-mounted case (user is already on the Videos page).
+watch(() => props.autoOpenCreate, (requested) => {
+  if (requested) {
+    currentView.value = 'list'
+    showCreateModal.value = true
+    emit('create-consumed')
+  }
+}, { immediate: true })
 </script>

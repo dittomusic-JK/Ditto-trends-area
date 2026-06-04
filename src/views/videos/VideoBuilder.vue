@@ -348,6 +348,18 @@ const handleCopyMetadata = (track: SpotifyTrack) => {
   if (track.featuredArtists.length > 0) {
     formData.artists.showFeatured = true
   }
+
+  // Copy track credits — these live on the release metadata too
+  const c = track.credits
+  formData.credits = [
+    { id: 'c1', category: 'composer' as CreditCategory, name: c.composer, role: 'Composer' },
+    { id: 'c2', category: 'songwriter' as CreditCategory, name: c.songwriter.name, role: c.songwriter.role },
+    { id: 'c3', category: 'production' as CreditCategory, name: c.production.name, role: c.production.role },
+    { id: 'c4', category: 'performer' as CreditCategory, name: c.performer.name, role: c.performer.role },
+    ...(c.additional ?? []).map((a, i) => ({
+      id: `c${5 + i}`, category: 'additional' as CreditCategory, name: a.name, role: a.role,
+    })),
+  ]
 }
 
 const handleComplete = () => {

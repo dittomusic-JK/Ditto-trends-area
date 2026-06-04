@@ -157,7 +157,10 @@
             <img src="/img/nav-musical-note.svg" alt="" class="w-4 h-4" />
             Music Release
           </button>
-          <button class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-ditto-text hover:bg-ditto-light-grey transition-colors text-left">
+          <button
+            @click="showCreateMenu = false; emit('create-video')"
+            class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-ditto-text hover:bg-ditto-light-grey transition-colors text-left"
+          >
             <img src="/img/nav-video-camera.svg" alt="" class="w-4 h-4" />
             Video Release
           </button>
@@ -233,6 +236,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'navigate', section: AppSection): void
+  (e: 'create-video'): void
 }>()
 
 const navRef = ref<HTMLElement | null>(null)

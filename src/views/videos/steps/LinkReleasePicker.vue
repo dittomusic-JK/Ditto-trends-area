@@ -5,7 +5,7 @@
       <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-ditto-light-grey text-ditto-subtext uppercase tracking-wide">Optional</span>
     </div>
     <p class="text-sm text-ditto-subtext mb-4">
-      Already released this track? Link it to copy over your artists, genre, copyrights and label automatically. You can still edit everything below.
+      Already released this track? Link it to copy over your artists, credits, genre, copyrights and label automatically. You can still edit everything below.
     </p>
 
     <!-- No releases available -->
@@ -25,7 +25,7 @@
                 <path d="M22 11.08V12a10 10 0 11-5.93-9.14" stroke-linecap="round" stroke-linejoin="round"/>
                 <polyline points="22,4 12,14.01 9,11.01" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
-              Metadata copied from this track
+              Metadata &amp; credits copied from this track
             </p>
           </div>
           <button @click="unlink" class="text-xs text-ditto-purple hover:underline flex-shrink-0">Unlink</button>

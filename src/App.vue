@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-white w-full max-w-full" data-ditto-colors-light-dark-mode="light">
     <!-- Top Navigation -->
-    <TopNavbar :active-section="appSection" @navigate="appSection = $event" />
+    <TopNavbar :active-section="appSection" @navigate="appSection = $event" @create-video="handleCreateVideo" />
     
     <!-- Analytics Section -->
     <div v-if="appSection === 'analytics'" class="px-4 py-4 sm:px-6 sm:py-6 lg:px-16 lg:py-8 w-full max-w-full box-border">
@@ -98,7 +98,11 @@
     <SyncView v-if="appSection === 'sync'" />
 
     <!-- Videos Section -->
-    <VideosDashboard v-if="appSection === 'videos'" />
+    <VideosDashboard
+      v-if="appSection === 'videos'"
+      :auto-open-create="videoCreateRequested"
+      @create-consumed="videoCreateRequested = false"
+    />
 
     <!-- Neighbouring Rights Section -->
     <div v-if="appSection === 'neighbouring-rights'" class="px-4 py-4 sm:px-6 sm:py-6 lg:px-16 lg:py-8 w-full max-w-full box-border">
@@ -160,6 +164,13 @@ import {
 
 // State
 const appSection = ref<AppSection>('analytics')
+
+// Lets "Create > Video Release" in the nav launch the video flow from any page.
+const videoCreateRequested = ref(false)
+const handleCreateVideo = () => {
+  videoCreateRequested.value = true
+  appSection.value = 'videos'
+}
 const activeView = ref<ViewType>('metrics')
 const showFiltersModal = ref(false)
 

@@ -207,6 +207,21 @@ export const videoStores = [
 ]
 
 // Spotify Music Releases — user's releases currently live on Spotify
+export interface TrackCredit {
+  name: string
+  role: string
+}
+
+// Track credits carried over when a release is linked. Maps to the video
+// builder's mandatory credit categories (+ any additional credits).
+export interface TrackCredits {
+  composer: string
+  songwriter: TrackCredit
+  production: TrackCredit
+  performer: TrackCredit
+  additional?: TrackCredit[]
+}
+
 export interface SpotifyTrack {
   id: string
   title: string
@@ -222,6 +237,7 @@ export interface SpotifyTrack {
   secondaryGenre: string
   language: string
   recordLabel: string
+  credits: TrackCredits
 }
 
 export interface SpotifyMusicRelease {
@@ -243,6 +259,7 @@ export const spotifyMusicReleases: SpotifyMusicRelease[] = [
     tracks: [
       {
         id: 'st-001', title: 'Summer Vibes', trackNumber: 1, isrc: 'GBDTT2600001',
+        credits: { composer: 'Oghenetega Adeleke', songwriter: { name: 'Tobi Bakare', role: 'Lyricist' }, production: { name: 'Julian Pemberton', role: 'Producer' }, performer: { name: 'Darkoo Adé', role: 'Lead Vocals' } },
         primaryArtists: [{ id: 'a1', name: 'Darkoo', initials: 'DK' }],
         featuredArtists: [],
         copyrightHolder: 'Darkoo Music Ltd', copyrightYear: 2026,
@@ -252,6 +269,7 @@ export const spotifyMusicReleases: SpotifyMusicRelease[] = [
       },
       {
         id: 'st-002', title: 'Sexy Girl Summer', trackNumber: 2, isrc: 'GBDTT2600002',
+        credits: { composer: 'Oghenetega Adeleke', songwriter: { name: 'Tobi Bakare', role: 'Lyricist' }, production: { name: 'Julian Pemberton', role: 'Producer' }, performer: { name: 'Darkoo Adé', role: 'Lead Vocals' }, additional: [{ name: 'Divine Ikubor', role: 'Background Vocals' }] },
         primaryArtists: [{ id: 'a1', name: 'Darkoo', initials: 'DK' }],
         featuredArtists: [{ id: 'a4', name: 'Rema', initials: 'RE' }],
         copyrightHolder: 'Darkoo Music Ltd', copyrightYear: 2026,
@@ -261,6 +279,7 @@ export const spotifyMusicReleases: SpotifyMusicRelease[] = [
       },
       {
         id: 'st-003', title: 'Beach Party', trackNumber: 3, isrc: 'GBDTT2600003',
+        credits: { composer: 'Oghenetega Adeleke', songwriter: { name: 'Tobi Bakare', role: 'Lyricist' }, production: { name: 'Julian Pemberton', role: 'Producer' }, performer: { name: 'Darkoo Adé', role: 'Lead Vocals' } },
         primaryArtists: [{ id: 'a1', name: 'Darkoo', initials: 'DK' }],
         featuredArtists: [],
         copyrightHolder: 'Darkoo Music Ltd', copyrightYear: 2026,
@@ -279,6 +298,7 @@ export const spotifyMusicReleases: SpotifyMusicRelease[] = [
     tracks: [
       {
         id: 'st-004', title: 'Solar', trackNumber: 1, isrc: 'GBDTT2600004',
+        credits: { composer: 'Michael Adekunle', songwriter: { name: 'Darkoo Adé', role: 'Lyricist' }, production: { name: 'Kelvin Peters', role: 'Producer' }, performer: { name: 'Ruger Daniels', role: 'Lead Vocals' }, additional: [{ name: 'Darkoo Adé', role: 'Background Vocals' }] },
         primaryArtists: [{ id: 'a1', name: 'Darkoo', initials: 'DK' }, { id: 'a3', name: 'Ruger', initials: 'RU' }],
         featuredArtists: [],
         copyrightHolder: 'Darkoo Music Ltd / Ruger Ent', copyrightYear: 2026,
@@ -297,6 +317,7 @@ export const spotifyMusicReleases: SpotifyMusicRelease[] = [
     tracks: [
       {
         id: 'st-005', title: 'Favourite Girl', trackNumber: 1, isrc: 'GBDTT2500001',
+        credits: { composer: 'Divine Ikubor', songwriter: { name: 'Darkoo Adé', role: 'Lyricist' }, production: { name: 'London Cunningham', role: 'Producer' }, performer: { name: 'Darkoo Adé', role: 'Lead Vocals' } },
         primaryArtists: [{ id: 'a1', name: 'Darkoo', initials: 'DK' }, { id: 'a4', name: 'Rema', initials: 'RE' }],
         featuredArtists: [],
         copyrightHolder: 'Darkoo Music Ltd', copyrightYear: 2025,
@@ -315,6 +336,7 @@ export const spotifyMusicReleases: SpotifyMusicRelease[] = [
     tracks: [
       {
         id: 'st-006', title: 'My Baby (Obimo)', trackNumber: 1, isrc: 'GBDTT2600010',
+        credits: { composer: 'Joseph Almonte', songwriter: { name: 'Joey Almonte', role: 'Author' }, production: { name: 'Marcus Reid', role: 'Mixing Engineer' }, performer: { name: 'Almost Joey', role: 'Lead Vocals' } },
         primaryArtists: [{ id: 'a2', name: 'Almost Joey', initials: 'AJ' }],
         featuredArtists: [],
         copyrightHolder: 'Almost Joey', copyrightYear: 2026,
@@ -324,6 +346,7 @@ export const spotifyMusicReleases: SpotifyMusicRelease[] = [
       },
       {
         id: 'st-007', title: 'Midnight Run', trackNumber: 2, isrc: 'GBDTT2600011',
+        credits: { composer: 'Joseph Almonte', songwriter: { name: 'Joey Almonte', role: 'Author' }, production: { name: 'Marcus Reid', role: 'Mixing Engineer' }, performer: { name: 'Almost Joey', role: 'Lead Vocals' } },
         primaryArtists: [{ id: 'a2', name: 'Almost Joey', initials: 'AJ' }],
         featuredArtists: [],
         copyrightHolder: 'Almost Joey', copyrightYear: 2026,
@@ -342,6 +365,7 @@ export const spotifyMusicReleases: SpotifyMusicRelease[] = [
     tracks: [
       {
         id: 'st-008', title: 'Like Dat', trackNumber: 1, isrc: 'GBDTT2500005',
+        credits: { composer: 'Oghenetega Adeleke', songwriter: { name: 'Tobi Bakare', role: 'Lyricist' }, production: { name: 'Julian Pemberton', role: 'Producer' }, performer: { name: 'Darkoo Adé', role: 'Lead Vocals' } },
         primaryArtists: [{ id: 'a1', name: 'Darkoo', initials: 'DK' }],
         featuredArtists: [],
         copyrightHolder: 'Darkoo Music Ltd', copyrightYear: 2025,
