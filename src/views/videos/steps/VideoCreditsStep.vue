@@ -25,8 +25,8 @@
             maxlength="255"
             placeholder="Name"
             :class="[
-              'w-full px-4 py-2.5 rounded-xl border text-sm text-ditto-text bg-white focus:outline-none transition-colors',
-              nameError(credit) ? 'border-error' : 'border-gray-200 hover:border-gray-300 focus:border-ditto-purple'
+              'w-full px-0 py-2.5 border-0 border-b text-sm text-ditto-text bg-transparent focus:outline-none transition-colors',
+              nameError(credit) ? 'border-error focus:border-error' : 'border-gray-300 focus:border-ditto-purple'
             ]"
           />
           <p v-if="nameError(credit)" class="text-xs text-error mt-1">{{ nameError(credit) }}</p>

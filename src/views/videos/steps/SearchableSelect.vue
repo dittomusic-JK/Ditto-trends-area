@@ -5,8 +5,8 @@
       type="button"
       @click="toggle"
       :class="[
-        'w-full flex items-center justify-between gap-2 px-4 py-2.5 rounded-xl border text-sm text-left bg-white transition-colors',
-        error ? 'border-error' : open ? 'border-ditto-purple' : 'border-gray-200 hover:border-gray-300'
+        'w-full flex items-center justify-between gap-2 px-0 py-2.5 border-0 border-b text-sm text-left bg-transparent transition-colors',
+        error ? 'border-error' : open ? 'border-ditto-purple' : 'border-gray-300'
       ]"
     >
       <span :class="modelValue ? 'text-ditto-text truncate' : 'text-ditto-subtext truncate'">

@@ -371,38 +371,6 @@
           </span>
         </div>
 
-        <!-- Charts Registration -->
-        <div class="flex items-center justify-between py-1.5 border-t border-gray-100">
-          <div class="flex items-center gap-2">
-            <svg class="w-4 h-4 text-ditto-subtext flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M18 20V10M12 20V4M6 20v-6"/>
-            </svg>
-            <p class="text-sm text-ditto-text">Charts Registration</p>
-          </div>
-          <span class="text-xs font-medium text-ditto-subtext bg-ditto-light-grey px-2.5 py-1 rounded-full">N/A</span>
-        </div>
-
-        <!-- YouTube Content ID -->
-        <div class="flex items-center justify-between py-1.5 border-t border-gray-100">
-          <div class="flex items-center gap-2">
-            <svg class="w-4 h-4 text-ditto-subtext flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-            </svg>
-            <p class="text-sm text-ditto-text">YouTube Content ID &amp; Shorts</p>
-          </div>
-          <span class="text-xs font-medium text-ditto-subtext bg-ditto-light-grey px-2.5 py-1 rounded-full">N/A</span>
-        </div>
-
-        <!-- Auto-release -->
-        <div class="flex items-center justify-between py-1.5 border-t border-gray-100">
-          <div class="flex items-center gap-2">
-            <svg class="w-4 h-4 text-ditto-subtext flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="17,1 21,5 17,9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7,23 3,19 7,15"/><path d="M21 13v2a4 4 0 01-4 4H3"/>
-            </svg>
-            <p class="text-sm text-ditto-text">Auto-release to new platforms</p>
-          </div>
-          <span class="text-xs font-medium text-ditto-subtext bg-ditto-light-grey px-2.5 py-1 rounded-full">N/A</span>
-        </div>
       </div>
     </div>
 
