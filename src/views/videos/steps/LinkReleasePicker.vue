@@ -72,47 +72,47 @@
             No releases match &ldquo;{{ query }}&rdquo;.
           </p>
 
-          <!-- Release Cards -->
+          <!-- Release Cards (track list folds out under the selected one) -->
           <div v-else class="space-y-2">
-            <button
-              v-for="release in filteredReleases"
-              :key="release.id"
-              @click="selectRelease(release.id)"
-              :class="[
-                'w-full flex items-center gap-3 p-3 rounded-lg border transition-all text-left',
-                releaseId === release.id ? 'border-ditto-purple bg-white shadow-sm' : 'border-gray-200 bg-white/50 hover:border-gray-300'
-              ]"
-            >
-              <img :src="release.artwork" :alt="release.title" class="w-12 h-12 rounded-lg object-cover flex-shrink-0" />
-              <div class="flex-1 min-w-0">
-                <p class="text-sm font-medium text-ditto-text truncate">{{ release.title }}</p>
-                <p class="text-xs text-ditto-subtext">{{ release.artist }} &middot; {{ formatReleaseDate(release.releaseDate) }}</p>
-              </div>
-              <div :class="[
-                'w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all',
-                releaseId === release.id ? 'border-ditto-purple bg-ditto-purple' : 'border-gray-300'
-              ]">
-                <div v-if="releaseId === release.id" class="w-2 h-2 rounded-full bg-white"></div>
-              </div>
-            </button>
-          </div>
-
-          <!-- Track List -->
-          <div v-if="selectedRelease" class="border-t border-ditto-purple/10 mt-4 pt-4">
-            <p class="text-xs font-medium text-ditto-subtext uppercase tracking-wide mb-2">Select Track</p>
-            <div class="space-y-1.5">
+            <div v-for="release in filteredReleases" :key="release.id">
               <button
-                v-for="track in selectedRelease.tracks"
-                :key="track.id"
-                @click="selectTrack(track.id)"
-                class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all text-left hover:bg-white/70 border border-transparent"
+                @click="selectRelease(release.id)"
+                :class="[
+                  'w-full flex items-center gap-3 p-3 rounded-lg border transition-all text-left',
+                  releaseId === release.id ? 'border-ditto-purple bg-white shadow-sm' : 'border-gray-200 bg-white/50 hover:border-gray-300'
+                ]"
               >
-                <span class="text-xs text-ditto-subtext w-5 text-center flex-shrink-0">{{ track.trackNumber }}</span>
-                <p class="text-sm text-ditto-text flex-1">{{ track.title }}</p>
-                <div v-if="track.featuredArtists.length > 0" class="text-xs text-ditto-subtext">
-                  feat. {{ track.featuredArtists.map(a => a.name).join(', ') }}
+                <img :src="release.artwork" :alt="release.title" class="w-12 h-12 rounded-lg object-cover flex-shrink-0" />
+                <div class="flex-1 min-w-0">
+                  <p class="text-sm font-medium text-ditto-text truncate">{{ release.title }}</p>
+                  <p class="text-xs text-ditto-subtext">{{ release.artist }} &middot; {{ formatReleaseDate(release.releaseDate) }}</p>
+                </div>
+                <div :class="[
+                  'w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all',
+                  releaseId === release.id ? 'border-ditto-purple bg-ditto-purple' : 'border-gray-300'
+                ]">
+                  <div v-if="releaseId === release.id" class="w-2 h-2 rounded-full bg-white"></div>
                 </div>
               </button>
+
+              <!-- Inline track list for the selected release -->
+              <div v-if="releaseId === release.id" class="mt-2 ml-4 pl-4 border-l-2 border-ditto-purple/20">
+                <p class="text-xs font-medium text-ditto-subtext uppercase tracking-wide mb-2">Select Track</p>
+                <div class="space-y-1.5">
+                  <button
+                    v-for="track in release.tracks"
+                    :key="track.id"
+                    @click="selectTrack(track.id)"
+                    class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all text-left hover:bg-white/70 border border-transparent"
+                  >
+                    <span class="text-xs text-ditto-subtext w-5 text-center flex-shrink-0">{{ track.trackNumber }}</span>
+                    <p class="text-sm text-ditto-text flex-1">{{ track.title }}</p>
+                    <div v-if="track.featuredArtists.length > 0" class="text-xs text-ditto-subtext">
+                      feat. {{ track.featuredArtists.map(a => a.name).join(', ') }}
+                    </div>
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
 

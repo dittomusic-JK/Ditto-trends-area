@@ -1,9 +1,6 @@
 <template>
   <div>
-    <h2 class="font-satoshi font-black tracking-[-0.03em] text-xl lg:text-2xl text-ditto-text mb-2">Upload your thumbnail</h2>
-    <p class="text-sm text-ditto-subtext mb-6">
-      Upload a thumbnail image or capture a frame from your video. 16:9 aspect ratio, 1920x1080 or higher.
-    </p>
+    <h2 class="font-satoshi font-black tracking-[-0.03em] text-xl lg:text-2xl text-ditto-text mb-5">Upload your thumbnail</h2>
 
     <!-- Source Tabs -->
     <div class="flex gap-1 p-1 bg-ditto-light-grey rounded-xl mb-6 w-fit">
@@ -24,15 +21,10 @@
         </span>
       </button>
       <button
-        @click="handleCaptureTab"
-        :disabled="!hasVideo"
+        @click="activeTab = 'capture'"
         :class="[
           'px-4 py-2 rounded-lg text-sm font-medium transition-all',
-          !hasVideo
-            ? 'text-gray-300 cursor-not-allowed'
-            : activeTab === 'capture'
-              ? 'bg-white text-ditto-text shadow-sm'
-              : 'text-ditto-subtext hover:text-ditto-text'
+          activeTab === 'capture' ? 'bg-white text-ditto-text shadow-sm' : 'text-ditto-subtext hover:text-ditto-text'
         ]"
       >
         <span class="flex items-center gap-1.5">
@@ -68,7 +60,7 @@
           Drag and drop your thumbnail here or
           <button @click="triggerFileInput" class="text-ditto-purple font-medium hover:underline">browse your files</button>
         </p>
-        <p class="text-xs text-ditto-subtext">JPG or PNG only. 16:9 aspect ratio, 1920x1080 or higher.</p>
+        <p class="text-xs text-ditto-subtext">JPG or PNG only &middot; 16:9, 9:16 or 4:3 &middot; 1920&times;1080 to 4500&times;4500px</p>
 
         <input
           ref="fileInputRef"
@@ -123,92 +115,127 @@
     </template>
 
     <!-- ===================== CAPTURE TAB ===================== -->
-    <template v-if="activeTab === 'capture'">
-      <!-- Video Preview Area -->
-      <div class="aspect-video rounded-2xl bg-gray-900 mb-4 relative overflow-hidden">
-        <div class="absolute inset-0 flex items-center justify-center" :class="selectedFrameGradient">
-          <div v-if="selectedTimestamp === null" class="text-center">
-            <svg class="w-12 h-12 text-white/20 mx-auto mb-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+    <template v-else>
+      <!-- No video yet -->
+      <div v-if="!hasVideo" class="border-2 border-dashed border-gray-300 rounded-2xl p-10 lg:p-16 text-center">
+        <div class="w-14 h-14 mx-auto mb-3 rounded-full bg-ditto-light-grey flex items-center justify-center">
+          <svg class="w-6 h-6 text-ditto-subtext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="2" y="4" width="20" height="16" rx="2"/><polygon points="10,8 16,12 10,16"/>
+          </svg>
+        </div>
+        <p class="text-sm text-ditto-text font-medium mb-1">No video to capture from yet</p>
+        <p class="text-xs text-ditto-subtext">Upload a video first to enable the &ldquo;Capture from Video&rdquo; option.</p>
+      </div>
+
+      <!-- Capture from the uploaded video -->
+      <div v-else class="space-y-4">
+        <!-- Video frame -->
+        <div class="aspect-video rounded-2xl bg-black overflow-hidden">
+          <video
+            ref="captureVideoRef"
+            :src="videoUrl || undefined"
+            class="w-full h-full object-contain"
+            muted
+            playsinline
+            preload="auto"
+            @loadedmetadata="onLoadedMetadata"
+            @seeked="onSeeked"
+          ></video>
+        </div>
+
+        <!-- Scrubber + precise controls -->
+        <div class="space-y-3">
+          <input
+            type="range"
+            min="0"
+            :max="duration || 0"
+            step="0.01"
+            :value="currentTime"
+            @input="seek(Number(($event.target as HTMLInputElement).value))"
+            class="w-full accent-ditto-purple cursor-pointer"
+          />
+
+          <div class="flex items-center justify-between gap-3 flex-wrap">
+            <!-- Frame-step controls -->
+            <div class="flex items-center gap-1">
+              <button @click="step(-1)" class="px-2.5 h-8 rounded-lg border border-gray-200 text-xs text-ditto-text hover:border-ditto-purple/40 transition-colors" title="Back 1 second">−1s</button>
+              <button @click="step(-frameStep)" class="px-2.5 h-8 rounded-lg border border-gray-200 text-xs text-ditto-text hover:border-ditto-purple/40 transition-colors" title="Previous frame">‹ frame</button>
+              <button @click="step(frameStep)" class="px-2.5 h-8 rounded-lg border border-gray-200 text-xs text-ditto-text hover:border-ditto-purple/40 transition-colors" title="Next frame">frame ›</button>
+              <button @click="step(1)" class="px-2.5 h-8 rounded-lg border border-gray-200 text-xs text-ditto-text hover:border-ditto-purple/40 transition-colors" title="Forward 1 second">+1s</button>
+            </div>
+
+            <!-- Editable timestamp -->
+            <div class="flex items-center gap-2">
+              <label class="text-xs text-ditto-subtext">Timestamp</label>
+              <input
+                :value="timeInput"
+                @change="onTimeInputChange(($event.target as HTMLInputElement).value)"
+                @keydown.enter="onTimeInputChange(($event.target as HTMLInputElement).value)"
+                type="text"
+                inputmode="decimal"
+                placeholder="0:00.00"
+                class="w-24 px-2 py-1.5 rounded-lg border border-gray-200 text-sm text-ditto-text font-mono text-center focus:outline-none focus:border-ditto-purple transition-colors"
+              />
+              <span class="text-xs text-ditto-subtext font-mono">/ {{ formatTimestamp(duration, true) }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filmstrip -->
+        <div>
+          <p class="text-xs font-medium text-ditto-subtext uppercase tracking-wide mb-2">Jump to a frame</p>
+          <div v-if="filmstrip.length" class="grid grid-cols-4 sm:grid-cols-8 gap-2">
+            <button
+              v-for="frame in filmstrip"
+              :key="frame.t"
+              @click="seek(frame.t)"
+              :class="[
+                'aspect-video rounded-lg overflow-hidden border-2 transition-all relative bg-gray-900',
+                Math.abs(currentTime - frame.t) < 0.5 ? 'border-ditto-purple ring-2 ring-ditto-purple/20' : 'border-gray-200 hover:border-gray-300'
+              ]"
+            >
+              <img :src="frame.url" alt="" class="w-full h-full object-cover" />
+              <span class="absolute bottom-0.5 right-0.5 text-[9px] font-mono text-white/90 bg-black/50 px-1 rounded">
+                {{ formatTimestamp(frame.t) }}
+              </span>
+            </button>
+          </div>
+          <div v-else class="text-xs text-ditto-subtext py-3">Generating frame previews…</div>
+        </div>
+
+        <!-- Capture action -->
+        <div class="flex items-center gap-3">
+          <button
+            @click="captureFrame"
+            class="px-4 py-2.5 rounded-full bg-ditto-purple text-white text-sm font-medium hover:bg-ditto-purple/90 transition-colors flex items-center gap-2"
+          >
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/>
             </svg>
-            <p class="text-sm text-white/40">Select a frame below</p>
-          </div>
-          <div v-else class="text-center">
-            <div class="w-16 h-16 rounded-full bg-ditto-purple/20 flex items-center justify-center mb-2 mx-auto">
-              <svg class="w-8 h-8 text-ditto-purple" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/>
-              </svg>
-            </div>
-            <p class="text-sm text-white/60 font-medium">Frame at {{ formatTimestamp(selectedTimestamp) }}</p>
-            <p class="text-xs text-white/30 mt-1">Selected as thumbnail</p>
-          </div>
+            {{ capturedTime === null ? 'Use this frame' : 'Update frame' }}
+          </button>
+          <p class="text-xs text-ditto-subtext">Scrub or step to the exact frame, then capture it.</p>
         </div>
 
-        <!-- Timeline scrubber overlay -->
-        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-3">
-          <div class="flex items-center gap-2">
-            <span class="text-[10px] text-white/60 font-mono">0:00</span>
-            <div class="flex-1 h-1 bg-white/20 rounded-full relative">
-              <div
-                v-if="selectedTimestamp !== null"
-                class="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-ditto-purple rounded-full border-2 border-white shadow-lg transition-all duration-200"
-                :style="{ left: `calc(${(selectedTimestamp / totalDuration) * 100}% - 6px)` }"
-              ></div>
-            </div>
-            <span class="text-[10px] text-white/60 font-mono">{{ formatTimestamp(totalDuration) }}</span>
+        <!-- Captured confirmation -->
+        <div v-if="capturedTime !== null" class="flex items-center gap-3 p-3 rounded-xl bg-success/10 border border-success/20">
+          <img v-if="capturedPreview" :src="capturedPreview" alt="Captured frame" class="w-20 aspect-video object-cover rounded-md flex-shrink-0" />
+          <div>
+            <p class="text-sm font-medium text-success">Frame captured at {{ formatTimestamp(capturedTime, true) }}</p>
+            <p class="text-xs text-ditto-subtext mt-0.5">This frame will be used as your video thumbnail.</p>
           </div>
         </div>
-      </div>
-
-      <!-- Frame Thumbnails -->
-      <p class="text-xs font-medium text-ditto-subtext uppercase tracking-wide mb-2">Select a frame</p>
-      <div class="grid grid-cols-4 sm:grid-cols-8 gap-2">
-        <button
-          v-for="frame in frameOptions"
-          :key="frame.timestamp"
-          @click="selectFrame(frame)"
-          :class="[
-            'aspect-video rounded-lg overflow-hidden border-2 transition-all relative',
-            selectedTimestamp === frame.timestamp
-              ? 'border-ditto-purple ring-2 ring-ditto-purple/20'
-              : 'border-gray-200 hover:border-gray-300'
-          ]"
-        >
-          <div class="absolute inset-0" :class="frame.gradient"></div>
-          <div class="absolute inset-0 flex items-center justify-center">
-            <span class="text-[10px] font-mono text-white/80 bg-black/40 px-1 py-0.5 rounded">
-              {{ formatTimestamp(frame.timestamp) }}
-            </span>
-          </div>
-        </button>
-      </div>
-
-      <!-- Captured confirmation -->
-      <div v-if="selectedTimestamp !== null" class="mt-4 p-3 rounded-xl bg-success/10 border border-success/20 flex items-center gap-2">
-        <svg class="w-4 h-4 text-success flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M22 11.08V12a10 10 0 11-5.93-9.14" stroke-linecap="round" stroke-linejoin="round"/>
-          <polyline points="22,4 12,14.01 9,11.01" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <p class="text-xs text-success font-medium">Frame captured at {{ formatTimestamp(selectedTimestamp) }}. This will be used as your video thumbnail.</p>
       </div>
     </template>
-
-    <!-- No video hint (when capture tab is disabled) -->
-    <div v-if="!hasVideo && activeTab === 'upload'" class="mt-4 p-3 rounded-xl bg-ditto-light-grey flex items-center gap-2">
-      <svg class="w-4 h-4 text-ditto-subtext flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-        <circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>
-      </svg>
-      <p class="text-xs text-ditto-subtext">Upload a video first to enable the "Capture from Video" option.</p>
-    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed, watch, onUnmounted } from 'vue'
 
 const props = defineProps<{
   thumbnailFile: File | null
-  hasVideo: boolean
+  videoFile: File | null
 }>()
 
 const emit = defineEmits<{
@@ -217,6 +244,9 @@ const emit = defineEmits<{
 }>()
 
 const activeTab = ref<'upload' | 'capture'>('upload')
+const hasVideo = computed(() => props.videoFile !== null)
+
+// ---- Upload Tab ----
 const isDragging = ref(false)
 const isUploading = ref(false)
 const isUploaded = ref(props.thumbnailFile !== null)
@@ -225,39 +255,8 @@ const fileName = ref(props.thumbnailFile?.name || '')
 const fileSize = ref('')
 const previewUrl = ref('')
 const fileInputRef = ref<HTMLInputElement | null>(null)
-const selectedTimestamp = ref<number | null>(null)
 
-// Simulated video duration: 3 min 15 sec
-const totalDuration = 195
-
-const frameOptions = [
-  { timestamp: 5, gradient: 'bg-gradient-to-br from-gray-700 to-gray-800' },
-  { timestamp: 25, gradient: 'bg-gradient-to-br from-purple-900/40 to-gray-800' },
-  { timestamp: 48, gradient: 'bg-gradient-to-br from-gray-600 to-gray-700' },
-  { timestamp: 72, gradient: 'bg-gradient-to-br from-blue-900/30 to-gray-800' },
-  { timestamp: 98, gradient: 'bg-gradient-to-br from-gray-700 to-purple-900/30' },
-  { timestamp: 125, gradient: 'bg-gradient-to-br from-gray-600 to-gray-700' },
-  { timestamp: 155, gradient: 'bg-gradient-to-br from-amber-900/20 to-gray-800' },
-  { timestamp: 180, gradient: 'bg-gradient-to-br from-gray-800 to-gray-900' },
-]
-
-const selectedFrameGradient = ref('bg-gradient-to-br from-gray-800 to-gray-900')
-
-const formatTimestamp = (seconds: number) => {
-  const mins = Math.floor(seconds / 60)
-  const secs = seconds % 60
-  return `${mins}:${String(secs).padStart(2, '0')}`
-}
-
-const handleCaptureTab = () => {
-  if (!props.hasVideo) return
-  activeTab.value = 'capture'
-}
-
-// ---- Upload Tab ----
-const triggerFileInput = () => {
-  fileInputRef.value?.click()
-}
+const triggerFileInput = () => fileInputRef.value?.click()
 
 const formatFileSize = (bytes: number): string => {
   if (bytes >= 1048576) return (bytes / 1048576).toFixed(1) + ' MB'
@@ -269,12 +268,9 @@ const simulateUpload = (file: File) => {
   fileSize.value = formatFileSize(file.size)
   isUploading.value = true
   uploadProgress.value = 0
-  selectedTimestamp.value = null
 
   const reader = new FileReader()
-  reader.onload = (e) => {
-    previewUrl.value = e.target?.result as string
-  }
+  reader.onload = (e) => { previewUrl.value = e.target?.result as string }
   reader.readAsDataURL(file)
 
   const interval = setInterval(() => {
@@ -285,6 +281,7 @@ const simulateUpload = (file: File) => {
       setTimeout(() => {
         isUploading.value = false
         isUploaded.value = true
+        capturedTime.value = null
         emit('update:thumbnailFile', file)
         emit('uploaded')
       }, 300)
@@ -294,16 +291,12 @@ const simulateUpload = (file: File) => {
 
 const handleFileSelect = (event: Event) => {
   const input = event.target as HTMLInputElement
-  if (input.files && input.files[0]) {
-    simulateUpload(input.files[0])
-  }
+  if (input.files && input.files[0]) simulateUpload(input.files[0])
 }
 
 const handleDrop = (event: DragEvent) => {
   isDragging.value = false
-  if (event.dataTransfer?.files && event.dataTransfer.files[0]) {
-    simulateUpload(event.dataTransfer.files[0])
-  }
+  if (event.dataTransfer?.files && event.dataTransfer.files[0]) simulateUpload(event.dataTransfer.files[0])
 }
 
 const removeFile = () => {
@@ -311,42 +304,145 @@ const removeFile = () => {
   fileName.value = ''
   fileSize.value = ''
   previewUrl.value = ''
-  selectedTimestamp.value = null
   emit('update:thumbnailFile', null)
 }
 
 // ---- Capture Tab ----
-const selectFrame = (frame: { timestamp: number; gradient: string }) => {
-  selectedTimestamp.value = frame.timestamp
-  selectedFrameGradient.value = frame.gradient
+const captureVideoRef = ref<HTMLVideoElement | null>(null)
+const videoUrl = ref<string | null>(null)
+const duration = ref(0)
+const currentTime = ref(0)
+const capturedTime = ref<number | null>(null)
+const capturedPreview = ref('')
+const filmstrip = ref<{ t: number; url: string }[]>([])
+const timeInput = ref('0:00.00')
+const frameStep = 1 / 30 // ~one frame at 30fps
 
-  // Generate a synthetic thumbnail from a canvas
+// Manage the object URL for the uploaded video + reset capture state on change.
+watch(() => props.videoFile, (file) => {
+  if (videoUrl.value) { URL.revokeObjectURL(videoUrl.value); videoUrl.value = null }
+  duration.value = 0
+  currentTime.value = 0
+  filmstrip.value = []
+  capturedTime.value = null
+  capturedPreview.value = ''
+  timeInput.value = '0:00.00'
+  if (file) videoUrl.value = URL.createObjectURL(file)
+}, { immediate: true })
+
+onUnmounted(() => { if (videoUrl.value) URL.revokeObjectURL(videoUrl.value) })
+
+const formatTimestamp = (seconds: number, withFraction = false): string => {
+  if (!seconds || seconds < 0) seconds = 0
+  const mins = Math.floor(seconds / 60)
+  const whole = Math.floor(seconds % 60)
+  if (!withFraction) return `${mins}:${String(whole).padStart(2, '0')}`
+  const frac = Math.round((seconds - Math.floor(seconds)) * 100)
+  return `${mins}:${String(whole).padStart(2, '0')}.${String(frac).padStart(2, '0')}`
+}
+
+const parseTimestamp = (str: string): number | null => {
+  const s = str.trim()
+  if (!s) return null
+  if (s.includes(':')) {
+    const [m, sec] = s.split(':')
+    const mins = parseInt(m, 10)
+    const secs = parseFloat(sec)
+    if (isNaN(mins) || isNaN(secs)) return null
+    return mins * 60 + secs
+  }
+  const v = parseFloat(s)
+  return isNaN(v) ? null : v
+}
+
+const seek = (t: number) => {
+  const clamped = Math.max(0, Math.min(t, duration.value || 0))
+  currentTime.value = clamped
+  timeInput.value = formatTimestamp(clamped, true)
+  if (captureVideoRef.value) captureVideoRef.value.currentTime = clamped
+}
+
+const step = (delta: number) => seek(currentTime.value + delta)
+
+const onTimeInputChange = (value: string) => {
+  const parsed = parseTimestamp(value)
+  if (parsed !== null) seek(parsed)
+  else timeInput.value = formatTimestamp(currentTime.value, true)
+}
+
+const onSeeked = () => {
+  if (captureVideoRef.value) {
+    currentTime.value = captureVideoRef.value.currentTime
+    timeInput.value = formatTimestamp(currentTime.value, true)
+  }
+}
+
+const onLoadedMetadata = () => {
+  if (!captureVideoRef.value) return
+  duration.value = captureVideoRef.value.duration || 0
+  generateFilmstrip()
+}
+
+// Build a strip of real frames from a detached video element so the main
+// preview isn't disturbed while we seek around.
+const generateFilmstrip = async () => {
+  if (!videoUrl.value) return
+  const url = videoUrl.value
+  const gen = document.createElement('video')
+  gen.src = url
+  gen.muted = true
+  gen.preload = 'auto'
+
+  await new Promise<void>((resolve) => {
+    gen.onloadedmetadata = () => resolve()
+    gen.onerror = () => resolve()
+  })
+  const dur = gen.duration || 0
+  if (!dur) return
+
   const canvas = document.createElement('canvas')
-  canvas.width = 1920
-  canvas.height = 1080
-  const ctx = canvas.getContext('2d')!
+  canvas.width = 320
+  canvas.height = 180
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return
 
-  // Draw a dark gradient background
-  const gradient = ctx.createLinearGradient(0, 0, 1920, 1080)
-  gradient.addColorStop(0, '#1a1a2e')
-  gradient.addColorStop(1, '#16213e')
-  ctx.fillStyle = gradient
-  ctx.fillRect(0, 0, 1920, 1080)
-
-  // Draw timestamp text
-  ctx.fillStyle = 'rgba(255,255,255,0.25)'
-  ctx.font = '600 48px system-ui, sans-serif'
-  ctx.textAlign = 'center'
-  ctx.textBaseline = 'middle'
-  ctx.fillText(`Frame at ${formatTimestamp(frame.timestamp)}`, 960, 540)
-
-  canvas.toBlob((blob) => {
-    if (blob) {
-      const file = new File([blob], `frame-${frame.timestamp}s.jpg`, { type: 'image/jpeg' })
-      isUploaded.value = false // not "uploaded" in the traditional sense
-      emit('update:thumbnailFile', file)
-      emit('uploaded')
+  const count = 8
+  const frames: { t: number; url: string }[] = []
+  for (let i = 0; i < count; i++) {
+    const t = Math.min((dur * i) / (count - 1), Math.max(0, dur - 0.05))
+    // skip if this video URL was revoked (component/video changed)
+    if (videoUrl.value !== url) return
+    await new Promise<void>((resolve) => {
+      gen.onseeked = () => resolve()
+      gen.currentTime = t
+    })
+    try {
+      ctx.drawImage(gen, 0, 0, canvas.width, canvas.height)
+      frames.push({ t, url: canvas.toDataURL('image/jpeg', 0.6) })
+    } catch {
+      // ignore a frame that failed to draw
     }
-  }, 'image/jpeg', 0.9)
+  }
+  if (videoUrl.value === url) filmstrip.value = frames
+}
+
+const captureFrame = () => {
+  const v = captureVideoRef.value
+  if (!v) return
+  const canvas = document.createElement('canvas')
+  canvas.width = v.videoWidth || 1920
+  canvas.height = v.videoHeight || 1080
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return
+  ctx.drawImage(v, 0, 0, canvas.width, canvas.height)
+  capturedPreview.value = canvas.toDataURL('image/jpeg', 0.92)
+  const stamp = currentTime.value
+  canvas.toBlob((blob) => {
+    if (!blob) return
+    const file = new File([blob], `frame-${stamp.toFixed(2)}s.jpg`, { type: 'image/jpeg' })
+    capturedTime.value = stamp
+    emit('update:thumbnailFile', file)
+    emit('uploaded')
+  }, 'image/jpeg', 0.92)
 }
 </script>

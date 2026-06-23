@@ -44,7 +44,7 @@
         <div class="border-t border-gray-200"></div>
         <UploadThumbnailStep
           v-model:thumbnailFile="formData.thumbnailFile"
-          :has-video="formData.videoFile !== null"
+          :video-file="formData.videoFile"
         />
       </div>
 

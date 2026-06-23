@@ -1,7 +1,6 @@
 <template>
   <div>
-    <h2 class="font-satoshi font-black tracking-[-0.03em] text-xl lg:text-2xl text-ditto-text mb-2">Upload your video</h2>
-    <p class="text-sm text-ditto-subtext mb-6">Upload a high-quality video file to get started.</p>
+    <h2 class="font-satoshi font-black tracking-[-0.03em] text-xl lg:text-2xl text-ditto-text mb-5">Upload your video</h2>
 
     <!-- Drop Zone (before upload) -->
     <div
@@ -25,13 +24,13 @@
         Drag and drop your video here or
         <button @click="triggerFileInput" class="text-ditto-purple font-medium hover:underline">browse your files</button>
       </p>
-      <p class="text-xs text-ditto-subtext">Accepted formats: MP4, MPEG, MOV, AVI, WMV, FLV, MKV &middot; Max 2GB</p>
+      <p class="text-xs text-ditto-subtext">Accepted formats: MP4, MPEG, MOV &middot; Max 50 GB</p>
       <p class="text-xs text-ditto-subtext mt-1">HD quality or higher &middot; Landscape orientation only (no square or vertical)</p>
 
       <input
         ref="fileInputRef"
         type="file"
-        accept=".mp4,.mpeg,.mov,.avi,.wmv,.flv,.mkv"
+        accept=".mp4,.mpeg,.mov"
         class="hidden"
         @change="handleFileSelect"
       />
@@ -103,7 +102,7 @@
 <script setup lang="ts">
 import { ref, onUnmounted } from 'vue'
 
-const MAX_FILE_SIZE = 2 * 1024 * 1024 * 1024 // 2GB
+const MAX_FILE_SIZE = 50 * 1024 * 1024 * 1024 // 50GB
 
 const props = defineProps<{
   videoFile: File | null
@@ -143,9 +142,9 @@ const formatFileSize = (bytes: number): string => {
 const simulateUpload = (file: File) => {
   fileSizeError.value = ''
 
-  // File size validation (max 2GB)
+  // File size validation (max 50GB)
   if (file.size > MAX_FILE_SIZE) {
-    fileSizeError.value = `File is too large (${formatFileSize(file.size)}). Maximum file size is 2GB.`
+    fileSizeError.value = `The file size should be no larger than 50 GB (this file is ${formatFileSize(file.size)}).`
     return
   }
 
