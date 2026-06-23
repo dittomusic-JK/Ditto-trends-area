@@ -143,17 +143,42 @@
           ></video>
         </div>
 
-        <!-- Scrubber + precise controls -->
+        <!-- YouTube-style scrubber with hover preview -->
         <div class="space-y-3">
-          <input
-            type="range"
-            min="0"
-            :max="duration || 0"
-            step="0.01"
-            :value="currentTime"
-            @input="seek(Number(($event.target as HTMLInputElement).value))"
-            class="w-full accent-ditto-purple cursor-pointer"
-          />
+          <div class="relative pt-1 pb-1">
+            <!-- Hover / scrub preview -->
+            <div
+              v-if="(hovering || isScrubbing) && duration"
+              class="absolute bottom-full mb-3 z-10 pointer-events-none"
+              :style="{ left: tooltipLeft + 'px' }"
+            >
+              <div class="w-40 rounded-lg overflow-hidden border border-white/10 shadow-xl bg-black">
+                <div class="aspect-video bg-gray-900">
+                  <img v-if="hoverThumb" :src="hoverThumb" alt="" class="w-full h-full object-cover" />
+                </div>
+              </div>
+              <p class="text-center text-[11px] font-mono text-ditto-text mt-1">{{ formatTimestamp(hoverTime, true) }}</p>
+            </div>
+
+            <!-- Track -->
+            <div
+              ref="trackRef"
+              @mousemove="onTrackHover"
+              @mouseleave="hovering = false"
+              @mousedown="onTrackDown"
+              class="group relative h-2 rounded-full bg-gray-200 cursor-pointer select-none"
+            >
+              <!-- buffered/full track is the gray bg; played fill -->
+              <div class="absolute inset-y-0 left-0 rounded-full bg-ditto-purple" :style="{ width: playedPct + '%' }"></div>
+              <!-- hover position marker -->
+              <div v-if="hovering && !isScrubbing" class="absolute top-1/2 -translate-y-1/2 w-0.5 h-3 bg-white/70 rounded" :style="{ left: hoverX + 'px' }"></div>
+              <!-- handle -->
+              <div
+                class="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-ditto-purple shadow-md ring-2 ring-white transition-transform group-hover:scale-110"
+                :style="{ left: playedPct + '%' }"
+              ></div>
+            </div>
+          </div>
 
           <div class="flex items-center justify-between gap-3 flex-wrap">
             <!-- Frame-step controls -->
@@ -179,28 +204,6 @@
               <span class="text-xs text-ditto-subtext font-mono">/ {{ formatTimestamp(duration, true) }}</span>
             </div>
           </div>
-        </div>
-
-        <!-- Filmstrip -->
-        <div>
-          <p class="text-xs font-medium text-ditto-subtext uppercase tracking-wide mb-2">Jump to a frame</p>
-          <div v-if="filmstrip.length" class="grid grid-cols-4 sm:grid-cols-8 gap-2">
-            <button
-              v-for="frame in filmstrip"
-              :key="frame.t"
-              @click="seek(frame.t)"
-              :class="[
-                'aspect-video rounded-lg overflow-hidden border-2 transition-all relative bg-gray-900',
-                Math.abs(currentTime - frame.t) < 0.5 ? 'border-ditto-purple ring-2 ring-ditto-purple/20' : 'border-gray-200 hover:border-gray-300'
-              ]"
-            >
-              <img :src="frame.url" alt="" class="w-full h-full object-cover" />
-              <span class="absolute bottom-0.5 right-0.5 text-[9px] font-mono text-white/90 bg-black/50 px-1 rounded">
-                {{ formatTimestamp(frame.t) }}
-              </span>
-            </button>
-          </div>
-          <div v-else class="text-xs text-ditto-subtext py-3">Generating frame previews…</div>
         </div>
 
         <!-- Capture action -->
@@ -314,23 +317,92 @@ const duration = ref(0)
 const currentTime = ref(0)
 const capturedTime = ref<number | null>(null)
 const capturedPreview = ref('')
-const filmstrip = ref<{ t: number; url: string }[]>([])
 const timeInput = ref('0:00.00')
 const frameStep = 1 / 30 // ~one frame at 30fps
+
+// Storyboard frames for the hover preview (YouTube-style precise seeking).
+const storyboard = ref<{ t: number; url: string }[]>([])
+
+// Scrubber state
+const trackRef = ref<HTMLElement | null>(null)
+const trackWidth = ref(0)
+const hovering = ref(false)
+const isScrubbing = ref(false)
+const hoverTime = ref(0)
+const hoverX = ref(0)
+
+const playedPct = computed(() => duration.value ? (currentTime.value / duration.value) * 100 : 0)
+const tooltipLeft = computed(() => {
+  const w = 160 // preview width (w-40)
+  return Math.max(0, Math.min(hoverX.value - w / 2, Math.max(0, trackWidth.value - w)))
+})
+const hoverThumb = computed(() => {
+  if (!storyboard.value.length) return ''
+  let best = storyboard.value[0]
+  for (const f of storyboard.value) {
+    if (Math.abs(f.t - hoverTime.value) < Math.abs(best.t - hoverTime.value)) best = f
+  }
+  return best.url
+})
 
 // Manage the object URL for the uploaded video + reset capture state on change.
 watch(() => props.videoFile, (file) => {
   if (videoUrl.value) { URL.revokeObjectURL(videoUrl.value); videoUrl.value = null }
   duration.value = 0
   currentTime.value = 0
-  filmstrip.value = []
+  storyboard.value = []
+  hovering.value = false
+  isScrubbing.value = false
   capturedTime.value = null
   capturedPreview.value = ''
   timeInput.value = '0:00.00'
   if (file) videoUrl.value = URL.createObjectURL(file)
 }, { immediate: true })
 
-onUnmounted(() => { if (videoUrl.value) URL.revokeObjectURL(videoUrl.value) })
+onUnmounted(() => {
+  if (videoUrl.value) URL.revokeObjectURL(videoUrl.value)
+  window.removeEventListener('mousemove', onDragMove)
+  window.removeEventListener('mouseup', onDragUp)
+})
+
+// ---- Scrubber interactions ----
+const timeFromClientX = (clientX: number) => {
+  const el = trackRef.value
+  if (!el) return 0
+  const rect = el.getBoundingClientRect()
+  trackWidth.value = rect.width
+  const ratio = Math.max(0, Math.min((clientX - rect.left) / rect.width, 1))
+  hoverX.value = ratio * rect.width
+  return ratio * duration.value
+}
+
+const onTrackHover = (e: MouseEvent) => {
+  if (!duration.value) return
+  hoverTime.value = timeFromClientX(e.clientX)
+  hovering.value = true
+}
+
+const onTrackDown = (e: MouseEvent) => {
+  if (!duration.value) return
+  isScrubbing.value = true
+  hoverTime.value = timeFromClientX(e.clientX)
+  seek(hoverTime.value)
+  window.addEventListener('mousemove', onDragMove)
+  window.addEventListener('mouseup', onDragUp)
+}
+
+const onDragMove = (e: MouseEvent) => {
+  hoverTime.value = timeFromClientX(e.clientX)
+  hovering.value = true
+  seek(hoverTime.value)
+}
+
+const onDragUp = () => {
+  isScrubbing.value = false
+  hovering.value = false
+  window.removeEventListener('mousemove', onDragMove)
+  window.removeEventListener('mouseup', onDragUp)
+}
 
 const formatTimestamp = (seconds: number, withFraction = false): string => {
   if (!seconds || seconds < 0) seconds = 0
@@ -380,12 +452,12 @@ const onSeeked = () => {
 const onLoadedMetadata = () => {
   if (!captureVideoRef.value) return
   duration.value = captureVideoRef.value.duration || 0
-  generateFilmstrip()
+  generateStoryboard()
 }
 
-// Build a strip of real frames from a detached video element so the main
-// preview isn't disturbed while we seek around.
-const generateFilmstrip = async () => {
+// Build a storyboard of real frames from a detached video element (so the
+// main preview isn't disturbed) to drive the scrubber hover preview.
+const generateStoryboard = async () => {
   if (!videoUrl.value) return
   const url = videoUrl.value
   const gen = document.createElement('video')
@@ -401,29 +473,30 @@ const generateFilmstrip = async () => {
   if (!dur) return
 
   const canvas = document.createElement('canvas')
-  canvas.width = 320
-  canvas.height = 180
+  canvas.width = 160
+  canvas.height = 90
   const ctx = canvas.getContext('2d')
   if (!ctx) return
 
-  const count = 8
+  // Denser sampling for smooth hover scrubbing, capped for performance.
+  const count = Math.min(40, Math.max(12, Math.round(dur / 3)))
   const frames: { t: number; url: string }[] = []
   for (let i = 0; i < count; i++) {
     const t = Math.min((dur * i) / (count - 1), Math.max(0, dur - 0.05))
-    // skip if this video URL was revoked (component/video changed)
-    if (videoUrl.value !== url) return
+    if (videoUrl.value !== url) return // video changed mid-generation
     await new Promise<void>((resolve) => {
       gen.onseeked = () => resolve()
       gen.currentTime = t
     })
     try {
       ctx.drawImage(gen, 0, 0, canvas.width, canvas.height)
-      frames.push({ t, url: canvas.toDataURL('image/jpeg', 0.6) })
+      frames.push({ t, url: canvas.toDataURL('image/jpeg', 0.55) })
     } catch {
       // ignore a frame that failed to draw
     }
+    // publish incrementally so the preview works before the full set is ready
+    if (videoUrl.value === url) storyboard.value = [...frames]
   }
-  if (videoUrl.value === url) filmstrip.value = frames
 }
 
 const captureFrame = () => {
