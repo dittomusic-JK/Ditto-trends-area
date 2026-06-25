@@ -5,45 +5,42 @@
 
     <!-- Primary Artists -->
     <div class="mb-6">
-      <div class="flex items-center justify-between mb-3">
-        <h3 class="text-sm font-semibold text-ditto-text">Primary Artists</h3>
-        <span class="text-xs text-ditto-subtext">{{ artists.primary.length }} / 4</span>
-      </div>
-
-      <!-- Artist Chips -->
-      <div v-if="artists.primary.length > 0" class="flex flex-wrap gap-2 mb-3">
+      <h3 class="font-satoshi font-bold text-base text-ditto-text mb-4">Primary Artists</h3>
+      <div class="flex flex-wrap items-start gap-5">
         <div
           v-for="artist in artists.primary"
           :key="artist.id"
-          class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-ditto-purple/10 border border-ditto-purple/20"
+          class="flex flex-col items-center gap-2 w-[72px] group"
         >
-          <div class="w-6 h-6 rounded-full bg-ditto-purple flex items-center justify-center text-[10px] font-bold text-white">
-            {{ artist.initials }}
+          <div class="relative">
+            <div
+              class="w-16 h-16 rounded-full flex items-center justify-center text-white font-bold text-2xl tracking-[-0.03em]"
+              :style="{ backgroundColor: colorFor(artist.id) }"
+            >
+              {{ artist.initials.charAt(0) }}
+            </div>
+            <button
+              @click="removeArtist('primary', artist.id)"
+              class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-white border border-gray-200 shadow-sm flex items-center justify-center text-ditto-subtext hover:text-error opacity-0 group-hover:opacity-100 transition-opacity"
+              aria-label="Remove artist"
+            >
+              <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
           </div>
-          <span class="text-sm text-ditto-text">{{ artist.name }}</span>
-          <button @click="removeArtist('primary', artist.id)" class="text-ditto-subtext hover:text-error transition-colors">
-            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-            </svg>
-          </button>
+          <span class="text-[13px] text-ditto-text text-center leading-tight w-full truncate">{{ artist.name }}</span>
         </div>
-      </div>
 
-      <button
-        @click="openArtistModal('primary')"
-        :disabled="artists.primary.length >= 4"
-        :class="[
-          'flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors',
-          artists.primary.length >= 4
-            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-            : 'bg-ditto-light-grey text-ditto-purple hover:bg-ditto-purple/10'
-        ]"
-      >
-        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>
-        </svg>
-        Add Artists
-      </button>
+        <button
+          v-if="artists.primary.length < 4"
+          @click="openArtistModal('primary')"
+          class="flex flex-col items-center gap-2 w-[72px] group"
+        >
+          <div class="w-16 h-16 rounded-full bg-ditto-light-grey border-2 border-[#C4DFFF] flex items-center justify-center group-hover:bg-[#C4DFFF]/20 transition-colors">
+            <img src="/img/user-music.svg" alt="" class="w-7 h-7" />
+          </div>
+          <span class="text-[13px] text-[#2680eb] text-center leading-tight">{{ artists.primary.length ? '+ Add More Artists' : 'Add Artists' }}</span>
+        </button>
+      </div>
     </div>
 
     <!-- Featured Artists Toggle -->
@@ -65,42 +62,42 @@
       </div>
 
       <div v-if="artists.showFeatured" class="ml-0">
-        <div class="flex items-center justify-between mb-3">
-          <h3 class="text-sm font-semibold text-ditto-text">Featured Artists</h3>
-          <span class="text-xs text-ditto-subtext">{{ artists.featured.length }} / 10</span>
-        </div>
-        <div v-if="artists.featured.length > 0" class="flex flex-wrap gap-2 mb-3">
+        <h3 class="font-satoshi font-bold text-base text-ditto-text mb-4">Featured Artists</h3>
+        <div class="flex flex-wrap items-start gap-5">
           <div
             v-for="artist in artists.featured"
             :key="artist.id"
-            class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-info/10 border border-info/20"
+            class="flex flex-col items-center gap-2 w-[72px] group"
           >
-            <div class="w-6 h-6 rounded-full bg-info flex items-center justify-center text-[10px] font-bold text-white">
-              {{ artist.initials }}
+            <div class="relative">
+              <div
+                class="w-16 h-16 rounded-full flex items-center justify-center text-white font-bold text-2xl tracking-[-0.03em]"
+                :style="{ backgroundColor: colorFor(artist.id) }"
+              >
+                {{ artist.initials.charAt(0) }}
+              </div>
+              <button
+                @click="removeArtist('featured', artist.id)"
+                class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-white border border-gray-200 shadow-sm flex items-center justify-center text-ditto-subtext hover:text-error opacity-0 group-hover:opacity-100 transition-opacity"
+                aria-label="Remove artist"
+              >
+                <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
             </div>
-            <span class="text-sm text-ditto-text">{{ artist.name }}</span>
-            <button @click="removeArtist('featured', artist.id)" class="text-ditto-subtext hover:text-error transition-colors">
-              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-              </svg>
-            </button>
+            <span class="text-[13px] text-ditto-text text-center leading-tight w-full truncate">{{ artist.name }}</span>
           </div>
+
+          <button
+            v-if="artists.featured.length < 10"
+            @click="openArtistModal('featured')"
+            class="flex flex-col items-center gap-2 w-[72px] group"
+          >
+            <div class="w-16 h-16 rounded-full bg-ditto-light-grey border-2 border-[#C4DFFF] flex items-center justify-center group-hover:bg-[#C4DFFF]/20 transition-colors">
+              <img src="/img/user-music.svg" alt="" class="w-7 h-7" />
+            </div>
+            <span class="text-[13px] text-[#2680eb] text-center leading-tight">{{ artists.featured.length ? '+ Add More Artists' : 'Add Artists' }}</span>
+          </button>
         </div>
-        <button
-          @click="openArtistModal('featured')"
-          :disabled="artists.featured.length >= 10"
-          :class="[
-            'flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors',
-            artists.featured.length >= 10
-              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-              : 'bg-ditto-light-grey text-ditto-purple hover:bg-ditto-purple/10'
-          ]"
-        >
-          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>
-          </svg>
-          Add Featured Artists
-        </button>
       </div>
     </div>
 
@@ -123,42 +120,42 @@
       </div>
 
       <div v-if="artists.showRemixer" class="ml-0">
-        <div class="flex items-center justify-between mb-3">
-          <h3 class="text-sm font-semibold text-ditto-text">Remixer Artists</h3>
-          <span class="text-xs text-ditto-subtext">{{ artists.remixer.length }} / 4</span>
-        </div>
-        <div v-if="artists.remixer.length > 0" class="flex flex-wrap gap-2 mb-3">
+        <h3 class="font-satoshi font-bold text-base text-ditto-text mb-4">Remixer Artists</h3>
+        <div class="flex flex-wrap items-start gap-5">
           <div
             v-for="artist in artists.remixer"
             :key="artist.id"
-            class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-warning/10 border border-warning/20"
+            class="flex flex-col items-center gap-2 w-[72px] group"
           >
-            <div class="w-6 h-6 rounded-full bg-warning flex items-center justify-center text-[10px] font-bold text-white">
-              {{ artist.initials }}
+            <div class="relative">
+              <div
+                class="w-16 h-16 rounded-full flex items-center justify-center text-white font-bold text-2xl tracking-[-0.03em]"
+                :style="{ backgroundColor: colorFor(artist.id) }"
+              >
+                {{ artist.initials.charAt(0) }}
+              </div>
+              <button
+                @click="removeArtist('remixer', artist.id)"
+                class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-white border border-gray-200 shadow-sm flex items-center justify-center text-ditto-subtext hover:text-error opacity-0 group-hover:opacity-100 transition-opacity"
+                aria-label="Remove artist"
+              >
+                <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
             </div>
-            <span class="text-sm text-ditto-text">{{ artist.name }}</span>
-            <button @click="removeArtist('remixer', artist.id)" class="text-ditto-subtext hover:text-error transition-colors">
-              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-              </svg>
-            </button>
+            <span class="text-[13px] text-ditto-text text-center leading-tight w-full truncate">{{ artist.name }}</span>
           </div>
+
+          <button
+            v-if="artists.remixer.length < 4"
+            @click="openArtistModal('remixer')"
+            class="flex flex-col items-center gap-2 w-[72px] group"
+          >
+            <div class="w-16 h-16 rounded-full bg-ditto-light-grey border-2 border-[#C4DFFF] flex items-center justify-center group-hover:bg-[#C4DFFF]/20 transition-colors">
+              <img src="/img/user-music.svg" alt="" class="w-7 h-7" />
+            </div>
+            <span class="text-[13px] text-[#2680eb] text-center leading-tight">{{ artists.remixer.length ? '+ Add More Artists' : 'Add Artists' }}</span>
+          </button>
         </div>
-        <button
-          @click="openArtistModal('remixer')"
-          :disabled="artists.remixer.length >= 4"
-          :class="[
-            'flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors',
-            artists.remixer.length >= 4
-              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-              : 'bg-ditto-light-grey text-ditto-purple hover:bg-ditto-purple/10'
-          ]"
-        >
-          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>
-          </svg>
-          Add Remix Artists
-        </button>
       </div>
     </div>
 
@@ -217,12 +214,8 @@
             @click="showAddNewModal = true"
             class="flex flex-col items-center gap-2 group"
           >
-            <div class="w-[84px] h-[84px] rounded-full border-2 border-[#2680eb] bg-ditto-light-grey flex items-center justify-center text-[#2680eb] group-hover:bg-blue-50 transition-colors">
-              <svg class="w-8 h-8" viewBox="0 0 32 32" fill="none">
-                <circle cx="13" cy="11" r="4.5" stroke="currentColor" stroke-width="1.8"/>
-                <path d="M5 25c0-4 3.6-7 8-7 2.4 0 4.5.9 6 2.3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                <path d="M22 18v8M18 22h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-              </svg>
+            <div class="w-[84px] h-[84px] rounded-full border-2 border-[#C4DFFF] bg-ditto-light-grey flex items-center justify-center group-hover:bg-[#C4DFFF]/20 transition-colors">
+              <img src="/img/user-music.svg" alt="" class="w-9 h-9" />
             </div>
             <span class="text-[13px] text-[#2680eb] text-center leading-tight">+ Add New Artist</span>
           </button>
@@ -439,6 +432,9 @@ const newArtistAppleId = ref('')
 const newArtistIsPlan = ref(false)
 
 const allArtists = ref([...mockArtists])
+
+// Resolve an artist's brand colour for their avatar (mock + newly added).
+const colorFor = (id: string) => allArtists.value.find(a => a.id === id)?.color || '#5f1fff'
 
 const filteredArtists = computed(() => {
   const q = searchQuery.value.trim().toLowerCase()
