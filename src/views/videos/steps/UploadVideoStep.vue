@@ -2,9 +2,83 @@
   <div>
     <h2 class="font-satoshi font-black tracking-[-0.03em] text-xl lg:text-2xl text-ditto-text mb-5">Upload your video</h2>
 
-    <!-- Drop Zone (before upload) -->
+    <!-- Error state -->
+    <div v-if="uploadError" class="border-2 border-dashed border-error/40 bg-error/5 rounded-2xl p-10 text-center">
+      <div class="w-14 h-14 mx-auto mb-3 rounded-full bg-error/10 flex items-center justify-center">
+        <svg class="w-6 h-6 text-error" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+      </div>
+      <p class="text-sm font-medium text-error mb-1">We couldn't upload your video</p>
+      <p class="text-xs text-ditto-subtext mb-4 max-w-md mx-auto">{{ uploadError }}</p>
+      <button @click="reset" class="px-4 py-2 rounded-full bg-ditto-purple text-white text-sm font-medium hover:bg-ditto-purple/90 transition-colors">Try another file</button>
+    </div>
+
+    <!-- Uploading (drag-and-drop + browse hidden — upload can't be interrupted) -->
+    <div v-else-if="isUploading" class="border-2 border-dashed border-ditto-purple/30 bg-ditto-purple/5 rounded-2xl p-8">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-10 h-10 rounded-lg bg-ditto-purple/10 flex items-center justify-center flex-shrink-0">
+          <svg class="w-5 h-5 text-ditto-purple" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="2" y="4" width="20" height="16" rx="2"/><polygon points="10,8 16,12 10,16"/>
+          </svg>
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-medium text-ditto-text truncate">{{ fileName }}</p>
+          <p class="text-xs text-ditto-subtext">{{ fileSize }}</p>
+        </div>
+      </div>
+      <div class="flex items-center justify-between text-xs text-ditto-subtext mb-1">
+        <span>Uploading…</span>
+        <span>{{ uploadProgress }}%</span>
+      </div>
+      <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+        <div class="h-full bg-ditto-purple rounded-full transition-all duration-300" :style="{ width: uploadProgress + '%' }"></div>
+      </div>
+      <p class="text-[11px] text-ditto-subtext mt-2">Please keep this tab open — the upload can't be interrupted.</p>
+    </div>
+
+    <!-- Uploaded -->
+    <div v-else-if="isUploaded" class="space-y-4">
+      <div class="flex items-center gap-3 p-4 rounded-xl bg-ditto-light-grey border border-gray-100">
+        <div class="w-10 h-10 rounded-lg bg-ditto-purple/10 flex items-center justify-center flex-shrink-0">
+          <svg class="w-5 h-5 text-ditto-purple" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="2" y="4" width="20" height="16" rx="2"/><polygon points="10,8 16,12 10,16"/>
+          </svg>
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-medium text-ditto-text truncate">{{ fileName }}</p>
+          <p class="text-xs text-ditto-subtext">{{ fileSize }}</p>
+        </div>
+        <button @click="removeFile" class="w-8 h-8 rounded-full hover:bg-gray-200 flex items-center justify-center transition-colors">
+          <svg class="w-4 h-4 text-ditto-subtext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Video Preview (errors here surface the error state) -->
+      <div class="aspect-video rounded-2xl bg-gray-900 flex items-center justify-center overflow-hidden">
+        <video
+          v-if="videoPreviewUrl"
+          :src="videoPreviewUrl"
+          controls
+          class="w-full h-full object-contain"
+          @error="onPreviewError"
+        ></video>
+        <div v-else class="text-center">
+          <div class="w-16 h-16 mx-auto rounded-full border-2 border-white/30 flex items-center justify-center mb-3">
+            <svg class="w-7 h-7 text-white/70 ml-1" viewBox="0 0 24 24" fill="currentColor">
+              <polygon points="6,4 20,12 6,20"/>
+            </svg>
+          </div>
+          <p class="text-xs text-white/50">Video Preview</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Idle drop zone -->
     <div
-      v-if="!isUploaded"
+      v-else
       @dragover.prevent="isDragging = true"
       @dragleave="isDragging = false"
       @drop.prevent="handleDrop"
@@ -13,7 +87,6 @@
         isDragging ? 'border-ditto-purple bg-ditto-purple/5' : 'border-gray-300 hover:border-ditto-purple/50'
       ]"
     >
-      <!-- Upload Icon -->
       <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-ditto-light-grey flex items-center justify-center">
         <svg class="w-7 h-7 text-ditto-subtext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
           <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke-linecap="round" stroke-linejoin="round"/>
@@ -34,67 +107,6 @@
         class="hidden"
         @change="handleFileSelect"
       />
-
-      <!-- File Size Error -->
-      <div v-if="fileSizeError" class="mt-4 p-3 rounded-xl bg-error/10 border border-error/20 flex items-center gap-2">
-        <svg class="w-4 h-4 text-error flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
-        </svg>
-        <p class="text-xs text-error">{{ fileSizeError }}</p>
-      </div>
-
-      <!-- Upload Progress -->
-      <div v-if="isUploading" class="mt-6 max-w-md mx-auto">
-        <div class="flex items-center justify-between text-xs text-ditto-subtext mb-1">
-          <span>Uploading...</span>
-          <span>{{ uploadProgress }}%</span>
-        </div>
-        <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
-          <div
-            class="h-full bg-ditto-purple rounded-full transition-all duration-300"
-            :style="{ width: uploadProgress + '%' }"
-          ></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- File Uploaded State -->
-    <div v-else class="space-y-4">
-      <!-- File info -->
-      <div class="flex items-center gap-3 p-4 rounded-xl bg-ditto-light-grey border border-gray-100">
-        <div class="w-10 h-10 rounded-lg bg-ditto-purple/10 flex items-center justify-center flex-shrink-0">
-          <svg class="w-5 h-5 text-ditto-purple" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-            <rect x="2" y="4" width="20" height="16" rx="2"/><polygon points="10,8 16,12 10,16"/>
-          </svg>
-        </div>
-        <div class="flex-1 min-w-0">
-          <p class="text-sm font-medium text-ditto-text truncate">{{ fileName }}</p>
-          <p class="text-xs text-ditto-subtext">{{ fileSize }}</p>
-        </div>
-        <button @click="removeFile" class="w-8 h-8 rounded-full hover:bg-gray-200 flex items-center justify-center transition-colors">
-          <svg class="w-4 h-4 text-ditto-subtext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-          </svg>
-        </button>
-      </div>
-
-      <!-- Video Preview -->
-      <div class="aspect-video rounded-2xl bg-gray-900 flex items-center justify-center overflow-hidden">
-        <video
-          v-if="videoPreviewUrl"
-          :src="videoPreviewUrl"
-          controls
-          class="w-full h-full object-contain"
-        ></video>
-        <div v-else class="text-center">
-          <div class="w-16 h-16 mx-auto rounded-full border-2 border-white/30 flex items-center justify-center mb-3">
-            <svg class="w-7 h-7 text-white/70 ml-1" viewBox="0 0 24 24" fill="currentColor">
-              <polygon points="6,4 20,12 6,20"/>
-            </svg>
-          </div>
-          <p class="text-xs text-white/50">Video Preview</p>
-        </div>
-      </div>
     </div>
   </div>
 </template>
@@ -119,19 +131,15 @@ const isUploaded = ref(props.videoFile !== null)
 const uploadProgress = ref(0)
 const fileName = ref(props.videoFile?.name || '')
 const fileSize = ref('')
-const fileSizeError = ref('')
+const uploadError = ref<string | null>(null)
 const fileInputRef = ref<HTMLInputElement | null>(null)
 const videoPreviewUrl = ref<string | null>(props.videoFile ? URL.createObjectURL(props.videoFile) : null)
 
 onUnmounted(() => {
-  if (videoPreviewUrl.value) {
-    URL.revokeObjectURL(videoPreviewUrl.value)
-  }
+  if (videoPreviewUrl.value) URL.revokeObjectURL(videoPreviewUrl.value)
 })
 
-const triggerFileInput = () => {
-  fileInputRef.value?.click()
-}
+const triggerFileInput = () => fileInputRef.value?.click()
 
 const formatFileSize = (bytes: number): string => {
   if (bytes >= 1073741824) return (bytes / 1073741824).toFixed(1) + ' GB'
@@ -139,12 +147,22 @@ const formatFileSize = (bytes: number): string => {
   return (bytes / 1024).toFixed(0) + ' KB'
 }
 
-const simulateUpload = (file: File) => {
-  fileSizeError.value = ''
+// Lightweight validation — full format/resolution/orientation checks happen
+// server-side; here we catch the obvious failures up front.
+const validateFile = (file: File): string | null => {
+  const okExt = /\.(mp4|mpeg|mpg|mov|m4v|webm|avi|mkv)$/i.test(file.name)
+  const okMime = file.type === '' || file.type.startsWith('video/')
+  if (!okMime && !okExt) return 'Invalid file format. Please upload a video file (MP4, MPEG or MOV).'
+  if (file.size > MAX_FILE_SIZE) return `The file size should be no larger than 50 GB (this file is ${formatFileSize(file.size)}).`
+  return null
+}
 
-  // File size validation (max 50GB)
-  if (file.size > MAX_FILE_SIZE) {
-    fileSizeError.value = `The file size should be no larger than 50 GB (this file is ${formatFileSize(file.size)}).`
+const simulateUpload = (file: File) => {
+  uploadError.value = null
+
+  const error = validateFile(file)
+  if (error) {
+    uploadError.value = error
     return
   }
 
@@ -161,7 +179,6 @@ const simulateUpload = (file: File) => {
       setTimeout(() => {
         isUploading.value = false
         isUploaded.value = true
-        // Create video preview URL
         if (videoPreviewUrl.value) URL.revokeObjectURL(videoPreviewUrl.value)
         videoPreviewUrl.value = URL.createObjectURL(file)
         emit('update:videoFile', file)
@@ -171,28 +188,41 @@ const simulateUpload = (file: File) => {
   }, 200)
 }
 
+// The browser couldn't decode the uploaded video (corrupt / unsupported / still
+// processing). Surface the error state and clear the broken file.
+const onPreviewError = () => {
+  uploadError.value = 'We couldn’t process this video. It may be corrupted, still processing, or in a format we can’t play. Please try another file.'
+  isUploaded.value = false
+  if (videoPreviewUrl.value) { URL.revokeObjectURL(videoPreviewUrl.value); videoPreviewUrl.value = null }
+  emit('update:videoFile', null)
+}
+
 const handleFileSelect = (event: Event) => {
   const input = event.target as HTMLInputElement
-  if (input.files && input.files[0]) {
-    simulateUpload(input.files[0])
-  }
+  if (input.files && input.files[0]) simulateUpload(input.files[0])
 }
 
 const handleDrop = (event: DragEvent) => {
   isDragging.value = false
-  if (event.dataTransfer?.files && event.dataTransfer.files[0]) {
-    simulateUpload(event.dataTransfer.files[0])
-  }
+  if (event.dataTransfer?.files && event.dataTransfer.files[0]) simulateUpload(event.dataTransfer.files[0])
 }
 
 const removeFile = () => {
   isUploaded.value = false
   fileName.value = ''
   fileSize.value = ''
-  if (videoPreviewUrl.value) {
-    URL.revokeObjectURL(videoPreviewUrl.value)
-    videoPreviewUrl.value = null
-  }
+  if (videoPreviewUrl.value) { URL.revokeObjectURL(videoPreviewUrl.value); videoPreviewUrl.value = null }
   emit('update:videoFile', null)
+}
+
+// Reset back to the idle drop zone after an error.
+const reset = () => {
+  uploadError.value = null
+  isUploaded.value = false
+  isUploading.value = false
+  fileName.value = ''
+  fileSize.value = ''
+  uploadProgress.value = 0
+  if (fileInputRef.value) fileInputRef.value.value = ''
 }
 </script>
