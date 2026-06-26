@@ -20,7 +20,7 @@
     
     <!-- Available Contracts -->
     <section>
-      <div class="flex items-center justify-between gap-3 mb-4">
+      <div class="flex items-center gap-3 mb-4">
         <h2 :class="['text-xl font-semibold', isDarkMode ? 'text-white' : 'text-gray-900']">Available Contracts</h2>
         <span :class="['inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full border border-ditto-purple', isDarkMode ? 'text-purple-200' : 'text-ditto-purple']">
           <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
