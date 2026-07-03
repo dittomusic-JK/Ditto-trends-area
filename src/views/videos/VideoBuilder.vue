@@ -70,6 +70,7 @@
         v-else-if="currentStep === 2"
         v-model:stores="formData.stores"
         :is-lyric-video="formData.metadata.isLyricVideo"
+        @go-to-step="navigateToStep"
       />
 
       <!-- Step 4: Schedule -->

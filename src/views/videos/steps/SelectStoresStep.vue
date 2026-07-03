@@ -1,7 +1,6 @@
 <template>
   <div>
-    <h2 class="font-satoshi font-black tracking-[-0.03em] text-xl lg:text-2xl text-ditto-text mb-2">Select Your Stores</h2>
-    <p class="text-sm text-ditto-subtext mb-6">Choose which stores and platforms you want to distribute your video to.</p>
+    <h2 class="font-satoshi font-black tracking-[-0.03em] text-xl lg:text-2xl text-ditto-text mb-5">Select your stores</h2>
 
     <!-- Store Tiles -->
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
@@ -9,7 +8,7 @@
         v-for="store in storeList"
         :key="store.id"
         :class="[
-          'rounded-xl transition-all overflow-hidden',
+          'rounded-xl transition-all',
           isStoreDisabled(store.id)
             ? 'bg-gray-50 opacity-50'
             : isSelected(store.id)
@@ -27,15 +26,19 @@
           <!-- Store Icon -->
           <img :src="store.logo" :alt="store.name" class="w-10 h-10 object-contain flex-shrink-0" />
 
-          <!-- Name + More Info -->
+          <!-- Name + Information tooltip -->
           <div class="flex-1 min-w-0">
             <p class="text-sm font-semibold text-ditto-text">{{ store.name }}</p>
             <p v-if="isStoreDisabled(store.id)" class="text-xs text-ditto-subtext">{{ storeDisabledReason(store.id) }}</p>
-            <span
-              v-else
-              @click.stop="toggleInfo(store.id)"
-              class="text-xs text-ditto-purple hover:underline cursor-pointer"
-            >{{ expandedInfo === store.id ? 'Hide info' : 'More info' }}</span>
+            <span v-else class="relative inline-flex group/info" @click.stop>
+              <span class="text-xs text-ditto-purple inline-flex items-center gap-1 cursor-help">
+                <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01" stroke-linecap="round"/></svg>
+                Information
+              </span>
+              <span class="absolute left-0 top-full mt-1.5 w-60 p-2.5 bg-ditto-text text-white text-[11px] leading-relaxed rounded-lg opacity-0 invisible group-hover/info:opacity-100 group-hover/info:visible transition-all z-20 pointer-events-none normal-case font-normal">
+                {{ store.info }}
+              </span>
+            </span>
           </div>
 
           <!-- Checkbox / Lock -->
@@ -55,11 +58,6 @@
             </div>
           </div>
         </button>
-
-        <!-- Expanded info -->
-        <div v-if="expandedInfo === store.id && !isStoreDisabled(store.id)" class="px-4 pb-4 -mt-1">
-          <p class="text-xs text-ditto-subtext leading-relaxed pl-14">{{ store.info }}</p>
-        </div>
       </div>
     </div>
 
@@ -289,8 +287,7 @@
 
     <!-- Price Band -->
     <div class="mb-6">
-      <h3 class="text-sm font-semibold text-ditto-text mb-2">How much would you like to charge?</h3>
-      <p class="text-xs text-ditto-subtext mb-3">Select a price band for your video on stores that support paid content.</p>
+      <h3 class="text-sm font-semibold text-ditto-text mb-3">How much would you like to charge?</h3>
 
       <div class="flex items-center gap-3">
         <label
@@ -316,12 +313,19 @@
       </div>
     </div>
 
-    <!-- Validation message -->
-    <div v-if="stores.selected.length === 0" class="p-3 rounded-xl bg-warning/10 border border-warning/20 flex items-center gap-2">
-      <svg class="w-4 h-4 text-warning flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
-      </svg>
-      <p class="text-xs text-warning">Please select at least one store to continue.</p>
+    <!-- Spotify requires a linked release -->
+    <div v-if="showSpotifyPrompt" class="fixed inset-0 z-50 flex items-center justify-center bg-black/10 backdrop-blur-[2px]" @click.self="showSpotifyPrompt = false">
+      <div class="bg-white rounded-2xl shadow-2xl w-[420px] max-w-[90vw] p-6 text-center">
+        <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-ditto-purple/10 flex items-center justify-center">
+          <img src="/img/spotify-icon.svg" alt="Spotify" class="w-6 h-6 object-contain" />
+        </div>
+        <h3 class="font-satoshi font-bold text-lg text-ditto-text tracking-[-0.03em] mb-1.5">Link a release for Spotify</h3>
+        <p class="text-sm text-ditto-subtext mb-5">To distribute your video to Spotify, it needs to be linked to a music release. We'll take you back to the Details step to link one.</p>
+        <div class="flex gap-2.5 justify-center">
+          <button @click="showSpotifyPrompt = false" class="px-5 h-11 rounded-full border border-gray-200 text-sm text-ditto-text hover:bg-ditto-light-grey transition-colors">Not now</button>
+          <button @click="goLinkRelease" class="px-5 h-11 rounded-full bg-ditto-purple text-white text-sm font-medium hover:bg-ditto-purple/90 transition-colors">Link a release</button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -350,15 +354,12 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'update:stores', stores: StoresData): void
+  (e: 'goToStep', index: number): void
 }>()
 
 const storeList = videoStores
 const hasSpotifyReleases = userHasSpotifyReleases
-const expandedInfo = ref<string | null>(null)
-
-const toggleInfo = (id: string) => {
-  expandedInfo.value = expandedInfo.value === id ? null : id
-}
+const showSpotifyPrompt = ref(false)
 
 const priceBands = [
   { id: 'budget', label: 'Budget' },
@@ -394,7 +395,19 @@ watch(() => props.isLyricVideo, (isLyric) => {
 
 const handleStoreClick = (id: string) => {
   if (isStoreDisabled(id)) return
+  // Spotify needs a linked release — prompt to link before selecting it.
+  if (id === 'spotify' && !isSelected('spotify') && !props.stores.spotifyTrackId) {
+    showSpotifyPrompt.value = true
+    return
+  }
   toggleStore(id)
+}
+
+// Select Spotify and send the user back to the Details step to link a release.
+const goLinkRelease = () => {
+  showSpotifyPrompt.value = false
+  if (!isSelected('spotify')) toggleStore('spotify')
+  emit('goToStep', 1)
 }
 
 const toggleStore = (id: string) => {
