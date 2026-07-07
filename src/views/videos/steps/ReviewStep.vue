@@ -94,10 +94,6 @@
               </p>
             </div>
             <div>
-              <p class="text-xs text-ditto-subtext">Various Artists:</p>
-              <p class="text-sm text-ditto-text">{{ formData.metadata.artistType === 'compilation' ? 'Yes' : 'No' }}</p>
-            </div>
-            <div>
               <p class="text-xs text-ditto-subtext">Language:</p>
               <p class="text-sm text-ditto-text">{{ formData.metadata.language }}</p>
             </div>
@@ -158,9 +154,8 @@
           <span v-if="formData.metadata.is18Plus" class="px-2.5 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wider bg-warning/10 text-warning border border-warning/20">18+</span>
           <span v-if="formData.metadata.isLyricVideo" class="px-2.5 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wider bg-info/10 text-info border border-info/20">Lyric Video</span>
           <span v-if="formData.metadata.aiTransparency" class="px-2.5 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wider bg-ditto-purple/10 text-ditto-purple border border-ditto-purple/20">AI Content</span>
-          <span v-if="formData.metadata.artistType === 'compilation'" class="px-2.5 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wider bg-ditto-light-grey text-ditto-subtext border border-gray-200">Compilation</span>
           <span v-if="formData.assetSource.type" class="px-2.5 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wider bg-ditto-light-grey text-ditto-subtext border border-gray-200">{{ assetSourceLabel }}</span>
-          <span v-if="!formData.metadata.isExplicit && !formData.metadata.is18Plus && !formData.metadata.isLyricVideo && !formData.metadata.aiTransparency && formData.metadata.artistType !== 'compilation' && !formData.assetSource.type" class="text-xs text-ditto-subtext">No content flags set</span>
+          <span v-if="!formData.metadata.isExplicit && !formData.metadata.is18Plus && !formData.metadata.isLyricVideo && !formData.metadata.aiTransparency && !formData.assetSource.type" class="text-xs text-ditto-subtext">No content flags set</span>
         </div>
       </div>
 
@@ -423,7 +418,6 @@ interface FormData {
     secondaryGenre: string
     language: string
     isrc: string
-    artistType: 'artist' | 'compilation'
     isLyricVideo: boolean
     isExplicit: boolean
     is18Plus: boolean

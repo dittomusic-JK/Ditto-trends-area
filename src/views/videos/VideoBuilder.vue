@@ -53,9 +53,11 @@
         <LinkReleasePicker
           :release-id="formData.stores.spotifyReleaseId"
           :track-id="formData.stores.spotifyTrackId"
+          :auto-open="openLinkPicker"
           @update:release-id="formData.stores.spotifyReleaseId = $event"
           @update:track-id="formData.stores.spotifyTrackId = $event"
           @copy-metadata="handleCopyMetadata"
+          @auto-open-consumed="openLinkPicker = false"
         />
         <div class="border-t border-gray-200"></div>
         <VideoMetadataStep v-model:metadata="formData.metadata" />
@@ -70,7 +72,7 @@
         v-else-if="currentStep === 2"
         v-model:stores="formData.stores"
         :is-lyric-video="formData.metadata.isLyricVideo"
-        @go-to-step="navigateToStep"
+        @link-release="handleLinkReleaseRedirect"
       />
 
       <!-- Step 4: Schedule -->
@@ -199,7 +201,6 @@ const formData = reactive({
     secondaryGenre: '',
     language: 'English',
     isrc: '',
-    artistType: 'artist' as 'artist' | 'compilation',
     isLyricVideo: false,
     isExplicit: false,
     is18Plus: false,
@@ -310,6 +311,14 @@ const canGoBack = computed(() => currentStep.value > 0)
 const navigateToStep = (index: number) => {
   currentStep.value = index
   window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+
+// Sent back from Stores to link a release for Spotify — jump to Details with
+// the link picker already open.
+const openLinkPicker = ref(false)
+const handleLinkReleaseRedirect = () => {
+  openLinkPicker.value = true
+  navigateToStep(1)
 }
 
 const handleBack = () => {

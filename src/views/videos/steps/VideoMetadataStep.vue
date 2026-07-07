@@ -147,15 +147,46 @@
             </div>
           </div>
         </div>
-        <select
-          :value="metadata.recordLabel"
-          @change="updateField('recordLabel', ($event.target as HTMLSelectElement).value)"
-          class="w-full px-0 py-2.5 border-0 border-b border-gray-300 text-sm text-ditto-text bg-transparent focus:outline-none focus:border-ditto-purple transition-colors"
-        >
-          <option value="Independent">Independent</option>
-          <option value="Goldenboy Entertainment">Goldenboy Entertainment</option>
-          <option value="__add_new">+ Add New Label</option>
-        </select>
+        <div class="flex items-center gap-3">
+          <select
+            :value="metadata.recordLabel"
+            @change="updateField('recordLabel', ($event.target as HTMLSelectElement).value)"
+            class="flex-1 min-w-0 px-0 py-2.5 border-0 border-b border-gray-300 text-sm text-ditto-text bg-transparent focus:outline-none focus:border-ditto-purple transition-colors"
+          >
+            <option value="Independent">Independent</option>
+            <option value="Goldenboy Entertainment">Goldenboy Entertainment</option>
+            <option v-for="label in customLabels" :key="label" :value="label">{{ label }}</option>
+          </select>
+          <button
+            type="button"
+            @click="showAddLabel = !showAddLabel"
+            class="flex items-center gap-2 pl-1.5 pr-4 h-[42px] rounded-full border border-gray-200 text-sm font-medium text-ditto-text hover:border-ditto-purple/40 transition-colors flex-shrink-0"
+          >
+            <span class="w-6 h-6 rounded-full bg-ditto-text flex items-center justify-center flex-shrink-0">
+              <svg class="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </span>
+            Add New Label
+          </button>
+        </div>
+        <!-- Inline add label -->
+        <div v-if="showAddLabel" class="flex items-center gap-2 mt-3">
+          <input
+            v-model="newLabel"
+            @keydown.enter="addLabel"
+            type="text"
+            placeholder="New label name"
+            class="flex-1 px-0 py-2 border-0 border-b border-gray-300 text-sm text-ditto-text bg-transparent focus:outline-none focus:border-ditto-purple transition-colors"
+          />
+          <button
+            @click="addLabel"
+            :disabled="!newLabel.trim()"
+            :class="[
+              'px-4 py-2 rounded-full text-sm font-medium transition-colors',
+              newLabel.trim() ? 'bg-ditto-purple text-white hover:bg-ditto-purple/90' : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+            ]"
+          >Add</button>
+          <button @click="showAddLabel = false; newLabel = ''" class="text-xs text-ditto-subtext hover:text-ditto-text px-2">Cancel</button>
+        </div>
       </div>
 
       <!-- Genres -->
@@ -248,48 +279,48 @@
         </div>
       </div>
 
-      <!-- Artist Type -->
+      <!-- Video Type -->
       <div>
-        <label class="block text-sm font-medium text-ditto-text mb-2">Artist Type</label>
+        <label class="block text-sm font-medium text-ditto-text mb-2">Type</label>
         <div class="flex items-center gap-4">
           <label class="flex items-center gap-2 cursor-pointer">
             <input
               type="radio"
-              name="artistType"
-              value="artist"
-              :checked="metadata.artistType === 'artist'"
-              @change="updateField('artistType', 'artist')"
+              name="videoType"
+              value="official"
+              :checked="metadata.videoType === 'official'"
+              @change="updateField('videoType', 'official')"
               class="hidden"
             />
             <div :class="[
               'w-6 h-6 rounded-full flex items-center justify-center transition-colors',
-              metadata.artistType === 'artist' ? 'bg-ditto-purple' : 'border-2 border-gray-300'
+              metadata.videoType === 'official' ? 'bg-ditto-purple' : 'border-2 border-gray-300'
             ]">
-              <svg v-if="metadata.artistType === 'artist'" class="w-3.5 h-3.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <svg v-if="metadata.videoType === 'official'" class="w-3.5 h-3.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </div>
-            <span class="text-sm font-medium text-ditto-text">Artist / Band</span>
+            <span class="text-sm font-medium text-ditto-text">Official Video</span>
           </label>
           <label class="flex items-center gap-2 cursor-pointer">
             <input
               type="radio"
-              name="artistType"
-              value="compilation"
-              :checked="metadata.artistType === 'compilation'"
-              @change="updateField('artistType', 'compilation')"
+              name="videoType"
+              value="live"
+              :checked="metadata.videoType === 'live'"
+              @change="updateField('videoType', 'live')"
               class="hidden"
             />
             <div :class="[
               'w-6 h-6 rounded-full flex items-center justify-center transition-colors',
-              metadata.artistType === 'compilation' ? 'bg-ditto-purple' : 'border-2 border-gray-300'
+              metadata.videoType === 'live' ? 'bg-ditto-purple' : 'border-2 border-gray-300'
             ]">
-              <svg v-if="metadata.artistType === 'compilation'" class="w-3.5 h-3.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <svg v-if="metadata.videoType === 'live'" class="w-3.5 h-3.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </div>
-            <span class="text-sm font-medium text-ditto-text">Compilation / Various Artists</span>
+            <span class="text-sm font-medium text-ditto-text">Live Performance</span>
           </label>
         </div>
       </div>
 
-      <!-- Toggles -->
+      <!-- Toggles (all grouped together) -->
       <div class="space-y-4 border-t border-gray-200 pt-5">
         <!-- Lyric Video -->
         <div class="flex items-center justify-between">
@@ -341,51 +372,30 @@
             ]"></span>
           </button>
         </div>
-      </div>
 
-      <!-- Video Type -->
-      <div>
-        <label class="block text-sm font-medium text-ditto-text mb-2">Type</label>
-        <div class="flex items-center gap-4">
-          <label class="flex items-center gap-2 cursor-pointer">
-            <input
-              type="radio"
-              name="videoType"
-              value="official"
-              :checked="metadata.videoType === 'official'"
-              @change="updateField('videoType', 'official')"
-              class="hidden"
-            />
-            <div :class="[
-              'w-6 h-6 rounded-full flex items-center justify-center transition-colors',
-              metadata.videoType === 'official' ? 'bg-ditto-purple' : 'border-2 border-gray-300'
-            ]">
-              <svg v-if="metadata.videoType === 'official'" class="w-3.5 h-3.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </div>
-            <span class="text-sm font-medium text-ditto-text">Official Video</span>
-          </label>
-          <label class="flex items-center gap-2 cursor-pointer">
-            <input
-              type="radio"
-              name="videoType"
-              value="live"
-              :checked="metadata.videoType === 'live'"
-              @change="updateField('videoType', 'live')"
-              class="hidden"
-            />
-            <div :class="[
-              'w-6 h-6 rounded-full flex items-center justify-center transition-colors',
-              metadata.videoType === 'live' ? 'bg-ditto-purple' : 'border-2 border-gray-300'
-            ]">
-              <svg v-if="metadata.videoType === 'live'" class="w-3.5 h-3.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </div>
-            <span class="text-sm font-medium text-ditto-text">Live Performance</span>
-          </label>
+        <!-- AI Transparency -->
+        <div class="flex items-center justify-between">
+          <div>
+            <span class="text-sm text-ditto-text">AI Transparency</span>
+            <p class="text-xs text-ditto-subtext mt-0.5">Enable if AI tools were used in producing this video.</p>
+          </div>
+          <button
+            @click="updateField('aiTransparency', !metadata.aiTransparency)"
+            :class="[
+              'w-[51px] h-[31px] rounded-full relative transition-colors flex-shrink-0',
+              metadata.aiTransparency ? 'bg-[#34c759]' : 'bg-[#e9e9eb]'
+            ]"
+          >
+            <span :class="[
+              'absolute top-[2px] left-[2px] w-[27px] h-[27px] rounded-full bg-white shadow-md transition-transform',
+              metadata.aiTransparency ? 'translate-x-[20px]' : 'translate-x-0'
+            ]"></span>
+          </button>
         </div>
       </div>
 
-      <!-- Video Description -->
-      <div>
+      <!-- Video Description (at the bottom) -->
+      <div class="border-t border-gray-200 pt-5">
         <label class="block text-sm font-medium text-ditto-text mb-1.5">Video Description</label>
         <textarea
           :value="metadata.description"
@@ -397,32 +407,12 @@
         ></textarea>
         <p class="text-xs text-ditto-subtext mt-1 text-right">{{ metadata.description.length }} / 5000</p>
       </div>
-
-      <!-- AI Transparency -->
-      <div class="flex items-center justify-between border-t border-gray-200 pt-5">
-        <div>
-          <span class="text-sm font-medium text-ditto-text">AI Transparency</span>
-          <p class="text-xs text-ditto-subtext mt-0.5">Enable if AI tools were used in producing this video.</p>
-        </div>
-        <button
-          @click="updateField('aiTransparency', !metadata.aiTransparency)"
-          :class="[
-            'w-[51px] h-[31px] rounded-full relative transition-colors flex-shrink-0',
-            metadata.aiTransparency ? 'bg-[#34c759]' : 'bg-[#e9e9eb]'
-          ]"
-        >
-          <span :class="[
-            'absolute top-[2px] left-[2px] w-[27px] h-[27px] rounded-full bg-white shadow-md transition-transform',
-            metadata.aiTransparency ? 'translate-x-[20px]' : 'translate-x-0'
-          ]"></span>
-        </button>
-      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, reactive } from 'vue'
+import { ref, computed, reactive } from 'vue'
 import { videoGenres, videoLanguages } from '../../../data/videoMockData'
 
 interface Metadata {
@@ -436,7 +426,6 @@ interface Metadata {
   secondaryGenre: string
   language: string
   isrc: string
-  artistType: 'artist' | 'compilation'
   isLyricVideo: boolean
   isExplicit: boolean
   is18Plus: boolean
@@ -455,6 +444,19 @@ const emit = defineEmits<{
 
 const genres = videoGenres
 const languages = videoLanguages
+
+// Add New Label (inline)
+const customLabels = ref<string[]>([])
+const showAddLabel = ref(false)
+const newLabel = ref('')
+const addLabel = () => {
+  const name = newLabel.value.trim()
+  if (!name) return
+  if (!customLabels.value.includes(name)) customLabels.value.push(name)
+  updateField('recordLabel', name)
+  newLabel.value = ''
+  showAddLabel.value = false
+}
 
 // Track which fields have been visited (for validation on blur)
 const touched = reactive({

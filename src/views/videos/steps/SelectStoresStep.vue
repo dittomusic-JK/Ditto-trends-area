@@ -354,7 +354,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'update:stores', stores: StoresData): void
-  (e: 'goToStep', index: number): void
+  (e: 'linkRelease'): void
 }>()
 
 const storeList = videoStores
@@ -407,7 +407,7 @@ const handleStoreClick = (id: string) => {
 const goLinkRelease = () => {
   showSpotifyPrompt.value = false
   if (!isSelected('spotify')) toggleStore('spotify')
-  emit('goToStep', 1)
+  emit('linkRelease')
 }
 
 const toggleStore = (id: string) => {

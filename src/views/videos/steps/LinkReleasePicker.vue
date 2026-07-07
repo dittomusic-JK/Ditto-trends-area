@@ -1,9 +1,6 @@
 <template>
   <div>
-    <div class="flex items-center gap-2 mb-1">
-      <h2 class="font-satoshi font-black tracking-[-0.03em] text-xl lg:text-2xl text-ditto-text">Link to a music release</h2>
-      <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-ditto-light-grey text-ditto-subtext uppercase tracking-wide">Optional</span>
-    </div>
+    <h2 class="font-satoshi font-black tracking-[-0.03em] text-xl lg:text-2xl text-ditto-text mb-1">Link to a music release</h2>
     <p class="text-sm text-ditto-subtext mb-4">
       Already released this track? Link it to copy over your artists, credits, genre, copyrights and label automatically. You can still edit everything below.
     </p>
@@ -127,24 +124,34 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { spotifyMusicReleases } from '../../../data/videoMockData'
 import type { SpotifyTrack } from '../../../data/videoMockData'
 
 const props = defineProps<{
   releaseId: string | null
   trackId: string | null
+  autoOpen?: boolean
 }>()
 
 const emit = defineEmits<{
   (e: 'update:releaseId', v: string | null): void
   (e: 'update:trackId', v: string | null): void
   (e: 'copyMetadata', track: SpotifyTrack): void
+  (e: 'autoOpenConsumed'): void
 }>()
 
 const releases = spotifyMusicReleases
 const open = ref(false)
 const query = ref('')
+
+// Opened automatically when the user is sent here to link a release (e.g. from Stores).
+watch(() => props.autoOpen, (v) => {
+  if (v) {
+    open.value = true
+    emit('autoOpenConsumed')
+  }
+}, { immediate: true })
 
 const filteredReleases = computed(() => {
   const q = query.value.trim().toLowerCase()
