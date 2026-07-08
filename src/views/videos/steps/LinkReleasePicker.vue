@@ -102,12 +102,8 @@
                     @click="selectTrack(track.id)"
                     class="group/track w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left bg-white/40 border border-transparent hover:bg-white hover:border-ditto-purple/40 hover:shadow-sm transition-all cursor-pointer"
                   >
-                    <span class="text-xs text-ditto-subtext w-5 text-center flex-shrink-0 group-hover/track:text-ditto-purple">{{ track.trackNumber }}</span>
-                    <p class="text-sm text-ditto-text flex-1 group-hover/track:font-medium">{{ track.title }}</p>
-                    <span class="text-[11px] font-medium text-ditto-purple opacity-0 group-hover/track:opacity-100 transition-opacity flex items-center gap-1 flex-shrink-0">
-                      Select
-                      <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    </span>
+                    <span class="text-xs text-ditto-subtext w-5 text-center flex-shrink-0 group-hover/track:text-ditto-purple transition-colors">{{ track.trackNumber }}</span>
+                    <p class="text-sm text-ditto-text flex-1 group-hover/track:text-ditto-purple group-hover/track:font-medium transition-colors">{{ track.title }}</p>
                   </button>
                 </div>
               </div>

@@ -147,45 +147,24 @@
             </div>
           </div>
         </div>
-        <div class="flex items-center gap-3">
-          <select
-            :value="metadata.recordLabel"
-            @change="updateField('recordLabel', ($event.target as HTMLSelectElement).value)"
-            class="flex-1 min-w-0 px-0 py-2.5 border-0 border-b border-gray-300 text-sm text-ditto-text bg-transparent focus:outline-none focus:border-ditto-purple transition-colors"
-          >
-            <option value="Independent">Independent</option>
-            <option value="Goldenboy Entertainment">Goldenboy Entertainment</option>
-            <option v-for="label in customLabels" :key="label" :value="label">{{ label }}</option>
-          </select>
+        <div class="flex items-end gap-4">
+          <SearchableSelect
+            class="flex-1 min-w-0"
+            :model-value="metadata.recordLabel"
+            :options="labelOptions"
+            :searchable="false"
+            @update:model-value="updateField('recordLabel', $event)"
+          />
           <button
             type="button"
-            @click="showAddLabel = !showAddLabel"
-            class="flex items-center gap-2 pl-1.5 pr-4 h-[42px] rounded-full border border-gray-200 text-sm font-medium text-ditto-text hover:border-ditto-purple/40 transition-colors flex-shrink-0"
+            @click="showAddLabel = true"
+            class="flex items-center gap-2.5 pl-2 pr-5 h-[52px] rounded-xl border border-gray-200 text-base font-medium text-ditto-text hover:border-ditto-purple/40 hover:bg-ditto-light-grey/50 transition-colors flex-shrink-0"
           >
-            <span class="w-6 h-6 rounded-full bg-ditto-text flex items-center justify-center flex-shrink-0">
-              <svg class="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <span class="w-8 h-8 rounded-full bg-ditto-text flex items-center justify-center flex-shrink-0">
+              <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             </span>
             Add New Label
           </button>
-        </div>
-        <!-- Inline add label -->
-        <div v-if="showAddLabel" class="flex items-center gap-2 mt-3">
-          <input
-            v-model="newLabel"
-            @keydown.enter="addLabel"
-            type="text"
-            placeholder="New label name"
-            class="flex-1 px-0 py-2 border-0 border-b border-gray-300 text-sm text-ditto-text bg-transparent focus:outline-none focus:border-ditto-purple transition-colors"
-          />
-          <button
-            @click="addLabel"
-            :disabled="!newLabel.trim()"
-            :class="[
-              'px-4 py-2 rounded-full text-sm font-medium transition-colors',
-              newLabel.trim() ? 'bg-ditto-purple text-white hover:bg-ditto-purple/90' : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-            ]"
-          >Add</button>
-          <button @click="showAddLabel = false; newLabel = ''" class="text-xs text-ditto-subtext hover:text-ditto-text px-2">Cancel</button>
         </div>
       </div>
 
@@ -408,12 +387,46 @@
         <p class="text-xs text-ditto-subtext mt-1 text-right">{{ metadata.description.length }} / 5000</p>
       </div>
     </div>
+
+    <!-- Add New Label modal -->
+    <div v-if="showAddLabel" class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-[2px]" @click.self="closeAddLabel">
+      <div class="bg-white rounded-2xl shadow-2xl w-[440px] max-w-[90vw] p-6">
+        <div class="flex items-start justify-between mb-5">
+          <h3 class="font-satoshi font-bold text-xl text-ditto-text tracking-[-0.03em]">Add New Label</h3>
+          <button @click="closeAddLabel" class="text-ditto-subtext hover:text-ditto-text p-1 -m-1 rounded-md transition-colors">
+            <svg class="w-[18px] h-[18px]" viewBox="0 0 18 18" fill="none"><path d="M2 2L16 16M16 2L2 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+        <input
+          v-model="newLabel"
+          @keydown.enter="addLabel"
+          type="text"
+          placeholder="Label name"
+          class="w-full px-0 py-2.5 border-0 border-b border-gray-300 text-base text-ditto-text bg-transparent focus:outline-none focus:border-ditto-purple transition-colors mb-6"
+        />
+        <div class="flex gap-2.5">
+          <button @click="closeAddLabel" class="flex-1 h-[52px] rounded-full bg-ditto-light-grey text-sm font-medium text-ditto-text hover:bg-gray-200 transition-colors">Cancel</button>
+          <button
+            @click="addLabel"
+            :disabled="!newLabel.trim()"
+            :class="[
+              'flex-1 h-[52px] rounded-full flex items-center justify-center gap-2 text-sm font-medium transition-all',
+              newLabel.trim() ? 'bg-ditto-purple text-white hover:opacity-95' : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+            ]"
+          >
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Label
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, reactive } from 'vue'
 import { videoGenres, videoLanguages } from '../../../data/videoMockData'
+import SearchableSelect from './SearchableSelect.vue'
 
 interface Metadata {
   title: string
@@ -445,8 +458,9 @@ const emit = defineEmits<{
 const genres = videoGenres
 const languages = videoLanguages
 
-// Add New Label (inline)
+// Record label options (base + user-added)
 const customLabels = ref<string[]>([])
+const labelOptions = computed(() => ['Independent', 'Goldenboy Entertainment', ...customLabels.value])
 const showAddLabel = ref(false)
 const newLabel = ref('')
 const addLabel = () => {
@@ -454,6 +468,10 @@ const addLabel = () => {
   if (!name) return
   if (!customLabels.value.includes(name)) customLabels.value.push(name)
   updateField('recordLabel', name)
+  newLabel.value = ''
+  showAddLabel.value = false
+}
+const closeAddLabel = () => {
   newLabel.value = ''
   showAddLabel.value = false
 }

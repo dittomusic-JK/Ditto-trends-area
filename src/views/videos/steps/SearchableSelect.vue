@@ -26,7 +26,7 @@
       v-if="open"
       class="absolute z-30 left-0 right-0 mt-1 rounded-xl border border-gray-200 bg-white shadow-lg overflow-hidden"
     >
-      <div class="p-2 border-b border-gray-100">
+      <div v-if="searchable" class="p-2 border-b border-gray-100">
         <input
           ref="searchInput"
           v-model="query"
@@ -65,9 +65,11 @@ const props = withDefaults(defineProps<{
   options: string[]
   placeholder?: string
   error?: boolean
+  searchable?: boolean
 }>(), {
   placeholder: 'Select...',
   error: false,
+  searchable: true,
 })
 
 const emit = defineEmits<{
@@ -89,7 +91,7 @@ const filtered = computed(() => {
 watch(open, (isOpen) => {
   if (isOpen) {
     query.value = ''
-    nextTick(() => searchInput.value?.focus())
+    if (props.searchable) nextTick(() => searchInput.value?.focus())
   }
 })
 

@@ -31,10 +31,7 @@
             <p class="text-sm font-semibold text-ditto-text">{{ store.name }}</p>
             <p v-if="isStoreDisabled(store.id)" class="text-xs text-ditto-subtext">{{ storeDisabledReason(store.id) }}</p>
             <span v-else class="relative inline-flex group/info" @click.stop>
-              <span class="text-xs text-ditto-purple inline-flex items-center gap-1 cursor-help">
-                <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01" stroke-linecap="round"/></svg>
-                Information
-              </span>
+              <span class="text-xs text-ditto-purple hover:underline cursor-help">More information</span>
               <span class="absolute left-0 top-full mt-1.5 w-60 p-2.5 bg-ditto-text text-white text-[11px] leading-relaxed rounded-lg opacity-0 invisible group-hover/info:opacity-100 group-hover/info:visible transition-all z-20 pointer-events-none normal-case font-normal">
                 {{ store.info }}
               </span>
