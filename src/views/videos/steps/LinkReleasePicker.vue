@@ -2,7 +2,7 @@
   <div>
     <h2 class="font-satoshi font-black tracking-[-0.03em] text-xl lg:text-2xl text-ditto-text mb-1">Link to a music release</h2>
     <p class="text-sm text-ditto-subtext mb-4">
-      Already released this track? Link it to copy over your artists, credits, genre, copyrights and label automatically. You can still edit everything below.
+      Already released this track? Link it to copy over your artists, credits, genre, copyrights and label automatically — you can still edit everything below. <span class="font-medium text-ditto-text">Linking a release is required to distribute your video to Spotify.</span>
     </p>
 
     <!-- No releases available -->
@@ -40,8 +40,15 @@
           Link a release
         </button>
 
-        <div v-else class="rounded-xl border border-ditto-purple/20 bg-ditto-purple/5 p-5">
-          <p class="text-xs text-ditto-subtext mb-4">Select a release, then choose the track you're making a video for.</p>
+        <div v-else class="relative rounded-xl border border-ditto-purple/20 bg-ditto-purple/5 p-5">
+          <button
+            @click="cancel"
+            aria-label="Cancel"
+            class="absolute top-4 right-4 w-7 h-7 rounded-full hover:bg-ditto-purple/10 flex items-center justify-center text-ditto-subtext hover:text-ditto-text transition-colors"
+          >
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+          <p class="text-xs text-ditto-subtext mb-4 pr-8">Select a release, then choose the track you're making a video for.</p>
 
           <!-- Search -->
           <div class="relative mb-3">
@@ -70,7 +77,7 @@
           </p>
 
           <!-- Release Cards (track list folds out under the selected one) -->
-          <div v-else class="space-y-2">
+          <div v-else class="space-y-2 max-h-[360px] overflow-y-auto pr-1 -mr-1">
             <div v-for="release in filteredReleases" :key="release.id">
               <button
                 @click="selectRelease(release.id)"
@@ -110,7 +117,6 @@
             </div>
           </div>
 
-          <button @click="open = false" class="mt-4 text-xs text-ditto-subtext hover:text-ditto-text">Cancel</button>
         </div>
       </template>
 
@@ -182,6 +188,13 @@ const selectTrack = (id: string) => {
 }
 
 const unlink = () => {
+  emit('update:releaseId', null)
+  emit('update:trackId', null)
+}
+
+// Cancel the linking process — close the panel and clear any in-progress selection.
+const cancel = () => {
+  open.value = false
   emit('update:releaseId', null)
   emit('update:trackId', null)
 }
