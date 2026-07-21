@@ -96,7 +96,7 @@
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <div class="flex items-center gap-1.5 mb-1.5">
-            <label class="text-sm font-medium text-ditto-text">&#8471; Copyright Holder</label>
+            <label class="text-sm font-medium text-ditto-text"><span class="text-[17px] leading-none align-[-1px]">&#8471;</span> Copyright Holder</label>
             <span class="text-error text-xs">*</span>
             <div class="relative group">
               <svg class="w-3.5 h-3.5 text-ditto-subtext cursor-help" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -355,7 +355,7 @@
         <!-- AI Transparency -->
         <div class="flex items-center justify-between">
           <div>
-            <span class="text-sm text-ditto-text">AI Transparency</span>
+            <span class="text-sm text-ditto-text">AI transparency</span>
             <p class="text-xs text-ditto-subtext mt-0.5">Enable if AI tools were used in producing this video.</p>
           </div>
           <button

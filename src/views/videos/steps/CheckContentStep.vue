@@ -109,7 +109,10 @@
         <!-- Original confirmation -->
         <div v-if="assetSource.type === 'original'" class="ml-7 pl-4 border-l-2 border-ditto-purple/20 pb-2">
           <label class="flex items-start gap-3 p-3 rounded-lg bg-ditto-light-grey/60 cursor-pointer">
-            <input type="checkbox" :checked="assetSource.ownershipConfirmed" @change="updateSource('ownershipConfirmed', !assetSource.ownershipConfirmed)" class="mt-0.5 accent-ditto-purple" />
+            <input type="checkbox" :checked="assetSource.ownershipConfirmed" @change="updateSource('ownershipConfirmed', !assetSource.ownershipConfirmed)" class="hidden" />
+            <div :class="['w-5 h-5 rounded border-2 flex items-center justify-center transition-all flex-shrink-0 mt-0.5', assetSource.ownershipConfirmed ? 'bg-ditto-purple border-ditto-purple' : 'border-gray-300 bg-white']">
+              <svg v-if="assetSource.ownershipConfirmed" class="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20,6 9,17 4,12"/></svg>
+            </div>
             <div>
               <p class="text-sm text-ditto-text">I confirm I own all necessary rights</p>
               <p class="text-xs text-ditto-subtext mt-0.5">This includes the rights to the music, the lyrics, and all video footage.</p>
@@ -167,11 +170,17 @@
             <label class="block text-xs font-medium text-ditto-subtext mb-1">Where does the license apply?</label>
             <div class="flex items-center gap-4">
               <label class="flex items-center gap-2 cursor-pointer">
-                <input type="radio" name="licenseTerritory" value="global" :checked="assetSource.licenseTerritory === 'global'" @change="updateSource('licenseTerritory', 'global')" class="accent-ditto-purple" />
+                <input type="radio" name="licenseTerritory" value="global" :checked="assetSource.licenseTerritory === 'global'" @change="updateSource('licenseTerritory', 'global')" class="hidden" />
+                <div :class="['w-5 h-5 rounded-full flex items-center justify-center transition-colors flex-shrink-0', assetSource.licenseTerritory === 'global' ? 'bg-ditto-purple' : 'border-2 border-gray-300']">
+                  <svg v-if="assetSource.licenseTerritory === 'global'" class="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
                 <span class="text-sm text-ditto-text">Global / Worldwide</span>
               </label>
               <label class="flex items-center gap-2 cursor-pointer">
-                <input type="radio" name="licenseTerritory" value="selected" :checked="assetSource.licenseTerritory === 'selected'" @change="updateSource('licenseTerritory', 'selected')" class="accent-ditto-purple" />
+                <input type="radio" name="licenseTerritory" value="selected" :checked="assetSource.licenseTerritory === 'selected'" @change="updateSource('licenseTerritory', 'selected')" class="hidden" />
+                <div :class="['w-5 h-5 rounded-full flex items-center justify-center transition-colors flex-shrink-0', assetSource.licenseTerritory === 'selected' ? 'bg-ditto-purple' : 'border-2 border-gray-300']">
+                  <svg v-if="assetSource.licenseTerritory === 'selected'" class="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
                 <span class="text-sm text-ditto-text">Selected territories</span>
               </label>
             </div>
@@ -187,7 +196,10 @@
             />
           </div>
           <label class="flex items-start gap-3 p-3 rounded-lg bg-ditto-light-grey/60 cursor-pointer">
-            <input type="checkbox" :checked="assetSource.licenseConfirmed" @change="updateSource('licenseConfirmed', !assetSource.licenseConfirmed)" class="mt-0.5 accent-ditto-purple" />
+            <input type="checkbox" :checked="assetSource.licenseConfirmed" @change="updateSource('licenseConfirmed', !assetSource.licenseConfirmed)" class="hidden" />
+            <div :class="['w-5 h-5 rounded border-2 flex items-center justify-center transition-all flex-shrink-0 mt-0.5', assetSource.licenseConfirmed ? 'bg-ditto-purple border-ditto-purple' : 'border-gray-300 bg-white']">
+              <svg v-if="assetSource.licenseConfirmed" class="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20,6 9,17 4,12"/></svg>
+            </div>
             <div>
               <p class="text-sm text-ditto-text">I confirm I hold a valid license for this content</p>
               <p class="text-xs text-ditto-subtext mt-0.5">You may be asked to provide proof of your license agreement.</p>
@@ -219,7 +231,10 @@
             />
           </div>
           <label class="flex items-start gap-3 p-3 rounded-lg bg-warning/5 border border-warning/10 cursor-pointer">
-            <input type="checkbox" :checked="assetSource.takedownConfirmed" @change="updateSource('takedownConfirmed', !assetSource.takedownConfirmed)" class="mt-0.5 accent-ditto-purple" />
+            <input type="checkbox" :checked="assetSource.takedownConfirmed" @change="updateSource('takedownConfirmed', !assetSource.takedownConfirmed)" class="hidden" />
+            <div :class="['w-5 h-5 rounded border-2 flex items-center justify-center transition-all flex-shrink-0 mt-0.5', assetSource.takedownConfirmed ? 'bg-ditto-purple border-ditto-purple' : 'border-gray-300 bg-white']">
+              <svg v-if="assetSource.takedownConfirmed" class="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20,6 9,17 4,12"/></svg>
+            </div>
             <div>
               <p class="text-sm text-ditto-text">I confirm the previous release has been taken down</p>
               <p class="text-xs text-ditto-subtext mt-0.5">You must remove the video from your previous distributor before re-distributing through Ditto.</p>
@@ -251,7 +266,10 @@
             />
           </div>
           <label class="flex items-start gap-3 p-3 rounded-lg bg-ditto-light-grey/60 cursor-pointer">
-            <input type="checkbox" :checked="assetSource.commissionAgreement" @change="updateSource('commissionAgreement', !assetSource.commissionAgreement)" class="mt-0.5 accent-ditto-purple" />
+            <input type="checkbox" :checked="assetSource.commissionAgreement" @change="updateSource('commissionAgreement', !assetSource.commissionAgreement)" class="hidden" />
+            <div :class="['w-5 h-5 rounded border-2 flex items-center justify-center transition-all flex-shrink-0 mt-0.5', assetSource.commissionAgreement ? 'bg-ditto-purple border-ditto-purple' : 'border-gray-300 bg-white']">
+              <svg v-if="assetSource.commissionAgreement" class="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20,6 9,17 4,12"/></svg>
+            </div>
             <div>
               <p class="text-sm text-ditto-text">I have an agreement giving me the right to distribute this video</p>
               <p class="text-xs text-ditto-subtext mt-0.5">You may be asked to provide a copy of this agreement.</p>

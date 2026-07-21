@@ -29,9 +29,9 @@
                 <rect x="2" y="4" width="20" height="16" rx="2"/><polygon points="10,8 16,12 10,16"/>
               </svg>
             </div>
-            <p class="text-xs text-white/70 mb-1">Videos This Week</p>
+            <p class="text-xs text-white/70 mb-1">New Video Uploads</p>
             <p class="text-2xl font-bold mb-2">3</p>
-            <p class="text-xs text-white/50">New uploads</p>
+            <p class="text-xs text-white/50">This week</p>
           </div>
           <!-- Most Viewed Video -->
           <div class="rounded-2xl p-5 text-white relative overflow-hidden" style="background: linear-gradient(180deg, #3cbbcd, #187e9f)">

@@ -71,14 +71,12 @@
 
       <!-- Right: Distribution + Date Info -->
       <div class="flex flex-col">
-        <label class="block text-sm font-medium text-ditto-text mb-3">Release Distribution</label>
-
         <!-- Selected Date Display -->
-        <div v-if="schedule.releaseDate" class="flex items-center gap-2 text-sm text-ditto-text mb-4 p-3 rounded-xl bg-ditto-light-grey/60">
-          <svg class="w-4 h-4 text-ditto-purple flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <div v-if="schedule.releaseDate" class="flex items-center gap-3 text-ditto-text mb-4 p-4 rounded-xl bg-ditto-light-grey/60">
+          <svg class="w-6 h-6 text-ditto-purple flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
           </svg>
-          <span>{{ formatDate(schedule.releaseDate) }}</span>
+          <span class="text-lg lg:text-xl font-semibold">{{ formatDate(schedule.releaseDate) }}</span>
         </div>
         <div v-else class="flex items-center gap-2 text-sm text-warning mb-4 p-3 rounded-xl bg-warning/5 border border-dashed border-warning/30">
           <svg class="w-4 h-4 text-warning flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
