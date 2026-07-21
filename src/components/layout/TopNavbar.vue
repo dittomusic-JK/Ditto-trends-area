@@ -54,7 +54,7 @@
         </div>
 
         <!-- Main nav -->
-        <nav class="px-4 pt-5">
+        <nav class="px-4 pt-5 pb-2">
           <p class="px-1 mb-2 text-[11px] font-semibold uppercase tracking-wide text-ditto-subtext">Menu</p>
           <div class="space-y-1">
             <template v-for="item in navEntries" :key="item.id">
@@ -72,23 +72,32 @@
                 <svg class="w-4 h-4 ml-auto flex-shrink-0" :class="item.active ? 'text-ditto-purple/60' : 'text-gray-300'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
               </button>
 
-              <!-- Dropdown group -->
-              <div v-else class="pt-3">
-                <div class="flex items-center gap-3 px-3 pb-1">
-                  <svg class="w-4 h-4 text-ditto-subtext flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" v-html="navIcons[item.id]"></svg>
-                  <p class="text-[11px] font-semibold uppercase tracking-wide text-ditto-subtext">{{ item.label }}</p>
-                </div>
+              <!-- Expandable group (accordion) -->
+              <div v-else>
                 <button
-                  v-for="sub in item.items || []" :key="sub.label"
-                  @click="sub.action ? (sub.action(), showMobileMenu = false) : null"
+                  @click="toggleGroup(item.id)"
                   :class="[
-                    'w-full flex items-center gap-3 pl-10 pr-3 py-2.5 rounded-xl text-sm transition-colors',
-                    sub.active ? 'bg-ditto-purple/10 text-ditto-purple font-medium' : 'text-ditto-text hover:bg-ditto-light-grey'
+                    'w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium transition-colors',
+                    item.active ? 'bg-ditto-purple/10 text-ditto-purple' : 'text-ditto-text hover:bg-ditto-light-grey'
                   ]"
                 >
-                  <span :class="['w-1.5 h-1.5 rounded-full flex-shrink-0', sub.active ? 'bg-ditto-purple' : 'bg-gray-300']"></span>
-                  {{ sub.label }}
+                  <svg class="w-5 h-5 flex-shrink-0" :class="item.active ? 'text-ditto-purple' : 'text-ditto-subtext'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" v-html="navIcons[item.id]"></svg>
+                  {{ item.label }}
+                  <svg class="w-4 h-4 ml-auto flex-shrink-0 transition-transform" :class="[isGroupExpanded(item.id) ? 'rotate-180' : '', item.active ? 'text-ditto-purple/60' : 'text-gray-400']" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 </button>
+                <div v-show="isGroupExpanded(item.id)" class="mt-1 ml-5 pl-3 border-l border-gray-200 space-y-1">
+                  <button
+                    v-for="sub in item.items || []" :key="sub.label"
+                    @click="sub.action ? (sub.action(), showMobileMenu = false) : null"
+                    :class="[
+                      'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-colors',
+                      sub.active ? 'bg-ditto-purple/10 text-ditto-purple font-medium' : 'text-ditto-text hover:bg-ditto-light-grey'
+                    ]"
+                  >
+                    <span :class="['w-1.5 h-1.5 rounded-full flex-shrink-0', sub.active ? 'bg-ditto-purple' : 'bg-gray-300']"></span>
+                    {{ sub.label }}
+                  </button>
+                </div>
               </div>
             </template>
           </div>
@@ -303,17 +312,6 @@ const emit = defineEmits<{
   (e: 'create-video'): void
 }>()
 
-// Inline icon markup (injected into an <svg> via v-html) for the mobile menu.
-const navIcons: Record<string, string> = {
-  artists: '<path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
-  music: '<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>',
-  videos: '<rect x="2" y="4" width="20" height="16" rx="2"/><polygon points="10 8 16 12 10 16"/>',
-  royalties: '<rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/>',
-  analytics: '<path d="M3 3v18h18"/><polyline points="7 14 11 10 14 13 20 6"/>',
-  promotion: '<path d="M3 11l14-5v12L3 14z"/><path d="M17 8a3.5 3.5 0 0 1 0 6"/><path d="M6 15v3a2 2 0 0 0 2 2h1"/>',
-  rights: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
-}
-
 const navRef = ref<HTMLElement | null>(null)
 const navItemRefs: Record<string, HTMLElement> = {}
 const navDropdownRefs: Record<string, HTMLElement> = {}
@@ -341,6 +339,26 @@ const showCreateMenu = ref(false)
 const showAvatarMenu = ref(false)
 const showHelpMenu = ref(false)
 const openNavDropdown = ref<string | null>(null)
+
+// Mobile menu accordion groups (Promotion, Rights Management)
+const expandedGroups = ref<string[]>([])
+const toggleGroup = (id: string) => {
+  const i = expandedGroups.value.indexOf(id)
+  if (i >= 0) expandedGroups.value.splice(i, 1)
+  else expandedGroups.value.push(id)
+}
+const isGroupExpanded = (id: string) => expandedGroups.value.includes(id)
+
+// Inline icon markup (injected into an <svg> via v-html) for the mobile menu.
+const navIcons: Record<string, string> = {
+  artists: '<path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+  music: '<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>',
+  videos: '<rect x="2" y="4" width="20" height="16" rx="2"/><polygon points="10 8 16 12 10 16"/>',
+  royalties: '<rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/>',
+  analytics: '<path d="M3 3v18h18"/><polyline points="7 14 11 10 14 13 20 6"/>',
+  promotion: '<path d="M3 11l14-5v12L3 14z"/><path d="M17 8a3.5 3.5 0 0 1 0 6"/><path d="M6 15v3a2 2 0 0 0 2 2h1"/>',
+  rights: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
+}
 const createDropdownRef = ref<HTMLElement | null>(null)
 const avatarDropdownRef = ref<HTMLElement | null>(null)
 const helpDropdownRef = ref<HTMLElement | null>(null)
@@ -409,6 +427,13 @@ const navEntries = computed<NavEntry[]>(() => [
     ],
   },
 ])
+
+// Auto-expand the group containing the active section when the mobile menu opens.
+watch(showMobileMenu, (open) => {
+  if (open) {
+    expandedGroups.value = navEntries.value.filter(e => e.type === 'dropdown' && e.active).map(e => e.id)
+  }
+})
 </script>
 
 <style scoped>
