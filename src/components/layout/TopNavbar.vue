@@ -3,7 +3,7 @@
   <header class="md:hidden h-16 flex items-center justify-between px-4 border-b border-gray-200 bg-white">
     <img src="/img/logo-2048-black.svg" alt="Ditto" class="h-6" />
     <div class="flex items-center gap-2">
-      <button class="group relative px-3 py-1 text-xs font-semibold rounded-full text-white flex items-center gap-1.5 animate-gradient-shift" style="background: linear-gradient(135deg, #5f1fff, #8640f4, #a855f7); background-size: 200% 200%">
+      <button @click="showMobileMenu = true" class="group relative px-3 py-1 text-xs font-semibold rounded-full text-white flex items-center gap-1.5 animate-gradient-shift" style="background: linear-gradient(135deg, #5f1fff, #8640f4, #a855f7); background-size: 200% 200%">
         <img src="/img/master-distro-icon.svg" alt="" class="w-3 h-3" />
         Create
       </button>
@@ -20,28 +20,92 @@
 
   <!-- Mobile Slide-out Menu -->
   <Transition name="slide">
-    <div v-if="showMobileMenu" class="md:hidden fixed inset-0 top-16 z-40 bg-white overflow-y-auto">
-      <nav class="px-4 py-4 space-y-1">
-        <template v-for="item in navEntries" :key="item.id">
-          <button
-            v-if="item.type === 'link'"
-            @click="item.action ? (item.action(), showMobileMenu = false) : null"
-            :class="['w-full text-left px-4 py-3 rounded-xl text-sm font-medium transition-colors', item.active ? 'bg-ditto-purple/10 text-ditto-purple' : 'text-ditto-text hover:bg-ditto-light-grey']"
-          >{{ item.label }}</button>
-          <div v-else class="pt-2">
-            <p class="px-4 py-2 text-[11px] font-semibold uppercase tracking-wide text-ditto-subtext">{{ item.label }}</p>
-            <button
-              v-for="sub in item.items || []" :key="sub.label"
-              @click="sub.action ? (sub.action(), showMobileMenu = false) : null"
-              :class="['w-full text-left px-4 py-3 rounded-xl text-sm transition-colors', sub.active ? 'bg-ditto-purple/10 text-ditto-purple font-medium' : 'text-ditto-text hover:bg-ditto-light-grey']"
-            >{{ sub.label }}</button>
+    <div v-if="showMobileMenu" class="md:hidden fixed inset-0 top-16 z-40 bg-white flex flex-col">
+      <div class="flex-1 overflow-y-auto overscroll-contain">
+        <!-- Profile -->
+        <button @click="showMobileMenu = false" class="w-full flex items-center gap-3 px-5 py-4 text-left bg-gradient-to-r from-ditto-purple/10 to-transparent border-b border-gray-100">
+          <div class="w-11 h-11 rounded-full overflow-hidden flex-shrink-0 ring-2 ring-white shadow-sm">
+            <img src="/img/avatar.jpg" alt="User" class="w-full h-full object-cover" />
           </div>
-        </template>
-      </nav>
-      <div class="border-t border-gray-200 px-4 py-4 space-y-1">
-        <button class="w-full text-left px-4 py-3 rounded-xl text-sm text-ditto-text hover:bg-ditto-light-grey">Account Settings</button>
-        <button class="w-full text-left px-4 py-3 rounded-xl text-sm text-ditto-text hover:bg-ditto-light-grey">Help & FAQs</button>
-        <button class="w-full text-left px-4 py-3 rounded-xl text-sm text-error hover:bg-error/5">Logout</button>
+          <div class="min-w-0">
+            <p class="text-sm font-semibold text-ditto-text truncate">Goldenboy Entertainment</p>
+            <span class="inline-block mt-0.5 text-[10px] font-semibold px-2 py-0.5 rounded-md bg-ditto-purple/15 text-ditto-purple">DITTO PLUS - RLS</span>
+          </div>
+          <svg class="w-4 h-4 text-ditto-subtext ml-auto flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+
+        <!-- Create -->
+        <div class="px-4 pt-4">
+          <p class="px-1 mb-2 text-[11px] font-semibold uppercase tracking-wide text-ditto-subtext">Create</p>
+          <div class="grid grid-cols-3 gap-2">
+            <button class="flex flex-col items-center gap-1.5 py-3.5 rounded-xl bg-ditto-light-grey hover:bg-ditto-purple/10 active:scale-95 transition-all">
+              <img src="/img/nav-musical-note.svg" alt="" class="w-5 h-5" />
+              <span class="text-[11px] font-medium text-ditto-text">Music</span>
+            </button>
+            <button @click="emit('create-video'); showMobileMenu = false" class="flex flex-col items-center gap-1.5 py-3.5 rounded-xl bg-ditto-light-grey hover:bg-ditto-purple/10 active:scale-95 transition-all">
+              <img src="/img/nav-video-camera.svg" alt="" class="w-5 h-5" />
+              <span class="text-[11px] font-medium text-ditto-text">Video</span>
+            </button>
+            <button class="flex flex-col items-center gap-1.5 py-3.5 rounded-xl bg-ditto-light-grey hover:bg-ditto-purple/10 active:scale-95 transition-all">
+              <img src="/img/nav-television.svg" alt="" class="w-5 h-5" />
+              <span class="text-[11px] font-medium text-ditto-text">Channel</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Main nav -->
+        <nav class="px-4 pt-5">
+          <p class="px-1 mb-2 text-[11px] font-semibold uppercase tracking-wide text-ditto-subtext">Menu</p>
+          <div class="space-y-1">
+            <template v-for="item in navEntries" :key="item.id">
+              <!-- Flat link -->
+              <button
+                v-if="item.type === 'link'"
+                @click="item.action ? (item.action(), showMobileMenu = false) : null"
+                :class="[
+                  'w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium transition-colors',
+                  item.active ? 'bg-ditto-purple/10 text-ditto-purple' : 'text-ditto-text hover:bg-ditto-light-grey'
+                ]"
+              >
+                <svg class="w-5 h-5 flex-shrink-0" :class="item.active ? 'text-ditto-purple' : 'text-ditto-subtext'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" v-html="navIcons[item.id]"></svg>
+                {{ item.label }}
+                <svg class="w-4 h-4 ml-auto flex-shrink-0" :class="item.active ? 'text-ditto-purple/60' : 'text-gray-300'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+
+              <!-- Dropdown group -->
+              <div v-else class="pt-3">
+                <div class="flex items-center gap-3 px-3 pb-1">
+                  <svg class="w-4 h-4 text-ditto-subtext flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" v-html="navIcons[item.id]"></svg>
+                  <p class="text-[11px] font-semibold uppercase tracking-wide text-ditto-subtext">{{ item.label }}</p>
+                </div>
+                <button
+                  v-for="sub in item.items || []" :key="sub.label"
+                  @click="sub.action ? (sub.action(), showMobileMenu = false) : null"
+                  :class="[
+                    'w-full flex items-center gap-3 pl-10 pr-3 py-2.5 rounded-xl text-sm transition-colors',
+                    sub.active ? 'bg-ditto-purple/10 text-ditto-purple font-medium' : 'text-ditto-text hover:bg-ditto-light-grey'
+                  ]"
+                >
+                  <span :class="['w-1.5 h-1.5 rounded-full flex-shrink-0', sub.active ? 'bg-ditto-purple' : 'bg-gray-300']"></span>
+                  {{ sub.label }}
+                </button>
+              </div>
+            </template>
+          </div>
+        </nav>
+      </div>
+
+      <!-- Footer -->
+      <div class="border-t border-gray-100 px-4 py-3 space-y-0.5 bg-white">
+        <button class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-ditto-text hover:bg-ditto-light-grey transition-colors">
+          <img src="/img/nav-settings.svg" alt="" class="w-4 h-4 opacity-60" /> Account Settings
+        </button>
+        <button class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-ditto-text hover:bg-ditto-light-grey transition-colors">
+          <img src="/img/nav-help.svg" alt="" class="w-4 h-4 opacity-60" /> Help &amp; FAQs
+        </button>
+        <button class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-error hover:bg-error/5 transition-colors">
+          <img src="/img/nav-logout.svg" alt="" class="w-4 h-4" /> Logout
+        </button>
       </div>
     </div>
   </Transition>
@@ -238,6 +302,17 @@ const emit = defineEmits<{
   (e: 'navigate', section: AppSection): void
   (e: 'create-video'): void
 }>()
+
+// Inline icon markup (injected into an <svg> via v-html) for the mobile menu.
+const navIcons: Record<string, string> = {
+  artists: '<path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+  music: '<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>',
+  videos: '<rect x="2" y="4" width="20" height="16" rx="2"/><polygon points="10 8 16 12 10 16"/>',
+  royalties: '<rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/>',
+  analytics: '<path d="M3 3v18h18"/><polyline points="7 14 11 10 14 13 20 6"/>',
+  promotion: '<path d="M3 11l14-5v12L3 14z"/><path d="M17 8a3.5 3.5 0 0 1 0 6"/><path d="M6 15v3a2 2 0 0 0 2 2h1"/>',
+  rights: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
+}
 
 const navRef = ref<HTMLElement | null>(null)
 const navItemRefs: Record<string, HTMLElement> = {}
