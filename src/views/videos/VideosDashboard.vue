@@ -87,18 +87,7 @@
       </div>
 
       <!-- Status Tabs -->
-      <div class="flex items-center gap-2">
-        <button
-          v-for="tab in statusTabs" :key="tab.id"
-          @click="activeStatus = tab.id"
-          :class="[
-            'px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap',
-            activeStatus === tab.id
-              ? 'bg-ditto-text text-white'
-              : 'bg-ditto-light-grey text-ditto-text hover:bg-ditto-light-grey/80'
-          ]"
-        >{{ tab.label }}</button>
-      </div>
+      <LiquidTabs :tabs="statusTabs" :active="activeStatus" @select="activeStatus = $event" />
     </div>
 
     <!-- Video Grid -->
@@ -171,6 +160,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import EmptyState from '../../components/common/EmptyState.vue'
+import LiquidTabs from '../../components/common/LiquidTabs.vue'
 import CreateVideoModal from './CreateVideoModal.vue'
 import VideoBuilder from './VideoBuilder.vue'
 import { videoReleases } from '../../data/videoMockData'
