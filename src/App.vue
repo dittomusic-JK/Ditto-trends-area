@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-white w-full max-w-full" data-ditto-colors-light-dark-mode="light">
     <!-- Top Navigation -->
-    <TopNavbar :active-section="appSection" @navigate="appSection = $event" @create-video="handleCreateVideo" />
+    <TopNavbar :active-section="appSection" @navigate="appSection = $event" @create-video="handleCreateVideo" @toggle-basket="showMiniBasket = true" />
     
     <!-- Analytics Section -->
     <div v-if="appSection === 'analytics'" class="px-4 py-4 sm:px-6 sm:py-6 lg:px-16 lg:py-8 w-full max-w-full box-border">
@@ -108,6 +108,15 @@
     <div v-if="appSection === 'neighbouring-rights'" class="px-4 py-4 sm:px-6 sm:py-6 lg:px-16 lg:py-8 w-full max-w-full box-border">
       <NeighbouringRightsView />
     </div>
+
+    <!-- Basket Section -->
+    <BasketView v-if="appSection === 'basket'" @navigate="handleBasketNavigate" />
+
+    <!-- Order Confirmation Section -->
+    <OrderConfirmationView v-if="appSection === 'order-confirmation'" @navigate="appSection = 'basket'" />
+
+    <!-- Mini basket drawer (opened from the nav basket icon) -->
+    <MiniBasket :open="showMiniBasket" @close="showMiniBasket = false" @navigate="appSection = 'basket'" />
   </div>
 </template>
 
@@ -140,6 +149,11 @@ import VideosDashboard from './views/videos/VideosDashboard.vue'
 // Neighbouring Rights
 import NeighbouringRightsView from './views/NeighbouringRightsView.vue'
 
+// Basket & order confirmation
+import BasketView from './views/basket/BasketView.vue'
+import OrderConfirmationView from './views/basket/OrderConfirmationView.vue'
+import MiniBasket from './components/basket/MiniBasket.vue'
+
 // Sync
 import SyncView from './views/sync/SyncView.vue'
 
@@ -162,8 +176,19 @@ import {
   getMetricsForTrendsType
 } from './data/mockData'
 
-// State
-const appSection = ref<AppSection>('analytics')
+// State — initial section can come from the URL (?section=basket), and the
+// basket demo states (?demo=voucher etc.) imply the basket section.
+const urlParams = new URLSearchParams(window.location.search)
+const sectionParam = urlParams.get('section') as AppSection | null
+const initialSection: AppSection =
+  sectionParam ?? (urlParams.has('demo') ? 'basket' : 'analytics')
+const appSection = ref<AppSection>(initialSection)
+
+const showMiniBasket = ref(false)
+
+const handleBasketNavigate = (target: 'order-confirmation' | 'music') => {
+  appSection.value = target
+}
 
 // Lets "Create > Video Release" in the nav launch the video flow from any page.
 const videoCreateRequested = ref(false)

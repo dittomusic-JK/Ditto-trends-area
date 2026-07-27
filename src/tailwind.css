@@ -150,3 +150,28 @@
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
+
+/* === Basket button utilities (ported from basket-confirmation) === */
+.btn {
+  display: inline-block;
+  padding: 7px 15px;
+  font-size: 1rem;
+  font-weight: 500;
+  text-align: center;
+  cursor: pointer;
+  border: var(--button-border-size, 2px) solid transparent;
+  border-radius: var(--button-border-radius, 2rem);
+  transition: background-color 0.15s ease, opacity 0.15s ease;
+  color: #fff;
+}
+.btn:hover { opacity: 0.9; }
+.btn:disabled, .btn.disabled { cursor: not-allowed; opacity: 0.65; }
+.btn-primary { background-color: var(--brand-primary); color: #fff; }
+.btn-danger { background-color: var(--error); color: #fff; }
+.btn-outline {
+  background: transparent;
+  border-color: var(--brand-border);
+  color: var(--blue);
+}
+.btn-outline:hover { border-color: var(--brand-primary); color: var(--brand-primary); }
+.btn-block { display: block; width: 100%; }

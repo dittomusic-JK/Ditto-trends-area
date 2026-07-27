@@ -187,8 +187,9 @@
         Upgrade
       </button>
       
-      <button class="w-9 h-9 flex items-center justify-center text-ditto-subtext hover:text-ditto-text transition-colors">
+      <button class="relative w-9 h-9 flex items-center justify-center text-ditto-subtext hover:text-ditto-text transition-colors" @click="emit('toggle-basket')">
         <img src="/img/nav-basket.svg" alt="Basket" class="w-5 h-5 opacity-50 hover:opacity-100 transition-opacity" />
+        <span v-if="basketCount > 0" class="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 flex items-center justify-center rounded-full bg-ditto-purple text-white text-[10px] font-bold leading-none">{{ basketCount }}</span>
       </button>
       
       <div class="relative" ref="helpDropdownRef">
@@ -302,6 +303,7 @@
 import { computed, ref, reactive, onMounted, onUnmounted, watch, nextTick } from 'vue'
 // Icons loaded as img tags from /img/nav-*.svg
 import type { AppSection } from '../../types'
+import { useBasketStore } from '../../composables/useBasketStore'
 
 const props = defineProps<{
   activeSection?: AppSection
@@ -310,7 +312,13 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'navigate', section: AppSection): void
   (e: 'create-video'): void
+  (e: 'toggle-basket'): void
 }>()
+
+const { basket } = useBasketStore()
+const basketCount = computed(() =>
+  basket.value.reduce((sum, item) => sum + item.services.length, 0)
+)
 
 const navRef = ref<HTMLElement | null>(null)
 const navItemRefs: Record<string, HTMLElement> = {}
