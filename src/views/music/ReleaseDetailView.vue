@@ -40,15 +40,8 @@
       </div>
     </div>
 
-    <div class="flex items-center gap-4 mb-6">
-      <img :src="release.artwork" :alt="release.title" class="w-12 h-12 rounded-xl object-cover flex-shrink-0 lg:hidden" />
-      <h1 class="font-satoshi font-black text-xl sm:text-3xl lg:text-[42px] leading-[1.25] tracking-[-0.03em] text-ditto-text truncate">
-        {{ release.title }}
-      </h1>
-    </div>
-
     <!-- Sub nav -->
-    <div class="flex items-center gap-2 mb-8 overflow-x-auto scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
+    <div class="flex items-center gap-2 mt-6 mb-8 overflow-x-auto scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
       <LiquidTabs :tabs="sectionTabs" :active="activeSection" @select="activeSection = $event" />
     </div>
 
