@@ -1,5 +1,6 @@
 <template>
   <div class="px-4 py-4 sm:px-6 sm:py-6 lg:px-16 lg:py-8 w-full max-w-full box-border">
+  <div class="max-w-[820px] mx-auto">
     <!-- Back + release switcher row -->
     <div class="flex items-center justify-between gap-3 mb-4">
       <button @click="$emit('back')" class="flex items-center gap-1.5 text-sm text-ditto-purple hover:text-ditto-purple/80 transition-colors">
@@ -56,6 +57,7 @@
     <ReleaseStoresTab v-else-if="activeSection === 'stores'" :release="release" :key="'stores-' + release.id" />
     <ReleaseServicesTab v-else-if="activeSection === 'services'" :release="release" :key="'services-' + release.id" />
     <ReleaseSplitsTab v-else-if="activeSection === 'splits'" :release="release" :key="'splits-' + release.id" />
+  </div>
   </div>
 </template>
 
