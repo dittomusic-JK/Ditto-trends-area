@@ -1,12 +1,18 @@
 <template>
-  <div>
+  <ReleaseDetailView
+    v-if="openedRelease"
+    :release="openedRelease"
+    @back="openedRelease = null"
+    @switch-release="openRelease"
+  />
+  <div v-else>
     <div class="px-4 sm:px-6 lg:px-16 pt-4 sm:pt-6 lg:pt-8">
     <!-- Welcome Header -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
       <h1 class="font-satoshi font-black text-xl sm:text-3xl lg:text-[42px] tracking-[-0.03em] text-ditto-text">
         Welcome back, Goldenboy! <span>👋</span>
       </h1>
-      <button class="flex items-center gap-2 px-5 py-2.5 bg-ditto-purple text-white text-sm font-medium rounded-full hover:bg-ditto-purple/90 transition-colors flex-shrink-0">
+      <button class="flex items-center gap-2 px-5 py-2.5 bg-ditto-purple btn-pop-purple text-white text-sm font-medium rounded-full hover:opacity-95 transition-all flex-shrink-0">
         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>
         </svg>
@@ -85,7 +91,7 @@
     <ul v-else class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6 list-none p-0 px-4 sm:px-6 lg:px-16 pt-6">
       <!-- Release Cards -->
       <li v-for="release in filteredReleases" :key="release.title + release.artist + release.year">
-        <div class="group cursor-pointer">
+        <div class="group cursor-pointer" @click="openRelease(release)">
           <!-- Artwork -->
           <div class="relative aspect-square rounded-2xl overflow-hidden mb-3 bg-gray-100">
             <span :class="[
@@ -120,6 +126,9 @@
 import { ref, computed } from 'vue'
 import EmptyState from '../components/common/EmptyState.vue'
 import LiquidTabs from '../components/common/LiquidTabs.vue'
+import ReleaseDetailView from './music/ReleaseDetailView.vue'
+import { getReleaseDetail, releaseCatalog } from '../data/releaseDetailMockData'
+import type { ReleaseDetail, ReleaseListItem } from '../data/releaseDetailMockData'
 
 defineEmits<{
   (e: 'navigate', section: string): void
@@ -128,6 +137,12 @@ defineEmits<{
 
 const searchQuery = ref('')
 const activeStatus = ref('all')
+const openedRelease = ref<ReleaseDetail | null>(null)
+
+const openRelease = (release: ReleaseListItem) => {
+  openedRelease.value = getReleaseDetail(release)
+  window.scrollTo(0, 0)
+}
 
 const statusTabs = [
   { id: 'all', label: 'All' },
@@ -147,28 +162,5 @@ const filteredReleases = computed(() => {
   return result
 })
 
-const releases = [
-  { title: "My Baby (Obimo) [Kraizee Remix]", artist: "Almost Joey", type: "Single", year: "2026", status: "Live", artwork: "https://prod-ditto-music-release-content.s3.eu-west-2.amazonaws.com/05515479/artwork/transforms/almost-joey-my-baby-obimo-cover-art-69d668b083423454897202-69d6696c45975848731632-small.jpg" },
-  { title: "My Baby (Obimo)", artist: "Almost Joey", type: "Single", year: "2026", status: "Live", artwork: "https://prod-ditto-music-release-content.s3.eu-west-2.amazonaws.com/05515461/artwork/transforms/almost-joey-my-baby-obimo-cover-art-69d668b083423454897202-small.jpg" },
-  { title: "Solar", artist: "Darkoo & Ruger", type: "Single", year: "2026", status: "Live", artwork: "https://prod-ditto-music-release-content.s3.eu-west-2.amazonaws.com/05301321/artwork/transforms/p1680529-edit-edit-edit-69c138b3ab4dd252257380-small.jpg" },
-  { title: "Obimo", artist: "Almost Joey", type: "Single", year: "2025", status: "Takedown", artwork: "https://prod-ditto-music-release-content.s3.eu-west-2.amazonaws.com/04149343/artwork/transforms/obimo-67f5311234c0d623819643-small.jpg" },
-  { title: "RHUDE GYAL! (with Darkoo)", artist: "Darkoo & JELEEL!", type: "Single", year: "2025", status: "Live", artwork: "https://prod-ditto-music-release-content.s3.eu-west-2.amazonaws.com/04493329/artwork/transforms/rhude-gyal-cover-2-68946b428627b575326562-small.jpg" },
-  { title: "$exy Girl $ummer (Vol.1)", artist: "Darkoo", type: "Album", year: "2025", status: "Live", artwork: "https://prod-ditto-music-release-content.s3.eu-west-2.amazonaws.com/04326032/artwork/transforms/darkoo-sexy-girl-summer-artwork-684334c523bdc995981350-small.jpg" },
-  { title: "Your Number", artist: "Darkoo", type: "Single", year: "2025", status: "Live", artwork: "https://prod-ditto-music-release-content.s3.eu-west-2.amazonaws.com/04364587/artwork/transforms/darkoo-sexy-girl-summer-artwork-684334c523bdc995981350-large-685524c44ea97979283518-small.jpg" },
-  { title: "$exy Girl $ummer (Vol.1)", artist: "Darkoo", type: "Album", year: "2025", status: "Takedown", artwork: "https://prod-ditto-music-release-content.s3.eu-west-2.amazonaws.com/04280153/artwork/transforms/darkoo-sexy-girl-summer-artwork-682de4f81edcc348240698-small.jpg" },
-  { title: "Like Dat", artist: "Darkoo", type: "Single", year: "2025", status: "Live", artwork: "https://prod-ditto-music-release-content.s3.eu-west-2.amazonaws.com/04205225/artwork/transforms/likedat-darkooartboard-2-copy-68109d82d3560361244047-small.jpg" },
-  { title: "Your Waist", artist: "Almost Joey", type: "Single", year: "2025", status: "Live", artwork: "https://prod-ditto-music-release-content.s3.eu-west-2.amazonaws.com/03784805/artwork/transforms/cover-your-waist-6762dd68c0aa2051281996-small.jpg" },
-  { title: "If I Dey Lie (with Crayon)", artist: "Almost Joey & Crayon", type: "Single", year: "2024", status: "Live", artwork: "https://prod-ditto-music-release-content.s3.eu-west-2.amazonaws.com/03604256/artwork/transforms/cover-iidl-670e6069be298946644138-small.jpg" },
-  { title: "Favourite Girl (with Rema)", artist: "Darkoo", type: "Single", year: "2024", status: "Live", artwork: "https://prod-ditto-music-release-content.s3.eu-west-2.amazonaws.com/03377228/artwork/transforms/darkoo-x-rema-favourite-girl-1-66b2194cd1729760795317-small.jpg" },
-  { title: "Favourite Girl", artist: "Darkoo & Dess Dior", type: "Single", year: "2024", status: "Live", artwork: "https://prod-ditto-music-release-content.s3.eu-west-2.amazonaws.com/03131046/artwork/transforms/Darkoo-Dess-Dior-Artwork-resize-800x800-661d4903ce1a7-small.jpg" },
-  { title: "Darkoo - EP", artist: "Darkoo", type: "Single", year: "2025", status: "Inactive", artwork: "https://prod-ditto-music-release-content.s3.eu-west-2.amazonaws.com/03977257/artwork/transforms/placeholder-67b852e678021833672407-small.jpg" },
-  { title: "Focus On Me (All The Sexy Girls In The Club)", artist: "Darkoo", type: "Single", year: "2025", status: "Live", artwork: "https://prod-ditto-music-release-content.s3.eu-west-2.amazonaws.com/03797034/artwork/transforms/focus-on-mefom-67698b3e2f65e734260490-small.jpg" },
-  { title: "One Of Them", artist: "Tion Wayne & Major League Djz", type: "Single", year: "2024", status: "Live", artwork: "https://prod-ditto-music-release-content.s3.eu-west-2.amazonaws.com/03669462/artwork/transforms/major-leauge-672cfbb3a6022534869049-small.jpg" },
-  { title: "One Of Them", artist: "Tion Wayne & Major League Djz", type: "Single", year: "2024", status: "Live", artwork: "https://prod-ditto-music-release-content.s3.eu-west-2.amazonaws.com/03610317/artwork/transforms/photo-oct-08-2024-5-19-34-am-1-6710d40f92f4f490442808-small.jpg" },
-  { title: "Right Now", artist: "Darkoo, Davido & Rvssian", type: "Single", year: "2024", status: "Takedown", artwork: "https://prod-ditto-music-release-content.s3.eu-west-2.amazonaws.com/03592636/artwork/transforms/rightnow-6703f7d700441946716686-large-67091ed8e14f2308646901-small.jpg" },
-  { title: "Favourite Girl (with Rema)", artist: "Darkoo", type: "Single", year: "2024", status: "Live", artwork: "https://prod-ditto-music-release-content.s3.eu-west-2.amazonaws.com/03402136/artwork/transforms/darkoo-x-rema-favourite-girl-1-66b21947742ce580893980-small.jpg" },
-  { title: "Right Now", artist: "Darkoo, Davido & Rvssian", type: "Single", year: "2024", status: "Live", artwork: "https://prod-ditto-music-release-content.s3.eu-west-2.amazonaws.com/03554659/artwork/transforms/rightnow-6703f7d700441946716686-small.jpg" },
-  { title: "Favourite Girl (with Rema)", artist: "Darkoo & Rema", type: "Single", year: "2024", status: "Takedown", artwork: "https://prod-ditto-music-release-content.s3.eu-west-2.amazonaws.com/03377342/artwork/transforms/Placeholder-resize-800x800-669eaca9e1aae-small.jpg" },
-  { title: "Sweet Thug", artist: "Tion Wayne & One Acen", type: "Single", year: "2018", status: "Live", artwork: "https://prod-ditto-music-release-content.s3.eu-west-2.amazonaws.com/03360937/artwork/transforms/small.jpg" },
-]
+const releases = releaseCatalog
 </script>

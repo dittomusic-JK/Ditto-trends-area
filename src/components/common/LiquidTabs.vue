@@ -27,7 +27,7 @@ const props = withDefaults(defineProps<{
   active: string
   fillClass?: string
 }>(), {
-  fillClass: 'bg-ditto-text',
+  fillClass: 'bg-ditto-text btn-pop-dark',
 })
 
 defineEmits<{

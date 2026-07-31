@@ -40,15 +40,11 @@
 
     <!-- Sub Nav -->
     <div class="flex items-center gap-2 mb-6 overflow-x-auto scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
-      <button
-        v-for="tab in sectionTabs" :key="tab.id"
-        @click="activeSection = tab.id"
-        :class="['px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap flex-shrink-0', activeSection === tab.id ? 'bg-ditto-text text-white' : 'bg-ditto-light-grey text-ditto-text hover:bg-ditto-light-grey/80']"
-      >{{ tab.label }}</button>
+      <LiquidTabs :tabs="sectionTabs" :active="activeSection" @select="activeSection = $event as RoyaltiesSectionType" />
 
       <div class="flex-1"></div>
 
-      <button v-if="activeSection !== 'payouts'" @click="activeSection = 'payouts'" class="flex items-center gap-2 px-6 py-2.5 bg-ditto-text text-white text-sm font-semibold rounded-full hover:bg-ditto-text/90 transition-colors flex-shrink-0">
+      <button v-if="activeSection !== 'payouts'" @click="activeSection = 'payouts'" class="flex items-center gap-2 px-6 py-2.5 bg-ditto-text btn-pop-dark text-white text-sm font-semibold rounded-full hover:opacity-95 transition-all flex-shrink-0">
         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
@@ -89,6 +85,7 @@ import { ref, computed } from 'vue'
 import type { RoyaltiesSectionType, RoyaltiesViewType, Filter } from '../../types'
 import FilterChip from '../../components/layout/FilterChip.vue'
 import FiltersPanel from '../../components/common/FiltersPanel.vue'
+import LiquidTabs from '../../components/common/LiquidTabs.vue'
 import RoyaltiesSidebar from './RoyaltiesSidebar.vue'
 import OverviewView from './OverviewView.vue'
 import ReleasesView from './ReleasesView.vue'
