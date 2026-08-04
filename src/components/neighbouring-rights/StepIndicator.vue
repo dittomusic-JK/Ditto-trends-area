@@ -16,7 +16,7 @@
         </template>
         <template v-else>1</template>
       </span>
-      <span class="si__label" :class="{ 'si__label--active': currentStep === 'pick-release' }">Pick a Release</span>
+      <span class="si__label" :class="{ 'si__label--active': currentStep === 'pick-release' }">{{ labels[0] }}</span>
     </button>
 
     <button
@@ -25,7 +25,7 @@
       :disabled="currentStep === 'pick-release'"
     >
       <span class="si__number" :class="{ 'si__number--active': currentStep === 'register-tracks' }">2</span>
-      <span class="si__label" :class="{ 'si__label--active': currentStep === 'register-tracks' }">Register Tracks</span>
+      <span class="si__label" :class="{ 'si__label--active': currentStep === 'register-tracks' }">{{ labels[1] }}</span>
     </button>
   </div>
 </template>
@@ -33,9 +33,13 @@
 <script setup lang="ts">
 import type { WizardStep } from '../../nrTypes'
 
-defineProps<{
+withDefaults(defineProps<{
   currentStep: WizardStep
-}>()
+  /** Step labels — defaults keep the Neighbouring Rights wording */
+  labels?: [string, string]
+}>(), {
+  labels: () => ['Pick a Release', 'Register Tracks'],
+})
 
 defineEmits<{
   goToStep: [step: WizardStep]
