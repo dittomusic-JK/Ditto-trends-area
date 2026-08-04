@@ -268,7 +268,7 @@ onUnmounted(() => {
     }
 
     &--selected {
-      background: rgba($color-brand-primary, 0.1);
+      background: var(--accent-tint);
       color: var(--brand-primary);
     }
   }

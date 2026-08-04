@@ -158,10 +158,10 @@ const ringOffset = (release: Release): number => {
   &__header,
   &__row {
     display: grid;
-    grid-template-columns: 4rem 1fr 9rem 5rem 7rem 5.5rem;
+    grid-template-columns: 3.5rem 1fr 9rem 5rem 7rem 5.5rem;
     gap: 1rem;
     align-items: center;
-    padding: 0.625rem 1.25rem;
+    padding: 0.625rem 1rem;
   }
 
   // Canonical list header: quiet label row, no divider
@@ -203,7 +203,7 @@ const ringOffset = (release: Release): number => {
 
   // Canonical list rows: rounded, hover tint, no dividers
   &__row {
-    padding: 1rem 1.25rem;
+    padding: 1rem;
     border-radius: 1rem;
     margin-bottom: 0.25rem;
     cursor: pointer;
@@ -213,8 +213,8 @@ const ringOffset = (release: Release): number => {
   }
 
   &__artwork {
-    width: 3.5rem;
-    height: 3.5rem;
+    width: 3rem;
+    height: 3rem;
     border-radius: 0.5rem;
     object-fit: cover;
     flex-shrink: 0;
@@ -225,8 +225,8 @@ const ringOffset = (release: Release): number => {
   }
 
   &__title {
-    font-size: $text-body;
-    font-weight: 700;
+    font-size: $text-sm;
+    font-weight: 600;
     color: var(--blue);
     font-family: $font-satoshi;
     overflow: hidden;
@@ -236,7 +236,7 @@ const ringOffset = (release: Release): number => {
   }
 
   &__track-count {
-    font-size: $text-sm;
+    font-size: $text-xs;
     font-weight: 500;
     color: var(--brand-primary);
     font-family: $font-satoshi;

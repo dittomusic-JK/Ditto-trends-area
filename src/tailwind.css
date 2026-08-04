@@ -59,6 +59,8 @@
   /* Ink navy as a FILL (buttons, bars) — never flips in dark mode, unlike
      --blue which doubles as the ink text colour and lightens on dark. */
   --ink-fill: #101f3c;
+  /* Purple selection tint (dropdown highlights etc.) — brighter on dark */
+  --accent-tint: rgba(108, 92, 231, 0.1);
   --mint: #12c1ae;
   --blue: #101f3c;
   --blue-alternate: #287ef7;
@@ -145,6 +147,8 @@
   --ditto-colors-light-dark-ditto-purple: rgba(160, 107, 255, 1);
   /* Ink navy text lifts to a soft blue-white (fills stay on --ink-fill) */
   --blue: #e9edf8;
+  --brand-primary: #a06bff;
+  --accent-tint: rgba(160, 107, 255, 0.18);
   --light-grey: #1e1e27;
   --lighter-grey: #1a1a22;
   --medium-grey: #2c2c38;
