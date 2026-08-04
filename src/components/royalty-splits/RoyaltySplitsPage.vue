@@ -539,8 +539,8 @@ const handleCancelUnsavedChanges = () => {
 
 <style lang="scss" scoped>
 .rsp {
+  // Width comes from the release detail layout — no local cap.
   width: 100%;
-  max-width: 820px;
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
@@ -558,8 +558,9 @@ const handleCancelUnsavedChanges = () => {
   }
 
   &__title {
+    // Matches the tab-header pattern (text-xl font-black) used on Stores/Overview
     font-size: 1.25rem;
-    font-weight: 700;
+    font-weight: 900;
     color: var(--blue);
     font-family: $font-satoshi;
     letter-spacing: -0.03em;

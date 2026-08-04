@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-white w-full max-w-full" data-ditto-colors-light-dark-mode="light">
     <!-- Top Navigation -->
-    <TopNavbar :active-section="appSection" @navigate="appSection = $event" @create-video="handleCreateVideo" @toggle-basket="showMiniBasket = true" />
+    <TopNavbar :active-section="appSection" @navigate="handleNavbarNavigate" @create-video="handleCreateVideo" @toggle-basket="showMiniBasket = true" @open-live-performances="handleOpenLivePerformances" />
     
     <!-- Analytics Section -->
     <div v-if="appSection === 'analytics'" class="px-4 py-4 sm:px-6 sm:py-6 lg:px-16 lg:py-8 w-full max-w-full box-border">
@@ -86,13 +86,14 @@
     <RoyaltiesDashboard v-if="appSection === 'royalties'" />
 
     <!-- Music Section -->
-    <MusicView v-if="appSection === 'music'" @navigate="(s: string) => appSection = s as AppSection" @navigate-view="(s: string, v: string) => handleNavigateView(s as AppSection, v)" />
+    <!-- Keyed so re-tapping "Music" in the nav resets to the releases overview -->
+    <MusicView v-if="appSection === 'music'" :key="musicViewKey" @navigate="(s: string) => appSection = s as AppSection" @navigate-view="(s: string, v: string) => handleNavigateView(s as AppSection, v)" />
 
     <!-- Artists Section -->
     <ArtistsDashboard v-if="appSection === 'artists'" />
 
     <!-- Publishing Section -->
-    <PublishingDashboard v-if="appSection === 'publishing'" @navigate="appSection = $event" />
+    <PublishingDashboard v-if="appSection === 'publishing'" :open-live="publishingLiveRequest" @navigate="appSection = $event" @live-consumed="publishingLiveRequest = false" />
 
     <!-- Sync Section -->
     <SyncView v-if="appSection === 'sync'" />
@@ -184,6 +185,14 @@ const initialSection: AppSection =
   sectionParam ?? (urlParams.has('demo') ? 'basket' : 'analytics')
 const appSection = ref<AppSection>(initialSection)
 
+// Re-tapping a section in the nav resets that section to its landing state
+// (e.g. Music returns from a release detail to the releases overview).
+const musicViewKey = ref(0)
+const handleNavbarNavigate = (s: AppSection) => {
+  if (s === 'music' && appSection.value === 'music') musicViewKey.value++
+  appSection.value = s
+}
+
 const showMiniBasket = ref(false)
 
 const handleBasketNavigate = (target: 'order-confirmation' | 'music') => {
@@ -195,6 +204,13 @@ const videoCreateRequested = ref(false)
 const handleCreateVideo = () => {
   videoCreateRequested.value = true
   appSection.value = 'videos'
+}
+
+// Lets "Rights Management > Register Live Performances" open Publishing on the live tab.
+const publishingLiveRequest = ref(false)
+const handleOpenLivePerformances = () => {
+  publishingLiveRequest.value = true
+  appSection.value = 'publishing'
 }
 const activeView = ref<ViewType>('metrics')
 const showFiltersModal = ref(false)

@@ -447,19 +447,17 @@ const totalPrice = computed(() => selectedItems.value.reduce((sum, item) => sum 
 @use '@/styles/mixins' as *;
 
 .st {
+  // Width and padding come from the release detail layout — no local cap.
   width: 100%;
-  max-width: 820px;
-  padding: 0 0.5rem;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  min-height: 100vh;
 
-  @include sm { padding: 0 1rem; }
-  @include md { padding: 0; gap: 2rem; }
+  @include md { gap: 2rem; }
 
   &__title {
-    font-size: $text-h2;
+    // Matches the tab-header pattern (text-xl font-black) used on Stores/Overview
+    font-size: 1.25rem;
     font-weight: 900;
     color: var(--blue);
     font-family: $font-satoshi;
