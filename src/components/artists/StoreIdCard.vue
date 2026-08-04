@@ -54,12 +54,12 @@ const props = defineProps<{
 const copied = ref(false)
 
 const storeConfig = {
-  spotify: { name: 'Spotify', icon: '/images/stores/spotify-icon.svg' },
-  appleMusic: { name: 'Apple Music', icon: '/images/stores/apple-music-icon.svg' },
-  soundcloud: { name: 'Soundcloud', icon: '/images/stores/soundcloud_icon.svg' },
-  deezer: { name: 'Deezer', icon: '/images/stores/deezer-icon.svg' },
-  audiomack: { name: 'Audiomack', icon: '/images/audiomack-icon.svg' },
-  amazon: { name: 'Amazon', icon: '/images/stores/amazonmusic-icon.svg' },
+  spotify: { name: 'Spotify', icon: '/img/spotify-icon.svg' },
+  appleMusic: { name: 'Apple Music', icon: '/img/apple-music-icon.svg' },
+  soundcloud: { name: 'Soundcloud', icon: '/img/soundcloud_icon.svg' },
+  deezer: { name: 'Deezer', icon: '/img/deezer-icon.svg' },
+  audiomack: { name: 'Audiomack', icon: '/img/audiomack-icon.svg' },
+  amazon: { name: 'Amazon', icon: '/img/amazonmusic-icon.svg' },
 }
 
 const storeName = computed(() => storeConfig[props.store].name)

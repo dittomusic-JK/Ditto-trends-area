@@ -51,8 +51,8 @@
         <p class="text-xs text-ditto-subtext mt-0.5">{{ stores.length }} stores reporting earnings</p>
       </div>
 
-      <!-- Header -->
-      <div class="hidden lg:grid grid-cols-[40px_1fr_120px_80px_120px] gap-4 px-6 py-3 text-xs text-ditto-subtext">
+      <!-- Header (canonical list spec) -->
+      <div class="hidden lg:grid grid-cols-[40px_1fr_120px_80px_120px] gap-4 px-4 py-3 mx-2 text-xs text-ditto-subtext">
         <div>#</div>
         <div>Store</div>
         <div class="text-right">Earnings</div>
@@ -60,12 +60,12 @@
         <div></div>
       </div>
 
-      <!-- Rows -->
-      <div class="divide-y divide-gray-50">
+      <!-- Rows (canonical list spec: rounded hover rows, no dividers) -->
+      <div class="px-2 pb-2 space-y-1">
         <div
           v-for="(store, idx) in stores"
           :key="store.id"
-          class="flex items-center gap-4 px-6 py-3.5 hover:bg-ditto-light-grey transition-colors lg:grid lg:grid-cols-[40px_1fr_120px_80px_120px]"
+          class="flex items-center gap-4 px-4 py-4 rounded-2xl hover:bg-ditto-light-grey transition-colors lg:grid lg:grid-cols-[40px_1fr_120px_80px_120px]"
         >
           <!-- Rank -->
           <span class="text-sm text-ditto-subtext w-6 lg:w-auto">{{ idx + 1 }}</span>

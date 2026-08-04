@@ -26,7 +26,7 @@
       </div>
 
       <!-- Desktop Header -->
-      <div class="hidden lg:grid grid-cols-[1fr_140px_80px_80px_100px_100px_100px] gap-4 px-6 py-3 text-xs text-ditto-subtext border-b border-gray-50">
+      <div class="hidden lg:grid grid-cols-[1fr_140px_80px_80px_100px_100px_100px] gap-4 px-4 py-3 mx-2 text-xs text-ditto-subtext">
         <div>Track Title</div>
         <div>Artist</div>
         <div class="text-center">Collaborators</div>
@@ -36,10 +36,10 @@
         <div class="text-center">Split Start</div>
       </div>
 
-      <!-- Rows -->
-      <div v-for="collab in collaborations" :key="collab.id" class="border-t border-gray-50">
+      <!-- Rows (canonical list spec: rounded hover rows, no dividers) -->
+      <div v-for="collab in collaborations" :key="collab.id" class="px-2 last:pb-2">
         <!-- Desktop -->
-        <div class="hidden lg:grid grid-cols-[1fr_140px_80px_80px_100px_100px_100px] gap-4 px-6 py-4 items-center hover:bg-ditto-light-grey transition-colors">
+        <div class="hidden lg:grid grid-cols-[1fr_140px_80px_80px_100px_100px_100px] gap-4 px-4 py-4 mb-1 items-center rounded-2xl hover:bg-ditto-light-grey transition-colors">
           <div>
             <p class="text-sm font-medium text-ditto-text truncate" :title="collab.title">{{ collab.title }}</p>
           </div>
@@ -72,10 +72,7 @@
           </div>
           <div class="text-right flex-shrink-0">
             <p class="text-sm font-semibold text-ditto-text">{{ formatCurrency(collab.earnings) }}</p>
-            <span :class="[
-              'text-[10px] font-medium',
-              collab.status === 'Sent to stores' ? 'text-success' : 'text-warning'
-            ]">{{ collab.status }}</span>
+            <StatusPill :variant="collab.status === 'Sent to stores' ? 'success' : 'warning'" :label="collab.status" class="mt-1" />
           </div>
         </div>
       </div>
@@ -85,6 +82,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import StatusPill from '../../components/common/StatusPill.vue'
 
 const collaborations = [
   { id: 1, title: 'Favourite Girl', artist: 'Darkoo & Dess Dior', collaborators: 1, share: 10, earnings: 88676.36, status: 'Sent to stores', releaseDate: '03/05/2024', splitStart: '19/03/2026' },

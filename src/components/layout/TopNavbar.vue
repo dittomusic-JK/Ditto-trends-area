@@ -182,7 +182,8 @@
     
     <!-- Right side actions -->
     <div class="flex items-center gap-3">
-      <button class="px-3.5 py-1.5 text-xs font-semibold rounded-lg border border-ditto-purple/30 text-ditto-purple hover:bg-ditto-purple/5 transition-colors flex items-center gap-1.5">
+      <!-- Brand lime: reserved for conversion moments (btn-lime — lime bg, ink text, hover lift) -->
+      <button class="px-3.5 py-1.5 text-xs font-bold rounded-full bg-[#E6FF3A] text-[#0a0a0a] hover:-translate-y-0.5 transition-transform flex items-center gap-1.5">
         <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2z"/></svg>
         Upgrade
       </button>
@@ -313,6 +314,7 @@ const emit = defineEmits<{
   (e: 'navigate', section: AppSection): void
   (e: 'create-video'): void
   (e: 'toggle-basket'): void
+  (e: 'open-live-performances'): void
 }>()
 
 const { basket } = useBasketStore()
@@ -416,22 +418,22 @@ const navEntries = computed<NavEntry[]>(() => [
   { id: 'royalties', type: 'link', label: 'Royalties', active: props.activeSection === 'royalties', action: () => emit('navigate', 'royalties') },
   { id: 'analytics', type: 'link', label: 'Analytics', active: props.activeSection === 'analytics', action: () => emit('navigate', 'analytics') },
   {
-    id: 'promotion', type: 'dropdown', label: 'Promotion', active: false,
-    items: [
-      { label: 'Promo Campaigns', action: null },
-      { label: 'Ad Launcher', action: null },
-      { label: 'Promo Cards', action: null },
-      { label: 'AI Artwork Generator', action: null },
-    ],
-  },
-  {
     id: 'rights', type: 'dropdown', label: 'Rights Management',
     active: props.activeSection === 'publishing' || props.activeSection === 'neighbouring-rights' || props.activeSection === 'sync',
     items: [
       { label: 'Music Publishing', active: props.activeSection === 'publishing', action: () => emit('navigate', 'publishing') },
       { label: 'Apply for Sync', active: props.activeSection === 'sync', action: () => emit('navigate', 'sync') },
       { label: 'Neighbouring Rights', active: props.activeSection === 'neighbouring-rights', action: () => emit('navigate', 'neighbouring-rights') },
-      { label: 'Report Live Performance', action: null },
+      { label: 'Register Live Performances', action: () => emit('open-live-performances') },
+    ],
+  },
+  {
+    id: 'promotion', type: 'dropdown', label: 'Promotion', active: false,
+    items: [
+      { label: 'Promo Campaigns', action: null },
+      { label: 'Ad Launcher', action: null },
+      { label: 'Promo Cards', action: null },
+      { label: 'AI Artwork Generator', action: null },
     ],
   },
 ])

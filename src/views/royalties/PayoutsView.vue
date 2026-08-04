@@ -79,8 +79,8 @@
       <h3 class="font-satoshi font-black tracking-[-0.03em] text-lg text-ditto-text mb-1">Activity</h3>
       <p class="text-sm text-ditto-subtext mb-4">Recent payouts</p>
 
-      <!-- Clean rows with dividers -->
-      <div class="divide-y divide-gray-100">
+      <!-- Rows (canonical list spec: rounded hover rows, no dividers) -->
+      <div class="space-y-1">
         <div
           v-for="payout in payouts"
           :key="payout.id"

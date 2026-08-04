@@ -151,15 +151,13 @@ const canRegister = (track: Track): boolean => {
   &__header {
     display: none;
 
+    // Canonical list header: quiet label row, no fill or divider
     @include sm {
       display: grid;
       grid-template-columns: 2.5rem 1fr 1fr 4.5rem 7rem 7rem;
       gap: 0.75rem;
       align-items: center;
       padding: 0.625rem 1rem;
-      background: var(--lighter-grey);
-      border-bottom: 1px solid var(--faded-grey);
-      border-radius: $radius-card $radius-card 0 0;
     }
   }
 
@@ -173,15 +171,16 @@ const canRegister = (track: Track): boolean => {
     &--action { text-align: right; }
   }
 
-  // ── Track wrapper ──
+  // ── Track wrapper (canonical list rows: rounded, hover tint, no dividers) ──
   &__track {
-    border-bottom: 1px solid var(--faded-grey);
+    border-radius: $radius-card;
+    margin-bottom: 0.25rem;
+    transition: background 0.15s;
 
-    &:last-child { border-bottom: 0; }
+    &:hover { background: var(--light-grey); }
 
     &--expanded {
-      box-shadow: inset 0 0 0 1px rgba($color-brand-primary, 0.25);
-      border-radius: $radius-lg;
+      background: var(--light-grey);
     }
   }
 

@@ -40,7 +40,7 @@
         :class="[
           'hidden lg:grid grid-cols-[40px_1fr_100px_100px_140px_80px] gap-4 px-4 py-4 items-center transition-colors',
           playlist.tracks && playlist.tracks.length > 0 ? 'cursor-pointer' : '',
-          playlist.isExpanded ? 'bg-[#f8f8fc]' : 'hover:bg-ditto-light-grey rounded-2xl'
+          playlist.isExpanded ? 'bg-ditto-light-grey' : 'hover:bg-ditto-light-grey rounded-2xl'
         ]"
       >
         <div class="text-lg text-ditto-text">{{ playlist.rank }}</div>
@@ -72,7 +72,7 @@
         :class="[
           'lg:hidden flex items-center gap-3 px-2 py-3 transition-colors',
           playlist.tracks && playlist.tracks.length > 0 ? 'cursor-pointer' : '',
-          playlist.isExpanded ? 'bg-[#f8f8fc] rounded-t-xl' : 'hover:bg-ditto-light-grey rounded-xl'
+          playlist.isExpanded ? 'bg-ditto-light-grey rounded-t-xl' : 'hover:bg-ditto-light-grey rounded-xl'
         ]"
       >
         <!-- Rank -->
@@ -103,7 +103,7 @@
       <!-- Expanded Tracks Section - Desktop -->
       <div 
         v-if="playlist.isExpanded && playlist.tracks && playlist.tracks.length > 0"
-        class="hidden lg:block bg-[#f8f8fc] px-8 pb-4 -mt-1"
+        class="hidden lg:block bg-ditto-light-grey px-8 pb-4 -mt-1"
       >
         <div class="grid grid-cols-[1fr_140px_100px_160px_80px] gap-4 py-2.5 text-xs font-medium text-ditto-purple bg-ditto-purple/10 rounded-lg px-4 mb-1">
           <div>Name</div>
@@ -131,7 +131,7 @@
       <!-- Expanded Tracks Section - Mobile -->
       <div 
         v-if="playlist.isExpanded && playlist.tracks && playlist.tracks.length > 0"
-        class="lg:hidden bg-[#f8f8fc] rounded-b-xl px-3 pb-3"
+        class="lg:hidden bg-ditto-light-grey rounded-b-xl px-3 pb-3"
       >
         <div 
           v-for="track in playlist.tracks" 

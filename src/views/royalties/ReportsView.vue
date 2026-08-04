@@ -49,7 +49,7 @@
       <div class="px-6 py-4 border-b border-gray-100">
         <h3 class="font-satoshi font-black tracking-[-0.03em] text-lg text-ditto-text">Recent Downloads</h3>
       </div>
-      <div v-for="report in recentReports" :key="report.id" class="flex items-center gap-4 px-6 py-4 border-t border-gray-50 first:border-t-0 hover:bg-ditto-light-grey transition-colors">
+      <div v-for="report in recentReports" :key="report.id" class="flex items-center gap-4 px-4 py-4 mx-2 mb-1 last:mb-2 rounded-2xl hover:bg-ditto-light-grey transition-colors">
         <div class="w-10 h-10 rounded-lg bg-ditto-purple/10 flex items-center justify-center flex-shrink-0">
           <svg class="w-5 h-5 text-ditto-purple" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke-linecap="round" stroke-linejoin="round"/>

@@ -164,8 +164,9 @@ const ringOffset = (release: Release): number => {
     padding: 0.625rem 1.25rem;
   }
 
+  // Canonical list header: quiet label row, no divider
   &__header {
-    border-bottom: 1px solid var(--faded-grey);
+    border-bottom: 0;
   }
 
   &__header-cell {
@@ -200,14 +201,15 @@ const ringOffset = (release: Release): number => {
     background: #fff;
   }
 
+  // Canonical list rows: rounded, hover tint, no dividers
   &__row {
-    padding: 1.125rem 1.25rem;
-    border-bottom: 1px solid var(--faded-grey);
+    padding: 1rem 1.25rem;
+    border-radius: 1rem;
+    margin-bottom: 0.25rem;
     cursor: pointer;
     transition: background 0.15s;
 
-    &:last-child { border-bottom: 0; }
-    &:hover { background: var(--lighter-grey); }
+    &:hover { background: var(--light-grey); }
   }
 
   &__artwork {
