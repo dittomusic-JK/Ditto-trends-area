@@ -39,7 +39,7 @@ defineEmits<{
   padding: 0.5rem 0.75rem;
   border: 1px solid var(--faded-grey);
   border-radius: $radius-lg;
-  background: #fff;
+  background: var(--ditto-colors-light-dark-ditto-background-white);
   cursor: pointer;
   transition: border-color 0.15s, box-shadow 0.15s;
   text-align: left;

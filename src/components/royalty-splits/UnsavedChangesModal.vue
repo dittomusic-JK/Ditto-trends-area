@@ -41,7 +41,7 @@ defineEmits<{
 }
 
 .ucm {
-  background: #fff;
+  background: var(--ditto-colors-light-dark-ditto-background-white);
   border-radius: $radius-card;
   width: 100%;
   max-width: 95vw;

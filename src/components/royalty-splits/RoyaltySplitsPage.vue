@@ -600,7 +600,7 @@ const handleCancelUnsavedChanges = () => {
     border: 2px dashed var(--faded-grey);
     padding: 2rem;
     text-align: center;
-    background: #fff;
+    background: var(--ditto-colors-light-dark-ditto-background-white);
   }
 
   &__empty-icon {

@@ -51,7 +51,7 @@ defineEmits<{
   align-items: center;
   gap: 0.75rem;
   padding: 0.75rem 1rem;
-  background: #fff;
+  background: var(--ditto-colors-light-dark-ditto-background-white);
   border: 1px solid var(--faded-grey);
   border-radius: $radius-lg;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);

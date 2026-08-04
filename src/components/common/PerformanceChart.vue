@@ -11,7 +11,7 @@
     <!-- Legend -->
     <div class="flex items-center justify-center gap-4 sm:gap-6 mt-2 sm:mt-4">
       <div class="flex items-center gap-1.5 sm:gap-2">
-        <span class="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-[#5f1fff]"></span>
+        <span class="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-ditto-purple"></span>
         <span class="text-[10px] sm:text-sm font-medium text-ditto-text">Current</span>
       </div>
       <div class="flex items-center gap-1.5 sm:gap-2">
@@ -37,6 +37,7 @@ import {
   Filler,
 } from 'chart.js'
 import type { PerformanceDataPoint } from '../../types'
+import { useTheme } from '../../composables/useTheme'
 
 ChartJS.register(
   CategoryScale,
@@ -55,6 +56,13 @@ const props = defineProps<{
 
 const chartRef = ref(null)
 
+// Theme-reactive chart colours: softer strokes and a stronger area fill on dark
+const { isDark } = useTheme()
+const accent = computed(() => (isDark.value ? '#a06bff' : '#5f1fff'))
+const pointRing = computed(() => (isDark.value ? '#16161d' : '#fff'))
+const gridColor = computed(() => (isDark.value ? 'rgba(255, 255, 255, 0.07)' : '#efefef'))
+const tickColor = computed(() => (isDark.value ? '#8b8ba0' : '#626984'))
+
 // Custom plugin to draw data labels at first and last points
 const dataLabelsPlugin = {
   id: 'dataLabels',
@@ -69,12 +77,12 @@ const dataLabelsPlugin = {
     // Draw label at first point
     const firstPoint = meta.data[0]
     const firstValue = dataset.data[0]
-    drawLabel(ctx, firstPoint.x, firstPoint.y, firstValue, '#5f1fff', false, chartWidth)
-    
-    // Draw label at last point  
+    drawLabel(ctx, firstPoint.x, firstPoint.y, firstValue, accent.value, false, chartWidth)
+
+    // Draw label at last point
     const lastPoint = meta.data[meta.data.length - 1]
     const lastValue = dataset.data[dataset.data.length - 1]
-    drawLabel(ctx, lastPoint.x, lastPoint.y, lastValue, '#5f1fff', true, chartWidth)
+    drawLabel(ctx, lastPoint.x, lastPoint.y, lastValue, accent.value, true, chartWidth)
   }
 }
 
@@ -137,12 +145,18 @@ const chartData = computed(() => ({
     {
       label: 'Current period',
       data: props.data.map(d => d.current),
-      borderColor: '#5f1fff',
+      borderColor: accent.value,
       backgroundColor: (context: any) => {
         const ctx = context.chart.ctx
         const gradient = ctx.createLinearGradient(0, 0, 0, 300)
-        gradient.addColorStop(0, 'rgba(95, 31, 255, 0.15)')
-        gradient.addColorStop(1, 'rgba(95, 31, 255, 0)')
+        // The fill needs more presence on dark surfaces to read as a glow
+        if (isDark.value) {
+          gradient.addColorStop(0, 'rgba(160, 107, 255, 0.38)')
+          gradient.addColorStop(1, 'rgba(160, 107, 255, 0)')
+        } else {
+          gradient.addColorStop(0, 'rgba(95, 31, 255, 0.15)')
+          gradient.addColorStop(1, 'rgba(95, 31, 255, 0)')
+        }
         return gradient
       },
       fill: true,
@@ -150,17 +164,17 @@ const chartData = computed(() => ({
       borderWidth: 3,
       pointRadius: 0,
       pointHoverRadius: 8,
-      pointBackgroundColor: '#5f1fff',
-      pointBorderColor: '#fff',
-      pointBorderWidth: 3,
-      pointHoverBackgroundColor: '#5f1fff',
-      pointHoverBorderColor: '#fff',
-      pointHoverBorderWidth: 3,
+      pointBackgroundColor: accent.value,
+      pointBorderColor: pointRing.value,
+      pointBorderWidth: 2,
+      pointHoverBackgroundColor: accent.value,
+      pointHoverBorderColor: pointRing.value,
+      pointHoverBorderWidth: 2,
     },
     {
       label: 'Previous period',
       data: props.data.map(d => d.previous),
-      borderColor: '#d9c1ff',
+      borderColor: isDark.value ? 'rgba(217, 193, 255, 0.45)' : '#d9c1ff',
       backgroundColor: 'transparent',
       fill: false,
       tension: 0.4,
@@ -168,7 +182,7 @@ const chartData = computed(() => ({
       pointRadius: 0,
       pointHoverRadius: 6,
       pointBackgroundColor: '#d9c1ff',
-      pointBorderColor: '#fff',
+      pointBorderColor: pointRing.value,
       pointBorderWidth: 2,
     },
   ],
@@ -204,10 +218,10 @@ const chartOptions = computed(() => ({
     },
     tooltip: {
       enabled: true,
-      backgroundColor: '#fff',
-      titleColor: '#101f3c',
-      bodyColor: '#101f3c',
-      borderColor: '#e5e5e5',
+      backgroundColor: isDark.value ? '#1e1e27' : '#fff',
+      titleColor: isDark.value ? '#f2f2f7' : '#101f3c',
+      bodyColor: isDark.value ? '#f2f2f7' : '#101f3c',
+      borderColor: isDark.value ? '#2e2e3a' : '#e5e5e5',
       borderWidth: 1,
       padding: 12,
       cornerRadius: 8,
@@ -241,7 +255,7 @@ const chartOptions = computed(() => ({
         display: false,
       },
       ticks: {
-        color: '#626984',
+        color: tickColor.value,
         font: {
           size: 10,
           family: 'Satoshi, sans-serif',
@@ -259,11 +273,11 @@ const chartOptions = computed(() => ({
         display: false,
       },
       grid: {
-        color: '#efefef',
+        color: gridColor.value,
         drawTicks: false,
       },
       ticks: {
-        color: '#626984',
+        color: tickColor.value,
         font: {
           size: 10,
           family: 'Satoshi, sans-serif',

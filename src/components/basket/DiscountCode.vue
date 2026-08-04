@@ -103,7 +103,7 @@ function handleValidate() {
 
     &:focus {
       border-color: #b8b8cf;
-      background: #fff;
+      background: var(--ditto-colors-light-dark-ditto-background-white);
     }
   }
 

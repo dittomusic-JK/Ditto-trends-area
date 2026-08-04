@@ -1,8 +1,14 @@
 <template>
-  <div class="min-h-screen bg-white w-full max-w-full" data-ditto-colors-light-dark-mode="light">
-    <!-- Top Navigation -->
-    <TopNavbar :active-section="appSection" @navigate="handleNavbarNavigate" @create-video="handleCreateVideo" @toggle-basket="showMiniBasket = true" @open-live-performances="handleOpenLivePerformances" />
-    
+  <div class="min-h-screen bg-white w-full max-w-full" :data-ditto-colors-light-dark-mode="isDark ? 'dark' : 'light'">
+    <!-- Top Navigation (in side-nav exploration mode it only provides the mobile header) -->
+    <div :class="navStyle === 'side' ? 'md:hidden' : ''">
+      <TopNavbar :active-section="appSection" @navigate="handleNavbarNavigate" @create-video="handleCreateVideo" @toggle-basket="showMiniBasket = true" @open-live-performances="handleOpenLivePerformances" />
+    </div>
+
+    <div :class="navStyle === 'side' ? 'md:flex md:items-start' : ''">
+    <!-- Alternative nav exploration (?nav=side): collapsible left rail -->
+    <SideNav v-if="navStyle === 'side'" :active-section="appSection" @navigate="handleNavbarNavigate" @create-video="handleCreateVideo" @toggle-basket="showMiniBasket = true" @open-live-performances="handleOpenLivePerformances" />
+    <div :class="navStyle === 'side' ? 'flex-1 min-w-0 md:[--header-h:0px]' : ''" :data-nav="navStyle === 'side' ? 'side' : null">
     <!-- Analytics Section -->
     <div v-if="appSection === 'analytics'" class="px-4 py-4 sm:px-6 sm:py-6 lg:px-16 lg:py-8 w-full max-w-full box-border">
       <!-- Page Header -->
@@ -118,15 +124,18 @@
 
     <!-- Mini basket drawer (opened from the nav basket icon) -->
     <MiniBasket :open="showMiniBasket" @close="showMiniBasket = false" @navigate="appSection = 'basket'" />
+    </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, provide } from 'vue'
 import type { ViewType, Filter, DateRange, MetricsData, TrendsType, AppSection } from './types'
 
 // Layout Components
 import TopNavbar from './components/layout/TopNavbar.vue'
+import SideNav from './components/layout/SideNav.vue'
 import LeftSidebar from './components/layout/LeftSidebar.vue'
 import PageHeader from './components/layout/PageHeader.vue'
 import FilterChip from './components/layout/FilterChip.vue'
@@ -158,6 +167,9 @@ import MiniBasket from './components/basket/MiniBasket.vue'
 // Sync
 import SyncView from './views/sync/SyncView.vue'
 
+// Theme (dark mode class + legacy token attribute)
+import { useTheme } from './composables/useTheme'
+
 // View Components
 import MetricsView from './views/MetricsView.vue'
 import ReleasesView from './views/ReleasesView.vue'
@@ -180,6 +192,14 @@ import {
 // State — initial section can come from the URL (?section=basket), and the
 // basket demo states (?demo=voucher etc.) imply the basket section.
 const urlParams = new URLSearchParams(window.location.search)
+// Alternative navigation exploration: ?nav=side swaps the top bar for a
+// collapsible left rail. Default stays on the current top-nav iteration.
+const { isDark } = useTheme()
+
+const navStyle = urlParams.get('nav') === 'side' ? 'side' : 'top'
+// Full-height views (Artists, release manage) read this to add their own
+// header band in side-nav mode, where there's no top bar to anchor them.
+provide('navStyle', navStyle)
 const sectionParam = urlParams.get('section') as AppSection | null
 const initialSection: AppSection =
   sectionParam ?? (urlParams.has('demo') ? 'basket' : 'analytics')

@@ -117,7 +117,7 @@ const releaseArtworkSrc = (releaseId: string): string => releaseArtworkById[rele
   }
 
   &--release {
-    background: #fff;
+    background: var(--ditto-colors-light-dark-ditto-background-white);
   }
 
   &--service {
@@ -201,7 +201,7 @@ const releaseArtworkSrc = (releaseId: string): string => releaseArtworkById[rele
     height: 1.85rem;
     border: 1px solid #dcdceb;
     border-radius: 0.45rem;
-    background: #fff;
+    background: var(--ditto-colors-light-dark-ditto-background-white);
     color: #6e6e84;
     cursor: pointer;
     transition: border-color 0.15s, color 0.15s, background 0.15s;

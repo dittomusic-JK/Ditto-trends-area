@@ -1,7 +1,7 @@
 <template>
   <!-- Mobile Header -->
   <header class="md:hidden h-16 flex items-center justify-between px-4 border-b border-gray-200 bg-white">
-    <img src="/img/logo-2048-black.svg" alt="Ditto" class="h-6" />
+    <img src="/img/logo-2048-black.svg" alt="Ditto" class="h-6 dark:invert" />
     <div class="flex items-center gap-2">
       <button @click="showMobileMenu = true" class="group relative px-3 py-1 text-xs font-semibold rounded-full text-white flex items-center gap-1.5 animate-gradient-shift" style="background: linear-gradient(135deg, #5f1fff, #8640f4, #a855f7); background-size: 200% 200%">
         <img src="/img/master-distro-icon.svg" alt="" class="w-3 h-3" />
@@ -123,7 +123,7 @@
   <header class="hidden md:flex h-[80px] items-center justify-between px-8 lg:px-12 border-b border-ditto-border-grey bg-white">
     <!-- Logo and Nav -->
     <div class="flex items-center gap-8">
-      <img src="/img/logo-2048-black.svg" alt="Ditto" class="h-8" />
+      <img src="/img/logo-2048-black.svg" alt="Ditto" class="h-8 dark:invert" />
       
       <!-- Nav Items -->
       <nav class="relative flex items-center gap-6" ref="navRef">
@@ -288,6 +288,15 @@
             <img src="/img/nav-globe.svg" alt="" class="w-4 h-4 opacity-60" />
             Language
           </button>
+          <button @click.stop="toggleTheme" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-ditto-text hover:bg-ditto-light-grey transition-colors text-left">
+            <svg class="w-4 h-4 opacity-60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+            </svg>
+            <span class="flex-1">Dark Mode</span>
+            <span :class="['relative w-8 h-[18px] rounded-full transition-all flex-shrink-0', isDark ? 'bg-gradient-to-b from-white via-[#f3f3fa] to-[#dcdce9] shadow-inner' : 'bg-gray-200']">
+              <span :class="['absolute top-[2px] w-[14px] h-[14px] rounded-full shadow transition-all', isDark ? 'left-[18px] bg-ditto-purple' : 'left-[2px] bg-white']"></span>
+            </span>
+          </button>
           <div class="border-t border-gray-200 mt-1 pt-1">
             <button class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-error hover:bg-error/5 transition-colors text-left">
               <img src="/img/nav-logout.svg" alt="" class="w-4 h-4" />
@@ -305,6 +314,7 @@ import { computed, ref, reactive, onMounted, onUnmounted, watch, nextTick } from
 // Icons loaded as img tags from /img/nav-*.svg
 import type { AppSection } from '../../types'
 import { useBasketStore } from '../../composables/useBasketStore'
+import { useTheme } from '../../composables/useTheme'
 
 const props = defineProps<{
   activeSection?: AppSection
@@ -316,6 +326,8 @@ const emit = defineEmits<{
   (e: 'toggle-basket'): void
   (e: 'open-live-performances'): void
 }>()
+
+const { isDark, toggleTheme } = useTheme()
 
 const { basket } = useBasketStore()
 const basketCount = computed(() =>

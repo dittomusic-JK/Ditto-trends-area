@@ -584,7 +584,7 @@ const handleClose = () => {
     right: 0;
     margin-bottom: 0.5rem;
     padding: 0.5rem 0.75rem;
-    background: var(--blue);
+    background: var(--ink-fill);
     color: #fff;
     font-size: $text-xs;
     border-radius: $radius-lg;

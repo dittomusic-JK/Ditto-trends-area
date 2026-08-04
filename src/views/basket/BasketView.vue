@@ -238,7 +238,7 @@ function handleCheckout() {
   &__empty {
     text-align: center;
     padding: 3.5rem 1.5rem;
-    background: #fff;
+    background: var(--ditto-colors-light-dark-ditto-background-white);
     border-radius: $radius-card;
     border: 1px solid var(--light-grey);
     box-shadow: $shadow-card;
@@ -303,7 +303,7 @@ function handleCheckout() {
   }
 
   &__table {
-    background: #fff;
+    background: var(--ditto-colors-light-dark-ditto-background-white);
     border-radius: 1rem;
     border: 1px solid #e7e7f1;
     overflow: hidden;
@@ -313,7 +313,7 @@ function handleCheckout() {
     display: grid;
     grid-template-columns: 3.5rem 1fr auto 5.5rem;
     padding: 0.8rem 1rem;
-    background: #fff;
+    background: var(--ditto-colors-light-dark-ditto-background-white);
     border-bottom: 1px solid #ececf5;
     font-size: 0.6875rem;
     font-weight: 600;
@@ -340,7 +340,7 @@ function handleCheckout() {
   }
 
   &__summary {
-    background: #fff;
+    background: var(--ditto-colors-light-dark-ditto-background-white);
     border-radius: 1rem;
     border: 1px solid #e7e7f1;
     overflow: hidden;

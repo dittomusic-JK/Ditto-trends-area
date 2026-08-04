@@ -225,7 +225,7 @@ const hasChangesForTrack = (trackId: string): boolean => {
 .tg {
   border-radius: $radius-card;
   overflow: hidden;
-  background: #fff;
+  background: var(--ditto-colors-light-dark-ditto-background-white);
 
   &--rls {
     background: var(--rls-card);
@@ -297,7 +297,7 @@ const hasChangesForTrack = (trackId: string): boolean => {
       &:hover { background: rgba($color-orange-500, 0.1); }
     }
     &--none {
-      background: #fff;
+      background: var(--ditto-colors-light-dark-ditto-background-white);
       &:hover { background: var(--lighter-grey); }
     }
     &--rls-none {
@@ -370,7 +370,7 @@ const hasChangesForTrack = (trackId: string): boolean => {
     &--close {
       border-color: var(--ditto-grey);
       color: var(--ditto-grey);
-      background: #fff;
+      background: var(--ditto-colors-light-dark-ditto-background-white);
     }
     &--close-rls {
       border-color: var(--rls-border);
@@ -422,7 +422,7 @@ const hasChangesForTrack = (trackId: string): boolean => {
     &.tg__row--pending { background: rgba($color-amber-500, 0.05); }
     &.tg__row--rejected { background: rgba($color-error, 0.05); }
     &.tg__row--unclaimed { background: rgba($color-orange-500, 0.05); }
-    &.tg__row--none { background: #fff; }
+    &.tg__row--none { background: var(--ditto-colors-light-dark-ditto-background-white); }
     &.tg__row--rls-none { background: transparent; }
     &.tg__row--ring { box-shadow: inset 0 0 0 1px rgba($color-brand-secondary, 0.3); }
   }
@@ -504,7 +504,7 @@ const hasChangesForTrack = (trackId: string): boolean => {
     &--close {
       border-color: var(--ditto-grey);
       color: var(--ditto-grey);
-      background: #fff;
+      background: var(--ditto-colors-light-dark-ditto-background-white);
     }
     &--close-rls {
       border-color: var(--rls-border);

@@ -46,7 +46,7 @@ const onClick = () => {
   align-items: center;
   justify-content: center;
   transition: all 0.15s ease;
-  background: #fff;
+  background: var(--ditto-colors-light-dark-ditto-background-white);
   cursor: pointer;
 
   @include sm {

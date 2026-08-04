@@ -133,6 +133,7 @@ import {
   Filler
 } from 'chart.js'
 import StatsCard from '../../components/common/RoyaltiesStatsCard.vue'
+import { useTheme } from '../../composables/useTheme'
 import type { RoyaltiesStatsCard as StatsCardType, EarningsDataPoint, StoreEarnings, CountryEarnings, SalesBreakdown } from '../../types'
 
 ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Legend, Filler)
@@ -185,6 +186,9 @@ const chartTabs = [
 const activeColor = computed(() => chartTabs.find(t => t.key === activeChartTab.value)?.color || '#8640f4')
 const activeLabel = computed(() => chartTabs.find(t => t.key === activeChartTab.value)?.label || 'Total')
 
+const { isDark } = useTheme()
+const pointRing = computed(() => (isDark.value ? '#16161d' : '#fff'))
+
 const chartData = computed(() => {
   const color = activeColor.value
   return {
@@ -197,7 +201,8 @@ const chartData = computed(() => {
         backgroundColor: (context: any) => {
           const ctx = context.chart.ctx
           const gradient = ctx.createLinearGradient(0, 0, 0, 300)
-          gradient.addColorStop(0, color + '25')
+          // Stronger fill on dark so the area reads as a glow, not a smudge
+          gradient.addColorStop(0, color + (isDark.value ? '55' : '25'))
           gradient.addColorStop(1, color + '00')
           return gradient
         },
@@ -208,17 +213,17 @@ const chartData = computed(() => {
         pointRadius: 0,
         pointHoverRadius: 8,
         pointBackgroundColor: color,
-        pointBorderColor: '#fff',
-        pointBorderWidth: 3,
+        pointBorderColor: pointRing.value,
+        pointBorderWidth: 2,
         pointHoverBackgroundColor: color,
-        pointHoverBorderColor: '#fff',
-        pointHoverBorderWidth: 3,
+        pointHoverBorderColor: pointRing.value,
+        pointHoverBorderWidth: 2,
       }
     ]
   }
 })
 
-const chartOptions = {
+const chartOptions = computed(() => ({
   responsive: true,
   maintainAspectRatio: false,
   layout: { padding: { top: 20, right: 20, left: 10 } },
@@ -226,10 +231,10 @@ const chartOptions = {
   plugins: {
     legend: { display: false },
     tooltip: {
-      backgroundColor: '#fff',
-      titleColor: '#101f3c',
-      bodyColor: '#101f3c',
-      borderColor: '#e5e5e5',
+      backgroundColor: isDark.value ? '#1e1e27' : '#fff',
+      titleColor: isDark.value ? '#f2f2f7' : '#101f3c',
+      bodyColor: isDark.value ? '#f2f2f7' : '#101f3c',
+      borderColor: isDark.value ? '#2e2e3a' : '#e5e5e5',
       borderWidth: 1,
       padding: 12,
       cornerRadius: 8,
@@ -246,11 +251,11 @@ const chartOptions = {
     y: {
       beginAtZero: true,
       border: { display: false },
-      grid: { color: '#efefef', drawTicks: false },
+      grid: { color: isDark.value ? 'rgba(255, 255, 255, 0.07)' : '#efefef', drawTicks: false },
       ticks: {
         callback: (val: any) => `\u00a3${(val / 1000).toFixed(0)}K`,
         font: { size: 10, family: 'Satoshi, sans-serif' },
-        color: '#626984',
+        color: isDark.value ? '#8b8ba0' : '#626984',
         padding: 8,
         maxTicksLimit: 5,
       },
@@ -260,13 +265,13 @@ const chartOptions = {
       grid: { display: false },
       ticks: {
         font: { size: 10, family: 'Satoshi, sans-serif' },
-        color: '#626984',
+        color: isDark.value ? '#8b8ba0' : '#626984',
         padding: 4,
         maxRotation: 0,
       },
     }
   }
-}
+}))
 
 const formatCurrency = (val: number): string => {
   if (val >= 1000000) return `£${(val / 1000000).toFixed(1)}M`

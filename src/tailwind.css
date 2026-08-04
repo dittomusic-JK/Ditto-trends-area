@@ -56,6 +56,9 @@
 :root {
   /* Ditto Framework Colors */
   --pink: #ff006e;
+  /* Ink navy as a FILL (buttons, bars) — never flips in dark mode, unlike
+     --blue which doubles as the ink text colour and lightens on dark. */
+  --ink-fill: #101f3c;
   --mint: #12c1ae;
   --blue: #101f3c;
   --blue-alternate: #287ef7;
@@ -126,6 +129,99 @@
   --ditto-colors-light-dark-ditto-subtext-grey: rgba(98, 105, 132, 1);
   --ditto-colors-light-dark-ditto-text-fill: rgba(16, 31, 60, 1);
 }
+
+/* === Dark mode ===
+ * Layer 1: retarget the design-token CSS variables (everything using
+ *          ditto-* / brand-* utilities flips automatically).
+ * Layer 2: retarget the raw Tailwind utilities used across the app
+ *          (bg-white, border-gray-*, text-gray-*) in one place, so views
+ *          don't need per-class dark: variants. text-white / bg-white/NN
+ *          overlays are deliberately left alone.
+ */
+.dark,
+[data-ditto-colors-light-dark-mode="dark"] {
+  /* Brand purple shifts to the lighter lavender on dark surfaces for contrast */
+  --ditto-purple: #a06bff;
+  --ditto-colors-light-dark-ditto-purple: rgba(160, 107, 255, 1);
+  /* Ink navy text lifts to a soft blue-white (fills stay on --ink-fill) */
+  --blue: #e9edf8;
+  --light-grey: #1e1e27;
+  --lighter-grey: #1a1a22;
+  --medium-grey: #2c2c38;
+  --faded-grey: #30303d;
+  --darkening-grey: #3d3d4c;
+  --ditto-black: #f2f2f7;
+  --ditto-grey: #9c9cb0;
+  --brand-body: #f2f2f7;
+  --brand-body-light: #9c9cb0;
+  --brand-border: #30303d;
+  --ditto-colors-light-dark-ditto-background-white: #16161d;
+  --ditto-colors-light-dark-ditto-border-grey: #2e2e3a;
+  --ditto-colors-light-dark-ditto-light-grey: #1e1e27;
+  --ditto-colors-light-dark-ditto-mid-button-grey: #262631;
+  --ditto-colors-light-dark-ditto-subtext-grey: #9c9cb0;
+  --ditto-colors-light-dark-ditto-text-fill: #f2f2f7;
+  --ditto-colors-light-dark-ditto-text-prompt: #6f6f85;
+}
+
+.dark { color-scheme: dark; }
+
+/* Layer 2: raw utility retargets */
+.dark .bg-white { background-color: #16161d; }
+.dark .hover\:bg-white:hover { background-color: #16161d; }
+.dark .bg-gray-50 { background-color: #1a1a22; }
+.dark .hover\:bg-gray-50:hover { background-color: #1a1a22; }
+.dark .bg-gray-100 { background-color: #232330; }
+.dark .hover\:bg-gray-100:hover { background-color: #232330; }
+.dark .bg-gray-200 { background-color: #2c2c3a; }
+.dark .hover\:bg-gray-200:hover { background-color: #2c2c3a; }
+.dark .border-gray-100 { border-color: #26262f; }
+.dark .border-gray-200 { border-color: #2e2e3a; }
+.dark .border-gray-300 { border-color: #3d3d4c; }
+.dark .hover\:border-gray-300:hover { border-color: #4a4a5c; }
+.dark .divide-gray-100 > :not([hidden]) ~ :not([hidden]) { border-color: #26262f; }
+.dark .divide-gray-200 > :not([hidden]) ~ :not([hidden]) { border-color: #2e2e3a; }
+.dark .text-gray-900 { color: #f2f2f7; }
+.dark .text-gray-700 { color: #d6d6e2; }
+.dark .hover\:text-gray-700:hover { color: #d6d6e2; }
+.dark .text-gray-600 { color: #b9b9c9; }
+.dark .text-gray-500 { color: #9c9cb0; }
+.dark .text-gray-400 { color: #7e7e93; }
+.dark .text-gray-300 { color: #585870; }
+.dark .ring-white { --tw-ring-color: #16161d; }
+
+/* Side-nav exploration: the rail already indents the content, so the main
+   page containers drop from 64px to 32px gutters to line their headers up
+   with the full-height areas (Artists, release manage). */
+@media (min-width: 1024px) {
+  [data-nav="side"] .lg\:px-16 {
+    padding-left: 2rem;
+    /* Right side keeps extra clearance for the floating basket chip */
+    padding-right: 4.5rem;
+  }
+}
+
+/* Monochrome dark nav glyphs (img-based) flip to light in dark mode */
+.dark img[src^="/img/nav-"] { filter: invert(1); }
+/* Exception: the floating basket chip is ink-filled in BOTH modes, so its
+   icon must stay solid white (the blanket invert above would muddy it). */
+button[aria-label="Basket"] img,
+.dark button[aria-label="Basket"] img { filter: brightness(0) invert(1); }
+
+/* Arbitrary light hexes in components */
+.dark .bg-\[\#e9e9eb\] { background-color: #2c2c3a; }
+.dark .bg-\[\#f9f9ff\] { background-color: #1a1a22; }
+.dark .bg-\[\#efeffc\] { background-color: #1e1e27; }
+.dark .bg-\[\#e8e8ff\] { background-color: #262636; }
+.dark .border-\[\#e4e4ef\] { border-color: #2e2e3a; }
+/* Selected artist / release row tint (pink on light, deep violet on dark) */
+.dark .bg-\[\#FDF2F8\] { background-color: #251b33; }
+/* Status pill tints: keep the hue, lift the text for dark surfaces */
+.dark .bg-\[\#fffbeb\] { background-color: #2e2612; }
+.dark .text-\[\#92400e\] { color: #f0b429; }
+.dark .text-\[\#006633\] { color: #3fe0a0; }
+.dark .text-\[\#d92121\] { color: #ff7070; }
+.dark .text-\[\#1e63c4\] { color: #7ab3ff; }
 
 /* Hide scrollbar utility */
 /* === Ditto Design Tokens === */

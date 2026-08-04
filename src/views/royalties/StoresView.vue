@@ -109,6 +109,7 @@ import { computed } from 'vue'
 import { Doughnut } from 'vue-chartjs'
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
 import type { StoreEarnings } from '../../types'
+import { useTheme } from '../../composables/useTheme'
 
 ChartJS.register(ArcElement, Tooltip, Legend)
 
@@ -129,6 +130,8 @@ const donutStores = computed(() => {
   return top
 })
 
+const { isDark } = useTheme()
+
 const donutData = computed(() => ({
   labels: donutStores.value.map(s => s.name),
   datasets: [{
@@ -136,23 +139,23 @@ const donutData = computed(() => ({
     backgroundColor: donutStores.value.map(s => s.color),
     hoverBackgroundColor: donutStores.value.map(s => s.color + 'CC'),
     borderWidth: 2,
-    borderColor: '#f9f9ff',
+    borderColor: isDark.value ? '#1a1a22' : '#f9f9ff',
     cutout: '72%',
     borderRadius: 4,
     spacing: 2,
   }]
 }))
 
-const donutOptions = {
+const donutOptions = computed(() => ({
   responsive: true,
   maintainAspectRatio: true,
   plugins: {
     legend: { display: false },
     tooltip: {
-      backgroundColor: '#fff',
-      titleColor: '#101f3c',
-      bodyColor: '#101f3c',
-      borderColor: '#e5e5e5',
+      backgroundColor: isDark.value ? '#1e1e27' : '#fff',
+      titleColor: isDark.value ? '#f2f2f7' : '#101f3c',
+      bodyColor: isDark.value ? '#f2f2f7' : '#101f3c',
+      borderColor: isDark.value ? '#2e2e3a' : '#e5e5e5',
       borderWidth: 1,
       padding: 10,
       cornerRadius: 8,
@@ -167,7 +170,7 @@ const donutOptions = {
     animateRotate: true,
     duration: 1000,
   }
-}
+}))
 
 const formatCurrency = (val: number): string => {
   if (val >= 1000000) return `£${(val / 1000000).toFixed(1)}M`

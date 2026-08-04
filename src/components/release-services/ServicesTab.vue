@@ -498,7 +498,7 @@ const totalPrice = computed(() => selectedItems.value.reduce((sum, item) => sum 
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    background: #fff;
+    background: var(--ditto-colors-light-dark-ditto-background-white);
     border-radius: $radius-card;
     padding: 0.75rem;
     cursor: pointer;
@@ -554,7 +554,7 @@ const totalPrice = computed(() => selectedItems.value.reduce((sum, item) => sum 
     left: 0;
     margin-bottom: 0.5rem;
     padding: 0.5rem 0.75rem;
-    background: var(--blue);
+    background: var(--ink-fill);
     color: #fff;
     font-size: $text-xs;
     border-radius: $radius-lg;
@@ -591,7 +591,7 @@ const totalPrice = computed(() => selectedItems.value.reduce((sum, item) => sum 
     left: 2px;
     width: 1.5rem;
     height: 1.5rem;
-    background: #fff;
+    background: var(--ditto-colors-light-dark-ditto-background-white);
     border-radius: 9999px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
     transition: transform 0.15s;
@@ -638,7 +638,7 @@ const totalPrice = computed(() => selectedItems.value.reduce((sum, item) => sum 
 
     &--sel {
       border-color: var(--brand-secondary);
-      background: #fff;
+      background: var(--ditto-colors-light-dark-ditto-background-white);
       color: var(--brand-secondary);
     }
 
@@ -676,7 +676,7 @@ const totalPrice = computed(() => selectedItems.value.reduce((sum, item) => sum 
     align-items: center;
     gap: 0.5rem;
     padding: 0.5rem 0.75rem;
-    background: #fff;
+    background: var(--ditto-colors-light-dark-ditto-background-white);
     border-radius: $radius-card;
     cursor: pointer;
     transition: background 0.15s;
@@ -715,7 +715,7 @@ const totalPrice = computed(() => selectedItems.value.reduce((sum, item) => sum 
     align-items: center;
     justify-content: center;
     transition: border-color 0.15s;
-    background: #fff;
+    background: var(--ditto-colors-light-dark-ditto-background-white);
 
     &--on { border-color: var(--brand-secondary); }
 

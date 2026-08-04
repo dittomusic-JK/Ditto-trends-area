@@ -80,7 +80,7 @@ defineEmits<{
     padding: 0 0.85rem;
     border: 1px solid #d9d9e8;
     border-radius: 999px;
-    background: #fff;
+    background: var(--ditto-colors-light-dark-ditto-background-white);
     color: #43435a;
     font-size: 0.75rem;
     font-weight: 600;

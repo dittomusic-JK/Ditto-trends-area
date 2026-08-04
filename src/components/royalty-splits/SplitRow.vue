@@ -543,7 +543,7 @@ const emitUpdate = () => {
   z-index: 20;
   max-height: 10rem;
   overflow-y: auto;
-  background: #fff;
+  background: var(--ditto-colors-light-dark-ditto-background-white);
 
   &--rls {
     background: var(--rls-bg-elevated);
@@ -617,7 +617,7 @@ const emitUpdate = () => {
   pointer-events: none;
   z-index: 20;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  background: var(--blue);
+  background: var(--ink-fill);
 }
 
 .sr__tooltip {

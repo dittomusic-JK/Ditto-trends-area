@@ -128,7 +128,7 @@ function goToCheckout() {
   width: 22rem;
   max-width: 90vw;
   height: 100vh;
-  background: #fff;
+  background: var(--ditto-colors-light-dark-ditto-background-white);
   z-index: 1060;
   display: flex;
   flex-direction: column;
@@ -312,7 +312,7 @@ function goToCheckout() {
     }
 
     &--secondary {
-      background: #fff;
+      background: var(--ditto-colors-light-dark-ditto-background-white);
       color: var(--blue);
       border: 1px solid #d8d8e8;
     }

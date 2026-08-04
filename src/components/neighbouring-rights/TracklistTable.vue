@@ -136,7 +136,7 @@ const canRegister = (track: Track): boolean => {
 .tl {
   border-radius: $radius-card;
   overflow: hidden;
-  background: #fff;
+  background: var(--ditto-colors-light-dark-ditto-background-white);
 
   &__heading {
     font-family: $font-poppins;
@@ -315,7 +315,7 @@ const canRegister = (track: Track): boolean => {
     &--close {
       border-color: var(--ditto-grey);
       color: var(--ditto-grey);
-      background: #fff;
+      background: var(--ditto-colors-light-dark-ditto-background-white);
     }
   }
 

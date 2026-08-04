@@ -158,7 +158,7 @@ onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
     padding: 0 0.85rem;
     border: 1px solid #d5c9ff;
     border-radius: 999px;
-    background: #fff;
+    background: var(--ditto-colors-light-dark-ditto-background-white);
     color: var(--brand-primary);
     font-size: 0.75rem;
     font-weight: 600;
@@ -186,7 +186,7 @@ onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
     top: calc(100% + 0.35rem);
     right: 0;
     width: 17rem;
-    background: #fff;
+    background: var(--ditto-colors-light-dark-ditto-background-white);
     border: 1px solid #e3e3f0;
     border-radius: 0.65rem;
     box-shadow: 0 12px 28px rgba(16, 31, 60, 0.14);
@@ -208,7 +208,7 @@ onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
     width: 100%;
     padding: 0.65rem 0.85rem;
     border: none;
-    background: #fff;
+    background: var(--ditto-colors-light-dark-ditto-background-white);
     text-align: left;
     font-family: $font-satoshi;
     cursor: pointer;

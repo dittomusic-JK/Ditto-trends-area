@@ -41,7 +41,7 @@ defineEmits<{
 }
 
 .modal {
-  background: #fff;
+  background: var(--ditto-colors-light-dark-ditto-background-white);
   border-radius: $radius-card;
   padding: 2rem;
   max-width: 28rem;

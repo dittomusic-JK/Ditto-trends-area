@@ -247,7 +247,7 @@ const removePerformer = (id: string) => {
     font-weight: 500;
     font-family: $font-satoshi;
     color: var(--ditto-grey);
-    background: #fff;
+    background: var(--ditto-colors-light-dark-ditto-background-white);
     cursor: pointer;
     transition: all 0.15s;
 

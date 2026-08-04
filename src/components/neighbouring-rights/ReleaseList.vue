@@ -198,7 +198,7 @@ const ringOffset = (release: Release): number => {
   }
 
   &__list {
-    background: #fff;
+    background: var(--ditto-colors-light-dark-ditto-background-white);
   }
 
   // Canonical list rows: rounded, hover tint, no dividers

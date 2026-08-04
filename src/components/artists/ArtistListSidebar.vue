@@ -6,7 +6,7 @@
     <!-- Header -->
     <div :class="['px-4 py-5 border-b', isDarkMode ? 'border-gray-800' : 'border-gray-200']">
       <div class="flex items-center justify-between mb-4">
-        <h2 :class="['text-lg font-semibold', isDarkMode ? 'text-white' : 'text-gray-900']">Your Artists</h2>
+        <h2 :class="['text-lg font-semibold', isDarkMode ? 'text-white' : 'text-gray-900']">{{ navStyle === 'side' ? 'All artists' : 'Your Artists' }}</h2>
         <div class="relative">
           <button 
             @click="showFilterDropdown = !showFilterDropdown"
@@ -88,9 +88,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, inject } from 'vue'
 import type { Artist, ArtistFilterType } from '../../views/artists/artistTypes'
 import { IconPlus, IconChevronDown } from '../icons/artistIcons'
+
+// 'side' when the ?nav=side left-rail exploration is active — the page then has
+// its own "Your Artists" header, so the column label switches to avoid duplication.
+const navStyle = inject<'top' | 'side'>('navStyle', 'top')
 
 const props = defineProps<{
   artists: Artist[]

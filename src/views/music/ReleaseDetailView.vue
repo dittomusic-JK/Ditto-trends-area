@@ -2,7 +2,15 @@
   <!-- Manage view: catalog sidebar + full-width content (Option C hybrid — the
        grid stays the browsing surface; this layout takes over once a release
        is opened). Sidebar mirrors the Artists area pattern. -->
-  <div class="flex h-[calc(100vh-80px)]">
+  <div class="flex flex-col h-[calc(100vh-var(--header-h,80px))]">
+    <!-- Side-nav mode: header band anchors the top edge (no top bar above) -->
+    <div v-if="navStyle === 'side'" class="flex-shrink-0 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-4 border-b border-gray-200">
+      <h1 class="font-satoshi font-black text-xl sm:text-3xl lg:text-[42px] tracking-[-0.03em] text-ditto-text">
+        Your Releases <span>💿</span>
+      </h1>
+    </div>
+
+    <div class="flex flex-1 min-h-0">
     <ReleaseListSidebar
       :releases="releaseCatalog"
       :current="release"
@@ -34,11 +42,12 @@
         </div>
       </div>
     </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, inject } from 'vue'
 import LiquidTabs from '../../components/common/LiquidTabs.vue'
 import ReleaseListSidebar from '../../components/music/ReleaseListSidebar.vue'
 import ReleaseOverviewTab from './ReleaseOverviewTab.vue'
@@ -53,6 +62,9 @@ const emit = defineEmits<{
   (e: 'back'): void
   (e: 'switch-release', item: ReleaseListItem): void
 }>()
+
+// 'side' when the ?nav=side left-rail exploration is active (no top bar).
+const navStyle = inject<'top' | 'side'>('navStyle', 'top')
 
 const activeSection = ref('overview')
 

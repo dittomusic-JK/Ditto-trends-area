@@ -90,7 +90,7 @@ defineEmits<{
     }
 
     &--completed {
-      background: #fff;
+      background: var(--ditto-colors-light-dark-ditto-background-white);
       border-color: var(--ditto-grey);
       color: var(--ditto-grey);
     }

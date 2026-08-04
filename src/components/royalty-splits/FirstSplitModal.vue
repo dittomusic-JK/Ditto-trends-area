@@ -109,7 +109,7 @@ defineEmits<{
   max-width: 95vw;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
   margin: 0 0.5rem;
-  background: #fff;
+  background: var(--ditto-colors-light-dark-ditto-background-white);
 
   @include sm { padding: 1.5rem; width: 440px; margin: 0; }
 

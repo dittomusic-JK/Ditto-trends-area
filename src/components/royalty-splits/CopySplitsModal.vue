@@ -237,7 +237,7 @@ const handleConfirm = () => {
 }
 
 @mixin modal-card($w: 520px) {
-  background: #fff;
+  background: var(--ditto-colors-light-dark-ditto-background-white);
   border-radius: $radius-card;
   width: 100%;
   max-width: 95vw;
@@ -271,7 +271,7 @@ const handleConfirm = () => {
 
 @mixin btn-primary {
   padding: 0.625rem 1.5rem;
-  background: var(--blue);
+  background: var(--ink-fill);
   color: #fff;
   border-radius: $radius-button;
   font-size: $text-sm;
@@ -470,7 +470,7 @@ const handleConfirm = () => {
     transform: translateX(-50%);
     margin-bottom: 0.25rem;
     padding: 0.25rem 0.5rem;
-    background: var(--blue);
+    background: var(--ink-fill);
     color: #fff;
     font-size: 10px;
     font-weight: 400;
@@ -513,7 +513,7 @@ const handleConfirm = () => {
     padding: 0.75rem 1rem 1rem;
     border-top: 1px solid var(--faded-grey);
     flex-shrink: 0;
-    background: #fff;
+    background: var(--ditto-colors-light-dark-ditto-background-white);
     border-radius: 0 0 $radius-card $radius-card;
 
     @include sm { padding: 0.75rem 1.5rem 1.5rem; }

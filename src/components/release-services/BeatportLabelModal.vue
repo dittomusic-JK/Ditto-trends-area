@@ -127,7 +127,7 @@ const selectedLabel = ref('')
 }
 
 .blm {
-  background: #fff;
+  background: var(--ditto-colors-light-dark-ditto-background-white);
   border-radius: $radius-card;
   padding: 1.5rem;
   width: 480px;

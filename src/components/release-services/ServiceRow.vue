@@ -212,7 +212,7 @@ const rowModifier = computed(() => {
     right: 0;
     margin-bottom: 0.5rem;
     padding: 0.75rem;
-    background: var(--blue);
+    background: var(--ink-fill);
     color: #fff;
     font-size: $text-xs;
     border-radius: $radius-lg;
@@ -251,7 +251,7 @@ const rowModifier = computed(() => {
     align-items: center;
     justify-content: center;
     transition: all 0.15s ease;
-    background: #fff;
+    background: var(--ditto-colors-light-dark-ditto-background-white);
 
     @include sm {
       width: 2.25rem;

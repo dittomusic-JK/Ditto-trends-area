@@ -125,7 +125,7 @@ const handleConfirm = () => {
 }
 
 .eem {
-  background: #fff;
+  background: var(--ditto-colors-light-dark-ditto-background-white);
   border-radius: $radius-card;
   width: 100%;
   max-width: 95vw;
@@ -249,7 +249,7 @@ const handleConfirm = () => {
     height: 1.25rem;
     border-radius: 0.375rem;
     border: 2px solid var(--faded-grey);
-    background: #fff;
+    background: var(--ditto-colors-light-dark-ditto-background-white);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -276,7 +276,7 @@ const handleConfirm = () => {
   &__foot {
     padding: 0.75rem 1.25rem 1.25rem;
     flex-shrink: 0;
-    background: #fff;
+    background: var(--ditto-colors-light-dark-ditto-background-white);
     border-radius: 0 0 $radius-card $radius-card;
     @include sm { padding: 0.75rem 1.5rem 1.5rem; }
   }
@@ -304,7 +304,7 @@ const handleConfirm = () => {
 
   &__btn-confirm {
     padding: 0.625rem 1.5rem;
-    background: var(--blue);
+    background: var(--ink-fill);
     color: #fff;
     border-radius: $radius-button;
     font-size: $text-sm;

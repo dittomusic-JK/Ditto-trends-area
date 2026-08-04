@@ -4,7 +4,7 @@
   <aside class="w-[280px] flex-shrink-0 border-r border-gray-200 flex flex-col h-full bg-white">
     <div class="px-4 py-4 border-b border-gray-200">
       <div class="flex items-baseline justify-between mb-3">
-        <h2 class="text-base font-semibold text-ditto-text">Your releases</h2>
+        <h2 class="text-base font-semibold text-ditto-text">{{ navStyle === 'side' ? 'All releases' : 'Your releases' }}</h2>
         <span class="text-xs text-ditto-subtext tabular-nums">{{ filtered.length }} of {{ releases.length }}</span>
       </div>
       <SearchInput v-model="query" placeholder="Search for a release" width-class="w-full" />
@@ -47,9 +47,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, inject } from 'vue'
 import SearchInput from '../common/SearchInput.vue'
 import type { ReleaseListItem } from '../../data/releaseDetailMockData'
+
+// 'side' when the ?nav=side left-rail exploration is active — the page then has
+// its own "Your Releases" header, so the column label switches to avoid duplication.
+const navStyle = inject<'top' | 'side'>('navStyle', 'top')
 
 const props = defineProps<{
   releases: ReleaseListItem[]

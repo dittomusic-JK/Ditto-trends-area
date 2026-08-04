@@ -70,7 +70,7 @@ defineEmits<{
     }
 
     &--paypal {
-      background: #fff;
+      background: var(--ditto-colors-light-dark-ditto-background-white);
       color: #1659c6;
       border: 1px solid #d9d9e8;
     }

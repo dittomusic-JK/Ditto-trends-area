@@ -322,7 +322,7 @@ function releaseFacebookUrl(_item: { release: { title: string; releaseDate: stri
   }
 
   &__card {
-    background: #fff;
+    background: var(--ditto-colors-light-dark-ditto-background-white);
     border: 1px solid #e7e7f1;
     border-radius: 1rem;
     overflow: hidden;
@@ -403,7 +403,7 @@ function releaseFacebookUrl(_item: { release: { title: string; releaseDate: stri
     font-family: $font-satoshi;
     letter-spacing: 0.04em;
     text-transform: uppercase;
-    background: #fff;
+    background: var(--ditto-colors-light-dark-ditto-background-white);
 
     &--right {
       text-align: right;
@@ -549,7 +549,7 @@ function releaseFacebookUrl(_item: { release: { title: string; releaseDate: stri
     border-radius: 0.8rem;
     padding: 0.8rem;
     margin-bottom: 0.75rem;
-    background: #fff;
+    background: var(--ditto-colors-light-dark-ditto-background-white);
   }
 
   &__module--promo {
@@ -625,7 +625,7 @@ function releaseFacebookUrl(_item: { release: { title: string; releaseDate: stri
     font-weight: 600;
     font-family: $font-satoshi;
     color: #3f3f5d;
-    background: #fff;
+    background: var(--ditto-colors-light-dark-ditto-background-white);
     text-decoration: none;
     transition: border-color 0.15s, background 0.15s;
 
@@ -660,7 +660,7 @@ function releaseFacebookUrl(_item: { release: { title: string; releaseDate: stri
     padding: 0 0.85rem;
     border-radius: 999px;
     border: 1px solid #d8d8e8;
-    background: #fff;
+    background: var(--ditto-colors-light-dark-ditto-background-white);
     color: #4b4b62;
     font-size: 0.72rem;
     font-weight: 700;

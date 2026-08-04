@@ -1,5 +1,13 @@
 <template>
-  <div class="flex h-[calc(100vh-80px)]">
+  <div class="flex flex-col h-[calc(100vh-var(--header-h,80px))]">
+    <!-- Side-nav mode: header band anchors the top edge (no top bar above) -->
+    <div v-if="navStyle === 'side'" class="flex-shrink-0 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-4 border-b border-gray-200">
+      <h1 class="font-satoshi font-black text-xl sm:text-3xl lg:text-[42px] tracking-[-0.03em] text-ditto-text">
+        Your Artists <span>🎤</span>
+      </h1>
+    </div>
+
+    <div class="flex flex-1 min-h-0">
     <!-- Left Artist List Sidebar -->
     <ArtistListSidebar
       :artists="artists"
@@ -43,6 +51,7 @@
         </div>
       </div>
     </div>
+    </div>
 
     <!-- Edit Artist Modal -->
     <div v-if="showEditModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50" @click.self="showEditModal = false">
@@ -61,8 +70,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, inject } from 'vue'
 import type { ArtistViewType, Artist, AvailableContract } from './artistTypes'
+
+// 'side' when the ?nav=side left-rail exploration is active (no top bar).
+const navStyle = inject<'top' | 'side'>('navStyle', 'top')
 
 import ArtistListSidebar from '../../components/artists/ArtistListSidebar.vue'
 import HorizontalTabNav from '../../components/artists/HorizontalTabNav.vue'

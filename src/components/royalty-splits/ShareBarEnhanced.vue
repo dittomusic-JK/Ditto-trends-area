@@ -90,7 +90,7 @@ const actualUserShare = computed(() => 100 - props.confirmedShare)
   pointer-events: none;
   z-index: 20;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  background: var(--blue);
+  background: var(--ink-fill);
 }
 
 .sbe {
