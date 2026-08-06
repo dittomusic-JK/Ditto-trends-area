@@ -24,8 +24,8 @@
   <Transition name="slide">
     <div v-if="showMobileMenu" class="md:hidden fixed inset-0 top-16 z-40 bg-white flex flex-col">
       <div class="flex-1 overflow-y-auto overscroll-contain">
-        <!-- Profile -->
-        <button @click="showMobileMenu = false" class="w-full flex items-center gap-3 px-5 py-4 text-left bg-gradient-to-r from-ditto-purple/10 to-transparent border-b border-gray-100">
+        <!-- Profile (expands into the user subnav) -->
+        <button @click="showUserMenu = !showUserMenu" class="w-full flex items-center gap-3 px-5 py-4 text-left bg-gradient-to-r from-ditto-purple/10 to-transparent border-b border-gray-100">
           <div class="w-11 h-11 rounded-full overflow-hidden flex-shrink-0 ring-2 ring-white shadow-sm">
             <img src="/img/avatar.jpg" alt="User" class="w-full h-full object-cover" />
           </div>
@@ -33,8 +33,39 @@
             <p class="text-sm font-semibold text-ditto-text truncate">Goldenboy Entertainment</p>
             <span class="inline-block mt-0.5 text-[10px] font-semibold px-2 py-0.5 rounded-md bg-ditto-purple/15 text-ditto-purple">DITTO PLUS - RLS</span>
           </div>
-          <svg class="w-4 h-4 text-ditto-subtext ml-auto flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <svg class="w-4 h-4 text-ditto-subtext ml-auto flex-shrink-0 transition-transform" :class="showUserMenu ? 'rotate-90' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
+
+        <!-- User subnav -->
+        <div v-show="showUserMenu" class="px-4 py-3 border-b border-gray-100 space-y-0.5 bg-ditto-light-grey/40">
+          <button class="w-full mb-2 px-3.5 py-2.5 text-xs font-bold rounded-full bg-[#E6FF3A] text-[#0a0a0a] flex items-center justify-center gap-1.5">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2z"/></svg>
+            Upgrade
+          </button>
+          <button @click.stop="toggleTheme" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-ditto-text hover:bg-ditto-light-grey transition-colors text-left">
+            <svg class="w-4 h-4 opacity-60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+            <span class="flex-1">Dark Mode</span>
+            <span :class="['relative w-8 h-[18px] rounded-full transition-all flex-shrink-0', isDark ? 'bg-gradient-to-b from-white via-[#f3f3fa] to-[#dcdce9] shadow-inner' : 'bg-gray-200']">
+              <span :class="['absolute top-[2px] w-[14px] h-[14px] rounded-full shadow transition-all', isDark ? 'left-[18px] bg-ditto-purple' : 'left-[2px] bg-white']"></span>
+            </span>
+          </button>
+          <button @click.stop="toggleNewUser" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-ditto-text hover:bg-ditto-light-grey transition-colors text-left">
+            <svg class="w-4 h-4 opacity-60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="16" y1="11" x2="22" y2="11"/></svg>
+            <span class="flex-1">New User Demo</span>
+            <span :class="['relative w-8 h-[18px] rounded-full transition-all flex-shrink-0', isNewUser ? 'bg-gradient-to-b from-white via-[#f3f3fa] to-[#dcdce9] shadow-inner' : 'bg-gray-200']">
+              <span :class="['absolute top-[2px] w-[14px] h-[14px] rounded-full shadow transition-all', isNewUser ? 'left-[18px] bg-ditto-purple' : 'left-[2px] bg-white']"></span>
+            </span>
+          </button>
+          <button class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-ditto-text hover:bg-ditto-light-grey transition-colors">
+            <img src="/img/nav-settings.svg" alt="" class="w-4 h-4 opacity-60" /> Account Settings
+          </button>
+          <button class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-ditto-text hover:bg-ditto-light-grey transition-colors">
+            <img src="/img/nav-help.svg" alt="" class="w-4 h-4 opacity-60" /> Help &amp; FAQs
+          </button>
+          <button class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-error hover:bg-error/5 transition-colors">
+            <img src="/img/nav-logout.svg" alt="" class="w-4 h-4" /> Logout
+          </button>
+        </div>
 
         <!-- Create -->
         <div class="px-4 pt-4">
@@ -59,7 +90,7 @@
         <nav class="px-4 pt-5 pb-2">
           <p class="px-1 mb-2 text-[11px] font-semibold uppercase tracking-wide text-ditto-subtext">Menu</p>
           <div class="space-y-1">
-            <template v-for="item in navEntries" :key="item.id">
+            <template v-for="item in mobileNavEntries" :key="item.id">
               <!-- Flat link -->
               <button
                 v-if="item.type === 'link'"
@@ -106,18 +137,6 @@
         </nav>
       </div>
 
-      <!-- Footer -->
-      <div class="border-t border-gray-100 px-4 py-3 space-y-0.5 bg-white">
-        <button class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-ditto-text hover:bg-ditto-light-grey transition-colors">
-          <img src="/img/nav-settings.svg" alt="" class="w-4 h-4 opacity-60" /> Account Settings
-        </button>
-        <button class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-ditto-text hover:bg-ditto-light-grey transition-colors">
-          <img src="/img/nav-help.svg" alt="" class="w-4 h-4 opacity-60" /> Help &amp; FAQs
-        </button>
-        <button class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-error hover:bg-error/5 transition-colors">
-          <img src="/img/nav-logout.svg" alt="" class="w-4 h-4" /> Logout
-        </button>
-      </div>
     </div>
   </Transition>
   
@@ -332,6 +351,7 @@ import { useDemoUser } from '../../composables/useDemoUser'
 
 const props = defineProps<{
   activeSection?: AppSection
+  royaltiesSection?: string
 }>()
 
 const emit = defineEmits<{
@@ -340,6 +360,7 @@ const emit = defineEmits<{
   (e: 'create-music'): void
   (e: 'toggle-basket'): void
   (e: 'open-live-performances'): void
+  (e: 'open-royalties', section: string): void
 }>()
 
 const { isDark, toggleTheme } = useTheme()
@@ -373,6 +394,7 @@ watch(() => props.activeSection, () => { nextTick(updateIndicator) })
 onMounted(() => { nextTick(updateIndicator) })
 
 const showMobileMenu = ref(false)
+const showUserMenu = ref(false)
 const showCreateMenu = ref(false)
 const showAvatarMenu = ref(false)
 const showHelpMenu = ref(false)
@@ -465,6 +487,24 @@ const navEntries = computed<NavEntry[]>(() => [
     ],
   },
 ])
+
+// The mobile slide-out mirrors the side rail: Royalties expands into its
+// sections instead of being a flat link. Desktop top-nav entries unchanged.
+const mobileNavEntries = computed<NavEntry[]>(() =>
+  navEntries.value.map(entry => {
+    if (entry.id !== 'royalties') return entry
+    return {
+      id: 'royalties', type: 'dropdown', label: 'Royalties',
+      active: props.activeSection === 'royalties',
+      items: [
+        { label: 'Sales', active: props.activeSection === 'royalties' && props.royaltiesSection === 'sales', action: () => emit('open-royalties', 'sales') },
+        { label: 'Collaborations', active: props.activeSection === 'royalties' && props.royaltiesSection === 'collaborations', action: () => emit('open-royalties', 'collaborations') },
+        { label: 'Reports', active: props.activeSection === 'royalties' && props.royaltiesSection === 'reports', action: () => emit('open-royalties', 'reports') },
+        { label: 'Payouts', active: props.activeSection === 'royalties' && props.royaltiesSection === 'payouts', action: () => emit('open-royalties', 'payouts') },
+      ],
+    }
+  })
+)
 
 // Auto-expand the group containing the active section when the mobile menu opens.
 watch(showMobileMenu, (open) => {

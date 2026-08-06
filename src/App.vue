@@ -2,7 +2,7 @@
   <div class="min-h-screen bg-white w-full max-w-full" :data-ditto-colors-light-dark-mode="isDark ? 'dark' : 'light'">
     <!-- Top Navigation (in side-nav exploration mode it only provides the mobile header) -->
     <div :class="navStyle === 'side' ? 'md:hidden' : ''">
-      <TopNavbar :active-section="appSection" @navigate="handleNavbarNavigate" @create-video="handleCreateVideo" @create-music="appSection = 'music-builder'" @toggle-basket="showMiniBasket = true" @open-live-performances="handleOpenLivePerformances" />
+      <TopNavbar :active-section="appSection" :royalties-section="royaltiesCurrentSection" @navigate="handleNavbarNavigate" @create-video="handleCreateVideo" @create-music="appSection = 'music-builder'" @toggle-basket="showMiniBasket = true" @open-live-performances="handleOpenLivePerformances" @open-royalties="handleOpenRoyalties" />
     </div>
 
     <div :class="navStyle === 'side' ? 'md:flex md:items-start' : ''">
@@ -13,7 +13,8 @@
     <HomeView v-if="appSection === 'home'" @navigate="(s: string) => appSection = s as AppSection" />
 
     <!-- Analytics Section -->
-    <div v-if="appSection === 'analytics'" class="px-4 py-4 sm:px-6 sm:py-6 lg:px-16 lg:py-8 w-full max-w-full box-border">
+    <div v-if="appSection === 'analytics'" class="relative px-4 py-4 sm:px-6 sm:py-6 lg:px-16 lg:py-8 w-full max-w-full box-border">
+      <GlobalSearch />
       <!-- Page Header -->
       <PageHeader 
         :date-range="dateRange" 
@@ -35,13 +36,23 @@
         />
       </div>
       
+      <!-- New user: analytics arrive with the first live release -->
+      <NewUserEmptyState
+        v-if="isNewUser"
+        icon="/img/suite/playlisting.svg"
+        title="No data to show yet"
+        message="Streams, audience and playlist insights appear here once your first release is live in stores."
+        cta-label="Create your first release"
+        @cta="appSection = 'music-builder'"
+      />
+
       <!-- Side-nav mode: the analytics views move up into a tab row -->
-      <div v-if="navStyle === 'side'" class="mb-6 overflow-x-auto scrollbar-hide">
+      <div v-if="!isNewUser && navStyle === 'side'" class="mb-6 overflow-x-auto scrollbar-hide">
         <LiquidTabs :tabs="analyticsTabs" :active="activeView" @select="setActiveView($event as ViewType)" />
       </div>
 
       <!-- Main Layout with Sidebar -->
-      <div class="flex flex-col lg:flex-row gap-4 lg:gap-6">
+      <div v-if="!isNewUser" class="flex flex-col lg:flex-row gap-4 lg:gap-6">
         <!-- Left Sidebar -->
         <LeftSidebar
           v-if="navStyle !== 'side'"
@@ -98,17 +109,17 @@
     />
 
     <!-- Royalties Section -->
-    <RoyaltiesDashboard v-if="appSection === 'royalties'" :open-section="royaltiesRequest" @section-changed="royaltiesCurrentSection = $event" />
+    <RoyaltiesDashboard v-if="appSection === 'royalties'" :open-section="royaltiesRequest" @section-changed="royaltiesCurrentSection = $event" @navigate="appSection = $event as AppSection" />
 
     <!-- Music Section -->
     <!-- Keyed so re-tapping "Music" in the nav resets to the releases overview -->
-    <MusicView v-if="appSection === 'music'" :key="musicViewKey" @navigate="(s: string) => appSection = s as AppSection" @navigate-view="(s: string, v: string) => handleNavigateView(s as AppSection, v)" />
+    <MusicView v-if="appSection === 'music'" :key="musicViewKey" :open-release="searchRelease" @navigate="(s: string) => appSection = s as AppSection" @navigate-view="(s: string, v: string) => handleNavigateView(s as AppSection, v)" />
 
     <!-- Music Release Builder (Create > Music Release) -->
     <ReleaseBuilderView v-if="appSection === 'music-builder'" @back="appSection = 'music'" @navigate="(s: string) => appSection = s as AppSection" />
 
     <!-- Artists Section -->
-    <ArtistsDashboard v-if="appSection === 'artists'" />
+    <ArtistsDashboard v-if="appSection === 'artists'" :open-artist-id="searchArtistId" />
 
     <!-- Publishing Section -->
     <PublishingDashboard v-if="appSection === 'publishing'" :open-live="publishingLiveRequest" @navigate="appSection = $event" @live-consumed="publishingLiveRequest = false" />
@@ -124,8 +135,9 @@
     />
 
     <!-- Neighbouring Rights Section -->
-    <div v-if="appSection === 'neighbouring-rights'" class="px-4 py-4 sm:px-6 sm:py-6 lg:px-16 lg:py-8 w-full max-w-full box-border">
-      <NeighbouringRightsView />
+    <div v-if="appSection === 'neighbouring-rights'" class="relative px-4 py-4 sm:px-6 sm:py-6 lg:px-16 lg:py-8 w-full max-w-full box-border">
+      <GlobalSearch />
+      <NeighbouringRightsView @navigate="appSection = $event as AppSection" />
     </div>
 
     <!-- Basket Section -->
@@ -149,11 +161,15 @@ import type { ViewType, Filter, DateRange, MetricsData, TrendsType, AppSection }
 // Layout Components
 import TopNavbar from './components/layout/TopNavbar.vue'
 import SideNav from './components/layout/SideNav.vue'
+import GlobalSearch from './components/layout/GlobalSearch.vue'
+import type { ReleaseListItem } from './data/releaseDetailMockData'
 import LeftSidebar from './components/layout/LeftSidebar.vue'
 import PageHeader from './components/layout/PageHeader.vue'
 import FilterChip from './components/layout/FilterChip.vue'
 import FiltersPanel from './components/common/FiltersPanel.vue'
 import LiquidTabs from './components/common/LiquidTabs.vue'
+import NewUserEmptyState from './components/common/NewUserEmptyState.vue'
+import { useDemoUser } from './composables/useDemoUser'
 
 // Royalties Dashboard
 import RoyaltiesDashboard from './views/royalties/RoyaltiesDashboard.vue'
@@ -215,6 +231,9 @@ const urlParams = new URLSearchParams(window.location.search)
 const { isDark } = useTheme()
 
 const navStyle = urlParams.get('nav') === 'side' ? 'side' : 'top'
+
+// New-user demo state (empty dashboards + onboarding CTAs)
+const { isNewUser } = useDemoUser()
 // Full-height views (Artists, release manage) read this to add their own
 // header band in side-nav mode, where there's no top bar to anchor them.
 provide('navStyle', navStyle)
@@ -247,12 +266,36 @@ const handleCreateVideo = () => {
 // The side rail's Royalties dropdown opens the dashboard on a specific section.
 const royaltiesRequest = ref<string | null>(null)
 const royaltiesCurrentSection = ref('sales')
+// Global search: open a specific release / artist (null-then-set so repeat
+// selections of the same item still re-trigger the watchers)
+const searchRelease = ref<ReleaseListItem | null>(null)
+const handleSearchRelease = (item: ReleaseListItem) => {
+  appSection.value = 'music'
+  searchRelease.value = null
+  nextTick(() => { searchRelease.value = item })
+}
+
+const searchArtistId = ref<string | null>(null)
+const handleSearchArtist = (id: string) => {
+  appSection.value = 'artists'
+  searchArtistId.value = null
+  nextTick(() => { searchArtistId.value = id })
+}
+
 const handleOpenRoyalties = (section: string) => {
   appSection.value = 'royalties'
   // Null-then-set so re-clicking the same rail item still re-opens that section
   royaltiesRequest.value = null
   nextTick(() => { royaltiesRequest.value = section })
 }
+
+// Navigation API for the global search (lives inside page headers)
+provide('appNav', {
+  navigate: (s: string) => handleNavbarNavigate(s as AppSection),
+  openRoyalties: handleOpenRoyalties,
+  openRelease: handleSearchRelease,
+  openArtist: handleSearchArtist,
+})
 
 // Lets "Rights Management > Register Live Performances" open Publishing on the live tab.
 const publishingLiveRequest = ref(false)

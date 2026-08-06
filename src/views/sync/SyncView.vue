@@ -1,5 +1,6 @@
 <template>
-  <div class="px-4 py-4 sm:px-6 sm:py-6 lg:px-16 lg:py-8 w-full max-w-full box-border">
+  <div class="relative px-4 py-4 sm:px-6 sm:py-6 lg:px-16 lg:py-8 w-full max-w-full box-border">
+    <GlobalSearch />
     <!-- Header -->
     <h1 class="font-satoshi font-black text-xl sm:text-3xl lg:text-[42px] tracking-[-0.03em] text-ditto-text mb-2">
       Apply for Sync <span>🎬</span>
@@ -176,6 +177,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import SyncDetail from './SyncDetail.vue'
+import GlobalSearch from '../../components/layout/GlobalSearch.vue'
 import { categoryGradient, categoryEmoji, type SyncOpp } from './syncTypes'
 
 const categories = ['All', 'Advertising', 'Film', 'TV Series', 'Gaming', 'Trailer']

@@ -10,108 +10,83 @@ import type {
 } from '../views/artists/artistTypes'
 
 // Sample Artists
+// The real Goldenboy Entertainment roster (mirrors dashboard.dittomusic.com/artists).
+// Artists without a photo in /images/artists get an empty avatar and render
+// as initials on a brand colour (InitialsAvatar).
+const makeArtist = (
+  id: string,
+  name: string,
+  artistType: Artist['artistType'],
+  releaseCount: number,
+  avatar: string,
+  extra: Partial<Artist> = {},
+): Artist => ({
+  id,
+  name,
+  avatar,
+  artistType,
+  isPlanArtist: artistType === 'plan',
+  releaseCount,
+  socialLinks: {},
+  storeIds: {},
+  ...extra,
+})
+
 export const artists: Artist[] = [
-  {
-    id: '38398',
-    name: 'Shaun Reynolds',
-    avatar: '/images/artist_image.png',
-    bannerImage: '/images/artist_image.png',
-    artistType: 'plan',
-    isPlanArtist: true,
-    releaseCount: 19,
-    website: 'https://shaunreynoldsmusic.com',
-    bio: 'Shaun Reynolds (born: Shaun Daniel Reynolds) is a British music producer, singer & songwriter, who became known for his work with various artists.',
+  // ── Plan artists ──
+  makeArtist('90001', 'Micks (3x3)', 'plan', 3, '', {
+    bio: 'London-based artist and producer, one third of the 3x3 collective.',
+    website: 'https://dittomusic.com',
     socialLinks: {
       facebook: 'https://facebook.com',
       tiktok: 'https://tiktok.com',
       twitter: 'https://twitter.com',
       instagram: 'https://instagram.com',
-      youtube: 'https://youtube.com'
+      youtube: 'https://youtube.com',
     },
     storeIds: {
       spotify: '0Tn0YISbd1XYRBk9myaseg',
       appleMusic: 'TIGEJ5123FA',
       soundcloud: '285419023',
-      deezer: undefined,
       audiomack: '15252151',
-      amazon: '1252512512'
-    }
-  },
-  {
-    id: '39035',
-    name: 'Black Prez',
-    avatar: '/images/image-2.png',
-    artistType: 'plan',
-    isPlanArtist: true,
-    releaseCount: 10,
-    socialLinks: {},
-    storeIds: {}
-  },
-  {
-    id: '938509',
-    name: 'SecondBorn Music Group',
-    avatar: '/images/image-1.png',
-    artistType: 'plan',
-    isPlanArtist: true,
-    releaseCount: 4,
-    socialLinks: {},
-    storeIds: {}
-  },
-  {
-    id: '997383',
-    name: 'Matt Luis',
-    avatar: '/images/image-3.png',
-    artistType: 'plan',
-    isPlanArtist: true,
-    releaseCount: 6,
-    socialLinks: {},
-    storeIds: {}
-  },
-  {
-    id: '1083523',
-    name: 'Seniors Lo-Fi',
-    avatar: '/images/image-5.png',
-    artistType: 'plan',
-    isPlanArtist: true,
-    releaseCount: 1,
-    socialLinks: {},
-    storeIds: {}
-  },
-  {
-    id: '1092163',
-    name: 'Esmée Denters',
-    avatar: '/images/image-4.png',
-    artistType: 'plan',
-    isPlanArtist: true,
-    releaseCount: 15,
-    socialLinks: {},
-    storeIds: {}
-  },
-  {
-    id: '1128482',
-    name: 'RNLD',
-    avatar: '/images/image-6.png',
-    artistType: 'plan',
-    isPlanArtist: true,
-    releaseCount: 2,
-    socialLinks: {},
-    storeIds: {
-      spotify: '1J0Y3ckQiHwLop55N4XAww'
-    }
-  },
-  {
-    id: '1349789',
-    name: 'Tilda',
-    avatar: '/images/image-1.png',
-    artistType: 'plan',
-    isPlanArtist: true,
-    releaseCount: 7,
-    socialLinks: {},
-    storeIds: {
-      spotify: '1GQ101cyceb0teCPL6XdMY'
-    }
-  }
+      amazon: '1252512512',
+    },
+  }),
+  makeArtist('90002', 'Drilla (3x3)', 'plan', 1, ''),
+  makeArtist('90003', 'DS (3x3)', 'plan', 1, ''),
+  makeArtist('90004', 'ZT (3x3)', 'plan', 2, '/images/artists/zt.jpeg'),
+  makeArtist('90005', 'Rowdy (3x3)', 'plan', 1, ''),
+  makeArtist('90006', 'E1 (3x3)', 'plan', 2, '/images/artists/e1-3x3.jpeg', {
+    storeIds: { spotify: '1J0Y3ckQiHwLop55N4XAww' },
+  }),
+
+  // ── Release artists ──
+  makeArtist('91001', 'Darkoo', 'release', 2, '/images/artists/darkoo.jpeg'),
+  makeArtist('91002', 'Almost Joey', 'release', 2, ''),
+  makeArtist('91003', 'Davido', 'release', 1, '/images/artists/davido.jpeg'),
+  makeArtist('91004', 'Br3nya', 'release', 1, '/images/artists/br3nya.jpeg'),
+  makeArtist('91005', 'Ms Banks', 'release', 1, '/images/artists/ms-banks.jpeg'),
+  makeArtist('91006', 'Happi', 'release', 1, '/images/artists/happi.jpeg'),
+  makeArtist('91007', 'SL', 'release', 1, '/images/artists/sl.jpeg'),
+  makeArtist('91008', '3x3', 'release', 1, ''),
+  makeArtist('91009', 'Tion Wayne', 'release', 1, '/images/artists/tion-wayne.jpeg'),
+  makeArtist('91010', 'Kojo Funds', 'release', 1, '/images/artists/kojo-funds.jpeg'),
+  makeArtist('91011', 'Afro B', 'release', 1, '/images/artists/afro-b.jpeg'),
+
+  // ── Contributing artists ──
+  makeArtist('92001', 'M Splash (3x3)', 'contributing', 0, ''),
+  makeArtist('92002', 'DB (3x3)', 'contributing', 0, ''),
+  makeArtist('92003', 'Mayuaisha', 'contributing', 0, ''),
+  makeArtist('92004', 'Lee Weathers', 'contributing', 1, '/images/artists/lee-weathers.jpeg'),
+  makeArtist('92005', 'S Sosa', 'contributing', 1, ''),
+  makeArtist('92006', 'Marxie', 'contributing', 1, '/images/artists/marxie.jpeg'),
+  makeArtist('92007', 'Nins Harlem', 'contributing', 1, ''),
+  makeArtist('92008', 'Lil M', 'contributing', 1, '/images/artists/lil-m.jpeg'),
+  makeArtist('92009', 'TB', 'contributing', 1, '/images/artists/tb.jpeg'),
+  makeArtist('92010', 'E Hoxy', 'contributing', 1, '/images/artists/e-hoxy.jpeg'),
+  makeArtist('92011', 'Kofi Kay', 'contributing', 1, '/images/artists/kofi-kay.jpeg'),
 ]
+
 
 // Top Songs for artist overview (based on actual stream data)
 export const topSongs: TopSong[] = [

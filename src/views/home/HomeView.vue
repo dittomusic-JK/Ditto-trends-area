@@ -1,14 +1,15 @@
 <template>
-  <div class="px-4 py-4 sm:px-6 sm:py-6 lg:px-16 lg:py-8 w-full max-w-full box-border">
+  <div class="relative px-4 py-4 sm:px-6 sm:py-6 lg:px-16 lg:py-8 w-full max-w-full box-border">
+    <GlobalSearch />
     <!-- ── Header ── -->
     <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-12">
       <div>
         <h1 class="font-satoshi font-black text-xl sm:text-3xl lg:text-[42px] tracking-[-0.03em] text-ditto-text">
-          {{ isNewUser ? 'Welcome to Ditto, Goldenboy!' : 'Welcome back, Goldenboy!' }} <span>👋</span>
+          {{ isNewUser ? 'Welcome, Goldenboy!' : 'Hey, Goldenboy!' }} <span>👋</span>
         </h1>
         <p class="text-sm text-ditto-subtext mt-1.5">{{ isNewUser ? "Let's get your first release out into the world." : "Here's what's happening with your music." }}</p>
       </div>
-      <button @click="emit('navigate', 'music-builder')" class="flex items-center gap-2 px-5 h-10 bg-ditto-purple btn-pop-purple text-white text-sm font-medium rounded-full hover:opacity-95 transition-all flex-shrink-0">
+      <button @click="emit('navigate', 'music-builder')" class="flex items-center gap-2 px-5 h-10 bg-ditto-purple btn-pop-purple text-white text-sm font-medium rounded-full hover:opacity-95 transition-all flex-shrink-0 lg:mr-[24.75rem]">
         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>
         </svg>
@@ -121,12 +122,7 @@
           @click="emit('navigate', 'music-builder')"
           class="flex-shrink-0 w-52 sm:w-56 aspect-square rounded-2xl bg-white shadow-[0_2px_14px_rgba(16,31,60,0.08)] hover:shadow-[0_12px_32px_rgba(95,31,255,0.18)] hover:-translate-y-1 flex flex-col items-center justify-center gap-4 transition-all duration-200 group"
         >
-          <span
-            class="w-14 h-14 rounded-full text-white flex items-center justify-center shadow-lg shadow-ditto-purple/25 group-hover:scale-105 transition-transform animate-gradient-shift"
-            style="background: linear-gradient(135deg, #5f1fff, #8640f4, #a855f7); background-size: 200% 200%"
-          >
-            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </span>
+          <img src="/img/suite/distro.svg" alt="" class="w-12 h-12 group-hover:scale-105 transition-transform" />
           <span class="text-center">
             <span class="block text-sm font-bold text-ditto-text">New release</span>
             <span class="block text-xs text-ditto-subtext mt-1">Upload audio &amp; artwork</span>
@@ -155,9 +151,7 @@
           @click="emit('navigate', 'music-builder')"
           class="snap-start flex-shrink-0 w-52 sm:w-56 aspect-square rounded-2xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center gap-3 text-ditto-subtext hover:border-ditto-purple hover:text-ditto-purple transition-colors"
         >
-          <span class="w-12 h-12 rounded-full bg-ditto-light-grey flex items-center justify-center">
-            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </span>
+          <img src="/img/suite/distro.svg" alt="" class="w-12 h-12" />
           <span class="text-sm font-semibold">Start a release</span>
         </button>
       </div>
@@ -190,9 +184,9 @@
           @click="emit('navigate', 'artists')"
           class="snap-start flex-shrink-0 w-32 sm:w-36 flex flex-col items-center gap-3 group transition-transform duration-300 hover:-translate-y-1"
         >
-          <span class="w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden ring-1 ring-gray-200 group-hover:ring-[3px] group-hover:ring-ditto-purple shadow-sm group-hover:shadow-lg transition-all">
+          <span class="block w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden ring-1 ring-gray-200 group-hover:ring-[3px] group-hover:ring-ditto-purple shadow-sm group-hover:shadow-lg transition-all">
             <img v-if="artist.avatar" :src="artist.avatar" :alt="artist.name" class="w-full h-full object-cover group-hover:scale-[1.06] transition-transform duration-500" loading="lazy" />
-            <span v-else class="w-full h-full flex items-center justify-center bg-ditto-purple/10 text-ditto-purple font-bold text-3xl">{{ artist.name.charAt(0) }}</span>
+            <InitialsAvatar v-else :name="artist.name" text-class="text-3xl" />
           </span>
           <span class="text-sm font-semibold text-ditto-text text-center leading-tight w-full truncate">{{ artist.name }}</span>
         </button>
@@ -250,6 +244,8 @@ import { releaseCatalog } from '../../data/releaseDetailMockData'
 import { artists } from '../../data/artistsMockData'
 import { homeGuides, exploreTiles } from '../../data/homeMockData'
 import { useDemoUser } from '../../composables/useDemoUser'
+import InitialsAvatar from '../../components/common/InitialsAvatar.vue'
+import GlobalSearch from '../../components/layout/GlobalSearch.vue'
 
 const emit = defineEmits<{
   (e: 'navigate', section: string): void

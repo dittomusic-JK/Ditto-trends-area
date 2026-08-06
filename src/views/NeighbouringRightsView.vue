@@ -1,19 +1,30 @@
 <template>
   <div class="nr">
     <h1 class="nr__title">
-      Neighbouring Rights <strong>Registration</strong>
+      Neighbouring <strong>Rights</strong>
     </h1>
     <p class="nr__subtitle">
       Register your sound recordings with collection societies worldwide. We'll handle the claims and collect neighbouring rights royalties on your behalf.
     </p>
 
+    <!-- New user: nothing to register until music is released -->
+    <NewUserEmptyState
+      v-if="isNewUser"
+      icon="/img/suite/release-protection.svg"
+      title="Nothing to register yet"
+      message="Once you've released music through Ditto, you can register your sound recordings here and we'll collect neighbouring rights royalties on your behalf."
+      cta-label="Create your first release"
+      @cta="emit('navigate', 'music-builder')"
+    />
+
     <StepIndicator
+      v-if="!isNewUser"
       :current-step="currentStep"
       @go-to-step="handleGoToStep"
     />
 
     <!-- Step 1: Pick a Release -->
-    <template v-if="currentStep === 'pick-release'">
+    <template v-if="!isNewUser && currentStep === 'pick-release'">
       <ReleaseList
         :releases="filteredReleases"
         :selected-release-id="selectedRelease?.id ?? null"
@@ -28,7 +39,7 @@
     </template>
 
     <!-- Step 2: Register Tracks -->
-    <template v-if="currentStep === 'register-tracks' && selectedRelease">
+    <template v-if="!isNewUser && currentStep === 'register-tracks' && selectedRelease">
       <div class="nr__step-header">
         <h2 class="nr__step-title">Choose which <strong>tracks to register</strong></h2>
       </div>
@@ -57,11 +68,16 @@
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted, onBeforeUnmount } from 'vue'
 import type { Release, WizardStep, Performer } from '../nrTypes'
+import NewUserEmptyState from '../components/common/NewUserEmptyState.vue'
+import { useDemoUser } from '../composables/useDemoUser'
 import StepIndicator from '../components/neighbouring-rights/StepIndicator.vue'
 import ReleaseList from '../components/neighbouring-rights/ReleaseList.vue'
 import SelectedRelease from '../components/neighbouring-rights/SelectedRelease.vue'
 import TracklistTable from '../components/neighbouring-rights/TracklistTable.vue'
 import UnsavedChangesModal from '../components/neighbouring-rights/UnsavedChangesModal.vue'
+
+const emit = defineEmits<{ (e: 'navigate', section: string): void }>()
+const { isNewUser } = useDemoUser()
 
 const currentStep = ref<WizardStep>('pick-release')
 const selectedRelease = ref<Release | null>(null)

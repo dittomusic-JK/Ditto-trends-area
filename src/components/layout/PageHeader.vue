@@ -1,10 +1,11 @@
 <template>
-  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4 sm:mb-6 w-full max-w-full">
+  <div class="flex flex-col sm:flex-row sm:flex-wrap sm:items-center sm:justify-between gap-3 mb-4 sm:mb-6 w-full max-w-full">
     <h1 class="font-satoshi font-black text-xl sm:text-3xl lg:text-[42px] tracking-[-0.03em] text-ditto-text text-center sm:text-left">
       Analytics & Trends <span>📈</span>
     </h1>
-    
-    <div class="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
+
+    <!-- Side mode: controls drop to a second row so the search sits flush right -->
+    <div class="flex items-center gap-2 sm:gap-3 w-full" :class="navStyle === 'side' ? 'sm:justify-end' : 'sm:w-auto'">
       <!-- Date Range Picker -->
       <DateRangePicker 
         :model-value="dateRange" 
@@ -61,9 +62,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, inject } from 'vue'
 import { IconFilter, IconChevronDown } from '../icons'
 import DateRangePicker from '../common/DateRangePicker.vue'
+const navStyle = inject<'top' | 'side'>('navStyle', 'top')
 import type { DateRange, TrendsType } from '../../types'
 
 defineProps<{

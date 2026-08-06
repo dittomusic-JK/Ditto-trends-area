@@ -95,11 +95,15 @@
       
       <!-- Right: Artist Image -->
       <div class="lg:w-[400px] flex-shrink-0">
-        <img 
-          :src="artist.bannerImage || artist.avatar" 
-          :alt="artist.name" 
+        <img
+          v-if="artist.bannerImage || artist.avatar"
+          :src="artist.bannerImage || artist.avatar"
+          :alt="artist.name"
           class="w-full h-64 lg:h-80 object-cover rounded-2xl shadow-xl"
         />
+        <div v-else class="w-full h-64 lg:h-80 rounded-2xl shadow-xl overflow-hidden">
+          <InitialsAvatar :name="artist.name" text-class="text-7xl" />
+        </div>
       </div>
     </div>
     
@@ -172,6 +176,7 @@
 import { computed } from 'vue'
 import type { Artist, TopSong, TopCountry, Integration } from './artistTypes'
 import StoreIdCard from '../../components/artists/StoreIdCard.vue'
+import InitialsAvatar from '../../components/common/InitialsAvatar.vue'
 import SongRow from '../../components/artists/SongRow.vue'
 import { 
   IconEdit, 

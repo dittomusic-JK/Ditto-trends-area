@@ -67,12 +67,13 @@
         ]"
         style="width: calc(100% - 16px); margin-left: 8px; margin-right: 8px;"
       >
-        <img 
-          :src="artist.avatar" 
-          :alt="artist.name" 
-          class="w-10 h-10 rounded-full object-cover ring-2 ring-transparent"
+        <span
+          class="block w-10 h-10 rounded-full overflow-hidden flex-shrink-0 ring-2 ring-transparent"
           :class="{ 'ring-ditto-purple': selectedArtist?.id === artist.id }"
-        />
+        >
+          <img v-if="artist.avatar" :src="artist.avatar" :alt="artist.name" class="w-full h-full object-cover" />
+          <InitialsAvatar v-else :name="artist.name" text-class="text-xs" />
+        </span>
         <div class="flex-1 min-w-0 text-left">
           <p :class="['text-sm font-medium truncate', selectedArtist?.id === artist.id ? 'text-ditto-purple' : isDarkMode ? 'text-white' : 'text-gray-900']">{{ artist.name }}</p>
           <p class="text-xs text-ditto-purple">{{ artist.releaseCount }} Releases</p>
@@ -91,6 +92,7 @@
 import { ref, computed, inject } from 'vue'
 import type { Artist, ArtistFilterType } from '../../views/artists/artistTypes'
 import { IconPlus, IconChevronDown } from '../icons/artistIcons'
+import InitialsAvatar from '../common/InitialsAvatar.vue'
 
 // 'side' when the ?nav=side left-rail exploration is active — the page then has
 // its own "Your Artists" header, so the column label switches to avoid duplication.

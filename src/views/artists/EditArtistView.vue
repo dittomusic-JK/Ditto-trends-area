@@ -15,8 +15,8 @@
       <!-- Avatar Upload -->
       <div class="relative">
         <!-- Show placeholder for new artist, image for existing -->
-        <div 
-          v-if="isNew && !hasCustomAvatar"
+        <div
+          v-if="!formData.avatar"
           :class="['w-20 h-20 rounded-full border-2 border-dashed flex items-center justify-center', isDarkMode ? 'bg-[#0F0E0E] border-gray-600' : 'bg-gray-100 border-gray-300']"
         >
           <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -140,7 +140,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
+import { reactive } from 'vue'
 import type { Artist } from './artistTypes'
 
 // Sub-components (inline for simplicity)
@@ -171,10 +171,7 @@ const defaultStoreIds = {
   amazon: ''
 }
 
-const defaultAvatar = 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&h=200&fit=crop'
-
-// Track if user has uploaded a custom avatar
-const hasCustomAvatar = ref(false)
+const defaultAvatar = ''
 
 const formData = reactive({
   name: props.artist?.name || '',

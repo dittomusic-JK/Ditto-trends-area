@@ -2,11 +2,11 @@
   <div class="space-y-6">
     <!-- Monthly Report Hero + KPI Cards -->
     <div class="grid grid-cols-1 lg:grid-cols-[1fr_1fr_1fr] gap-3 sm:gap-4">
-      <!-- Monthly Report - Hero Card -->
-      <div class="lg:row-span-1 px-6 py-5 border border-ditto-purple/20 rounded-xl bg-gradient-to-br from-ditto-purple/5 to-white">
-        <p class="text-xs text-ditto-subtext mb-1">This Month's Earnings</p>
-        <p class="text-3xl lg:text-4xl font-bold text-ditto-text">£{{ thisMonth.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</p>
-        <p class="text-xs text-ditto-subtext mt-1">vs £{{ lastMonth.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }} last month</p>
+      <!-- Monthly Report - Hero Card (ink + lime lead stat) -->
+      <div class="lg:row-span-1 px-6 py-5 rounded-xl text-white" style="background: linear-gradient(145deg, #26262e, #0a0a0a 80%)">
+        <p class="text-xs text-white/60 mb-1">This Month's Earnings</p>
+        <p class="text-2xl lg:text-3xl font-black font-satoshi tracking-[-0.02em] text-[#E6FF3A]">£{{ thisMonth.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</p>
+        <p class="text-xs text-white/50 mt-1.5">vs £{{ lastMonth.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }} last month</p>
       </div>
       <StatsCard v-for="stat in stats.filter(s => s.id !== 'monthly-average')" :key="stat.id" :stat="stat" />
     </div>

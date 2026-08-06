@@ -2,38 +2,50 @@
   <div class="space-y-8">
     <!-- Balance Section -->
     <div class="grid grid-cols-1 lg:grid-cols-[1fr_1fr] gap-6">
-      <!-- Main Balance Card -->
-      <div class="bg-white rounded-2xl p-8 border border-gray-200 flex flex-col">
-        <p class="text-sm text-ditto-subtext mb-2">Your balance</p>
-        <p class="text-5xl font-bold text-ditto-text tracking-[-0.03em] mb-6">£168,247.18</p>
+      <!-- Main Balance Card (credit-card treatment) -->
+      <div class="relative overflow-hidden rounded-3xl p-8 flex flex-col text-white shadow-[0_10px_30px_rgba(10,10,10,0.25)]" style="background: linear-gradient(145deg, #26262e, #0a0a0a 80%)">
+        <!-- Soft card sheen -->
+        <span class="absolute -top-20 -right-16 w-64 h-64 rounded-full bg-white/5 pointer-events-none"></span>
+
+        <!-- Chip + wordmark row -->
+        <div class="relative flex items-start justify-between mb-7">
+          <span class="relative block w-11 h-8 rounded-md overflow-hidden" style="background: linear-gradient(135deg, #E6FF3A, #b8cc2e)">
+            <span class="absolute inset-x-0 top-1/2 -translate-y-1/2 h-px bg-black/20"></span>
+            <span class="absolute inset-y-0 left-1/2 -translate-x-1/2 w-px bg-black/20"></span>
+          </span>
+          <span class="font-satoshi font-black tracking-[0.18em] text-sm text-white/70 select-none">DI++O</span>
+        </div>
+
+        <p class="relative text-sm text-white/60 mb-2">Your balance</p>
+        <p class="relative text-5xl font-satoshi font-black tracking-[-0.03em] mb-6 text-[#E6FF3A]">£168,247.18</p>
 
         <!-- Segmented Balance Bar -->
-        <div class="flex h-3 rounded-full bg-gray-100 mb-3">
-          <div 
-            class="bg-ditto-purple rounded-l-full transition-all duration-1000 ease-out" 
+        <div class="relative flex h-3 rounded-full bg-white/10 mb-3">
+          <div
+            class="rounded-l-full transition-all duration-1000 ease-out bg-[#E6FF3A]"
             :style="{ width: animated ? '68%' : '0%' }"
           ></div>
-          <div class="w-1 bg-white flex-shrink-0"></div>
-          <div 
-            class="bg-[#F87171]/40 rounded-r-full transition-all duration-1000 ease-out delay-200" 
+          <div class="w-1 flex-shrink-0"></div>
+          <div
+            class="bg-[#F87171]/60 rounded-r-full transition-all duration-1000 ease-out delay-200"
             :style="{ width: animated ? '32%' : '0%' }"
           ></div>
         </div>
 
         <!-- Dot Legend -->
-        <div class="flex items-center gap-5 flex-wrap">
-          <span class="flex items-center gap-1.5 text-sm text-ditto-text">
-            <span class="w-2.5 h-2.5 rounded-full bg-ditto-purple"></span>
+        <div class="relative flex items-center gap-5 flex-wrap">
+          <span class="flex items-center gap-1.5 text-sm text-white">
+            <span class="w-2.5 h-2.5 rounded-full bg-[#E6FF3A]"></span>
             £114,409.68 available
           </span>
-          <span class="flex items-center gap-1.5 text-sm text-ditto-subtext">
-            <span class="w-2.5 h-2.5 rounded-full bg-[#F87171]/40"></span>
+          <span class="flex items-center gap-1.5 text-sm text-white/60">
+            <span class="w-2.5 h-2.5 rounded-full bg-[#F87171]/60"></span>
             £53,837.50 pending
           </span>
         </div>
 
-        <div class="mt-auto pt-6">
-          <button class="px-8 py-3.5 bg-ditto-purple text-white text-base font-semibold rounded-full hover:bg-ditto-purple/90 transition-colors">
+        <div class="relative mt-auto pt-6">
+          <button class="px-8 py-3.5 bg-[#E6FF3A] text-[#101f3c] text-base font-semibold rounded-full hover:opacity-90 transition-opacity">
             Withdraw
           </button>
         </div>

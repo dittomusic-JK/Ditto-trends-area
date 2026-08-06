@@ -1,5 +1,6 @@
 <template>
-  <div class="basket-view">
+  <div class="basket-view relative">
+    <GlobalSearch />
     <div class="basket-view__container">
       <h1 class="basket-view__title">Basket</h1>
       <p class="basket-view__subtitle">You're almost there! Checkout to confirm your releases.</p>
@@ -144,6 +145,7 @@ import AccountCredit from '../../components/basket/AccountCredit.vue'
 import PaymentOptions from '../../components/basket/PaymentOptions.vue'
 import RemoveConfirmModal from '../../components/basket/RemoveConfirmModal.vue'
 import Toast from '../../components/ui/Toast.vue'
+import GlobalSearch from '../../components/layout/GlobalSearch.vue'
 
 const emit = defineEmits<{
   navigate: [section: 'order-confirmation' | 'music']

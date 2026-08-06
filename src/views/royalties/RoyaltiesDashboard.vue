@@ -1,11 +1,13 @@
 <template>
-  <div class="px-4 py-4 sm:px-6 sm:py-6 lg:px-16 lg:py-8 w-full max-w-full box-border">
+  <div class="relative px-4 py-4 sm:px-6 sm:py-6 lg:px-16 lg:py-8 w-full max-w-full box-border">
+    <GlobalSearch />
     <!-- Header -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4 sm:mb-6">
+    <div class="flex flex-col sm:flex-row sm:flex-wrap sm:items-center sm:justify-between gap-3 mb-4 sm:mb-6">
       <h1 class="font-satoshi font-black text-xl sm:text-3xl lg:text-[42px] tracking-[-0.03em] text-ditto-text text-center sm:text-left">
         Royalties &amp; Sales <span>💰</span>
       </h1>
-      <div class="flex items-center gap-2 sm:gap-3">
+      <!-- Side mode: date + filters drop to a second row so the search sits flush right -->
+      <div v-if="!isNewUser" class="flex items-center gap-2 sm:gap-3" :class="navStyle === 'side' ? 'sm:w-full sm:justify-end' : ''">
         <div class="relative group">
           <span class="px-4 py-2.5 border border-gray-200 rounded-lg text-sm text-ditto-subtext bg-white flex items-center gap-2 cursor-help">
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -38,8 +40,18 @@
       <FilterChip v-for="filter in activeFilters" :key="filter.id" :label="filter.label" :value="filter.value" @remove="removeFilter(filter.id)" />
     </div>
 
+    <!-- New user: royalties arrive once music is live -->
+    <NewUserEmptyState
+      v-if="isNewUser"
+      icon="/img/suite/splits.svg"
+      title="No royalties yet"
+      message="Your earnings will show up here once your music is live in stores and starts being streamed. Store royalty data is reported with a 2–3 month delay."
+      cta-label="Create your first release"
+      @cta="emit('navigate', 'music-builder')"
+    />
+
     <!-- Sub Nav (in side-nav mode the sections live in the rail's Royalties dropdown) -->
-    <div class="flex items-center gap-2 mb-6 overflow-x-auto scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
+    <div v-if="!isNewUser" class="flex items-center gap-2 mb-6 overflow-x-auto scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
       <LiquidTabs v-if="navStyle !== 'side'" :tabs="sectionTabs" :active="activeSection" @select="activeSection = $event as RoyaltiesSectionType" />
       <LiquidTabs v-else-if="activeSection === 'sales'" :tabs="salesViewTabs" :active="activeView" @select="setActiveView($event as RoyaltiesViewType)" />
 
@@ -54,7 +66,7 @@
     </div>
 
     <!-- Sales -->
-    <template v-if="activeSection === 'sales'">
+    <template v-if="!isNewUser && activeSection === 'sales'">
       <div class="flex flex-col lg:flex-row gap-4 lg:gap-6">
         <RoyaltiesSidebar v-if="navStyle !== 'side'" :active-view="activeView" @navigate="setActiveView" />
         <div class="flex-1 min-w-0">
@@ -72,9 +84,9 @@
         </div>
       </div>
     </template>
-    <CollaborationsView v-else-if="activeSection === 'collaborations'" />
-    <ReportsView v-else-if="activeSection === 'reports'" />
-    <PayoutsView v-else-if="activeSection === 'payouts'" />
+    <CollaborationsView v-else-if="!isNewUser && activeSection === 'collaborations'" />
+    <ReportsView v-else-if="!isNewUser && activeSection === 'reports'" />
+    <PayoutsView v-else-if="!isNewUser && activeSection === 'payouts'" />
   </div>
 
   <!-- Filters Panel -->
@@ -87,6 +99,9 @@ import { IconMetrics, IconReleases, IconTracks, IconAudience, IconSource } from 
 import type { RoyaltiesSectionType, RoyaltiesViewType, Filter } from '../../types'
 import FilterChip from '../../components/layout/FilterChip.vue'
 import FiltersPanel from '../../components/common/FiltersPanel.vue'
+import NewUserEmptyState from '../../components/common/NewUserEmptyState.vue'
+import GlobalSearch from '../../components/layout/GlobalSearch.vue'
+import { useDemoUser } from '../../composables/useDemoUser'
 import LiquidTabs from '../../components/common/LiquidTabs.vue'
 import RoyaltiesSidebar from './RoyaltiesSidebar.vue'
 import OverviewView from './OverviewView.vue'
@@ -98,6 +113,8 @@ import CollaborationsView from './CollaborationsView.vue'
 import ReportsView from './ReportsView.vue'
 import PayoutsView from './PayoutsView.vue'
 import { statsData, earningsData, storesData, countriesData, breakdownData, releasesData, tracksData } from '../../data/royaltiesMockData'
+
+const { isNewUser } = useDemoUser()
 
 const activeSection = ref<RoyaltiesSectionType>('sales')
 const activeView = ref<RoyaltiesViewType>('overview')
@@ -119,6 +136,7 @@ const salesViewTabs = [
 const props = defineProps<{ openSection?: string | null }>()
 const emit = defineEmits<{
   (e: 'section-changed', section: string): void
+  (e: 'navigate', section: string): void
 }>()
 watch(() => props.openSection, (s) => {
   if (s) activeSection.value = s as RoyaltiesSectionType

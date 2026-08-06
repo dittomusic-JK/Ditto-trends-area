@@ -1,5 +1,6 @@
 <template>
-  <div v-if="currentView === 'list'">
+  <div v-if="currentView === 'list'" class="relative">
+    <GlobalSearch />
     <div class="px-4 sm:px-6 lg:px-16 pt-4 sm:pt-6 lg:pt-8">
       <!-- Welcome Header -->
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
@@ -8,7 +9,7 @@
         </h1>
         <button
           @click="showCreateModal = true"
-          class="flex items-center gap-2 px-5 py-2.5 text-white text-sm font-medium rounded-full hover:opacity-90 transition-all hover:shadow-lg hover:shadow-ditto-purple/30 flex-shrink-0"
+          class="flex items-center gap-2 px-5 py-2.5 text-white text-sm font-medium rounded-full hover:opacity-90 transition-all hover:shadow-lg hover:shadow-ditto-purple/30 flex-shrink-0 lg:mr-[24.75rem]"
           style="background: linear-gradient(135deg, #5f1fff, #8640f4, #a855f7)"
         >
           <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -19,7 +20,7 @@
       </div>
 
       <!-- Snapshot Analytics -->
-      <div class="mb-8">
+      <div v-if="!isNewUser" class="mb-8">
         <p class="text-sm text-ditto-subtext mb-4">Here's a snapshot of your video performance this week.</p>
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
           <!-- Videos This Week -->
@@ -68,8 +69,29 @@
       </div>
     </div>
 
+    <!-- New user: create-first-video card + ghost thumbnail frames -->
+    <div v-if="isNewUser" class="px-4 sm:px-6 lg:px-16 pb-8">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
+        <button
+          @click="showCreateModal = true"
+          class="aspect-video rounded-2xl bg-white shadow-[0_2px_14px_rgba(16,31,60,0.08)] hover:shadow-[0_12px_32px_rgba(95,31,255,0.18)] hover:-translate-y-1 flex flex-col items-center justify-center gap-3 transition-all duration-200 group"
+        >
+          <img src="/img/suite/music-video-distro.svg" alt="" class="w-11 h-11 group-hover:scale-105 transition-transform" />
+          <span class="text-center">
+            <span class="block text-sm font-bold text-ditto-text">New video</span>
+            <span class="block text-xs text-ditto-subtext mt-1">Get your videos on VEVO &amp; more</span>
+          </span>
+        </button>
+        <div v-for="n in 5" :key="'ghost-vid-' + n" :style="{ opacity: Math.max(0, 1 - n * 0.2) }">
+          <div class="aspect-video rounded-2xl bg-ditto-light-grey"></div>
+          <div class="w-28 h-2.5 rounded bg-ditto-light-grey mt-3"></div>
+          <div class="w-20 h-2 rounded bg-ditto-light-grey mt-2"></div>
+        </div>
+      </div>
+    </div>
+
     <!-- Sticky Filter Bar -->
-    <div class="sticky top-0 z-20 bg-white px-4 sm:px-6 lg:px-16 pt-4 pb-3 shadow-[0_4px_12px_-2px_rgba(0,0,0,0.06)]">
+    <div v-if="!isNewUser" class="sticky top-0 z-20 bg-white px-4 sm:px-6 lg:px-16 pt-4 pb-3 shadow-[0_4px_12px_-2px_rgba(0,0,0,0.06)]">
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
         <h2 class="font-satoshi font-black tracking-[-0.03em] text-2xl lg:text-3xl text-ditto-text">Your Videos</h2>
         <!-- Search -->
@@ -82,13 +104,13 @@
 
     <!-- Video Grid -->
     <EmptyState
-      v-if="filteredVideos.length === 0"
+      v-if="!isNewUser && filteredVideos.length === 0"
       type="no-results"
       title="No videos found"
       :message="searchQuery ? `No videos match '${searchQuery}'` : 'No videos in this category'"
       class="px-4 sm:px-6 lg:px-16"
     />
-    <ul v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 list-none p-0 px-4 sm:px-6 lg:px-16 pt-6">
+    <ul v-else-if="!isNewUser" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 list-none p-0 px-4 sm:px-6 lg:px-16 pt-6">
       <li v-for="video in filteredVideos" :key="video.id">
         <div class="group cursor-pointer">
           <!-- Thumbnail (16:9) -->
@@ -153,8 +175,10 @@ import EmptyState from '../../components/common/EmptyState.vue'
 import LiquidTabs from '../../components/common/LiquidTabs.vue'
 import SearchInput from '../../components/common/SearchInput.vue'
 import CreateVideoModal from './CreateVideoModal.vue'
+import GlobalSearch from '../../components/layout/GlobalSearch.vue'
 import VideoBuilder from './VideoBuilder.vue'
 import { videoReleases } from '../../data/videoMockData'
+import { useDemoUser } from '../../composables/useDemoUser'
 
 const props = defineProps<{
   autoOpenCreate?: boolean
@@ -163,6 +187,8 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'create-consumed'): void
 }>()
+
+const { isNewUser } = useDemoUser()
 
 const searchQuery = ref('')
 const activeStatus = ref('all')

@@ -1,17 +1,28 @@
 <template>
-  <div class="px-4 py-4 sm:px-6 sm:py-6 lg:px-16 lg:py-8 w-full max-w-full box-border">
+  <div class="relative px-4 py-4 sm:px-6 sm:py-6 lg:px-16 lg:py-8 w-full max-w-full box-border">
+    <GlobalSearch />
     <!-- Header -->
     <h1 class="font-satoshi font-black text-xl sm:text-3xl lg:text-[42px] tracking-[-0.03em] text-ditto-text mb-6">
       Publishing <span>📝</span>
     </h1>
 
+    <!-- New user: publishing kicks in after the first release -->
+    <NewUserEmptyState
+      v-if="isNewUser"
+      icon="/img/suite/publishing.svg"
+      title="No works registered yet"
+      message="Sign up your songs to collect publishing royalties everywhere they're played. Once you've released your first tracks, register your works here."
+      cta-label="Create your first release"
+      @cta="emit('navigate', 'music-builder')"
+    />
+
     <!-- Sub Nav -->
-    <div class="flex items-center gap-2 mb-6 overflow-x-auto scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
+    <div v-if="!isNewUser" class="flex items-center gap-2 mb-6 overflow-x-auto scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
       <LiquidTabs :tabs="tabs" :active="activeTab" @select="activeTab = $event" />
     </div>
 
     <!-- ===================== Overview ===================== -->
-    <div v-if="activeTab === 'overview'" class="space-y-10">
+    <div v-if="!isNewUser && activeTab === 'overview'" class="space-y-10">
       <!-- Hero + stats -->
       <div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_320px] gap-4">
         <!-- Hero -->
@@ -63,7 +74,7 @@
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div
           v-for="card in actionCards" :key="card.title"
-          class="relative bg-white rounded-2xl border border-gray-200 p-5 flex items-center gap-4 hover:shadow-md transition-shadow cursor-pointer group"
+          class="relative bg-white rounded-2xl shadow-[0_2px_14px_rgba(16,31,60,0.08)] p-5 flex items-center gap-4 hover:shadow-[0_10px_28px_rgba(16,31,60,0.14)] hover:-translate-y-0.5 transition-all duration-200 cursor-pointer group"
           @click="card.go()"
         >
           <span v-if="card.tag" class="absolute top-4 right-4 px-2 py-0.5 rounded-full bg-[#0a0a0a] text-white text-[11px] font-bold uppercase tracking-[1.8px]">{{ card.tag }}</span>
@@ -123,7 +134,7 @@
     </div>
 
     <!-- ===================== Add a new work ===================== -->
-    <div v-else-if="activeTab === 'works' && addingWork" class="space-y-5">
+    <div v-else-if="!isNewUser && activeTab === 'works' && addingWork" class="space-y-5">
       <div class="flex items-center justify-between gap-3">
         <h2 class="font-satoshi text-xl tracking-[-0.02em] text-ditto-text">
           <span class="font-normal">Register a new</span> <span class="font-black">Musical Work</span>
@@ -137,7 +148,7 @@
     </div>
 
     <!-- ===================== My Works ===================== -->
-    <div v-else-if="activeTab === 'works'" class="space-y-5">
+    <div v-else-if="!isNewUser && activeTab === 'works'" class="space-y-5">
       <div class="flex items-center justify-between gap-3">
         <h2 class="font-satoshi font-black tracking-[-0.03em] text-xl text-ditto-text">
           My Works <span class="font-normal text-ditto-subtext text-base">({{ works.length }})</span>
@@ -262,7 +273,7 @@
     </div>
 
     <!-- ===================== Co-writers ===================== -->
-    <div v-else-if="activeTab === 'cowriters'" class="space-y-6">
+    <div v-else-if="!isNewUser && activeTab === 'cowriters'" class="space-y-6">
       <div class="flex items-center justify-between gap-3">
         <h2 class="font-satoshi font-black tracking-[-0.03em] text-xl text-ditto-text">Co-writers</h2>
       </div>
@@ -327,7 +338,7 @@
     </div>
 
     <!-- ===================== Register Live Performances ===================== -->
-    <LivePerformancesView v-else-if="activeTab === 'live'" />
+    <LivePerformancesView v-else-if="!isNewUser && activeTab === 'live'" />
 
     <!-- Toast -->
     <transition
@@ -350,6 +361,9 @@ import SearchInput from '../../components/common/SearchInput.vue'
 import StatusPill from '../../components/common/StatusPill.vue'
 import LivePerformancesView from './LivePerformancesView.vue'
 import AddWorkView, { type NewWorkPayload } from './AddWorkView.vue'
+import NewUserEmptyState from '../../components/common/NewUserEmptyState.vue'
+import GlobalSearch from '../../components/layout/GlobalSearch.vue'
+import { useDemoUser } from '../../composables/useDemoUser'
 
 const props = defineProps<{
   openLive?: boolean
@@ -359,6 +373,8 @@ const emit = defineEmits<{
   (e: 'navigate', section: AppSection): void
   (e: 'live-consumed'): void
 }>()
+
+const { isNewUser } = useDemoUser()
 
 const activeTab = ref('overview')
 
