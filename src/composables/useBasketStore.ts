@@ -159,6 +159,16 @@ function recalcDiscount() {
   }
 }
 
+// Adds (or replaces) a release in the basket — used by the release builder's
+// Complete Release action, which lands the user here for checkout.
+function addRelease(item: BasketItem) {
+  const idx = basket.value.findIndex(existing => existing.release.id === item.release.id)
+  if (idx !== -1) basket.value.splice(idx, 1, item)
+  else basket.value.push(item)
+  recalcDiscount()
+  showToast('Your release has been added to the basket')
+}
+
 function removeRelease(releaseId: string) {
   const idx = basket.value.findIndex(item => item.release.id === releaseId)
   if (idx !== -1) {
@@ -291,6 +301,7 @@ export function useBasketStore() {
     voucherSavings,
     totalPrice,
     isFreeOrder,
+    addRelease,
     removeRelease,
     applyDiscount,
     removeDiscount,

@@ -1,7 +1,9 @@
 <template>
   <div>
-    <h2 class="font-satoshi font-black tracking-[-0.03em] text-xl lg:text-2xl text-ditto-text mb-2">Artists</h2>
-    <p class="text-sm text-ditto-subtext mb-6">Add the artists involved in this video release.</p>
+    <template v-if="!compact">
+      <h2 class="font-satoshi font-black tracking-[-0.03em] text-xl lg:text-2xl text-ditto-text mb-2">Artists</h2>
+      <p class="text-sm text-ditto-subtext mb-6">Add the artists involved in this {{ context ?? 'video' }} release.</p>
+    </template>
 
     <!-- Primary Artists -->
     <div class="mb-6">
@@ -412,6 +414,10 @@ interface ArtistsData {
 
 const props = defineProps<{
   artists: ArtistsData
+  // Word used in the intro copy ("video" by default; the music builder passes "music")
+  context?: string
+  // Hides the section heading/intro for embedded use (e.g. per-track artists)
+  compact?: boolean
 }>()
 
 const emit = defineEmits<{

@@ -2,13 +2,16 @@
   <div class="min-h-screen bg-white w-full max-w-full" :data-ditto-colors-light-dark-mode="isDark ? 'dark' : 'light'">
     <!-- Top Navigation (in side-nav exploration mode it only provides the mobile header) -->
     <div :class="navStyle === 'side' ? 'md:hidden' : ''">
-      <TopNavbar :active-section="appSection" @navigate="handleNavbarNavigate" @create-video="handleCreateVideo" @toggle-basket="showMiniBasket = true" @open-live-performances="handleOpenLivePerformances" />
+      <TopNavbar :active-section="appSection" @navigate="handleNavbarNavigate" @create-video="handleCreateVideo" @create-music="appSection = 'music-builder'" @toggle-basket="showMiniBasket = true" @open-live-performances="handleOpenLivePerformances" />
     </div>
 
     <div :class="navStyle === 'side' ? 'md:flex md:items-start' : ''">
     <!-- Alternative nav exploration (?nav=side): collapsible left rail -->
-    <SideNav v-if="navStyle === 'side'" :active-section="appSection" @navigate="handleNavbarNavigate" @create-video="handleCreateVideo" @toggle-basket="showMiniBasket = true" @open-live-performances="handleOpenLivePerformances" />
+    <SideNav v-if="navStyle === 'side'" :active-section="appSection" :royalties-section="royaltiesCurrentSection" @navigate="handleNavbarNavigate" @create-video="handleCreateVideo" @create-music="appSection = 'music-builder'" @toggle-basket="showMiniBasket = true" @open-live-performances="handleOpenLivePerformances" @open-royalties="handleOpenRoyalties" />
     <div :class="navStyle === 'side' ? 'flex-1 min-w-0 md:[--header-h:0px]' : ''" :data-nav="navStyle === 'side' ? 'side' : null">
+    <!-- Home hub (root, reached via the Ditto logo) -->
+    <HomeView v-if="appSection === 'home'" @navigate="(s: string) => appSection = s as AppSection" />
+
     <!-- Analytics Section -->
     <div v-if="appSection === 'analytics'" class="px-4 py-4 sm:px-6 sm:py-6 lg:px-16 lg:py-8 w-full max-w-full box-border">
       <!-- Page Header -->
@@ -32,11 +35,17 @@
         />
       </div>
       
+      <!-- Side-nav mode: the analytics views move up into a tab row -->
+      <div v-if="navStyle === 'side'" class="mb-6 overflow-x-auto scrollbar-hide">
+        <LiquidTabs :tabs="analyticsTabs" :active="activeView" @select="setActiveView($event as ViewType)" />
+      </div>
+
       <!-- Main Layout with Sidebar -->
       <div class="flex flex-col lg:flex-row gap-4 lg:gap-6">
         <!-- Left Sidebar -->
-        <LeftSidebar 
-          :active-view="activeView" 
+        <LeftSidebar
+          v-if="navStyle !== 'side'"
+          :active-view="activeView"
           @navigate="setActiveView"
         />
         
@@ -89,11 +98,14 @@
     />
 
     <!-- Royalties Section -->
-    <RoyaltiesDashboard v-if="appSection === 'royalties'" />
+    <RoyaltiesDashboard v-if="appSection === 'royalties'" :open-section="royaltiesRequest" @section-changed="royaltiesCurrentSection = $event" />
 
     <!-- Music Section -->
     <!-- Keyed so re-tapping "Music" in the nav resets to the releases overview -->
     <MusicView v-if="appSection === 'music'" :key="musicViewKey" @navigate="(s: string) => appSection = s as AppSection" @navigate-view="(s: string, v: string) => handleNavigateView(s as AppSection, v)" />
+
+    <!-- Music Release Builder (Create > Music Release) -->
+    <ReleaseBuilderView v-if="appSection === 'music-builder'" @back="appSection = 'music'" @navigate="(s: string) => appSection = s as AppSection" />
 
     <!-- Artists Section -->
     <ArtistsDashboard v-if="appSection === 'artists'" />
@@ -130,7 +142,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, provide } from 'vue'
+import { ref, computed, provide, markRaw, nextTick } from 'vue'
+import { IconMetrics, IconReleases, IconTracks, IconPlaylists, IconAudience, IconSource } from './components/icons'
 import type { ViewType, Filter, DateRange, MetricsData, TrendsType, AppSection } from './types'
 
 // Layout Components
@@ -140,12 +153,17 @@ import LeftSidebar from './components/layout/LeftSidebar.vue'
 import PageHeader from './components/layout/PageHeader.vue'
 import FilterChip from './components/layout/FilterChip.vue'
 import FiltersPanel from './components/common/FiltersPanel.vue'
+import LiquidTabs from './components/common/LiquidTabs.vue'
 
 // Royalties Dashboard
 import RoyaltiesDashboard from './views/royalties/RoyaltiesDashboard.vue'
 
+// Home hub
+import HomeView from './views/home/HomeView.vue'
+
 // Music page
 import MusicView from './views/MusicView.vue'
+import ReleaseBuilderView from './views/music/builder/ReleaseBuilderView.vue'
 
 // Artists dashboard
 import ArtistsDashboard from './views/artists/ArtistsDashboard.vue'
@@ -202,7 +220,7 @@ const navStyle = urlParams.get('nav') === 'side' ? 'side' : 'top'
 provide('navStyle', navStyle)
 const sectionParam = urlParams.get('section') as AppSection | null
 const initialSection: AppSection =
-  sectionParam ?? (urlParams.has('demo') ? 'basket' : 'analytics')
+  sectionParam ?? (urlParams.has('demo') ? 'basket' : 'home')
 const appSection = ref<AppSection>(initialSection)
 
 // Re-tapping a section in the nav resets that section to its landing state
@@ -226,6 +244,16 @@ const handleCreateVideo = () => {
   appSection.value = 'videos'
 }
 
+// The side rail's Royalties dropdown opens the dashboard on a specific section.
+const royaltiesRequest = ref<string | null>(null)
+const royaltiesCurrentSection = ref('sales')
+const handleOpenRoyalties = (section: string) => {
+  appSection.value = 'royalties'
+  // Null-then-set so re-clicking the same rail item still re-opens that section
+  royaltiesRequest.value = null
+  nextTick(() => { royaltiesRequest.value = section })
+}
+
 // Lets "Rights Management > Register Live Performances" open Publishing on the live tab.
 const publishingLiveRequest = ref(false)
 const handleOpenLivePerformances = () => {
@@ -233,6 +261,16 @@ const handleOpenLivePerformances = () => {
   appSection.value = 'publishing'
 }
 const activeView = ref<ViewType>('metrics')
+
+// Side-nav mode replaces the analytics left sidebar with a tab row
+const analyticsTabs = [
+  { id: 'metrics', label: 'Metrics', icon: markRaw(IconMetrics) },
+  { id: 'releases', label: 'Releases', icon: markRaw(IconReleases) },
+  { id: 'tracks', label: 'Tracks', icon: markRaw(IconTracks) },
+  { id: 'playlists', label: 'Playlists', icon: markRaw(IconPlaylists) },
+  { id: 'audience', label: 'Audience', icon: markRaw(IconAudience) },
+  { id: 'source', label: 'Source', icon: markRaw(IconSource) },
+]
 const showFiltersModal = ref(false)
 
 // Date range - default to last 7 days

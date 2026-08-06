@@ -12,7 +12,8 @@
     >
       <!-- Per-button clipped slice of the shared fill (masked to the pill shape) -->
       <span class="absolute inset-y-0 rounded-full pointer-events-none" :class="fillClass" :style="fillStyle(i)"></span>
-      <span :class="['relative z-10 transition-colors duration-200', active === tab.id ? 'text-white' : 'text-ditto-text']">
+      <span :class="['relative z-10 transition-colors duration-200 flex items-center gap-2', active === tab.id ? 'text-white' : 'text-ditto-text']">
+        <component :is="tab.icon" v-if="tab.icon" class="w-4 h-4 flex-shrink-0" />
         {{ tab.label }}
       </span>
     </button>
@@ -23,7 +24,7 @@
 import { ref, reactive, watch, onMounted, onUnmounted, nextTick } from 'vue'
 
 const props = withDefaults(defineProps<{
-  tabs: { id: string; label: string }[]
+  tabs: { id: string; label: string; icon?: object }[]
   active: string
   fillClass?: string
 }>(), {

@@ -38,9 +38,10 @@
       <FilterChip v-for="filter in activeFilters" :key="filter.id" :label="filter.label" :value="filter.value" @remove="removeFilter(filter.id)" />
     </div>
 
-    <!-- Sub Nav -->
+    <!-- Sub Nav (in side-nav mode the sections live in the rail's Royalties dropdown) -->
     <div class="flex items-center gap-2 mb-6 overflow-x-auto scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
-      <LiquidTabs :tabs="sectionTabs" :active="activeSection" @select="activeSection = $event as RoyaltiesSectionType" />
+      <LiquidTabs v-if="navStyle !== 'side'" :tabs="sectionTabs" :active="activeSection" @select="activeSection = $event as RoyaltiesSectionType" />
+      <LiquidTabs v-else-if="activeSection === 'sales'" :tabs="salesViewTabs" :active="activeView" @select="setActiveView($event as RoyaltiesViewType)" />
 
       <div class="flex-1"></div>
 
@@ -55,7 +56,7 @@
     <!-- Sales -->
     <template v-if="activeSection === 'sales'">
       <div class="flex flex-col lg:flex-row gap-4 lg:gap-6">
-        <RoyaltiesSidebar :active-view="activeView" @navigate="setActiveView" />
+        <RoyaltiesSidebar v-if="navStyle !== 'side'" :active-view="activeView" @navigate="setActiveView" />
         <div class="flex-1 min-w-0">
           <OverviewView v-if="activeView === 'overview'" :stats="filteredStats" :earnings="filteredEarnings" :stores="storesData" :countries="countriesData" :breakdown="breakdownData" @navigate-to-countries="activeView = 'countries'" />
           <template v-else>
@@ -81,7 +82,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, inject, watch, markRaw } from 'vue'
+import { IconMetrics, IconReleases, IconTracks, IconAudience, IconSource } from '../../components/icons'
 import type { RoyaltiesSectionType, RoyaltiesViewType, Filter } from '../../types'
 import FilterChip from '../../components/layout/FilterChip.vue'
 import FiltersPanel from '../../components/common/FiltersPanel.vue'
@@ -99,6 +101,29 @@ import { statsData, earningsData, storesData, countriesData, breakdownData, rele
 
 const activeSection = ref<RoyaltiesSectionType>('sales')
 const activeView = ref<RoyaltiesViewType>('overview')
+
+// 'side' when the ?nav=side left-rail exploration is active — the sales
+// sidebar then folds into a secondary row under the section tabs.
+const navStyle = inject<'top' | 'side'>('navStyle', 'top')
+
+// Side-nav mode: the sales views use the same pill format as Analytics
+const salesViewTabs = [
+  { id: 'overview', label: 'Overview', icon: markRaw(IconMetrics) },
+  { id: 'releases', label: 'Releases', icon: markRaw(IconReleases) },
+  { id: 'tracks', label: 'Tracks', icon: markRaw(IconTracks) },
+  { id: 'stores', label: 'Stores', icon: markRaw(IconSource) },
+  { id: 'countries', label: 'Countries', icon: markRaw(IconAudience) },
+]
+
+// The rail's Royalties dropdown can open a specific section directly.
+const props = defineProps<{ openSection?: string | null }>()
+const emit = defineEmits<{
+  (e: 'section-changed', section: string): void
+}>()
+watch(() => props.openSection, (s) => {
+  if (s) activeSection.value = s as RoyaltiesSectionType
+}, { immediate: true })
+watch(activeSection, (s) => emit('section-changed', s), { immediate: true })
 const showFilters = ref(false)
 const activeFilters = ref<Filter[]>([])
 

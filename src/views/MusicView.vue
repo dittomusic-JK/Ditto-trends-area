@@ -10,9 +10,9 @@
     <!-- Welcome Header -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
       <h1 class="font-satoshi font-black text-xl sm:text-3xl lg:text-[42px] tracking-[-0.03em] text-ditto-text">
-        Welcome back, Goldenboy! <span>👋</span>
+        Your Releases
       </h1>
-      <button class="flex items-center gap-2 px-5 py-2.5 bg-ditto-purple btn-pop-purple text-white text-sm font-medium rounded-full hover:opacity-95 transition-all flex-shrink-0">
+      <button @click="$emit('navigate', 'music-builder')" class="flex items-center gap-2 px-5 py-2.5 bg-ditto-purple btn-pop-purple text-white text-sm font-medium rounded-full hover:opacity-95 transition-all flex-shrink-0">
         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>
         </svg>
@@ -20,54 +20,16 @@
       </button>
     </div>
 
-    <!-- Snapshot Analytics -->
-    <div class="mb-8">
-      <p class="text-sm text-ditto-subtext mb-4">Here's a snapshot of your music's performance this week.</p>
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <!-- Streams This Week -->
-        <div @click="$emit('navigate', 'analytics')" class="rounded-2xl p-5 text-white relative overflow-hidden cursor-pointer hover:scale-[1.02] hover:shadow-lg transition-all duration-200" style="background: linear-gradient(180deg, #3a1bb9, #a859cd 97%)">
-          <img src="/img/equalizer-icon.svg" alt="" class="absolute top-4 right-4 w-14 h-14 rounded-xl" />
-          <p class="text-xs text-white/70 mb-1">Streams This Week</p>
-          <p class="text-2xl font-bold mb-2">1,696,508</p>
-          <p class="text-xs text-white/50">All stores, 14–20 Apr</p>
-        </div>
-        <!-- Most Streamed Track -->
-        <div @click="$emit('navigateView', 'analytics', 'tracks')" class="rounded-2xl p-5 text-white relative overflow-hidden cursor-pointer hover:scale-[1.02] hover:shadow-lg transition-all duration-200" style="background: linear-gradient(180deg, #3cbbcd, #187e9f)">
-          <div class="absolute top-4 right-4 w-14 h-14 rounded-xl overflow-hidden">
-            <img src="https://prod-ditto-music-release-content.s3.eu-west-2.amazonaws.com/05301321/artwork/transforms/p1680529-edit-edit-edit-69c138b3ab4dd252257380-small.jpg" alt="Solar" class="w-full h-full object-cover" />
-          </div>
-          <p class="text-xs text-white/70 mb-1">Most Streamed Track</p>
-          <p class="text-2xl font-bold mb-2">Solar</p>
-          <p class="text-xs text-white/50">All stores • 440,333 streams</p>
-        </div>
-        <!-- Best Playlist -->
-        <div @click="$emit('navigateView', 'analytics', 'playlists')" class="rounded-2xl p-5 text-white relative overflow-hidden cursor-pointer hover:scale-[1.02] hover:shadow-lg transition-all duration-200" style="background: linear-gradient(180deg, #2680eb, #035cc6 97%)">
-          <img src="/img/spotify-retail-logo.svg" alt="Spotify" class="absolute top-4 right-4 w-14 h-14 rounded-xl" />
-          <p class="text-xs text-white/70 mb-1">Best Playlist</p>
-          <p class="text-2xl font-bold mb-2">Mix</p>
-          <p class="text-xs text-white/50">Spotify • 60,766 streams</p>
-        </div>
-        <!-- Best Platform -->
-        <div @click="$emit('navigateView', 'analytics', 'source')" class="rounded-2xl p-5 text-white relative overflow-hidden cursor-pointer hover:scale-[1.02] hover:shadow-lg transition-all duration-200" style="background: linear-gradient(180deg, #dc7b30, #b54a4c)">
-          <img src="/img/spotify-retail-logo.svg" alt="Spotify" class="absolute top-4 right-4 w-14 h-14 rounded-xl" />
-          <p class="text-xs text-white/70 mb-1">Best Platform</p>
-          <p class="text-2xl font-bold mb-2">Spotify</p>
-          <p class="text-xs text-white/50">1,089,741 streams</p>
-        </div>
-      </div>
-    </div>
     </div>
 
     <!-- Sticky Release Bar -->
     <div class="sticky top-0 z-20 bg-white px-4 sm:px-6 lg:px-16 pt-4 pb-3 shadow-[0_4px_12px_-2px_rgba(0,0,0,0.06)]">
-      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
-        <h2 class="font-satoshi font-black tracking-[-0.03em] text-2xl lg:text-3xl text-ditto-text">Your Releases</h2>
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <!-- Status Tabs -->
+        <LiquidTabs :tabs="statusTabs" :active="activeStatus" @select="activeStatus = $event" />
         <!-- Search -->
         <SearchInput v-model="searchQuery" placeholder="Search for a release" />
       </div>
-
-      <!-- Status Tabs -->
-      <LiquidTabs :tabs="statusTabs" :active="activeStatus" @select="activeStatus = $event" />
     </div>
 
     <!-- Release Grid -->

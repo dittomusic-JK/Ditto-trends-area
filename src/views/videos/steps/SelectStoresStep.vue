@@ -210,6 +210,10 @@
                 </svg>
                 <p class="text-sm text-ditto-text font-medium mb-1">Upload artist image</p>
                 <p class="text-[11px] text-ditto-subtext">JPEG only &middot; Min 5000 &times; 5000px &middot; Max 15MB</p>
+                <div class="mt-3 pt-3 border-t border-gray-200 space-y-1">
+                  <p class="text-[10px] text-ditto-subtext">Press picture of the artist(s), <strong>no text or logos</strong></p>
+                  <p class="text-[10px] text-ditto-subtext">Artist(s) should be centred &bull; Background should not be pure white</p>
+                </div>
               </div>
               <div v-else class="flex items-center gap-3">
                 <div class="w-14 h-14 rounded-lg bg-ditto-light-grey flex items-center justify-center overflow-hidden flex-shrink-0">
@@ -225,10 +229,6 @@
               </div>
             </div>
             <input ref="artistImageInput" type="file" accept=".jpg,.jpeg" class="hidden" @change="handleVevoFileUpload('vevoArtistImage', $event)" />
-            <div class="mt-2 space-y-1">
-              <p class="text-[10px] text-ditto-subtext">&bull; Press picture of the artist(s), <strong>no text or logos</strong></p>
-              <p class="text-[10px] text-ditto-subtext">&bull; Artist(s) should be centred &bull; Background should not be pure white</p>
-            </div>
             <!-- Artist image error -->
             <div v-if="vevoFileError && vevoFileErrorField === 'vevoArtistImage'" class="mt-2 p-2.5 rounded-lg bg-error/10 border border-error/20 flex items-center gap-2">
               <svg class="w-3.5 h-3.5 text-error flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
@@ -254,6 +254,9 @@
                 </svg>
                 <p class="text-sm text-ditto-text font-medium mb-1">Upload channel art / YouTube banner</p>
                 <p class="text-[11px] text-ditto-subtext">PNG only &middot; Min 2560 &times; 1440px &middot; Max 4MB</p>
+                <div class="mt-3 pt-3 border-t border-gray-200">
+                  <p class="text-[10px] text-ditto-subtext">Can contain text &mdash; great for making your VEVO and YouTube channels look more official.</p>
+                </div>
               </div>
               <div v-else class="flex items-center gap-3">
                 <div class="w-20 h-11 rounded-lg bg-ditto-light-grey flex items-center justify-center overflow-hidden flex-shrink-0">
@@ -269,7 +272,6 @@
               </div>
             </div>
             <input ref="bannerInput" type="file" accept=".png" class="hidden" @change="handleVevoFileUpload('vevoBanner', $event)" />
-            <p class="mt-2 text-[10px] text-ditto-subtext">Can contain text &mdash; great for making your VEVO and YouTube channels look more official.</p>
             <!-- Banner error -->
             <div v-if="vevoFileError && vevoFileErrorField === 'vevoBanner'" class="mt-2 p-2.5 rounded-lg bg-error/10 border border-error/20 flex items-center gap-2">
               <svg class="w-3.5 h-3.5 text-error flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">

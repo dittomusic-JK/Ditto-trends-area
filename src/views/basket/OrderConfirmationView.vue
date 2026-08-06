@@ -262,13 +262,22 @@ function releaseFacebookUrl(_item: { release: { title: string; releaseDate: stri
     margin-bottom: 0.3rem;
   }
 
+  // Canonical page header: Satoshi 900, -0.03em tracking, 42px at desktop
   &__title {
-    font-size: 2.15rem;
-    font-weight: 700;
-    font-family: $font-poppins;
-    color: var(--blue);
+    font-size: 1.25rem;
+    font-weight: 900;
+    font-family: $font-satoshi;
+    letter-spacing: -0.03em;
+    color: var(--ditto-colors-light-dark-ditto-text-fill);
     line-height: 1.08;
     margin-bottom: 0.25rem;
+
+    @media (min-width: $breakpoint-sm) {
+      font-size: 1.875rem;
+    }
+    @media (min-width: $breakpoint-lg) {
+      font-size: 2.625rem;
+    }
   }
 
   &__confirmation-number {

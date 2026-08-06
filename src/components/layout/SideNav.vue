@@ -9,8 +9,10 @@
   >
     <!-- Logo -->
     <div class="h-[80px] flex items-center flex-shrink-0" :class="collapsed ? 'justify-center' : 'px-5'">
-      <img v-if="!collapsed" src="/img/logo-2048-black.svg" alt="Ditto" class="h-7 dark:invert" />
-      <img v-else src="/img/logo-mark-black.svg" alt="Ditto" class="h-7 dark:invert" />
+      <button @click="emit('navigate', 'home')" aria-label="Ditto home">
+        <img v-if="!collapsed" src="/img/logo-2048-black.svg" alt="Ditto" class="h-9 dark:invert" />
+        <img v-else src="/img/logo-mark-black.svg" alt="Ditto" class="h-8 dark:invert" />
+      </button>
     </div>
 
     <!-- Create -->
@@ -179,7 +181,7 @@
     >
       <!-- Create menu -->
       <template v-if="openFlyout === 'create'">
-        <button class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-ditto-text hover:bg-ditto-light-grey transition-colors text-left">
+        <button @click="closeFlyout(); emit('create-music')" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-ditto-text hover:bg-ditto-light-grey transition-colors text-left">
           <img src="/img/nav-musical-note.svg" alt="" class="w-4 h-4" /> Music Release
         </button>
         <button @click="closeFlyout(); emit('create-video')" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-ditto-text hover:bg-ditto-light-grey transition-colors text-left">
@@ -217,6 +219,15 @@
             <span :class="['absolute top-[2px] w-[14px] h-[14px] rounded-full shadow transition-all', isDark ? 'left-[18px] bg-ditto-purple' : 'left-[2px] bg-white']"></span>
           </span>
         </button>
+        <button @click.stop="toggleNewUser" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-ditto-text hover:bg-ditto-light-grey transition-colors text-left">
+          <svg class="w-4 h-4 opacity-60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="16" y1="11" x2="22" y2="11"/>
+          </svg>
+          <span class="flex-1">New User Demo</span>
+          <span :class="['relative w-8 h-[18px] rounded-full transition-all flex-shrink-0', isNewUser ? 'bg-gradient-to-b from-white via-[#f3f3fa] to-[#dcdce9] shadow-inner' : 'bg-gray-200']">
+            <span :class="['absolute top-[2px] w-[14px] h-[14px] rounded-full shadow transition-all', isNewUser ? 'left-[18px] bg-ditto-purple' : 'left-[2px] bg-white']"></span>
+          </span>
+        </button>
         <div class="border-t border-gray-200 mt-1 pt-1">
           <button class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-error hover:bg-error/5 transition-colors text-left">
             <img src="/img/nav-logout.svg" alt="" class="w-4 h-4" /> Logout
@@ -247,19 +258,24 @@ import { computed, reactive, ref, onMounted, onUnmounted } from 'vue'
 import type { AppSection } from '../../types'
 import { useBasketStore } from '../../composables/useBasketStore'
 import { useTheme } from '../../composables/useTheme'
+import { useDemoUser } from '../../composables/useDemoUser'
 
 const props = defineProps<{
   activeSection?: AppSection
+  royaltiesSection?: string
 }>()
 
 const emit = defineEmits<{
   (e: 'navigate', section: AppSection): void
   (e: 'create-video'): void
+  (e: 'create-music'): void
   (e: 'toggle-basket'): void
   (e: 'open-live-performances'): void
+  (e: 'open-royalties', section: string): void
 }>()
 
 const { isDark, toggleTheme } = useTheme()
+const { isNewUser, toggleNewUser } = useDemoUser()
 
 const { basket } = useBasketStore()
 const basketCount = computed(() =>
@@ -353,7 +369,16 @@ const navEntries = computed<NavEntry[]>(() => [
   { id: 'artists', type: 'link', label: 'Artists', active: props.activeSection === 'artists', action: () => emit('navigate', 'artists') },
   { id: 'music', type: 'link', label: 'Music', active: props.activeSection === 'music', action: () => emit('navigate', 'music') },
   { id: 'videos', type: 'link', label: 'Videos', active: props.activeSection === 'videos', action: () => emit('navigate', 'videos') },
-  { id: 'royalties', type: 'link', label: 'Royalties', active: props.activeSection === 'royalties', action: () => emit('navigate', 'royalties') },
+  {
+    id: 'royalties', type: 'dropdown', label: 'Royalties',
+    active: props.activeSection === 'royalties',
+    items: [
+      { label: 'Sales', active: props.activeSection === 'royalties' && props.royaltiesSection === 'sales', action: () => emit('open-royalties', 'sales') },
+      { label: 'Collaborations', active: props.activeSection === 'royalties' && props.royaltiesSection === 'collaborations', action: () => emit('open-royalties', 'collaborations') },
+      { label: 'Reports', active: props.activeSection === 'royalties' && props.royaltiesSection === 'reports', action: () => emit('open-royalties', 'reports') },
+      { label: 'Payouts', active: props.activeSection === 'royalties' && props.royaltiesSection === 'payouts', action: () => emit('open-royalties', 'payouts') },
+    ],
+  },
   { id: 'analytics', type: 'link', label: 'Analytics', active: props.activeSection === 'analytics', action: () => emit('navigate', 'analytics') },
   {
     id: 'rights', type: 'dropdown', label: 'Rights Management',

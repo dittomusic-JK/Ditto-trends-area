@@ -1,7 +1,9 @@
 <template>
   <!-- Mobile Header -->
   <header class="md:hidden h-16 flex items-center justify-between px-4 border-b border-gray-200 bg-white">
-    <img src="/img/logo-2048-black.svg" alt="Ditto" class="h-6 dark:invert" />
+    <button @click="emit('navigate', 'home')" aria-label="Ditto home">
+      <img src="/img/logo-2048-black.svg" alt="Ditto" class="h-6 dark:invert" />
+    </button>
     <div class="flex items-center gap-2">
       <button @click="showMobileMenu = true" class="group relative px-3 py-1 text-xs font-semibold rounded-full text-white flex items-center gap-1.5 animate-gradient-shift" style="background: linear-gradient(135deg, #5f1fff, #8640f4, #a855f7); background-size: 200% 200%">
         <img src="/img/master-distro-icon.svg" alt="" class="w-3 h-3" />
@@ -38,7 +40,7 @@
         <div class="px-4 pt-4">
           <p class="px-1 mb-2 text-[11px] font-semibold uppercase tracking-wide text-ditto-subtext">Create</p>
           <div class="grid grid-cols-3 gap-2">
-            <button class="flex flex-col items-center gap-1.5 py-3.5 rounded-xl bg-ditto-light-grey hover:bg-ditto-purple/10 active:scale-95 transition-all">
+            <button @click="emit('create-music'); showMobileMenu = false" class="flex flex-col items-center gap-1.5 py-3.5 rounded-xl bg-ditto-light-grey hover:bg-ditto-purple/10 active:scale-95 transition-all">
               <img src="/img/nav-musical-note.svg" alt="" class="w-5 h-5" />
               <span class="text-[11px] font-medium text-ditto-text">Music</span>
             </button>
@@ -123,7 +125,9 @@
   <header class="hidden md:flex h-[80px] items-center justify-between px-8 lg:px-12 border-b border-ditto-border-grey bg-white">
     <!-- Logo and Nav -->
     <div class="flex items-center gap-8">
-      <img src="/img/logo-2048-black.svg" alt="Ditto" class="h-8 dark:invert" />
+      <button @click="emit('navigate', 'home')" aria-label="Ditto home" class="cursor-pointer">
+        <img src="/img/logo-2048-black.svg" alt="Ditto" class="h-8 dark:invert" />
+      </button>
       
       <!-- Nav Items -->
       <nav class="relative flex items-center gap-6" ref="navRef">
@@ -228,7 +232,7 @@
           v-if="showCreateMenu"
           class="absolute right-0 top-full mt-2 w-52 bg-white rounded-2xl shadow-xl border border-gray-200 py-1.5 z-50"
         >
-          <button class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-ditto-text hover:bg-ditto-light-grey transition-colors text-left">
+          <button @click="showCreateMenu = false; emit('create-music')" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-ditto-text hover:bg-ditto-light-grey transition-colors text-left">
             <img src="/img/nav-musical-note.svg" alt="" class="w-4 h-4" />
             Music Release
           </button>
@@ -297,6 +301,15 @@
               <span :class="['absolute top-[2px] w-[14px] h-[14px] rounded-full shadow transition-all', isDark ? 'left-[18px] bg-ditto-purple' : 'left-[2px] bg-white']"></span>
             </span>
           </button>
+          <button @click.stop="toggleNewUser" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-ditto-text hover:bg-ditto-light-grey transition-colors text-left">
+            <svg class="w-4 h-4 opacity-60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M15 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="16" y1="11" x2="22" y2="11"/>
+            </svg>
+            <span class="flex-1">New User Demo</span>
+            <span :class="['relative w-8 h-[18px] rounded-full transition-all flex-shrink-0', isNewUser ? 'bg-gradient-to-b from-white via-[#f3f3fa] to-[#dcdce9] shadow-inner' : 'bg-gray-200']">
+              <span :class="['absolute top-[2px] w-[14px] h-[14px] rounded-full shadow transition-all', isNewUser ? 'left-[18px] bg-ditto-purple' : 'left-[2px] bg-white']"></span>
+            </span>
+          </button>
           <div class="border-t border-gray-200 mt-1 pt-1">
             <button class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-error hover:bg-error/5 transition-colors text-left">
               <img src="/img/nav-logout.svg" alt="" class="w-4 h-4" />
@@ -315,6 +328,7 @@ import { computed, ref, reactive, onMounted, onUnmounted, watch, nextTick } from
 import type { AppSection } from '../../types'
 import { useBasketStore } from '../../composables/useBasketStore'
 import { useTheme } from '../../composables/useTheme'
+import { useDemoUser } from '../../composables/useDemoUser'
 
 const props = defineProps<{
   activeSection?: AppSection
@@ -323,11 +337,13 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'navigate', section: AppSection): void
   (e: 'create-video'): void
+  (e: 'create-music'): void
   (e: 'toggle-basket'): void
   (e: 'open-live-performances'): void
 }>()
 
 const { isDark, toggleTheme } = useTheme()
+const { isNewUser, toggleNewUser } = useDemoUser()
 
 const { basket } = useBasketStore()
 const basketCount = computed(() =>

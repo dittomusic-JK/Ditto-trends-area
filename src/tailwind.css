@@ -203,6 +203,15 @@
     /* Right side keeps extra clearance for the floating basket chip */
     padding-right: 4.5rem;
   }
+  /* Full-bleed rails mirror the reduced side-mode gutters */
+  [data-nav="side"] .lg\:-mx-16 {
+    margin-left: -2rem;
+    margin-right: -4.5rem;
+  }
+  [data-nav="side"] .lg\:scroll-px-16 {
+    scroll-padding-left: 2rem;
+    scroll-padding-right: 4.5rem;
+  }
 }
 
 /* Monochrome dark nav glyphs (img-based) flip to light in dark mode */
