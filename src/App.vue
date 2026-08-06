@@ -2,15 +2,15 @@
   <div class="min-h-screen bg-white w-full max-w-full" :data-ditto-colors-light-dark-mode="isDark ? 'dark' : 'light'">
     <!-- Top Navigation (in side-nav exploration mode it only provides the mobile header) -->
     <div :class="navStyle === 'side' ? 'md:hidden' : ''">
-      <TopNavbar :active-section="appSection" :royalties-section="royaltiesCurrentSection" @navigate="handleNavbarNavigate" @create-video="handleCreateVideo" @create-music="appSection = 'music-builder'" @toggle-basket="showMiniBasket = true" @open-live-performances="handleOpenLivePerformances" @open-royalties="handleOpenRoyalties" />
+      <TopNavbar :active-section="appSection" :royalties-section="royaltiesCurrentSection" @navigate="handleNavbarNavigate" @create-video="handleCreateVideo" @create-music="startMusicRelease" @toggle-basket="showMiniBasket = true" @open-live-performances="handleOpenLivePerformances" @open-royalties="handleOpenRoyalties" />
     </div>
 
     <div :class="navStyle === 'side' ? 'md:flex md:items-start' : ''">
     <!-- Alternative nav exploration (?nav=side): collapsible left rail -->
-    <SideNav v-if="navStyle === 'side'" :active-section="appSection" :royalties-section="royaltiesCurrentSection" @navigate="handleNavbarNavigate" @create-video="handleCreateVideo" @create-music="appSection = 'music-builder'" @toggle-basket="showMiniBasket = true" @open-live-performances="handleOpenLivePerformances" @open-royalties="handleOpenRoyalties" />
+    <SideNav v-if="navStyle === 'side'" :active-section="appSection" :royalties-section="royaltiesCurrentSection" @navigate="handleNavbarNavigate" @create-video="handleCreateVideo" @create-music="startMusicRelease" @toggle-basket="showMiniBasket = true" @open-live-performances="handleOpenLivePerformances" @open-royalties="handleOpenRoyalties" />
     <div :class="navStyle === 'side' ? 'flex-1 min-w-0 md:[--header-h:0px]' : ''" :data-nav="navStyle === 'side' ? 'side' : null">
     <!-- Home hub (root, reached via the Ditto logo) -->
-    <HomeView v-if="appSection === 'home'" @navigate="(s: string) => appSection = s as AppSection" />
+    <HomeView v-if="appSection === 'home'" @navigate="(s: string) => handleNavbarNavigate(s as AppSection)" />
 
     <!-- Analytics Section -->
     <div v-if="appSection === 'analytics'" class="relative px-4 py-4 sm:px-6 sm:py-6 lg:px-16 lg:py-8 w-full max-w-full box-border">
@@ -43,7 +43,7 @@
         title="No data to show yet"
         message="Streams, audience and playlist insights appear here once your first release is live in stores."
         cta-label="Create your first release"
-        @cta="appSection = 'music-builder'"
+        @cta="startMusicRelease"
       />
 
       <!-- Side-nav mode: the analytics views move up into a tab row -->
@@ -109,20 +109,27 @@
     />
 
     <!-- Royalties Section -->
-    <RoyaltiesDashboard v-if="appSection === 'royalties'" :open-section="royaltiesRequest" @section-changed="royaltiesCurrentSection = $event" @navigate="appSection = $event as AppSection" />
+    <RoyaltiesDashboard v-if="appSection === 'royalties'" :open-section="royaltiesRequest" @section-changed="royaltiesCurrentSection = $event" @navigate="handleNavbarNavigate($event as AppSection)" />
 
     <!-- Music Section -->
     <!-- Keyed so re-tapping "Music" in the nav resets to the releases overview -->
-    <MusicView v-if="appSection === 'music'" :key="musicViewKey" :open-release="searchRelease" @navigate="(s: string) => appSection = s as AppSection" @navigate-view="(s: string, v: string) => handleNavigateView(s as AppSection, v)" />
+    <MusicView v-if="appSection === 'music'" :key="musicViewKey" :open-release="searchRelease" @navigate="(s: string) => handleNavbarNavigate(s as AppSection)" @navigate-view="(s: string, v: string) => handleNavigateView(s as AppSection, v)" />
 
     <!-- Music Release Builder (Create > Music Release) -->
-    <ReleaseBuilderView v-if="appSection === 'music-builder'" @back="appSection = 'music'" @navigate="(s: string) => appSection = s as AppSection" />
+    <ReleaseBuilderView v-if="appSection === 'music-builder'" :initial-title="newReleaseTitle" @back="appSection = 'music'" @navigate="(s: string) => handleNavbarNavigate(s as AppSection)" />
+
+    <!-- Name the release before the wizard opens, so the draft is logged -->
+    <CreateMusicReleaseModal
+      v-if="showNewReleaseModal"
+      @close="showNewReleaseModal = false"
+      @create="openMusicBuilder"
+    />
 
     <!-- Artists Section -->
     <ArtistsDashboard v-if="appSection === 'artists'" :open-artist-id="searchArtistId" />
 
     <!-- Publishing Section -->
-    <PublishingDashboard v-if="appSection === 'publishing'" :open-live="publishingLiveRequest" @navigate="appSection = $event" @live-consumed="publishingLiveRequest = false" />
+    <PublishingDashboard v-if="appSection === 'publishing'" :open-live="publishingLiveRequest" @navigate="handleNavbarNavigate($event)" @live-consumed="publishingLiveRequest = false" />
 
     <!-- Sync Section -->
     <SyncView v-if="appSection === 'sync'" />
@@ -137,7 +144,7 @@
     <!-- Neighbouring Rights Section -->
     <div v-if="appSection === 'neighbouring-rights'" class="relative px-4 py-4 sm:px-6 sm:py-6 lg:px-16 lg:py-8 w-full max-w-full box-border">
       <GlobalSearch />
-      <NeighbouringRightsView @navigate="appSection = $event as AppSection" />
+      <NeighbouringRightsView @navigate="handleNavbarNavigate($event as AppSection)" />
     </div>
 
     <!-- Basket Section -->
@@ -180,6 +187,7 @@ import HomeView from './views/home/HomeView.vue'
 // Music page
 import MusicView from './views/MusicView.vue'
 import ReleaseBuilderView from './views/music/builder/ReleaseBuilderView.vue'
+import CreateMusicReleaseModal from './views/music/builder/CreateMusicReleaseModal.vue'
 
 // Artists dashboard
 import ArtistsDashboard from './views/artists/ArtistsDashboard.vue'
@@ -246,8 +254,22 @@ const appSection = ref<AppSection>(initialSection)
 // (e.g. Music returns from a release detail to the releases overview).
 const musicViewKey = ref(0)
 const handleNavbarNavigate = (s: AppSection) => {
+  // The builder is only reachable once the release has a name
+  if (s === 'music-builder') return startMusicRelease()
   if (s === 'music' && appSection.value === 'music') musicViewKey.value++
   appSection.value = s
+}
+
+// ── New music release: name first, then the wizard ──
+const showNewReleaseModal = ref(false)
+const newReleaseTitle = ref('')
+
+const startMusicRelease = () => { showNewReleaseModal.value = true }
+
+const openMusicBuilder = (title: string) => {
+  newReleaseTitle.value = title
+  showNewReleaseModal.value = false
+  appSection.value = 'music-builder'
 }
 
 const showMiniBasket = ref(false)

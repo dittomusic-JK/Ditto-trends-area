@@ -117,6 +117,14 @@ export interface StoreDef {
   type: 'streaming' | 'download' | 'both'
 }
 
+export interface AdvancedSubPlatform {
+  id: string
+  name: string
+  icon?: string
+  letter?: string
+  tileColor?: string
+}
+
 export interface AdvancedStoreDef {
   id: string
   name: string
@@ -125,6 +133,10 @@ export interface AdvancedStoreDef {
   icon?: string
   letter?: string
   tileColor?: string
+  /** Bundled with a Pro plan — shown as a badge instead of a price */
+  includedWithPro?: boolean
+  /** Individually selectable platforms revealed when the parent is on */
+  subPlatforms?: AdvancedSubPlatform[]
 }
 
 export const primaryGenres = [
@@ -169,20 +181,20 @@ export const standardStores: StoreDef[] = [
   { id: 'facebook', name: 'Facebook', icon: '/img/facebook-icon.svg', type: 'streaming' },
   { id: 'instagram', name: 'Instagram', icon: '/img/instagram-icon.svg', type: 'streaming' },
   { id: 'whatsapp', name: 'WhatsApp', letter: 'W', tileColor: '#25d366', type: 'streaming' },
-  { id: 'iheart', name: 'I Heart Radio', letter: 'iH', tileColor: '#c6002b', type: 'streaming' },
-  { id: 'pandora', name: 'Pandora', letter: 'P', tileColor: '#3668ff', type: 'streaming' },
+  { id: 'iheart', name: 'I Heart Radio', icon: '/img/iheart-icon.svg', type: 'streaming' },
+  { id: 'pandora', name: 'Pandora', icon: '/img/pandora-icon.svg', type: 'streaming' },
   { id: 'deezer', name: 'Deezer', icon: '/img/deezer-icon.svg', type: 'streaming' },
   { id: 'tidal', name: 'Tidal', icon: '/img/tidal-icon.svg', type: 'streaming' },
   { id: 'tiktok', name: 'TikTok', icon: '/img/tiktok-icon.svg', type: 'streaming' },
   { id: 'capcut', name: 'CapCut', letter: 'CC', tileColor: '#111111', type: 'streaming' },
   { id: 'youtube-music', name: 'YouTube Music', icon: '/img/youtube-icon.svg', type: 'streaming' },
-  { id: 'claro', name: 'Claro Musica', letter: 'CM', tileColor: '#e0302a', type: 'both' },
+  { id: 'claro', name: 'Claro Musica', icon: '/img/claro-icon.svg', type: 'both' },
   { id: 'soundcloud', name: 'SoundCloud', icon: '/img/soundcloud_icon.svg', type: 'streaming' },
-  { id: 'mixcloud', name: 'Mixcloud', letter: 'MX', tileColor: '#5000ff', type: 'streaming' },
-  { id: '7digital', name: '7digital', letter: '7d', tileColor: '#1d2b64', type: 'download' },
-  { id: 'soundtrack-brand', name: 'Soundtrack Your Brand', letter: 'SB', tileColor: '#f05537', type: 'streaming' },
+  { id: 'mixcloud', name: 'Mixcloud', icon: '/img/mixcloud-icon.svg', type: 'streaming' },
+  { id: '7digital', name: '7digital', icon: '/img/7digital-icon.svg', type: 'download' },
+  { id: 'soundtrack-brand', name: 'Soundtrack Your Brand', icon: '/img/soundtrack-brand-icon.svg', type: 'streaming' },
   { id: 'snapchat', name: 'Snapchat', letter: 'S', tileColor: '#fffc00', type: 'streaming' },
-  { id: 'musixmatch', name: 'Musixmatch', letter: 'MM', tileColor: '#ff2453', type: 'streaming' },
+  { id: 'musixmatch', name: 'Musixmatch', icon: '/img/musixmatch-icon.svg', type: 'streaming' },
   { id: 'boomplay', name: 'Boomplay', icon: '/img/boomplay-icon.svg', type: 'streaming' },
   { id: 'audiomack', name: 'Audiomack', icon: '/img/audiomack-icon.svg', type: 'streaming' },
   { id: 'vevo', name: 'Vevo', icon: '/img/vevo-icon.svg', type: 'streaming' },
@@ -194,29 +206,53 @@ export const advancedStores: AdvancedStoreDef[] = [
     name: 'YouTube Content ID & Shorts',
     description: "Get paid whenever your music is used in a YouTube video. We'll add this release to YouTube's Content ID database and continuously scan for matches. Any ad revenue will automatically go to you, instead of whoever uploaded the video. Your release will also be available on YouTube Shorts.",
     icon: '/img/youtube-icon.svg',
+    includedWithPro: true,
   },
   {
     id: 'ai-platforms',
     name: 'AI Platforms',
     description: 'A new revenue stream from your music. AI platforms pay to license tracks for training their models. This is optional and independent from your other stores.',
-    letter: 'AI',
-    tileColor: '#1c1c24',
+    icon: '/img/ai-platforms-icon.svg',
+    subPlatforms: [
+      { id: 'elevenlabs', name: 'ElevenLabs', icon: '/img/elevenlabs-icon.svg' },
+      { id: 'udio', name: 'Udio', icon: '/img/udio-icon.svg' },
+      { id: 'meta', name: 'Meta', icon: '/img/meta-icon.svg' },
+    ],
   },
   {
     id: 'audio-fingerprint',
     name: 'Audio Fingerprint',
-    description: 'Add this release to the global databases used to match music with artists info and protect tracks from copyright infringement.',
-    letter: 'AF',
-    tileColor: '#101f3c',
+    description: 'Add this release to the global databases used to match music with artist info and protect tracks from copyright infringement.',
+    icon: '/img/audio-fingerprint-icon.svg',
+    includedWithPro: true,
+    subPlatforms: [
+      { id: 'jaxsta', name: 'Jaxsta', icon: '/img/jaxsta-icon.svg' },
+      { id: 'acrcloud', name: 'ACRCloud', icon: '/img/acrcloud-icon.svg' },
+      { id: 'soundcloud-id', name: 'SoundCloud ID', icon: '/img/soundcloud_icon.svg' },
+      { id: 'gracenote', name: 'Gracenote', letter: 'GN', tileColor: '#1c1c24' },
+      { id: 'soundmouse', name: 'Sound Mouse', icon: '/img/soundmouse-icon.svg' },
+    ],
   },
   {
     id: 'beatport',
-    name: 'Beatport Distribution & Label Setup',
-    description: "If you don't have a Beatport label, you will need to set one up before releasing music on Beatport.",
-    price: 49,
-    letter: 'B',
-    tileColor: '#111111',
+    name: 'Beatport Label Setup & Distribution',
+    description: 'You need a label set up with Beatport to release your music on this store, one time only fee.',
+    price: 65,
+    icon: '/img/beatport-icon.svg',
   },
+]
+
+// Beatport needs a label and genres once it's switched on
+export const beatportLabels = [
+  'The Esoteric Order of Dagon Records',
+  'Goldenboy Entertainment',
+  'Set up a new label',
+]
+
+export const beatportGenres = [
+  'Progressive Trance', 'Hard Trance', 'Techno (Peak Time / Driving)', 'Techno (Raw / Deep / Hypnotic)',
+  'Tech House', 'Deep House', 'Melodic House & Techno', 'Drum & Bass', 'Dubstep', 'Bass House',
+  'Minimal / Deep Tech', 'Afro House', 'Organic House', 'Electro House', 'Big Room', 'Trap / Wave',
 ]
 
 export const chartRegions = [

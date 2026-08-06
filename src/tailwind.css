@@ -297,4 +297,16 @@ button[aria-label="Basket"] img,
     background-image: linear-gradient(180deg, #24365e 0%, #101f3c 68%);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 1px 3px rgba(16, 31, 60, 0.22);
   }
+
+  /* Rounded clip + a child that scales on hover: WebKit/Blink hand the child its
+     own composited layer mid-transform and drop the parent's radius, so the card
+     flicks square and back. Promoting the clipping box keeps the corners. */
+  .clip-radius-stable {
+    transform: translateZ(0);
+    will-change: transform;
+    /* Belt and braces for WebKit, which can still square the corners when the
+       child's layer is rasterised separately */
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
 }

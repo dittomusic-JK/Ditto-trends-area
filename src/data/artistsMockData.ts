@@ -62,7 +62,7 @@ export const artists: Artist[] = [
 
   // ── Release artists ──
   makeArtist('91001', 'Darkoo', 'release', 2, '/images/artists/darkoo.jpeg'),
-  makeArtist('91002', 'Almost Joey', 'release', 2, ''),
+  makeArtist('91002', 'Almost Joey', 'release', 2, '/images/artists/almost-joey.jpeg'),
   makeArtist('91003', 'Davido', 'release', 1, '/images/artists/davido.jpeg'),
   makeArtist('91004', 'Br3nya', 'release', 1, '/images/artists/br3nya.jpeg'),
   makeArtist('91005', 'Ms Banks', 'release', 1, '/images/artists/ms-banks.jpeg'),

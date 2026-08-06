@@ -143,15 +143,23 @@ export interface ReleaseBuilderForm {
   // Stores
   selectedStores: string[]
   advancedStores: string[]
+  /** Individually toggled AI / fingerprint platforms */
+  advancedSubPlatforms: string[]
+  beatportLabel: string
+  beatportPrimaryGenre: string
+  beatportSecondaryGenre: string
   priceBand: 'budget' | 'mid' | 'premium'
 }
+
+// Named in the "Create a New Music Release" modal before the wizard opens
+const props = defineProps<{ initialTitle?: string }>()
 
 const formData = reactive<ReleaseBuilderForm>({
   tracks: [],
   artwork: null,
   artworkFileName: '',
   artworkConfirmed: false,
-  title: '',
+  title: props.initialTitle ?? '',
   copyrightHolder: '',
   copyrightYear: 2026,
   pCopyrightHolder: '',
@@ -180,6 +188,10 @@ const formData = reactive<ReleaseBuilderForm>({
   releaseProtection: false,
   selectedStores: [],
   advancedStores: [],
+  advancedSubPlatforms: [],
+  beatportLabel: '',
+  beatportPrimaryGenre: '',
+  beatportSecondaryGenre: '',
   priceBand: 'mid',
 })
 
@@ -289,7 +301,7 @@ const handleComplete = () => {
     if (region) pushService(`Charts Registration ${region.label}`, region.price)
   }
   if (formData.preReleaseDownloads) pushService('Pre-release Downloads', 40)
-  if (formData.advancedStores.includes('beatport')) pushService('Beatport Label Setup', 49)
+  if (formData.advancedStores.includes('beatport')) pushService('Beatport Label Setup', 65)
 
   const item: BasketItem = {
     release: {

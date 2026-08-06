@@ -23,7 +23,7 @@
       <button @click="emit('navigate', 'royalties')" class="text-left rounded-2xl border border-gray-200 bg-ditto-light-grey/40 p-6 hover:shadow-lg transition-shadow group flex flex-col justify-between min-h-[230px]">
         <div>
           <p class="text-sm text-ditto-subtext">Current Balance</p>
-          <p v-if="!isNewUser" class="font-satoshi font-black text-3xl lg:text-4xl tracking-[-0.03em] text-ditto-text mt-2">£24,318<span class="text-xl">.56</span></p>
+          <p v-if="!isNewUser" class="font-satoshi font-black text-3xl lg:text-4xl tracking-[-0.03em] text-ditto-text mt-2 tabular-nums">£{{ balanceCount.toLocaleString('en-GB') }}<span class="text-xl">.56</span></p>
           <template v-else>
             <p class="font-satoshi font-black text-3xl lg:text-4xl tracking-[-0.03em] text-ditto-subtext/40 mt-2">£0<span class="text-xl">.00</span></p>
             <p class="text-xs text-ditto-subtext mt-2 leading-relaxed">Royalties land here once your music is live in stores.</p>
@@ -69,7 +69,7 @@
             <img src="/img/equalizer-icon.svg" alt="" class="w-7 h-7" />
           </span>
           <p class="text-xs text-[#0a0a0a]/60 mb-1">Streams This Week</p>
-          <p class="text-2xl font-black font-satoshi tracking-[-0.02em] mb-2">1,696,508</p>
+          <p class="text-2xl font-black font-satoshi tracking-[-0.02em] mb-2 tabular-nums">{{ streamsCount.toLocaleString('en-GB') }}</p>
           <p class="text-xs text-[#0a0a0a]/55">All stores, 14–20 Apr</p>
         </button>
         <!-- Ink card with artwork -->
@@ -131,14 +131,16 @@
         <div v-for="n in 4" :key="'ghost-rel-' + n" class="flex-shrink-0 w-52 sm:w-56 aspect-square rounded-2xl bg-ditto-light-grey" :style="{ opacity: 1 - n * 0.2 }"></div>
       </div>
 
-      <div v-else ref="releaseRail" class="flex gap-5 overflow-x-auto scrollbar-hide snap-x scroll-smooth pb-4 -mx-4 px-4 scroll-px-4 sm:-mx-6 sm:px-6 sm:scroll-px-6 lg:-mx-16 lg:px-16 lg:scroll-px-16">
+      <!-- -mt-3/pt-3: overflow-x forces overflow-y, so the hover lift and shadow
+           need headroom inside the clip box (the negative margin keeps spacing) -->
+      <div v-else ref="releaseRail" class="flex gap-5 overflow-x-auto scrollbar-hide snap-x scroll-smooth -mt-3 pt-3 pb-4 -mx-4 px-4 scroll-px-4 sm:-mx-6 sm:px-6 sm:scroll-px-6 lg:-mx-16 lg:px-16 lg:scroll-px-16">
         <button
           v-for="release in homeReleases"
           :key="release.title + release.year"
           @click="emit('navigate', 'music')"
           class="snap-start flex-shrink-0 w-52 sm:w-56 text-left group transition-transform duration-300 hover:-translate-y-1.5"
         >
-          <span class="relative block rounded-2xl overflow-hidden shadow-sm group-hover:shadow-xl transition-shadow duration-300">
+          <span class="relative block rounded-2xl overflow-hidden clip-radius-stable shadow-sm group-hover:shadow-xl transition-shadow duration-300">
             <img :src="release.artwork" :alt="release.title" class="w-full aspect-square object-cover group-hover:scale-[1.05] transition-transform duration-500" loading="lazy" />
             <span :class="['absolute top-3 left-3 px-2 py-0.5 rounded-full text-[10px] font-semibold backdrop-blur-sm', statusPillClass(release.status)]">{{ release.status }}</span>
           </span>
@@ -177,14 +179,14 @@
           <span class="w-16 h-2.5 rounded bg-ditto-light-grey"></span>
         </div>
       </div>
-      <div v-else class="flex gap-6 overflow-x-auto scrollbar-hide snap-x pb-2 -mx-4 px-4 scroll-px-4 sm:-mx-6 sm:px-6 sm:scroll-px-6 lg:-mx-16 lg:px-16 lg:scroll-px-16">
+      <div v-else class="flex gap-6 overflow-x-auto scrollbar-hide snap-x -mt-3 pt-3 pb-3 -mx-4 px-4 scroll-px-4 sm:-mx-6 sm:px-6 sm:scroll-px-6 lg:-mx-16 lg:px-16 lg:scroll-px-16">
         <button
           v-for="artist in homeArtists"
           :key="artist.id"
           @click="emit('navigate', 'artists')"
           class="snap-start flex-shrink-0 w-32 sm:w-36 flex flex-col items-center gap-3 group transition-transform duration-300 hover:-translate-y-1"
         >
-          <span class="block w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden ring-1 ring-gray-200 group-hover:ring-[3px] group-hover:ring-ditto-purple shadow-sm group-hover:shadow-lg transition-all">
+          <span class="block w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden clip-radius-stable ring-1 ring-gray-200 group-hover:ring-[3px] group-hover:ring-ditto-purple shadow-sm group-hover:shadow-lg transition-all">
             <img v-if="artist.avatar" :src="artist.avatar" :alt="artist.name" class="w-full h-full object-cover group-hover:scale-[1.06] transition-transform duration-500" loading="lazy" />
             <InitialsAvatar v-else :name="artist.name" text-class="text-3xl" />
           </span>
@@ -244,6 +246,7 @@ import { releaseCatalog } from '../../data/releaseDetailMockData'
 import { artists } from '../../data/artistsMockData'
 import { homeGuides, exploreTiles } from '../../data/homeMockData'
 import { useDemoUser } from '../../composables/useDemoUser'
+import { useCountUp } from '../../composables/useCountUp'
 import InitialsAvatar from '../../components/common/InitialsAvatar.vue'
 import GlobalSearch from '../../components/layout/GlobalSearch.vue'
 
@@ -252,6 +255,10 @@ const emit = defineEmits<{
 }>()
 
 const { isNewUser } = useDemoUser()
+
+// Headline figures rack up on arrival (pence stay put — see useCountUp)
+const balanceCount = useCountUp(24318)
+const streamsCount = useCountUp(1696508, { duration: 850 })
 
 // New-user onboarding: three concrete first moves
 const guidesSection = ref<HTMLElement | null>(null)
@@ -274,7 +281,10 @@ const homeReleases = computed(() => {
     .slice(0, 14)
 })
 
-const homeArtists = computed(() => artists.slice(0, 10))
+// Lead the rail with artists who have a photo — initials tiles trail behind
+const homeArtists = computed(() =>
+  [...artists].sort((a, b) => Number(Boolean(b.avatar)) - Number(Boolean(a.avatar))).slice(0, 10)
+)
 
 // Arrow-button scrolling for the release rail
 const releaseRail = ref<HTMLElement | null>(null)

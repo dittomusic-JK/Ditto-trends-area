@@ -190,6 +190,61 @@
                 </div>
                 <p class="text-[13px] text-ditto-subtext leading-relaxed mt-1">Let fans pre-order your music on iTunes and Amazon and offer early access to selected tracks with instant gratification.</p>
                 <p v-if="!preReleaseAllowed" class="text-[13px] font-medium text-ditto-purple mt-1">Pick a date more than 10 days away or use Priority Distro.</p>
+
+                <!-- Pre-order date: anywhere between today and release day -->
+                <div v-if="form.preReleaseDownloads" class="mt-5">
+                  <p class="flex items-center gap-1.5 text-sm font-semibold text-ditto-text mb-1">
+                    Choose a pre-order date
+                    <span class="group/tip relative">
+                      <svg class="w-4 h-4 text-ditto-purple" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12" stroke-linecap="round"/><line x1="12" y1="8" x2="12.01" y2="8" stroke-linecap="round"/></svg>
+                      <span class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 p-2.5 rounded-lg bg-ditto-text text-white text-[11px] font-normal leading-relaxed opacity-0 invisible group-hover/tip:opacity-100 group-hover/tip:visible transition-all z-30">
+                        The day fans can start pre-ordering. It must land before your release date.
+                      </span>
+                    </span>
+                  </p>
+                  <div class="relative max-w-xs" ref="preOrderWrap">
+                    <button
+                      @click="showPreOrderCalendar = !showPreOrderCalendar"
+                      class="w-full flex items-center gap-2.5 border-0 border-b border-gray-300 hover:border-ditto-purple px-0 py-2.5 text-sm bg-transparent transition-colors focus:outline-none"
+                    >
+                      <svg class="w-4 h-4 flex-shrink-0 text-ditto-purple" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                      <span :class="form.preReleaseDate ? 'text-ditto-text font-medium' : 'text-ditto-subtext'">{{ form.preReleaseDate ? formatLongDate(form.preReleaseDate) : 'Select date' }}</span>
+                      <svg class="w-3.5 h-3.5 text-ditto-subtext ml-auto transition-transform" :class="showPreOrderCalendar ? 'rotate-180' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </button>
+
+                    <div v-if="showPreOrderCalendar" class="absolute left-0 top-full mt-2 w-72 bg-white rounded-2xl shadow-xl border border-gray-200 p-4 z-30">
+                      <div class="flex items-center justify-between mb-3">
+                        <button @click="prevPreOrderMonth" class="w-7 h-7 flex items-center justify-center rounded-lg text-ditto-subtext hover:bg-ditto-light-grey transition-colors">
+                          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                        </button>
+                        <p class="text-sm font-bold text-ditto-text">{{ preOrderMonthLabel }}</p>
+                        <button @click="nextPreOrderMonth" class="w-7 h-7 flex items-center justify-center rounded-lg text-ditto-subtext hover:bg-ditto-light-grey transition-colors">
+                          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                        </button>
+                      </div>
+                      <div class="grid grid-cols-7 gap-y-1 text-center text-xs">
+                        <span v-for="d in ['Mo','Tu','We','Th','Fr','Sa','Su']" :key="d" class="font-semibold text-ditto-subtext py-1">{{ d }}</span>
+                        <button
+                          v-for="cell in preOrderCells"
+                          :key="cell.key"
+                          :disabled="cell.disabled || !cell.inMonth"
+                          @click="selectPreOrderDate(cell.date)"
+                          :class="[
+                            'relative h-8 rounded-lg text-[13px] transition-colors',
+                            !cell.inMonth ? 'text-gray-300' :
+                            cell.isReleaseDay ? 'text-ditto-purple font-bold ring-1 ring-inset ring-ditto-purple/40 cursor-not-allowed' :
+                            cell.disabled ? 'text-gray-300 cursor-not-allowed' :
+                            isPreOrderSelected(cell.date) ? 'bg-ditto-purple text-white font-bold' :
+                            'text-ditto-text hover:bg-ditto-light-grey'
+                          ]"
+                        >
+                          {{ cell.day }}
+                        </button>
+                      </div>
+                      <p class="mt-3 text-[11px] text-ditto-subtext text-center">Release day: {{ form.releaseDate ? formatDate(form.releaseDate) : 'not set' }}</p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
             <div class="flex items-start gap-3">
@@ -228,7 +283,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted, onUnmounted } from 'vue'
+import { computed, ref, watch, onMounted, onUnmounted } from 'vue'
 import { chartRegions } from '../../../../data/releaseBuilderMockData'
 import type { ReleaseBuilderForm } from '../ReleaseBuilderView.vue'
 
@@ -328,7 +383,80 @@ const preReleaseAllowed = computed(() =>
 const togglePreRelease = () => {
   if (!preReleaseAllowed.value) return
   props.form.preReleaseDownloads = !props.form.preReleaseDownloads
+  if (props.form.preReleaseDownloads) {
+    // Default the pre-order window to a week out, clamped inside the release date
+    if (!props.form.preReleaseDate && props.form.releaseDate) {
+      const suggested = new Date(today.getTime() + 7 * dayMs)
+      props.form.preReleaseDate = suggested < props.form.releaseDate ? suggested : new Date(today.getTime() + dayMs)
+    }
+    preOrderMonth.value = new Date(
+      (props.form.preReleaseDate ?? today).getFullYear(),
+      (props.form.preReleaseDate ?? today).getMonth(),
+      1,
+    )
+  } else {
+    props.form.preReleaseDate = null
+  }
 }
+
+// ── Pre-order calendar (same anatomy as the release-date picker) ──
+const showPreOrderCalendar = ref(false)
+const preOrderWrap = ref<HTMLElement | null>(null)
+const preOrderMonth = ref(new Date(today.getFullYear(), today.getMonth(), 1))
+
+const preOrderMonthLabel = computed(() =>
+  preOrderMonth.value.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })
+)
+
+const preOrderCells = computed(() => {
+  const first = preOrderMonth.value
+  const startOffset = (first.getDay() + 6) % 7
+  const release = props.form.releaseDate
+  const cells = []
+  for (let i = 0; i < 42; i++) {
+    const date = new Date(first.getFullYear(), first.getMonth(), 1 - startOffset + i)
+    const diff = daysFromToday(date)
+    cells.push({
+      key: date.toISOString(),
+      date,
+      day: date.getDate(),
+      inMonth: date.getMonth() === first.getMonth(),
+      // Pre-orders open from tomorrow up to the day before release
+      disabled: diff < 1 || (release !== null && date.getTime() >= release.getTime()),
+      isReleaseDay: release !== null && date.getTime() === release.getTime(),
+    })
+  }
+  return cells
+})
+
+const prevPreOrderMonth = () => { preOrderMonth.value = new Date(preOrderMonth.value.getFullYear(), preOrderMonth.value.getMonth() - 1, 1) }
+const nextPreOrderMonth = () => { preOrderMonth.value = new Date(preOrderMonth.value.getFullYear(), preOrderMonth.value.getMonth() + 1, 1) }
+
+const isPreOrderSelected = (d: Date) =>
+  props.form.preReleaseDate !== null && d.getTime() === props.form.preReleaseDate.getTime()
+
+const selectPreOrderDate = (d: Date) => {
+  props.form.preReleaseDate = d
+  showPreOrderCalendar.value = false
+}
+
+const formatLongDate = (d: Date) =>
+  d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
+
+const handlePreOrderClickOutside = (e: MouseEvent) => {
+  if (showPreOrderCalendar.value && preOrderWrap.value && !preOrderWrap.value.contains(e.target as Node)) {
+    showPreOrderCalendar.value = false
+  }
+}
+onMounted(() => document.addEventListener('click', handlePreOrderClickOutside))
+onUnmounted(() => document.removeEventListener('click', handlePreOrderClickOutside))
+
+// Moving the release date can strand an earlier pre-order choice
+watch(() => props.form.releaseDate, (release) => {
+  if (release && props.form.preReleaseDate && props.form.preReleaseDate >= release) {
+    props.form.preReleaseDate = null
+  }
+})
 </script>
 
 <style scoped>
