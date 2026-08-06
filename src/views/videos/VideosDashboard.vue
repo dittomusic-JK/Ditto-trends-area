@@ -128,17 +128,30 @@
               class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
               loading="lazy"
             />
-            <!-- Play overlay -->
-            <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20">
-              <div class="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center">
-                <svg class="w-5 h-5 text-ditto-text ml-0.5" viewBox="0 0 24 24" fill="currentColor">
-                  <polygon points="6,4 20,12 6,20"/>
-                </svg>
-              </div>
-            </div>
+            <!-- Row actions: incomplete videos can be deleted, processing ones edited -->
+            <button
+              v-if="video.status === 'In Progress'"
+              @click.stop="videoToDelete = video"
+              aria-label="Delete video"
+              class="absolute top-2 right-2 z-10 w-8 h-8 rounded-full bg-black/50 backdrop-blur-sm text-white flex items-center justify-center hover:bg-error transition-colors"
+            >
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/>
+              </svg>
+            </button>
+            <button
+              v-else-if="video.status === 'Processing'"
+              @click.stop="editVideo(video)"
+              aria-label="Edit video"
+              class="absolute top-2 right-2 z-10 w-8 h-8 rounded-full bg-black/50 backdrop-blur-sm text-white flex items-center justify-center hover:bg-ditto-purple transition-colors"
+            >
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+              </svg>
+            </button>
           </div>
-          <!-- Info -->
-          <p class="text-sm font-semibold text-ditto-text truncate">{{ video.title }}</p>
+          <!-- Info (the type lives in the line below, so it's stripped from the title) -->
+          <p class="text-sm font-semibold text-ditto-text truncate">{{ displayTitle(video.title) }}</p>
           <p class="text-xs text-ditto-subtext mt-0.5">
             <span class="text-ditto-subtext">{{ video.type }} by </span>
             <span class="text-ditto-purple">{{ video.artist }}</span>
@@ -159,6 +172,22 @@
       @close="showCreateModal = false"
       @create="handleCreateVideo"
     />
+
+    <!-- Delete confirmation -->
+    <Teleport to="body">
+      <div v-if="videoToDelete" class="fixed inset-0 z-[100] bg-black/40 flex items-center justify-center p-4" @click.self="videoToDelete = null">
+        <div class="w-full max-w-sm bg-white rounded-2xl shadow-xl p-6">
+          <h3 class="font-satoshi font-black tracking-[-0.02em] text-xl text-ditto-text mb-2">Delete video?</h3>
+          <p class="text-sm text-ditto-subtext leading-relaxed mb-6">
+            <strong class="text-ditto-text">{{ displayTitle(videoToDelete.title) }}</strong> hasn't been submitted yet. Deleting it removes the draft and everything uploaded to it.
+          </p>
+          <div class="flex items-center gap-3">
+            <button @click="deleteVideo(videoToDelete)" class="px-5 py-2.5 rounded-full bg-error text-white text-sm font-semibold hover:opacity-90 transition-opacity">Delete</button>
+            <button @click="videoToDelete = null" class="px-5 py-2.5 rounded-full border border-gray-200 text-sm font-medium text-ditto-text hover:bg-ditto-light-grey transition-colors">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </Teleport>
   </div>
 
   <!-- Video Builder -->
@@ -178,6 +207,7 @@ import CreateVideoModal from './CreateVideoModal.vue'
 import GlobalSearch from '../../components/layout/GlobalSearch.vue'
 import VideoBuilder from './VideoBuilder.vue'
 import { videoReleases } from '../../data/videoMockData'
+import type { VideoRelease } from '../../data/videoMockData'
 import { useDemoUser } from '../../composables/useDemoUser'
 
 const props = defineProps<{
@@ -196,6 +226,23 @@ const showCreateModal = ref(false)
 const currentView = ref<'list' | 'builder'>('list')
 const builderTitle = ref('')
 
+// Local copy so drafts can be deleted from the catalog
+const videos = ref<VideoRelease[]>([...videoReleases])
+const videoToDelete = ref<VideoRelease | null>(null)
+
+// Cards show the type on the line below, so drop it from the title
+const displayTitle = (title: string) => title.replace(/\s*\([^)]*\)\s*$/, '')
+
+const deleteVideo = (video: VideoRelease) => {
+  videos.value = videos.value.filter(v => v.id !== video.id)
+  videoToDelete.value = null
+}
+
+const editVideo = (video: VideoRelease) => {
+  builderTitle.value = displayTitle(video.title)
+  currentView.value = 'builder'
+}
+
 const statusTabs = [
   { id: 'all', label: 'All' },
   { id: 'inprogress', label: 'In Progress' },
@@ -204,7 +251,7 @@ const statusTabs = [
 ]
 
 const filteredVideos = computed(() => {
-  let result = videoReleases
+  let result = videos.value
   if (activeStatus.value === 'inprogress') result = result.filter(r => r.status === 'In Progress' || r.status === 'Processing')
   else if (activeStatus.value === 'completed') result = result.filter(r => r.status === 'Live')
   else if (activeStatus.value === 'inactive') result = result.filter(r => r.status === 'Takedown' || r.status === 'Inactive')
