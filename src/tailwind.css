@@ -149,6 +149,8 @@
  */
 .dark,
 [data-ditto-colors-light-dark-mode="dark"] {
+  /* Splits: same hue as light, lifted to balance the confirmed green on dark */
+  --split-yours: #5b9dff;
   /* Brand purple shifts to the lighter lavender on dark surfaces for contrast */
   --ditto-purple: #a06bff;
   --ditto-colors-light-dark-ditto-purple: rgba(160, 107, 255, 1);
