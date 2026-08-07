@@ -337,7 +337,7 @@ const hasChangesForTrack = (trackId: string): boolean => {
     font-family: $font-satoshi;
     color: var(--ditto-grey);
 
-    &--has { color: var(--brand-secondary); }
+    &--has { color: var(--split-yours); }
   }
 
   &__dist { width: 10rem; }

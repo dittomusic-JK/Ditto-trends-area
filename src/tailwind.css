@@ -84,6 +84,13 @@
   --medium-grey: #dddde7;
   --light-grey: #efeffc;
   --lighter-grey: #f9f9ff;
+  /* Royalty Splits — one palette across light and dark (see ditto-services) */
+  --split-yours: #287ef7;
+  --split-confirmed: #00e785;
+  --split-pending: #f59e0b;
+  --split-unclaimed: #f97316;
+  --split-rejected: #ee404c;
+
   --error: #ee404c;
   --warning: #ffb100;
   --success: #00e785;

@@ -432,9 +432,7 @@ const handleClose = () => {
     font-size: $text-sm;
     font-weight: 700;
     font-family: $font-satoshi;
-    color: var(--brand-secondary);
-
-    &--rls { color: var(--rls-accent); }
+    color: var(--split-yours);
   }
 
   &__summary-sep {
@@ -449,7 +447,7 @@ const handleClose = () => {
     color: $color-amber-500;
     font-family: $font-satoshi;
 
-    &--unsaved { color: var(--brand-secondary); }
+    &--unsaved { color: var(--split-yours); }
   }
 
   &__summary-pending-tag {
@@ -457,7 +455,7 @@ const handleClose = () => {
     color: $color-amber-500;
     font-family: $font-satoshi;
 
-    &--unsaved { color: var(--brand-secondary); }
+    &--unsaved { color: var(--split-yours); }
   }
 
   /* ---- Header ---- */
