@@ -9,9 +9,13 @@
   >
     <!-- Logo -->
     <div class="h-[80px] flex items-center flex-shrink-0" :class="collapsed ? 'justify-center' : 'px-5'">
-      <button @click="emit('navigate', 'home')" aria-label="Ditto home">
-        <img v-if="!collapsed" src="/img/logo-2048-black.svg" alt="Ditto" class="h-9 dark:invert" />
-        <img v-else src="/img/logo-mark-black.svg" alt="Ditto" class="h-8 dark:invert" />
+      <button
+        @click="emit('navigate', 'home')"
+        aria-label="Ditto home"
+        class="group rounded-lg transition-transform duration-200 hover:scale-[1.04] active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ditto-purple/40"
+      >
+        <img v-if="!collapsed" src="/img/logo-2048-black.svg" alt="Ditto" class="h-9 dark:invert transition-opacity duration-200 group-hover:opacity-80" />
+        <img v-else src="/img/logo-mark-black.svg" alt="Ditto" class="h-8 dark:invert transition-opacity duration-200 group-hover:opacity-80" />
       </button>
     </div>
 

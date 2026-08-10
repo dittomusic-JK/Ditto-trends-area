@@ -3,9 +3,12 @@
     <!-- Balance Section -->
     <div class="grid grid-cols-1 lg:grid-cols-[1fr_1fr] gap-6">
       <!-- Main Balance Card (credit-card treatment) -->
-      <div class="relative overflow-hidden rounded-3xl p-8 flex flex-col text-white shadow-[0_10px_30px_rgba(10,10,10,0.25)]" style="background: linear-gradient(145deg, #26262e, #0a0a0a 80%)">
-        <!-- Soft card sheen -->
-        <span class="absolute -top-20 -right-16 w-64 h-64 rounded-full bg-white/5 pointer-events-none"></span>
+      <!-- Mesh gradient: deep purple anchors the left where the figure and CTA
+           sit, lifting to lavender across the right so the card stays airy -->
+      <div class="relative overflow-hidden rounded-3xl p-8 flex flex-col text-white shadow-[0_10px_30px_rgba(58,18,168,0.25)] balance-card">
+        <!-- Soft card sheen + edge highlight -->
+        <span class="absolute -top-24 -right-20 w-72 h-72 rounded-full bg-white/10 blur-2xl pointer-events-none"></span>
+        <span class="absolute inset-0 rounded-3xl ring-1 ring-inset ring-white/15 pointer-events-none"></span>
 
         <!-- Chip + wordmark row -->
         <div class="relative flex items-start justify-between mb-7">
@@ -13,21 +16,21 @@
             <span class="absolute inset-x-0 top-1/2 -translate-y-1/2 h-px bg-black/20"></span>
             <span class="absolute inset-y-0 left-1/2 -translate-x-1/2 w-px bg-black/20"></span>
           </span>
-          <span class="font-satoshi font-black tracking-[0.18em] text-sm text-white/70 select-none">DI++O</span>
+          <img src="/img/logo-2048-black.svg" alt="Ditto" class="h-5 invert opacity-75 select-none" />
         </div>
 
-        <p class="relative text-sm text-white/60 mb-2">Your balance</p>
-        <p class="relative text-5xl font-satoshi font-black tracking-[-0.03em] mb-6 text-[#E6FF3A]">£168,247.18</p>
+        <p class="relative text-sm text-white/65 mb-2">Your balance</p>
+        <p class="relative text-5xl font-satoshi font-black tracking-[-0.03em] mb-6 text-white">£168,247.18</p>
 
         <!-- Segmented Balance Bar -->
-        <div class="relative flex h-3 rounded-full bg-white/10 mb-3">
+        <div class="relative flex h-3 rounded-full bg-white/15 mb-3">
           <div
             class="rounded-l-full transition-all duration-1000 ease-out bg-[#E6FF3A]"
             :style="{ width: animated ? '68%' : '0%' }"
           ></div>
           <div class="w-1 flex-shrink-0"></div>
           <div
-            class="bg-[#F87171]/60 rounded-r-full transition-all duration-1000 ease-out delay-200"
+            class="bg-white/35 rounded-r-full transition-all duration-1000 ease-out delay-200"
             :style="{ width: animated ? '32%' : '0%' }"
           ></div>
         </div>
@@ -38,8 +41,8 @@
             <span class="w-2.5 h-2.5 rounded-full bg-[#E6FF3A]"></span>
             £114,409.68 available
           </span>
-          <span class="flex items-center gap-1.5 text-sm text-white/60">
-            <span class="w-2.5 h-2.5 rounded-full bg-[#F87171]/60"></span>
+          <span class="flex items-center gap-1.5 text-sm text-white/65">
+            <span class="w-2.5 h-2.5 rounded-full bg-white/35"></span>
             £53,837.50 pending
           </span>
         </div>
@@ -140,3 +143,23 @@ const payouts = [
   { id: 7, amount: '£9,650.54', type: 'Manual', date: '15 Aug 2024', status: 'Paid' },
 ]
 </script>
+
+<style scoped>
+/* Monzo-style mesh: overlapping soft radials over a diagonal base. Deeper
+   tones sit left/top where the balance and Withdraw button live so the lime
+   keeps its contrast; the right side lifts to lavender to stay light. */
+.balance-card {
+  background:
+    /* deep anchor behind the figure */
+    radial-gradient(75% 95% at 0% 0%, #2a0a8c 0%, rgba(42, 10, 140, 0) 62%),
+    /* pale corner that gives the card its air */
+    radial-gradient(65% 80% at 104% 96%, #d6bcff 0%, rgba(214, 188, 255, 0) 58%),
+    /* violet bloom up the right edge */
+    radial-gradient(60% 70% at 96% 18%, #a879ff 0%, rgba(168, 121, 255, 0) 55%),
+    /* warm accent stops it reading as one flat purple */
+    radial-gradient(55% 60% at 62% 78%, #7d3bff 0%, rgba(125, 59, 255, 0) 58%),
+    /* keeps the Withdraw corner dark enough for the lime */
+    radial-gradient(55% 65% at 6% 108%, #35109f 0%, rgba(53, 16, 159, 0) 60%),
+    linear-gradient(120deg, #3a12a8 0%, #5f1fff 52%, #9c6dff 100%);
+}
+</style>
