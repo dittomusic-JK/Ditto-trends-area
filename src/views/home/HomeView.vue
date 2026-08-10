@@ -171,7 +171,7 @@
           @click="emit('navigate', 'artists')"
           class="flex-shrink-0 w-32 sm:w-36 aspect-square rounded-2xl bg-white shadow-[0_2px_14px_rgba(16,31,60,0.08)] hover:shadow-[0_12px_32px_rgba(95,31,255,0.18)] hover:-translate-y-1 flex flex-col items-center justify-center gap-3 transition-all duration-200 group mt-1"
         >
-          <img src="/img/user-music.svg" alt="" class="w-11 h-11 group-hover:scale-105 transition-transform" />
+          <img src="/img/suite/add-artist.svg" alt="" class="h-12 w-auto group-hover:scale-105 transition-transform" />
           <span class="text-sm font-bold text-ditto-text">Add artist</span>
         </button>
         <div v-for="n in 5" :key="'ghost-art-' + n" class="flex-shrink-0 w-32 sm:w-36 flex flex-col items-center gap-3" :style="{ opacity: 1 - n * 0.18 }">
@@ -203,7 +203,7 @@
           v-for="tile in exploreTiles"
           :key="tile.id"
           @click="emit('navigate', tile.section)"
-          class="flex items-center gap-4 text-left rounded-2xl bg-white p-5 shadow-[0_2px_14px_rgba(16,31,60,0.08)] hover:shadow-[0_10px_28px_rgba(16,31,60,0.14)] hover:-translate-y-0.5 transition-all duration-200"
+          class="flex flex-col items-center text-center gap-3 xl:flex-row xl:items-center xl:text-left xl:gap-4 rounded-2xl bg-white p-5 shadow-[0_2px_14px_rgba(16,31,60,0.08)] hover:shadow-[0_10px_28px_rgba(16,31,60,0.14)] hover:-translate-y-0.5 transition-all duration-200"
         >
           <img :src="tile.icon" alt="" class="w-14 h-14 object-contain flex-shrink-0" />
           <span class="min-w-0">

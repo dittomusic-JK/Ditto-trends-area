@@ -37,10 +37,10 @@
           @click="openArtistModal('primary')"
           class="flex flex-col items-center gap-2 w-[72px] group"
         >
-          <div class="w-16 h-16 rounded-full bg-ditto-light-grey border-2 border-[#C4DFFF] flex items-center justify-center group-hover:bg-[#C4DFFF]/20 transition-colors">
-            <img src="/img/user-music.svg" alt="" class="w-7 h-7" />
+          <div class="w-16 h-16 rounded-full bg-ditto-light-grey border-2 border-[#c89bff] flex items-center justify-center group-hover:bg-[#c89bff]/20 transition-colors">
+            <img src="/img/suite/add-artist.svg" alt="" class="h-8 w-auto" />
           </div>
-          <span class="text-[13px] text-[#2680eb] text-center leading-tight">{{ artists.primary.length ? '+ Add More Artists' : 'Add Artists' }}</span>
+          <span class="text-[13px] text-ditto-purple text-center leading-tight">{{ artists.primary.length ? '+ Add More Artists' : 'Add Artists' }}</span>
         </button>
       </div>
     </div>
@@ -94,10 +94,10 @@
             @click="openArtistModal('featured')"
             class="flex flex-col items-center gap-2 w-[72px] group"
           >
-            <div class="w-16 h-16 rounded-full bg-ditto-light-grey border-2 border-[#C4DFFF] flex items-center justify-center group-hover:bg-[#C4DFFF]/20 transition-colors">
-              <img src="/img/user-music.svg" alt="" class="w-7 h-7" />
+            <div class="w-16 h-16 rounded-full bg-ditto-light-grey border-2 border-[#c89bff] flex items-center justify-center group-hover:bg-[#c89bff]/20 transition-colors">
+              <img src="/img/suite/add-artist.svg" alt="" class="h-8 w-auto" />
             </div>
-            <span class="text-[13px] text-[#2680eb] text-center leading-tight">{{ artists.featured.length ? '+ Add More Artists' : 'Add Artists' }}</span>
+            <span class="text-[13px] text-ditto-purple text-center leading-tight">{{ artists.featured.length ? '+ Add More Artists' : 'Add Artists' }}</span>
           </button>
         </div>
       </div>
@@ -152,10 +152,10 @@
             @click="openArtistModal('remixer')"
             class="flex flex-col items-center gap-2 w-[72px] group"
           >
-            <div class="w-16 h-16 rounded-full bg-ditto-light-grey border-2 border-[#C4DFFF] flex items-center justify-center group-hover:bg-[#C4DFFF]/20 transition-colors">
-              <img src="/img/user-music.svg" alt="" class="w-7 h-7" />
+            <div class="w-16 h-16 rounded-full bg-ditto-light-grey border-2 border-[#c89bff] flex items-center justify-center group-hover:bg-[#c89bff]/20 transition-colors">
+              <img src="/img/suite/add-artist.svg" alt="" class="h-8 w-auto" />
             </div>
-            <span class="text-[13px] text-[#2680eb] text-center leading-tight">{{ artists.remixer.length ? '+ Add More Artists' : 'Add Artists' }}</span>
+            <span class="text-[13px] text-ditto-purple text-center leading-tight">{{ artists.remixer.length ? '+ Add More Artists' : 'Add Artists' }}</span>
           </button>
         </div>
       </div>
@@ -216,10 +216,10 @@
             @click="showAddNewModal = true"
             class="flex flex-col items-center gap-2 group"
           >
-            <div class="w-[84px] h-[84px] rounded-full border-2 border-[#C4DFFF] bg-ditto-light-grey flex items-center justify-center group-hover:bg-[#C4DFFF]/20 transition-colors">
-              <img src="/img/user-music.svg" alt="" class="w-9 h-9" />
+            <div class="w-[84px] h-[84px] rounded-full border-2 border-[#c89bff] bg-ditto-light-grey flex items-center justify-center group-hover:bg-[#c89bff]/20 transition-colors">
+              <img src="/img/suite/add-artist.svg" alt="" class="h-10 w-auto" />
             </div>
-            <span class="text-[13px] text-[#2680eb] text-center leading-tight">+ Add New Artist</span>
+            <span class="text-[13px] text-ditto-purple text-center leading-tight">+ Add New Artist</span>
           </button>
 
           <!-- Artist tiles -->
