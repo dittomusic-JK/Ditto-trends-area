@@ -113,7 +113,7 @@
 
     <!-- Music Section -->
     <!-- Keyed so re-tapping "Music" in the nav resets to the releases overview -->
-    <MusicView v-if="appSection === 'music'" :key="musicViewKey" :open-release="searchRelease" @navigate="(s: string) => handleNavbarNavigate(s as AppSection)" @navigate-view="(s: string, v: string) => handleNavigateView(s as AppSection, v)" />
+    <MusicView v-if="appSection === 'music'" :key="musicViewKey" :open-release="searchRelease" @navigate="(s: string) => handleNavbarNavigate(s as AppSection)" @navigate-view="(s: string, v: string) => handleNavigateView(s as AppSection, v)" @view-analytics="handleViewReleaseAnalytics" />
 
     <!-- Music Release Builder (Create > Music Release) -->
     <ReleaseBuilderView v-if="appSection === 'music-builder'" :initial-title="newReleaseTitle" @back="appSection = 'music'" @navigate="(s: string) => handleNavbarNavigate(s as AppSection)" />
@@ -401,6 +401,18 @@ const updateDateRange = (newRange: DateRange) => {
 
 const applyFilters = (filters: Filter[]) => {
   activeFilters.value = filters
+}
+
+// "View analytics" on a release: open Analytics scoped to that release, keeping
+// any non-release filters the user already had set.
+const handleViewReleaseAnalytics = (release: { id?: string; title: string }) => {
+  activeFilters.value = [
+    ...activeFilters.value.filter(f => f.type !== 'release'),
+    { id: `release-${release.id ?? release.title}`, type: 'release', label: 'Release', value: release.title },
+  ]
+  activeView.value = 'metrics'
+  appSection.value = 'analytics'
+  window.scrollTo(0, 0)
 }
 
 const updateTrendsType = (type: TrendsType) => {

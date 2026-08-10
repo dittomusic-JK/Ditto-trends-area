@@ -4,6 +4,7 @@
     :release="openedRelease"
     @back="openedRelease = null"
     @switch-release="openRelease"
+    @view-analytics="$emit('viewAnalytics', $event)"
   />
   <div v-else class="relative">
     <GlobalSearch />
@@ -112,6 +113,7 @@ const props = defineProps<{ openRelease?: ReleaseListItem | null }>()
 defineEmits<{
   (e: 'navigate', section: string): void
   (e: 'navigateView', section: string, view: string): void
+  (e: 'viewAnalytics', release: ReleaseDetail): void
 }>()
 
 const { isNewUser } = useDemoUser()

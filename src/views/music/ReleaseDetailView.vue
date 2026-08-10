@@ -43,8 +43,22 @@
             <LiquidTabs :tabs="sectionTabs" :active="activeSection" @select="activeSection = $event" />
           </div>
 
+          <!-- Jump to Analytics pre-filtered to this release -->
+          <button
+            @click="$emit('view-analytics', release)"
+            :class="[
+              'flex items-center gap-2 px-3.5 h-9 rounded-full border border-gray-200 text-sm font-medium text-ditto-text hover:border-ditto-purple hover:text-ditto-purple transition-colors flex-shrink-0',
+              navStyle === 'side' ? 'ml-auto' : 'ml-auto'
+            ]"
+          >
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+            </svg>
+            <span class="hidden sm:inline">View analytics</span>
+          </button>
+
           <!-- Side-nav mode: release switcher dropdown, top right -->
-          <div v-if="navStyle === 'side'" class="relative ml-auto flex-shrink-0" ref="switcherRef">
+          <div v-if="navStyle === 'side'" class="relative flex-shrink-0" ref="switcherRef">
             <button
               @click="switcherOpen = !switcherOpen"
               class="flex items-center gap-2.5 pl-2 pr-3 py-1.5 rounded-full border border-gray-200 hover:border-ditto-purple/40 hover:bg-ditto-light-grey transition-colors"
@@ -105,6 +119,7 @@ const props = defineProps<{ release: ReleaseDetail }>()
 const emit = defineEmits<{
   (e: 'back'): void
   (e: 'switch-release', item: ReleaseListItem): void
+  (e: 'view-analytics', release: ReleaseDetail): void
 }>()
 
 // 'side' when the ?nav=side left-rail exploration is active (no top bar).
