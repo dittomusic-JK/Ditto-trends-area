@@ -147,6 +147,12 @@
       <NeighbouringRightsView @navigate="handleNavbarNavigate($event as AppSection)" />
     </div>
 
+    <!-- Refer a Friend Section -->
+    <div v-if="appSection === 'refer'" class="relative px-4 py-4 sm:px-6 sm:py-6 lg:px-16 lg:py-8 w-full max-w-full box-border">
+      <GlobalSearch />
+      <ReferView />
+    </div>
+
     <!-- Basket Section -->
     <BasketView v-if="appSection === 'basket'" @navigate="handleBasketNavigate" />
 
@@ -200,6 +206,9 @@ import VideosDashboard from './views/videos/VideosDashboard.vue'
 
 // Neighbouring Rights
 import NeighbouringRightsView from './views/NeighbouringRightsView.vue'
+
+// Refer a Friend
+import ReferView from './views/refer/ReferView.vue'
 
 // Basket & order confirmation
 import BasketView from './views/basket/BasketView.vue'

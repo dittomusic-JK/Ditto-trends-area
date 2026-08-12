@@ -195,6 +195,9 @@
       </div>
     </section>
 
+    <!-- ── Refer a Friend entry point ── -->
+    <ReferShareStrip v-if="!isNewUser" @navigate="emit('navigate', $event)" />
+
     <!-- ── Explore Ditto (lower-tier areas, quiet row) ── -->
     <section class="mb-12">
       <h2 class="font-satoshi font-black tracking-[-0.03em] text-2xl lg:text-3xl text-ditto-text mb-5">More from Ditto</h2>
@@ -249,6 +252,7 @@ import { useDemoUser } from '../../composables/useDemoUser'
 import { useCountUp } from '../../composables/useCountUp'
 import InitialsAvatar from '../../components/common/InitialsAvatar.vue'
 import GlobalSearch from '../../components/layout/GlobalSearch.vue'
+import ReferShareStrip from '../../components/refer/ReferShareStrip.vue'
 
 const emit = defineEmits<{
   (e: 'navigate', section: string): void

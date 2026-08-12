@@ -43,7 +43,7 @@
             Upgrade
           </button>
           <button @click.stop="toggleTheme" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-ditto-text hover:bg-ditto-light-grey transition-colors text-left">
-            <svg class="w-4 h-4 opacity-60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+            <svg class="w-4 h-4 opacity-60" viewBox="0 0 16 16" fill="currentColor"><path d="M14.5 8.571A6.5 6.5 0 1 1 7.429 1.5 5.056 5.056 0 0 0 14.5 8.571Z"/></svg>
             <span class="flex-1">Dark Mode</span>
             <span :class="['relative w-8 h-[18px] rounded-full transition-all flex-shrink-0', isDark ? 'bg-gradient-to-b from-white via-[#f3f3fa] to-[#dcdce9] shadow-inner' : 'bg-gray-200']">
               <span :class="['absolute top-[2px] w-[14px] h-[14px] rounded-full shadow transition-all', isDark ? 'left-[18px] bg-ditto-purple' : 'left-[2px] bg-white']"></span>
@@ -58,6 +58,9 @@
           </button>
           <button class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-ditto-text hover:bg-ditto-light-grey transition-colors">
             <img src="/img/nav-settings.svg" alt="" class="w-4 h-4 opacity-60" /> Account Settings
+          </button>
+          <button @click="emit('navigate', 'refer'); showMobileMenu = false" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-ditto-text hover:bg-ditto-light-grey transition-colors">
+            <img src="/img/nav-refer-friend.svg" alt="" class="w-4 h-4 opacity-60" /> Refer a Friend
           </button>
           <button class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-ditto-text hover:bg-ditto-light-grey transition-colors">
             <img src="/img/nav-help.svg" alt="" class="w-4 h-4 opacity-60" /> Help &amp; FAQs
@@ -303,7 +306,7 @@
             <img src="/img/nav-gift.svg" alt="" class="w-4 h-4 opacity-60" />
             Perks
           </button>
-          <button class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-ditto-text hover:bg-ditto-light-grey transition-colors text-left">
+          <button @click="showAvatarMenu = false; emit('navigate', 'refer')" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-ditto-text hover:bg-ditto-light-grey transition-colors text-left">
             <img src="/img/nav-refer-friend.svg" alt="" class="w-4 h-4 opacity-60" />
             Refer a Friend
           </button>
@@ -312,8 +315,8 @@
             Language
           </button>
           <button @click.stop="toggleTheme" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-ditto-text hover:bg-ditto-light-grey transition-colors text-left">
-            <svg class="w-4 h-4 opacity-60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+            <svg class="w-4 h-4 opacity-60" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M14.5 8.571A6.5 6.5 0 1 1 7.429 1.5 5.056 5.056 0 0 0 14.5 8.571Z"/>
             </svg>
             <span class="flex-1">Dark Mode</span>
             <span :class="['relative w-8 h-[18px] rounded-full transition-all flex-shrink-0', isDark ? 'bg-gradient-to-b from-white via-[#f3f3fa] to-[#dcdce9] shadow-inner' : 'bg-gray-200']">
