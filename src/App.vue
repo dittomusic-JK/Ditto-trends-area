@@ -153,6 +153,12 @@
       <ReferView />
     </div>
 
+    <!-- Pattern Library (internal style guide) -->
+    <div v-if="appSection === 'patterns'" class="relative px-4 py-4 sm:px-6 sm:py-6 lg:px-16 lg:py-8 w-full max-w-full box-border">
+      <GlobalSearch />
+      <PatternLibraryView />
+    </div>
+
     <!-- Basket Section -->
     <BasketView v-if="appSection === 'basket'" @navigate="handleBasketNavigate" />
 
@@ -209,6 +215,9 @@ import NeighbouringRightsView from './views/NeighbouringRightsView.vue'
 
 // Refer a Friend
 import ReferView from './views/refer/ReferView.vue'
+
+// Pattern Library (internal style guide)
+import PatternLibraryView from './views/patterns/PatternLibraryView.vue'
 
 // Basket & order confirmation
 import BasketView from './views/basket/BasketView.vue'
