@@ -123,7 +123,7 @@
         <div class="mt-auto flex items-center gap-2.5 pt-4">
           <img src="/img/suite/perks.svg" alt="" class="w-6 h-6 flex-shrink-0" />
           <p class="text-sm text-ditto-subtext">
-            <span class="font-semibold text-ditto-text">Your friend gets ${{ REWARD_PER_REFERRAL }} too</span> — added to their balance when they join.
+            <span class="font-semibold text-ditto-text">Your friend gets ${{ REWARD_PER_REFERRAL }} too</span> — Ditto credit to spend on the platform when they join.
           </p>
         </div>
       </div>
@@ -353,7 +353,7 @@ const howItWorks = [
   {
     icon: '/img/suite/Royalties.svg',
     title: 'You both get paid',
-    body: `$${REWARD_PER_REFERRAL} each, straight to your balances.`,
+    body: `$${REWARD_PER_REFERRAL} cash for you, $${REWARD_PER_REFERRAL} Ditto credit for them.`,
   },
 ]
 
@@ -364,7 +364,7 @@ const faqs = [
   },
   {
     q: 'What does my friend get?',
-    a: `$${REWARD_PER_REFERRAL} added to their Ditto balance once they've joined on a paid subscription through your link.`,
+    a: `$${REWARD_PER_REFERRAL} of Ditto credit once they've joined on a paid subscription through your link — usable toward anything on the platform, though it can't be withdrawn as cash.`,
   },
   {
     q: 'Who can take part?',
