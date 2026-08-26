@@ -4,14 +4,73 @@
     {
       "name": "ditto-trends",
       "runtimeExecutable": "npx",
-      "runtimeArgs": ["vite", "--port", "5175"],
+      "runtimeArgs": [
+        "vite",
+        "--port",
+        "5175"
+      ],
       "port": 5175
     },
     {
       "name": "ditto-admin",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["--prefix", "/Users/jameskeane/Documents/Ditto Components/Admin Area/ditto-admin", "run", "dev"],
+      "runtimeArgs": [
+        "--prefix",
+        "/Users/jameskeane/Documents/Ditto Components/Admin Area/ditto-admin",
+        "run",
+        "dev"
+      ],
       "port": 5174
+    },
+    {
+      "name": "music-dashboard-mock",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "yarn",
+        "--cwd",
+        "/Users/jameskeane/Documents/Ditto Components/dittomusic-music-dashboard-76853a6d3a79",
+        "dev:mock",
+        "--port",
+        "5178"
+      ],
+      "port": 5178
+    },
+    {
+      "name": "analytics-dashboard-mock",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "yarn",
+        "--cwd",
+        "/Users/jameskeane/Documents/Ditto Components/dittomusic-analytics-dashboard-f0f4ef318e11",
+        "dev:mock",
+        "--port",
+        "5180"
+      ],
+      "port": 5180
+    },
+    {
+      "name": "artists-dashboard-mock",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "yarn",
+        "--cwd",
+        "/Users/jameskeane/Documents/Ditto Components/dittomusic-artists-dashboard-b83f0d592258",
+        "dev:mock",
+        "--port",
+        "5181"
+      ],
+      "port": 5181
+    },
+    {
+      "name": "publishing-dashboard-mock",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "yarn",
+        "--cwd",
+        "/Users/jameskeane/Documents/Ditto Components/dittomusic-publishing-dashboard-a31eaf97a138",
+        "serve:mock"
+      ],
+      "port": 5182
     }
   ]
 }

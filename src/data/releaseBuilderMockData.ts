@@ -5,6 +5,8 @@ export interface ArtistEntry {
   id: string
   name: string
   initials: string
+  /** AI disclosure (partially-AI releases tag the AI artists) */
+  isAi?: boolean
 }
 
 export interface TrackArtists {
@@ -40,6 +42,8 @@ export interface BuilderTrack {
   previewStart: number
   customIsrc: boolean
   customIsrcValue: string
+  /** AI disclosure (partially-AI releases tag the AI tracks) */
+  containsAi: boolean
   addLyrics: boolean
   fingerprint: boolean
   explicit: boolean
@@ -67,6 +71,7 @@ export const makeBuilderTrack = (id: string, title: string, duration: string, du
   previewStart: 30,
   customIsrc: false,
   customIsrcValue: '',
+  containsAi: false,
   addLyrics: false,
   fingerprint: false,
   explicit: false,

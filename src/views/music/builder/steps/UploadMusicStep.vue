@@ -54,6 +54,22 @@
           />
           <p class="text-xs text-ditto-subtext mt-0.5">{{ track.duration }}</p>
         </div>
+        <!-- AI disclosure: tag the AI tracks on a partially-AI release -->
+        <label
+          v-if="form.aiDisclosure === 'partial'"
+          :class="[
+            'flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-full border cursor-pointer transition-colors flex-shrink-0 select-none',
+            track.containsAi
+              ? 'border-ditto-purple bg-ditto-purple/10 text-ditto-purple'
+              : 'border-gray-200 text-ditto-subtext hover:border-ditto-purple hover:text-ditto-purple'
+          ]"
+        >
+          <input v-model="track.containsAi" type="checkbox" class="sr-only" />
+          <span :class="['w-3.5 h-3.5 rounded border flex items-center justify-center transition-colors', track.containsAi ? 'border-ditto-purple bg-ditto-purple' : 'border-gray-300 bg-white']">
+            <svg v-if="track.containsAi" class="w-2.5 h-2.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </span>
+          AI content
+        </label>
         <button
           @click="openLicense(track)"
           :class="[
@@ -69,6 +85,43 @@
         <button @click="removeTrack(track.id)" class="w-9 h-9 flex items-center justify-center text-error/70 hover:text-error transition-colors flex-shrink-0" aria-label="Remove track">
           <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
         </button>
+      </div>
+
+      <!-- ── AI Disclosure (required by Spotify & Apple Music) ─────────── -->
+      <div class="mt-10 border border-gray-200 rounded-2xl p-6 lg:p-7">
+        <div class="flex items-center gap-1.5 mb-1">
+          <h3 class="font-satoshi font-black text-lg tracking-[-0.02em] text-ditto-text">AI Disclosure</h3>
+          <span class="text-[10px] font-bold uppercase tracking-[1.4px] text-white bg-ditto-purple rounded-full px-2 py-0.5">Required</span>
+        </div>
+        <p class="text-sm text-ditto-subtext mb-5">Spotify and Apple Music now require every release to declare whether it contains AI-generated content.</p>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <label
+            v-for="opt in aiDisclosureOptions"
+            :key="opt.id"
+            :class="[
+              'flex flex-col gap-1.5 p-4 rounded-xl border-2 cursor-pointer transition-all select-none',
+              form.aiDisclosure === opt.id
+                ? 'border-ditto-purple bg-ditto-purple/[0.04]'
+                : 'border-gray-200 hover:border-ditto-purple/40'
+            ]"
+          >
+            <input v-model="form.aiDisclosure" type="radio" :value="opt.id" class="sr-only" />
+            <span class="flex items-center gap-2">
+              <span :class="['w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors flex-shrink-0', form.aiDisclosure === opt.id ? 'border-ditto-purple bg-ditto-purple' : 'border-gray-300']">
+                <svg v-if="form.aiDisclosure === opt.id" class="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </span>
+              <span class="text-sm font-semibold text-ditto-text">{{ opt.label }}</span>
+            </span>
+            <span class="text-xs text-ditto-subtext leading-snug">{{ opt.blurb }}</span>
+          </label>
+        </div>
+        <p v-if="form.aiDisclosure === 'partial'" class="text-xs text-ditto-purple mt-4 flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          Tag the AI tracks above, and the AI artists when you add them in Details.
+        </p>
+        <p v-if="form.aiDisclosure === 'full'" class="text-xs text-ditto-subtext mt-4">
+          The AI-generated tag will be applied to this release automatically — nothing else changes.
+        </p>
       </div>
 
       <div class="pt-4">
@@ -164,6 +217,12 @@ const confirmLicense = () => {
 }
 
 // ── Drag to rearrange ──
+const aiDisclosureOptions = [
+  { id: 'none', label: 'Not AI', blurb: 'No AI-generated content on this release.' },
+  { id: 'partial', label: 'Partially AI', blurb: 'Some tracks or artists use AI-generated content.' },
+  { id: 'full', label: 'Entirely AI', blurb: 'This release is fully AI-generated.' },
+] as const
+
 const dragIndex = ref<number | null>(null)
 const dropIndex = ref<number | null>(null)
 

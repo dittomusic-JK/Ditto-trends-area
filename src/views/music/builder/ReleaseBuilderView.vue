@@ -108,6 +108,8 @@ const steps = [
 export interface ReleaseBuilderForm {
   // Upload
   tracks: BuilderTrack[]
+  /** Spotify/Apple AI disclosure: '' until declared */
+  aiDisclosure: '' | 'none' | 'partial' | 'full'
   artwork: string | null
   artworkFileName: string
   artworkConfirmed: boolean
@@ -156,6 +158,7 @@ const props = defineProps<{ initialTitle?: string }>()
 
 const formData = reactive<ReleaseBuilderForm>({
   tracks: [],
+  aiDisclosure: '',
   artwork: null,
   artworkFileName: '',
   artworkConfirmed: false,
@@ -201,7 +204,7 @@ const visitedSteps = reactive(new Set<number>([0]))
 const validateStep = (stepIndex: number): boolean => {
   switch (stepIndex) {
     case 0:
-      return formData.tracks.length > 0
+      return formData.tracks.length > 0 && formData.aiDisclosure !== ''
     case 1:
       return formData.artwork !== null && formData.artworkConfirmed
     case 2:
@@ -210,7 +213,11 @@ const validateStep = (stepIndex: number): boolean => {
         formData.pCopyrightHolder.trim().length >= 2 &&
         formData.primaryGenre.length > 0 &&
         formData.primaryArtists.length > 0 &&
-        formData.tracks.every(isTrackMetadataComplete)
+        formData.tracks.every(isTrackMetadataComplete) &&
+        // Partially-AI releases must tag at least one AI track or artist
+        (formData.aiDisclosure !== 'partial' ||
+          formData.tracks.some(t => t.containsAi) ||
+          [...formData.primaryArtists, ...formData.featuredArtists, ...formData.remixerArtists].some(a => a.isAi))
     case 3:
       return formData.releaseDate !== null && formData.distributionType !== ''
     case 4:

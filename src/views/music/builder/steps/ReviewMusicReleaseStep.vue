@@ -96,6 +96,25 @@
       <p v-else class="text-sm text-ditto-subtext flex items-center gap-2">No uploaded tracks yet <WarnDot tip="Tracks not uploaded" /></p>
     </div>
 
+    <!-- AI disclosure summary -->
+    <div class="border border-gray-200 rounded-2xl p-7 lg:p-8 mt-8">
+      <div class="flex items-baseline gap-3 mb-3">
+        <h3 class="font-satoshi font-black text-lg tracking-[-0.02em] text-ditto-text">AI Disclosure</h3>
+        <WarnDot v-if="!form.aiDisclosure" tip="AI disclosure not set" />
+      </div>
+      <div class="flex items-center flex-wrap gap-2">
+        <span v-if="form.aiDisclosure === 'none'" class="text-sm text-ditto-text">No AI-generated content declared.</span>
+        <span v-else-if="form.aiDisclosure === 'full'" class="px-3 py-1.5 text-xs font-semibold rounded-full bg-ditto-purple/10 text-ditto-purple">Entirely AI-generated</span>
+        <template v-else-if="form.aiDisclosure === 'partial'">
+          <span class="px-3 py-1.5 text-xs font-semibold rounded-full bg-ditto-purple/10 text-ditto-purple">Partially AI-generated</span>
+          <span v-for="t in aiTaggedTracks" :key="'ait-' + t.id" class="px-3 py-1.5 text-xs font-medium rounded-full border border-gray-200 text-ditto-text">"{{ t.title }}"</span>
+          <span v-for="a in aiTaggedArtists" :key="'aia-' + a.id" class="px-3 py-1.5 text-xs font-medium rounded-full border border-gray-200 text-ditto-text">{{ a.name }}</span>
+          <WarnDot v-if="!aiTaggedTracks.length && !aiTaggedArtists.length" tip="No AI tracks or artists tagged" />
+        </template>
+        <span v-else class="text-sm text-ditto-subtext">Not declared yet.</span>
+      </div>
+    </div>
+
     <!-- Stores summary -->
     <div class="border border-gray-200 rounded-2xl p-7 lg:p-8 mt-8">
       <div class="flex items-baseline gap-3 mb-4">
@@ -219,6 +238,13 @@ const extrasLabel = computed(() => {
   if (props.form.advancedStores.includes('beatport')) extras.push('Beatport label')
   return extras.length ? extras.join(', ') : 'N/A'
 })
+
+const aiTaggedTracks = computed(() => props.form.tracks.filter(t => t.containsAi))
+const aiTaggedArtists = computed(() => [
+  ...props.form.primaryArtists,
+  ...props.form.featuredArtists,
+  ...props.form.remixerArtists,
+].filter(a => a.isAi))
 
 const selectedStoreDefs = computed(() => standardStores.filter(s => props.form.selectedStores.includes(s.id)))
 

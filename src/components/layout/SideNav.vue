@@ -216,7 +216,7 @@
         </button>
         <button @click.stop="toggleTheme" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-ditto-text hover:bg-ditto-light-grey transition-colors text-left">
           <svg class="w-4 h-4 opacity-60" viewBox="0 0 16 16" fill="currentColor">
-            <path d="M14.5 8.571A6.5 6.5 0 1 1 7.429 1.5 5.056 5.056 0 0 0 14.5 8.571Z"/>
+            <path d="M14.5982 8.5736A6.6 6.6 0 1 1 7.4264 1.4018A0.6 0.6 0 0 1 7.9577 2.3541A4.0667 4.0667 0 0 0 13.6459 8.0423A0.6 0.6 0 0 1 14.5982 8.5736ZM13.1502 9.6766A5.2667 5.2667 0 0 1 6.3234 2.8498A5.4 5.4 0 1 0 13.1502 9.6766Z"/>
           </svg>
           <span class="flex-1">Dark Mode</span>
           <span :class="['relative w-8 h-[18px] rounded-full transition-all flex-shrink-0', isDark ? 'bg-gradient-to-b from-white via-[#f3f3fa] to-[#dcdce9] shadow-inner' : 'bg-gray-200']">

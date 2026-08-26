@@ -172,6 +172,31 @@
       <div class="mt-12 border-t border-gray-200 pt-10">
         <VideoArtistsStep :artists="artistsSlice" context="music" @update:artists="applyArtists" />
         <p v-if="visited && form.primaryArtists.length === 0" class="text-xs text-error mt-2">Please select at least one Plan Artist.</p>
+
+        <!-- AI disclosure: tag the AI artists on a partially-AI release -->
+        <div v-if="form.aiDisclosure === 'partial' && allSelectedArtists.length" class="mt-8 border border-ditto-purple/30 bg-ditto-purple/[0.03] rounded-xl p-5">
+          <p class="text-sm font-semibold text-ditto-text mb-1">Tag AI artists</p>
+          <p class="text-xs text-ditto-subtext mb-4">You declared this release partially AI-generated — tick any artists that are AI.</p>
+          <div class="flex flex-wrap gap-2">
+            <label
+              v-for="artist in allSelectedArtists"
+              :key="artist.id"
+              :class="[
+                'flex items-center gap-2 px-3.5 py-2 text-sm font-medium rounded-full border cursor-pointer transition-colors select-none',
+                artist.isAi
+                  ? 'border-ditto-purple bg-ditto-purple/10 text-ditto-purple'
+                  : 'border-gray-200 text-ditto-text hover:border-ditto-purple/50'
+              ]"
+            >
+              <input v-model="artist.isAi" type="checkbox" class="sr-only" />
+              <span :class="['w-4 h-4 rounded border flex items-center justify-center transition-colors', artist.isAi ? 'border-ditto-purple bg-ditto-purple' : 'border-gray-300 bg-white']">
+                <svg v-if="artist.isAi" class="w-2.5 h-2.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </span>
+              {{ artist.name }}
+            </label>
+          </div>
+          <p v-if="visited && !hasAnyAiTag" class="text-xs text-error mt-3">A partially-AI release needs at least one AI track or artist tagged.</p>
+        </div>
       </div>
 
       <!-- Tracklist -->
@@ -307,6 +332,16 @@ const artistTypeOptions = [
 ] as const
 
 // Bridge the shared artists step onto the release form
+const allSelectedArtists = computed(() => [
+  ...props.form.primaryArtists,
+  ...props.form.featuredArtists,
+  ...props.form.remixerArtists,
+])
+
+const hasAnyAiTag = computed(() => (
+  props.form.tracks.some(t => t.containsAi) || allSelectedArtists.value.some(a => a.isAi)
+))
+
 const artistsSlice = computed(() => ({
   primary: props.form.primaryArtists,
   featured: props.form.featuredArtists,
