@@ -155,6 +155,14 @@
         <span class="text-sm text-ditto-text">Does it contain explicit lyrics?</span>
         <IosToggle v-model="track.explicit" />
       </div>
+      <!-- AI disclosure: per-track granularity on partially-AI releases -->
+      <div v-if="partialAi" class="flex items-center justify-between gap-4 py-3">
+        <span class="text-sm text-ditto-text">
+          Does this track contain AI-generated content?
+          <span class="block text-xs text-ditto-subtext mt-0.5">Optional — helps stores tag the right tracks.</span>
+        </span>
+        <IosToggle v-model="track.containsAi" />
+      </div>
     </div>
     <div v-if="track.customIsrc" class="max-w-xs mt-2">
       <label class="block text-sm font-medium text-ditto-text mb-1.5">ISRC</label>
@@ -259,7 +267,7 @@ import type { BuilderTrack, TrackArtists } from '../../../../data/releaseBuilder
 import VideoArtistsStep from '../../../videos/steps/VideoArtistsStep.vue'
 import SearchableSelect from '../../../videos/steps/SearchableSelect.vue'
 
-const props = defineProps<{ track: BuilderTrack }>()
+const props = defineProps<{ track: BuilderTrack; partialAi?: boolean }>()
 
 const emit = defineEmits<{
   (e: 'close'): void

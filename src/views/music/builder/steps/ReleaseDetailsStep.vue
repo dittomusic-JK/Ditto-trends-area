@@ -154,6 +154,77 @@
         </div>
       </div>
 
+      <!-- ── AI Disclosure (Spotify/Apple requirement) ──────────────────── -->
+      <div class="mt-10 border-t border-gray-200 pt-8">
+        <div class="flex items-center gap-1.5 mb-1">
+          <p class="text-sm font-medium text-ditto-text">Does this release use AI?</p>
+          <span class="text-[10px] font-bold uppercase tracking-[1.4px] text-white bg-ditto-purple rounded-full px-2 py-0.5">Required</span>
+        </div>
+        <p class="text-xs text-ditto-subtext mb-4">Spotify and Apple Music now require every release to declare whether it contains AI-generated content.</p>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-2xl">
+          <label
+            v-for="opt in aiDisclosureOptions"
+            :key="opt.id"
+            :class="[
+              'flex flex-col gap-1.5 p-4 rounded-xl border-2 cursor-pointer transition-all select-none',
+              form.aiDisclosure === opt.id
+                ? 'border-ditto-purple bg-ditto-purple/[0.04]'
+                : 'border-gray-200 hover:border-ditto-purple/40'
+            ]"
+          >
+            <input v-model="form.aiDisclosure" type="radio" :value="opt.id" class="sr-only" />
+            <span class="flex items-center gap-2">
+              <span :class="['w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors flex-shrink-0', form.aiDisclosure === opt.id ? 'border-ditto-purple bg-ditto-purple' : 'border-gray-300']">
+                <svg v-if="form.aiDisclosure === opt.id" class="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </span>
+              <span class="text-sm font-semibold text-ditto-text">{{ opt.label }}</span>
+            </span>
+            <span class="text-xs text-ditto-subtext leading-snug">{{ opt.blurb }}</span>
+          </label>
+        </div>
+        <p v-if="visited && !form.aiDisclosure" class="text-xs text-error mt-3">Please declare whether this release uses AI.</p>
+
+        <!-- Partial: one tag line for what was AI-generated (optional — user's responsibility) -->
+        <div v-if="form.aiDisclosure === 'partial'" class="mt-5 max-w-2xl">
+          <p class="text-sm font-medium text-ditto-text mb-1">What was AI-generated?</p>
+          <p class="text-xs text-ditto-subtext mb-3">Optional — helps stores label your release accurately. Pick any that apply or add your own.</p>
+          <div class="flex flex-wrap items-center gap-2">
+            <button
+              v-for="tag in aiTagSuggestions"
+              :key="tag"
+              type="button"
+              @click="toggleAiTag(tag)"
+              :class="[
+                'px-3.5 py-2 text-sm font-medium rounded-full border transition-colors select-none',
+                form.aiTags.includes(tag)
+                  ? 'border-ditto-purple bg-ditto-purple/10 text-ditto-purple'
+                  : 'border-gray-200 text-ditto-text hover:border-ditto-purple/50'
+              ]"
+            >{{ tag }}</button>
+            <span
+              v-for="tag in customAiTags"
+              :key="'custom-' + tag"
+              class="flex items-center gap-1.5 px-3.5 py-2 text-sm font-medium rounded-full border border-ditto-purple bg-ditto-purple/10 text-ditto-purple select-none"
+            >
+              {{ tag }}
+              <button type="button" @click="toggleAiTag(tag)" class="hover:opacity-70" aria-label="Remove tag">
+                <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </span>
+            <input
+              v-model="customAiTagDraft"
+              @keydown.enter.prevent="addCustomAiTag"
+              @blur="addCustomAiTag"
+              placeholder="Add your own…"
+              class="px-3.5 py-2 text-sm rounded-full border border-dashed border-gray-300 outline-none focus:border-ditto-purple w-36 bg-transparent"
+            />
+          </div>
+        </div>
+        <p v-if="form.aiDisclosure === 'full'" class="text-xs text-ditto-subtext mt-4 max-w-2xl">
+          The AI-generated tag will be applied to this release automatically — nothing else changes.
+        </p>
+      </div>
+
       <!-- Artist type -->
       <div class="mt-8">
         <p class="text-sm font-medium text-ditto-text mb-3">Artist Type</p>
@@ -172,31 +243,6 @@
       <div class="mt-12 border-t border-gray-200 pt-10">
         <VideoArtistsStep :artists="artistsSlice" context="music" @update:artists="applyArtists" />
         <p v-if="visited && form.primaryArtists.length === 0" class="text-xs text-error mt-2">Please select at least one Plan Artist.</p>
-
-        <!-- AI disclosure: tag the AI artists on a partially-AI release -->
-        <div v-if="form.aiDisclosure === 'partial' && allSelectedArtists.length" class="mt-8 border border-ditto-purple/30 bg-ditto-purple/[0.03] rounded-xl p-5">
-          <p class="text-sm font-semibold text-ditto-text mb-1">Tag AI artists</p>
-          <p class="text-xs text-ditto-subtext mb-4">You declared this release partially AI-generated — tick any artists that are AI.</p>
-          <div class="flex flex-wrap gap-2">
-            <label
-              v-for="artist in allSelectedArtists"
-              :key="artist.id"
-              :class="[
-                'flex items-center gap-2 px-3.5 py-2 text-sm font-medium rounded-full border cursor-pointer transition-colors select-none',
-                artist.isAi
-                  ? 'border-ditto-purple bg-ditto-purple/10 text-ditto-purple'
-                  : 'border-gray-200 text-ditto-text hover:border-ditto-purple/50'
-              ]"
-            >
-              <input v-model="artist.isAi" type="checkbox" class="sr-only" />
-              <span :class="['w-4 h-4 rounded border flex items-center justify-center transition-colors', artist.isAi ? 'border-ditto-purple bg-ditto-purple' : 'border-gray-300 bg-white']">
-                <svg v-if="artist.isAi" class="w-2.5 h-2.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-              </span>
-              {{ artist.name }}
-            </label>
-          </div>
-          <p v-if="visited && !hasAnyAiTag" class="text-xs text-error mt-3">A partially-AI release needs at least one AI track or artist tagged.</p>
-        </div>
       </div>
 
       <!-- Tracklist -->
@@ -252,7 +298,7 @@
               </span>
             </div>
             <!-- Full track metadata panel -->
-            <TrackMetadataPanel v-if="editingTrack === track.id" :track="track" @close="editingTrack = null" />
+            <TrackMetadataPanel v-if="editingTrack === track.id" :track="track" :partial-ai="form.aiDisclosure === 'partial'" @close="editingTrack = null" />
           </div>
         </div>
       </div>
@@ -331,17 +377,31 @@ const artistTypeOptions = [
   { id: 'compilation', label: 'Compilation/Various Artists' },
 ] as const
 
+// AI disclosure (Spotify/Apple requirement — declared here in Details)
+const aiDisclosureOptions = [
+  { id: 'none', label: 'Not AI', blurb: 'No AI-generated content on this release.' },
+  { id: 'partial', label: 'Partially AI', blurb: 'AI was used for part of this release.' },
+  { id: 'full', label: 'Entirely AI', blurb: 'This release is fully AI-generated.' },
+] as const
+
+const aiTagSuggestions = ['Vocals', 'Lyrics', 'Composition', 'Instrumentation', 'Drums', 'Artwork', 'Mixing & Mastering']
+
+const customAiTagDraft = ref('')
+const customAiTags = computed(() => props.form.aiTags.filter(t => !aiTagSuggestions.includes(t)))
+
+const toggleAiTag = (tag: string) => {
+  const i = props.form.aiTags.indexOf(tag)
+  if (i === -1) props.form.aiTags.push(tag)
+  else props.form.aiTags.splice(i, 1)
+}
+
+const addCustomAiTag = () => {
+  const tag = customAiTagDraft.value.trim()
+  if (tag && !props.form.aiTags.includes(tag)) props.form.aiTags.push(tag)
+  customAiTagDraft.value = ''
+}
+
 // Bridge the shared artists step onto the release form
-const allSelectedArtists = computed(() => [
-  ...props.form.primaryArtists,
-  ...props.form.featuredArtists,
-  ...props.form.remixerArtists,
-])
-
-const hasAnyAiTag = computed(() => (
-  props.form.tracks.some(t => t.containsAi) || allSelectedArtists.value.some(a => a.isAi)
-))
-
 const artistsSlice = computed(() => ({
   primary: props.form.primaryArtists,
   featured: props.form.featuredArtists,

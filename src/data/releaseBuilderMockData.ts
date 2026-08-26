@@ -5,8 +5,6 @@ export interface ArtistEntry {
   id: string
   name: string
   initials: string
-  /** AI disclosure (partially-AI releases tag the AI artists) */
-  isAi?: boolean
 }
 
 export interface TrackArtists {
