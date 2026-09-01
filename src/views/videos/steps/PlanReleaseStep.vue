@@ -43,35 +43,18 @@
                 !day.date ? 'invisible' :
                 day.disabled ? 'text-gray-300 cursor-not-allowed' :
                 isSelectedDate(day.date) ? 'bg-ditto-purple text-white font-medium' :
-                day.isPriority ? 'text-ditto-text hover:bg-ditto-light-grey' :
                 'text-ditto-text hover:bg-ditto-light-grey',
                 !day.isCurrentMonth && day.date ? 'text-gray-400' : ''
               ]"
             >
               {{ day.dayNumber }}
-              <span v-if="day.isPriority && !day.disabled && !isSelectedDate(day.date)" class="absolute bottom-0.5 w-1 h-1 rounded-full bg-warning"></span>
             </button>
-          </div>
-
-          <!-- Legend -->
-          <div class="flex items-center gap-4 mt-3 pt-3 border-t border-gray-100">
-            <div class="flex items-center gap-1.5">
-              <span class="w-1.5 h-1.5 rounded-full bg-warning"></span>
-              <span class="text-[10px] text-ditto-subtext">Priority only</span>
-            </div>
-            <div class="flex items-center gap-1.5">
-              <span class="w-4 h-4 rounded-full bg-ditto-purple flex items-center justify-center">
-                <span class="w-1 h-1 rounded-full bg-white"></span>
-              </span>
-              <span class="text-[10px] text-ditto-subtext">Selected</span>
-            </div>
           </div>
         </div>
       </div>
 
-      <!-- Right: Distribution + Date Info -->
+      <!-- Right: Selected date -->
       <div class="flex flex-col">
-        <!-- Selected Date Display -->
         <div v-if="schedule.releaseDate" class="flex items-center gap-3 text-ditto-text mb-4 p-4 rounded-xl bg-ditto-light-grey/60">
           <svg class="w-6 h-6 text-ditto-purple flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
@@ -83,67 +66,6 @@
             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
           </svg>
           <span>Release date is required</span>
-        </div>
-
-        <!-- Priority-only warning -->
-        <div v-if="isPriorityOnly" class="mb-3 p-3 rounded-xl bg-warning/10 border border-warning/20 flex items-start gap-2">
-          <svg class="w-4 h-4 text-warning flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
-          </svg>
-          <p class="text-xs text-warning">This date is within 10 days. Priority Distribution is required for timely delivery.</p>
-        </div>
-
-        <div class="space-y-3 flex-1">
-          <!-- Priority Distro -->
-          <button
-            @click="schedule.releaseDate ? updateField('distributionType', 'priority') : null"
-            :disabled="!schedule.releaseDate"
-            :class="[
-              'relative w-full p-5 rounded-xl text-left transition-all overflow-hidden',
-              !schedule.releaseDate ? 'opacity-40 cursor-not-allowed bg-gradient-to-br from-indigo-600 to-purple-600' :
-              schedule.distributionType === 'priority'
-                ? 'bg-gradient-to-br from-indigo-600 to-purple-600 ring-2 ring-ditto-purple ring-offset-2'
-                : 'bg-gradient-to-br from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500'
-            ]"
-          >
-            <svg class="absolute top-3 right-3 w-7 h-7 text-white/30" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M13 2L3 14h9l-1 10 10-12h-9l1-10z"/>
-            </svg>
-            <p class="text-white font-bold text-sm mb-0.5">Priority Distro</p>
-            <p class="text-white/60 text-[10px] uppercase tracking-wider mb-2">Less than 3 days</p>
-            <p class="text-white/90 text-xs leading-relaxed">Skip the queue to get your video out extra fast or give yourself more time to pitch for playlists.</p>
-            <p class="text-white font-bold text-sm mt-2">+$40</p>
-          </button>
-
-          <!-- Standard Distro -->
-          <button
-            @click="handleStandardClick"
-            :class="[
-              'relative w-full p-5 rounded-xl text-left transition-all border-2',
-              isPriorityOnly ? 'border-gray-200 opacity-40 cursor-not-allowed bg-gray-50' :
-              !schedule.releaseDate ? 'border-gray-200 opacity-40 cursor-not-allowed' :
-              schedule.distributionType === 'standard'
-                ? 'border-ditto-purple bg-white ring-2 ring-ditto-purple ring-offset-2'
-                : 'border-gray-200 bg-white hover:border-gray-300'
-            ]"
-          >
-            <div v-if="schedule.distributionType === 'standard' && !isPriorityOnly" class="absolute top-3 right-3">
-              <svg class="w-6 h-6 text-ditto-purple" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M22 11.08V12a10 10 0 11-5.93-9.14" stroke-linecap="round" stroke-linejoin="round"/>
-                <polyline points="22,4 12,14.01 9,11.01" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </div>
-            <!-- Lock icon when priority only -->
-            <div v-if="isPriorityOnly" class="absolute top-3 right-3">
-              <svg class="w-5 h-5 text-gray-300" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
-              </svg>
-            </div>
-            <p :class="isPriorityOnly ? 'text-gray-400' : 'text-ditto-text'" class="font-bold text-sm mb-0.5">Standard Distro</p>
-            <p :class="isPriorityOnly ? 'text-gray-300' : 'text-ditto-subtext'" class="text-[10px] uppercase tracking-wider mb-2">10 days+</p>
-            <p :class="isPriorityOnly ? 'text-gray-400' : 'text-ditto-subtext'" class="text-xs leading-relaxed">We'll let you know when your music has been processed and sent to stores.</p>
-            <p :class="isPriorityOnly ? 'text-gray-400' : 'text-success'" class="font-bold text-sm mt-2">{{ isPriorityOnly ? 'Unavailable' : 'Included' }}</p>
-          </button>
         </div>
       </div>
     </div>
@@ -178,13 +100,11 @@
           ]"></span>
         </button>
       </div>
-      <div v-if="schedule.timedRelease">
-        <input
-          :value="schedule.releaseTime"
-          @input="updateField('releaseTime', ($event.target as HTMLInputElement).value)"
-          type="time"
-          class="px-0 py-2 border-0 border-b border-gray-300 text-sm text-ditto-text bg-transparent focus:outline-none focus:border-ditto-purple transition-colors"
-        />
+      <!-- Same time controls as the music builder: hour / minute / timezone -->
+      <div v-if="schedule.timedRelease" class="flex items-center gap-2 max-w-md">
+        <select :value="schedule.releaseTime.hour" @change="updateTime('hour', ($event.target as HTMLSelectElement).value)" class="builder-select w-20"><option value="" disabled></option><option v-for="hh in 24" :key="hh" :value="String(hh - 1).padStart(2, '0')">{{ String(hh - 1).padStart(2, '0') }}</option></select>
+        <select :value="schedule.releaseTime.minute" @change="updateTime('minute', ($event.target as HTMLSelectElement).value)" class="builder-select w-20"><option value="" disabled></option><option value="00">00</option><option value="15">15</option><option value="30">30</option><option value="45">45</option></select>
+        <select :value="schedule.releaseTime.zone" @change="updateTime('zone', ($event.target as HTMLSelectElement).value)" class="builder-select flex-1"><option value="" disabled></option><option>Local to each store</option><option>UTC</option><option>BST (UK)</option><option>EST (US)</option></select>
       </div>
     </div>
 
@@ -205,38 +125,37 @@
           ]"></span>
         </button>
       </div>
-      <div v-if="schedule.countryRestrictions" class="space-y-2">
-        <p class="text-xs text-ditto-subtext">Select countries where this video should NOT be available.</p>
-        <div class="flex flex-wrap gap-2">
-          <button
-            v-for="country in sampleCountries"
+      <!-- Same country popup as the music builder -->
+      <div v-if="schedule.countryRestrictions" class="space-y-3">
+        <p class="text-xs text-ditto-subtext">Your video will not be available in the selected countries.</p>
+        <div class="flex flex-wrap items-center gap-2">
+          <span
+            v-for="country in schedule.restrictedCountries"
             :key="country"
-            @click="toggleCountry(country)"
-            :class="[
-              'px-3 py-1 rounded-full text-xs font-medium transition-colors',
-              schedule.restrictedCountries.includes(country) ? 'bg-error/15 text-error' : 'bg-ditto-light-grey text-ditto-text hover:bg-gray-200'
-            ]"
-          >{{ country }}</button>
+            class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-error/10 text-error"
+          >
+            {{ country }}
+            <button @click="removeCountry(country)" class="hover:opacity-70" :aria-label="'Remove ' + country">
+              <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </span>
+          <button
+            @click="showCountryModal = true"
+            class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium border border-gray-200 text-ditto-text hover:border-ditto-purple hover:text-ditto-purple transition-colors"
+          >
+            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            {{ schedule.restrictedCountries.length ? 'Edit countries' : 'Select countries' }}
+          </button>
         </div>
       </div>
     </div>
 
-    <!-- Toast -->
-    <Transition
-      enter-active-class="transition-all duration-300 ease-out"
-      leave-active-class="transition-all duration-200 ease-in"
-      enter-from-class="opacity-0 translate-y-2"
-      enter-to-class="opacity-100 translate-y-0"
-      leave-from-class="opacity-100 translate-y-0"
-      leave-to-class="opacity-0 translate-y-2"
-    >
-      <div v-if="toastMessage" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-5 py-3 rounded-xl bg-ditto-text text-white text-sm font-medium shadow-lg flex items-center gap-2">
-        <svg class="w-4 h-4 text-warning flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
-        </svg>
-        {{ toastMessage }}
-      </div>
-    </Transition>
+    <CountryRestrictionsModal
+      v-if="showCountryModal"
+      :selected="schedule.restrictedCountries"
+      @update:selected="updateField('restrictedCountries', $event)"
+      @close="showCountryModal = false"
+    />
 
     <!-- Original Release Date -->
     <div class="border-t border-gray-200 pt-5">
@@ -269,12 +188,12 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import CountryRestrictionsModal from './CountryRestrictionsModal.vue'
 
 interface Schedule {
   releaseDate: Date | null
-  distributionType: '' | 'priority' | 'standard'
   timedRelease: boolean
-  releaseTime: string
+  releaseTime: { hour: string; minute: string; zone: string }
   countryRestrictions: boolean
   restrictedCountries: string[]
   hasOriginalDate: boolean
@@ -298,33 +217,13 @@ today.setHours(0, 0, 0, 0)
 const calendarMonth = ref(today.getMonth())
 const calendarYear = ref(today.getFullYear())
 
-const sampleCountries = ['United Kingdom', 'United States', 'Germany', 'France', 'Japan', 'Australia', 'Brazil', 'Canada', 'India', 'Nigeria']
-
-// Toast
-const toastMessage = ref('')
-let toastTimer: ReturnType<typeof setTimeout> | null = null
-
-const showToast = (message: string) => {
-  if (toastTimer) clearTimeout(toastTimer)
-  toastMessage.value = message
-  toastTimer = setTimeout(() => { toastMessage.value = '' }, 3500)
-}
-
-const handleStandardClick = () => {
-  if (isPriorityOnly.value) {
-    showToast('You need to pick a day 10+ days in the future to use Standard Distro')
-    return
-  }
-  if (!props.schedule.releaseDate) return
-  updateField('distributionType', 'standard')
-}
+const showCountryModal = ref(false)
 
 interface CalendarDay {
   dayNumber: number
   date: Date | null
   isCurrentMonth: boolean
   disabled: boolean
-  isPriority: boolean
 }
 
 const calendarDays = computed<CalendarDay[]>(() => {
@@ -345,7 +244,6 @@ const calendarDays = computed<CalendarDay[]>(() => {
       date,
       isCurrentMonth: false,
       disabled: true,
-      isPriority: false,
     })
   }
 
@@ -359,7 +257,6 @@ const calendarDays = computed<CalendarDay[]>(() => {
       date,
       isCurrentMonth: true,
       disabled: diffDays <= 0,
-      isPriority: diffDays > 0 && diffDays <= 10,
     })
   }
 
@@ -371,7 +268,6 @@ const calendarDays = computed<CalendarDay[]>(() => {
       date: new Date(calendarYear.value, calendarMonth.value + 1, i),
       isCurrentMonth: false,
       disabled: true,
-      isPriority: false,
     })
   }
 
@@ -385,12 +281,6 @@ const isWithin3Days = computed(() => {
   return diff > 0 && diff <= 3
 })
 
-// Check if selected date is priority-only (within 10 days)
-const isPriorityOnly = computed(() => {
-  if (!props.schedule.releaseDate) return false
-  const diff = Math.ceil((props.schedule.releaseDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
-  return diff > 0 && diff <= 10
-})
 
 const prevMonth = () => {
   if (calendarMonth.value === 0) {
@@ -411,17 +301,7 @@ const nextMonth = () => {
 }
 
 const selectDate = (date: Date) => {
-  const diff = Math.ceil((date.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
-  const updated = { ...props.schedule, releaseDate: date }
-  // Auto-select priority if within 10 days
-  if (diff > 0 && diff <= 10) {
-    updated.distributionType = 'priority'
-  }
-  // Clear standard selection if switching to priority-only date
-  if (diff > 0 && diff <= 10 && updated.distributionType === 'standard') {
-    updated.distributionType = 'priority'
-  }
-  emit('update:schedule', updated)
+  emit('update:schedule', { ...props.schedule, releaseDate: date })
 }
 
 const isSelectedDate = (date: Date | null) => {
@@ -444,15 +324,12 @@ const updateField = (key: keyof Schedule, value: any) => {
   emit('update:schedule', { ...props.schedule, [key]: value })
 }
 
-const toggleCountry = (country: string) => {
-  const updated = { ...props.schedule }
-  const idx = updated.restrictedCountries.indexOf(country)
-  if (idx >= 0) {
-    updated.restrictedCountries = updated.restrictedCountries.filter(c => c !== country)
-  } else {
-    updated.restrictedCountries = [...updated.restrictedCountries, country]
-  }
-  emit('update:schedule', updated)
+const removeCountry = (country: string) => {
+  updateField('restrictedCountries', props.schedule.restrictedCountries.filter(c => c !== country))
+}
+
+const updateTime = (key: 'hour' | 'minute' | 'zone', value: string) => {
+  emit('update:schedule', { ...props.schedule, releaseTime: { ...props.schedule.releaseTime, [key]: value } })
 }
 
 const handleOriginalDateChange = (event: Event) => {
@@ -462,3 +339,21 @@ const handleOriginalDateChange = (event: Event) => {
   }
 }
 </script>
+
+<style scoped>
+/* Underline select matching the builder field idiom (same as the music builder) */
+.builder-select {
+  border: 0;
+  border-bottom: 1px solid #d1d5db;
+  border-radius: 0;
+  padding: 0.625rem 0;
+  font-size: 0.875rem;
+  color: var(--ditto-colors-light-dark-ditto-text-fill);
+  background: transparent;
+  transition: border-color 0.15s ease;
+}
+.builder-select:focus {
+  outline: none;
+  border-bottom-color: var(--ditto-purple);
+}
+</style>

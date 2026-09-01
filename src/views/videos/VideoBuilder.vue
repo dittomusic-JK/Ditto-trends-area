@@ -38,7 +38,7 @@
 
     <!-- Step Content -->
     <div class="px-4 sm:px-6 lg:px-20 py-8 lg:py-10 max-w-5xl mx-auto">
-      <!-- Step 1: Upload (video + thumbnail) -->
+      <!-- Step 1: Upload (video + thumbnail + album artwork) -->
       <div v-if="currentStep === 0" class="space-y-10">
         <UploadVideoStep v-model:videoFile="formData.videoFile" />
         <div class="border-t border-gray-200"></div>
@@ -46,6 +46,8 @@
           v-model:thumbnailFile="formData.thumbnailFile"
           :video-file="formData.videoFile"
         />
+        <div class="border-t border-gray-200"></div>
+        <UploadArtworkStep v-model:artworkFile="formData.artworkFile" />
       </div>
 
       <!-- Step 2: Details (link release + metadata + artists + credits) -->
@@ -134,6 +136,7 @@ import type { SpotifyTrack, CreditCategory } from '../../data/videoMockData'
 
 import UploadVideoStep from './steps/UploadVideoStep.vue'
 import UploadThumbnailStep from './steps/UploadThumbnailStep.vue'
+import UploadArtworkStep from './steps/UploadArtworkStep.vue'
 import LinkReleasePicker from './steps/LinkReleasePicker.vue'
 import CheckContentStep from './steps/CheckContentStep.vue'
 import VideoMetadataStep from './steps/VideoMetadataStep.vue'
@@ -167,6 +170,7 @@ const currentYear = new Date().getFullYear()
 const formData = reactive({
   videoFile: null as File | null,
   thumbnailFile: null as File | null,
+  artworkFile: null as File | null,
   contentChecks: {
     video: false,
     thumbnail: false,
@@ -223,9 +227,8 @@ const formData = reactive({
   ] as { id: string; category: CreditCategory; name: string; role: string }[],
   schedule: {
     releaseDate: null as Date | null,
-    distributionType: '' as '' | 'priority' | 'standard',
     timedRelease: false,
-    releaseTime: '00:00',
+    releaseTime: { hour: '', minute: '', zone: '' },
     countryRestrictions: false,
     restrictedCountries: [] as string[],
     hasOriginalDate: false,
@@ -250,7 +253,8 @@ const validateStep = (stepIndex: number): boolean => {
   switch (stepIndex) {
     case 0:
       return formData.videoFile !== null &&
-        formData.thumbnailFile !== null
+        formData.thumbnailFile !== null &&
+        formData.artworkFile !== null
     case 1:
       return formData.metadata.title.length > 0 &&
         formData.metadata.copyrightHolder.length >= 2 &&
@@ -261,8 +265,7 @@ const validateStep = (stepIndex: number): boolean => {
     case 2:
       return formData.stores.selected.length > 0
     case 3:
-      return formData.schedule.releaseDate !== null &&
-        formData.schedule.distributionType !== ''
+      return formData.schedule.releaseDate !== null
     case 4:
       return formData.contentChecks.video &&
         formData.contentChecks.thumbnail &&

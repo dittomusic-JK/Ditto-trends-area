@@ -56,6 +56,10 @@
               <svg class="w-3 h-3 text-ditto-subtext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>
               <p class="text-[10px] text-ditto-subtext truncate">{{ formData.thumbnailFile?.name || 'No thumbnail uploaded' }}</p>
             </div>
+            <div class="flex items-center gap-1.5">
+              <svg class="w-3 h-3 text-ditto-subtext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 8v8M8 12h8"/></svg>
+              <p class="text-[10px] text-ditto-subtext truncate">{{ formData.artworkFile?.name || 'No album artwork uploaded' }}</p>
+            </div>
           </div>
         </div>
 
@@ -98,12 +102,6 @@
               <p class="text-sm text-ditto-text">{{ formData.metadata.language }}</p>
             </div>
             <div>
-              <p class="text-xs text-ditto-subtext">Distribution:</p>
-              <p class="text-sm text-ditto-text">
-                {{ formData.schedule.distributionType === 'priority' ? 'Priority (+$40)' : formData.schedule.distributionType === 'standard' ? 'Standard' : 'Not set' }}
-              </p>
-            </div>
-            <div>
               <p class="text-xs text-ditto-subtext flex items-center gap-1">
                 Copyright:
                 <svg v-if="!formData.metadata.copyrightHolder" class="w-3 h-3 text-warning" viewBox="0 0 24 24" fill="currentColor">
@@ -115,7 +113,7 @@
             <div>
               <p class="text-xs text-ditto-subtext">Timed Release:</p>
               <p class="text-sm text-ditto-text">
-                {{ formData.schedule.timedRelease ? formData.schedule.releaseTime : 'No' }}
+                {{ formData.schedule.timedRelease ? formatReleaseTime(formData.schedule.releaseTime) : 'No' }}
               </p>
             </div>
             <div>
@@ -309,26 +307,8 @@
         <button @click="$emit('goToStep', 3)" class="text-xs text-ditto-purple hover:underline">Edit</button>
       </div>
       <div class="px-6 py-4 space-y-3">
-        <!-- Priority Distribution -->
-        <div class="flex items-center justify-between py-1.5">
-          <div class="flex items-center gap-2">
-            <svg class="w-4 h-4 text-ditto-purple flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M13 2L3 14h9l-1 10 10-12h-9l1-10z"/>
-            </svg>
-            <p class="text-sm text-ditto-text">Priority Distribution</p>
-          </div>
-          <span :class="[
-            'text-xs font-medium px-2.5 py-1 rounded-full',
-            formData.schedule.distributionType === 'priority'
-              ? 'bg-ditto-purple/10 text-ditto-purple'
-              : 'bg-ditto-light-grey text-ditto-subtext'
-          ]">
-            {{ formData.schedule.distributionType === 'priority' ? '+$40' : 'Not selected' }}
-          </span>
-        </div>
-
         <!-- Timed Release -->
-        <div class="flex items-center justify-between py-1.5 border-t border-gray-100">
+        <div class="flex items-center justify-between py-1.5">
           <div class="flex items-center gap-2">
             <svg class="w-4 h-4 text-ditto-subtext flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/>
@@ -336,7 +316,7 @@
             <p class="text-sm text-ditto-text">Timed Release</p>
           </div>
           <span class="text-xs font-medium text-ditto-subtext bg-ditto-light-grey px-2.5 py-1 rounded-full">
-            {{ formData.schedule.timedRelease ? formData.schedule.releaseTime : 'Off' }}
+            {{ formData.schedule.timedRelease ? formatReleaseTime(formData.schedule.releaseTime) : 'Off' }}
           </span>
         </div>
 
@@ -392,6 +372,7 @@ import { videoStores, spotifyMusicReleases } from '../../../data/videoMockData'
 interface FormData {
   videoFile: File | null
   thumbnailFile: File | null
+  artworkFile: File | null
   contentChecks: Record<string, boolean>
   assetSource: {
     type: '' | 'original' | 'licensed' | 'previously-distributed' | 'commissioned'
@@ -435,9 +416,8 @@ interface FormData {
   credits: { id: string; category: string; name: string; role: string }[]
   schedule: {
     releaseDate: Date | null
-    distributionType: '' | 'priority' | 'standard'
     timedRelease: boolean
-    releaseTime: string
+    releaseTime: { hour: string; minute: string; zone: string }
     countryRestrictions: boolean
     restrictedCountries: string[]
     hasOriginalDate: boolean
@@ -506,10 +486,11 @@ const vevoChannelDisplayName = computed(() => {
 const errorStages = computed(() => {
   const errors: { index: number; name: string; message: string }[] = []
 
-  if (!props.formData.videoFile || !props.formData.thumbnailFile) {
+  if (!props.formData.videoFile || !props.formData.thumbnailFile || !props.formData.artworkFile) {
     const issues = []
     if (!props.formData.videoFile) issues.push('video not uploaded')
     if (!props.formData.thumbnailFile) issues.push('thumbnail not uploaded')
+    if (!props.formData.artworkFile) issues.push('album artwork not uploaded')
     errors.push({ index: 0, name: stepNames[0], message: issues.join(', ') })
   }
 
@@ -528,11 +509,8 @@ const errorStages = computed(() => {
     errors.push({ index: 2, name: stepNames[2], message: 'no stores selected' })
   }
 
-  if (!props.formData.schedule.releaseDate || !props.formData.schedule.distributionType) {
-    const issues = []
-    if (!props.formData.schedule.releaseDate) issues.push('release date not set')
-    if (!props.formData.schedule.distributionType) issues.push('distribution type not selected')
-    errors.push({ index: 3, name: stepNames[3], message: issues.join(', ') })
+  if (!props.formData.schedule.releaseDate) {
+    errors.push({ index: 3, name: stepNames[3], message: 'release date not set' })
   }
 
   const c = props.formData.contentChecks
@@ -549,6 +527,11 @@ const errorStages = computed(() => {
 
 const formatDate = (date: Date) => {
   return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+}
+
+const formatReleaseTime = (t: { hour: string; minute: string; zone: string }) => {
+  if (!t.hour || !t.minute) return 'Time not set'
+  return `${t.hour}:${t.minute}${t.zone ? ' ' + t.zone : ''}`
 }
 
 const getStoreName = (id: string) => {

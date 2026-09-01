@@ -137,6 +137,7 @@ export interface ReleaseBuilderForm {
   timedRelease: boolean
   releaseTime: { hour: string; minute: string; zone: string }
   countryRestrictions: boolean
+  restrictedCountries: string[]
   releasedBefore: boolean
   originalReleaseDate: Date | null
   chartRegions: string[]
@@ -185,6 +186,7 @@ const formData = reactive<ReleaseBuilderForm>({
   timedRelease: false,
   releaseTime: { hour: '', minute: '', zone: '' },
   countryRestrictions: false,
+  restrictedCountries: [],
   releasedBefore: false,
   originalReleaseDate: null,
   chartRegions: [],

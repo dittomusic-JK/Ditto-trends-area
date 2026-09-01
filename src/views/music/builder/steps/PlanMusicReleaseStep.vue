@@ -136,7 +136,36 @@
         <button @click="form.countryRestrictions = false" :class="ynClass(!form.countryRestrictions)">No</button>
         <button @click="form.countryRestrictions = true" :class="ynClass(form.countryRestrictions)">Yes</button>
       </div>
+      <div v-if="form.countryRestrictions" class="mt-5 space-y-3">
+        <p class="text-xs text-ditto-subtext">Your release will not be available in the selected countries.</p>
+        <div class="flex flex-wrap items-center gap-2">
+          <span
+            v-for="country in form.restrictedCountries"
+            :key="country"
+            class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-error/10 text-error"
+          >
+            {{ country }}
+            <button @click="removeCountry(country)" class="hover:opacity-70" :aria-label="'Remove ' + country">
+              <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </span>
+          <button
+            @click="showCountryModal = true"
+            class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium border border-gray-200 text-ditto-text hover:border-ditto-purple hover:text-ditto-purple transition-colors"
+          >
+            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            {{ form.restrictedCountries.length ? 'Edit countries' : 'Select countries' }}
+          </button>
+        </div>
+      </div>
     </div>
+
+    <CountryRestrictionsModal
+      v-if="showCountryModal"
+      :selected="form.restrictedCountries"
+      @update:selected="form.restrictedCountries = $event"
+      @close="showCountryModal = false"
+    />
 
     <!-- ── Released before ── -->
     <div class="mt-12">
@@ -285,6 +314,7 @@
 <script setup lang="ts">
 import { computed, ref, watch, onMounted, onUnmounted } from 'vue'
 import { chartRegions } from '../../../../data/releaseBuilderMockData'
+import CountryRestrictionsModal from '../../../videos/steps/CountryRestrictionsModal.vue'
 import type { ReleaseBuilderForm } from '../ReleaseBuilderView.vue'
 
 const props = defineProps<{ form: ReleaseBuilderForm }>()
@@ -357,6 +387,12 @@ const handleClickOutside = (e: MouseEvent) => {
 }
 onMounted(() => document.addEventListener('click', handleClickOutside))
 onUnmounted(() => document.removeEventListener('click', handleClickOutside))
+
+// ── Country restrictions (same popup as the video builder) ──
+const showCountryModal = ref(false)
+const removeCountry = (country: string) => {
+  props.form.restrictedCountries = props.form.restrictedCountries.filter(c => c !== country)
+}
 
 // ── Extras ──
 const toggleChartRegion = (id: string) => {
