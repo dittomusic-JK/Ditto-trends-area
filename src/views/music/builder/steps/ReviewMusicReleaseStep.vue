@@ -107,8 +107,10 @@
         <span v-else-if="form.aiDisclosure === 'full'" class="px-3 py-1.5 text-xs font-semibold rounded-full bg-ditto-purple/10 text-ditto-purple">Entirely AI-generated</span>
         <template v-else-if="form.aiDisclosure === 'partial'">
           <span class="px-3 py-1.5 text-xs font-semibold rounded-full bg-ditto-purple/10 text-ditto-purple">Partially AI-generated</span>
-          <span v-for="tag in form.aiTags" :key="'aitag-' + tag" class="px-3 py-1.5 text-xs font-medium rounded-full border border-gray-200 text-ditto-text">{{ tag }}</span>
-          <span v-for="t in aiTaggedTracks" :key="'ait-' + t.id" class="px-3 py-1.5 text-xs font-medium rounded-full border border-gray-200 text-ditto-text">"{{ t.title }}"</span>
+          <span v-for="t in aiTaggedTracks" :key="'ait-' + t.id" class="px-3 py-1.5 text-xs font-medium rounded-full border border-gray-200 text-ditto-text">
+            "{{ t.title }}" <span class="text-ditto-subtext">— {{ t.aiTags.join(', ') }}</span>
+          </span>
+          <span v-if="!aiTaggedTracks.length" class="text-xs text-ditto-subtext">No tracks tagged yet.</span>
         </template>
         <span v-else class="text-sm text-ditto-subtext">Not declared yet.</span>
       </div>
@@ -238,7 +240,7 @@ const extrasLabel = computed(() => {
   return extras.length ? extras.join(', ') : 'N/A'
 })
 
-const aiTaggedTracks = computed(() => props.form.tracks.filter(t => t.containsAi))
+const aiTaggedTracks = computed(() => props.form.tracks.filter(t => t.aiTags.length > 0))
 
 const selectedStoreDefs = computed(() => standardStores.filter(s => props.form.selectedStores.includes(s.id)))
 

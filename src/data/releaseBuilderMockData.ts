@@ -41,7 +41,7 @@ export interface BuilderTrack {
   customIsrc: boolean
   customIsrcValue: string
   /** AI disclosure (partially-AI releases tag the AI tracks) */
-  containsAi: boolean
+  aiTags: string[] // AI disclosure: what was AI-generated on this track (empty = no AI)
   addLyrics: boolean
   fingerprint: boolean
   explicit: boolean
@@ -69,7 +69,7 @@ export const makeBuilderTrack = (id: string, title: string, duration: string, du
   previewStart: 30,
   customIsrc: false,
   customIsrcValue: '',
-  containsAi: false,
+  aiTags: [],
   addLyrics: false,
   fingerprint: false,
   explicit: false,
@@ -264,3 +264,6 @@ export const chartRegions = [
   { id: 'australia', label: 'Australia', price: 25 },
   { id: 'worldwide', label: 'Worldwide', price: 69 },
 ]
+
+// AI disclosure: suggested tags for what was AI-generated on a track
+export const aiTagSuggestions = ['Vocals', 'Lyrics', 'Composition', 'Instrumentation', 'Drums', 'Artwork', 'Mixing & Mastering']

@@ -184,42 +184,10 @@
         </div>
         <p v-if="visited && !form.aiDisclosure" class="text-xs text-error mt-3">Please declare whether this release uses AI.</p>
 
-        <!-- Partial: one tag line for what was AI-generated (optional — user's responsibility) -->
-        <div v-if="form.aiDisclosure === 'partial'" class="mt-5 max-w-2xl">
-          <p class="text-sm font-medium text-ditto-text mb-1">What was AI-generated?</p>
-          <p class="text-xs text-ditto-subtext mb-3">Optional — helps stores label your release accurately. Pick any that apply or add your own.</p>
-          <div class="flex flex-wrap items-center gap-2">
-            <button
-              v-for="tag in aiTagSuggestions"
-              :key="tag"
-              type="button"
-              @click="toggleAiTag(tag)"
-              :class="[
-                'px-3.5 py-2 text-sm font-medium rounded-full border transition-colors select-none',
-                form.aiTags.includes(tag)
-                  ? 'border-ditto-purple bg-ditto-purple/10 text-ditto-purple'
-                  : 'border-gray-200 text-ditto-text hover:border-ditto-purple/50'
-              ]"
-            >{{ tag }}</button>
-            <span
-              v-for="tag in customAiTags"
-              :key="'custom-' + tag"
-              class="flex items-center gap-1.5 px-3.5 py-2 text-sm font-medium rounded-full border border-ditto-purple bg-ditto-purple/10 text-ditto-purple select-none"
-            >
-              {{ tag }}
-              <button type="button" @click="toggleAiTag(tag)" class="hover:opacity-70" aria-label="Remove tag">
-                <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-              </button>
-            </span>
-            <input
-              v-model="customAiTagDraft"
-              @keydown.enter.prevent="addCustomAiTag"
-              @blur="addCustomAiTag"
-              placeholder="Add your own…"
-              class="px-3.5 py-2 text-sm rounded-full border border-dashed border-gray-300 outline-none focus:border-ditto-purple w-36 bg-transparent"
-            />
-          </div>
-        </div>
+        <!-- Partial: the tagging itself lives in each track's credits below -->
+        <p v-if="form.aiDisclosure === 'partial'" class="text-xs text-ditto-subtext mt-4 max-w-2xl">
+          Tag what was AI-generated on each track in its credits below — a track with no tags has no AI content.
+        </p>
         <p v-if="form.aiDisclosure === 'full'" class="text-xs text-ditto-subtext mt-4 max-w-2xl">
           The AI-generated tag will be applied to this release automatically — nothing else changes.
         </p>
@@ -383,23 +351,6 @@ const aiDisclosureOptions = [
   { id: 'partial', label: 'Partially AI', blurb: 'AI was used for part of this release.' },
   { id: 'full', label: 'Entirely AI', blurb: 'This release is fully AI-generated.' },
 ] as const
-
-const aiTagSuggestions = ['Vocals', 'Lyrics', 'Composition', 'Instrumentation', 'Drums', 'Artwork', 'Mixing & Mastering']
-
-const customAiTagDraft = ref('')
-const customAiTags = computed(() => props.form.aiTags.filter(t => !aiTagSuggestions.includes(t)))
-
-const toggleAiTag = (tag: string) => {
-  const i = props.form.aiTags.indexOf(tag)
-  if (i === -1) props.form.aiTags.push(tag)
-  else props.form.aiTags.splice(i, 1)
-}
-
-const addCustomAiTag = () => {
-  const tag = customAiTagDraft.value.trim()
-  if (tag && !props.form.aiTags.includes(tag)) props.form.aiTags.push(tag)
-  customAiTagDraft.value = ''
-}
 
 // Bridge the shared artists step onto the release form
 const artistsSlice = computed(() => ({

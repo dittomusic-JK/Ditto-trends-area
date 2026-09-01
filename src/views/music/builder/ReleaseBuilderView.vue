@@ -108,10 +108,8 @@ const steps = [
 export interface ReleaseBuilderForm {
   // Upload
   tracks: BuilderTrack[]
-  /** Spotify/Apple AI disclosure: '' until declared */
+  /** Spotify/Apple AI disclosure: '' until declared (per-track tags live on BuilderTrack.aiTags) */
   aiDisclosure: '' | 'none' | 'partial' | 'full'
-  /** Partial-AI: what was AI-generated (free tag list, e.g. Vocals, Drums) */
-  aiTags: string[]
   artwork: string | null
   artworkFileName: string
   artworkConfirmed: boolean
@@ -162,7 +160,6 @@ const props = defineProps<{ initialTitle?: string }>()
 const formData = reactive<ReleaseBuilderForm>({
   tracks: [],
   aiDisclosure: '',
-  aiTags: [],
   artwork: null,
   artworkFileName: '',
   artworkConfirmed: false,

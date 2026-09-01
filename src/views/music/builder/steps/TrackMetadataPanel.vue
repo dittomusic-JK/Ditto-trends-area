@@ -155,14 +155,6 @@
         <span class="text-sm text-ditto-text">Does it contain explicit lyrics?</span>
         <IosToggle v-model="track.explicit" />
       </div>
-      <!-- AI disclosure: per-track granularity on partially-AI releases -->
-      <div v-if="partialAi" class="flex items-center justify-between gap-4 py-3">
-        <span class="text-sm text-ditto-text">
-          Does this track contain AI-generated content?
-          <span class="block text-xs text-ditto-subtext mt-0.5">Optional — helps stores tag the right tracks.</span>
-        </span>
-        <IosToggle v-model="track.containsAi" />
-      </div>
     </div>
     <div v-if="track.customIsrc" class="max-w-xs mt-2">
       <label class="block text-sm font-medium text-ditto-text mb-1.5">ISRC</label>
@@ -241,6 +233,43 @@
           </span>
           Add more
         </button>
+
+        <!-- AI disclosure: on a partially-AI release each track tags what was AI-generated -->
+        <div v-if="partialAi" class="border-t border-gray-200 pt-5">
+          <p class="text-sm font-semibold text-ditto-text mb-1">What was AI-generated on this track?</p>
+          <p class="text-xs text-ditto-subtext mb-3">Pick any that apply or add your own — leave empty if this track has no AI content.</p>
+          <div class="flex flex-wrap items-center gap-2">
+            <button
+              v-for="tag in aiTagSuggestions"
+              :key="tag"
+              type="button"
+              @click="toggleAiTag(tag)"
+              :class="[
+                'px-3.5 py-2 text-sm font-medium rounded-full border transition-colors select-none',
+                track.aiTags.includes(tag)
+                  ? 'border-ditto-purple bg-ditto-purple/10 text-ditto-purple'
+                  : 'border-gray-200 text-ditto-text hover:border-ditto-purple/50'
+              ]"
+            >{{ tag }}</button>
+            <span
+              v-for="tag in customAiTags"
+              :key="'custom-' + tag"
+              class="flex items-center gap-1.5 px-3.5 py-2 text-sm font-medium rounded-full border border-ditto-purple bg-ditto-purple/10 text-ditto-purple select-none"
+            >
+              {{ tag }}
+              <button type="button" @click="toggleAiTag(tag)" class="hover:opacity-70" aria-label="Remove tag">
+                <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </span>
+            <input
+              v-model="customAiTagDraft"
+              @keydown.enter.prevent="addCustomAiTag"
+              @blur="addCustomAiTag"
+              placeholder="Add your own…"
+              class="px-3.5 py-2 text-sm rounded-full border border-dashed border-gray-300 outline-none focus:border-ditto-purple w-36 bg-transparent"
+            />
+          </div>
+        </div>
       </div>
     </div>
 
@@ -262,12 +291,28 @@
 
 <script setup lang="ts">
 import { computed, ref, defineComponent, h, onUnmounted } from 'vue'
-import { copyrightYears, isTrackMetadataComplete, songwriterRoles, productionRoles, performerRoles, allCreditRoles } from '../../../../data/releaseBuilderMockData'
+import { copyrightYears, isTrackMetadataComplete, songwriterRoles, productionRoles, performerRoles, allCreditRoles, aiTagSuggestions } from '../../../../data/releaseBuilderMockData'
 import type { BuilderTrack, TrackArtists } from '../../../../data/releaseBuilderMockData'
 import VideoArtistsStep from '../../../videos/steps/VideoArtistsStep.vue'
 import SearchableSelect from '../../../videos/steps/SearchableSelect.vue'
 
 const props = defineProps<{ track: BuilderTrack; partialAi?: boolean }>()
+
+// AI disclosure tags for this track (empty list = no AI on this track)
+const customAiTagDraft = ref('')
+const customAiTags = computed(() => props.track.aiTags.filter(t => !aiTagSuggestions.includes(t)))
+
+const toggleAiTag = (tag: string) => {
+  const i = props.track.aiTags.indexOf(tag)
+  if (i === -1) props.track.aiTags.push(tag)
+  else props.track.aiTags.splice(i, 1)
+}
+
+const addCustomAiTag = () => {
+  const tag = customAiTagDraft.value.trim()
+  if (tag && !props.track.aiTags.includes(tag)) props.track.aiTags.push(tag)
+  customAiTagDraft.value = ''
+}
 
 const emit = defineEmits<{
   (e: 'close'): void
