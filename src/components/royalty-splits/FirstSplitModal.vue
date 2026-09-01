@@ -3,71 +3,38 @@
     <div class="fsm-overlay" @click="$emit('close')">
       <div class="fsm" :class="{ 'fsm--rls': isRLS }" @click.stop>
         <h2 class="fsm__title" :class="{ 'fsm__title--rls': isRLS }">You've set up your first split! 🎉</h2>
-        <p class="fsm__subtitle" :class="{ 'fsm__subtitle--rls': isRLS }">Here's how it works:</p>
+        <p class="fsm__subtitle" :class="{ 'fsm__subtitle--rls': isRLS }">Here is how it works:</p>
 
-        <div v-if="!isRLS" class="fsm__steps">
+        <!-- One flow for RLS users: email -> free account -> paid -->
+        <div class="fsm__steps">
           <div class="fsm__step">
             <div class="fsm__step-icon fsm__step-icon--blue">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M14 4L6 12L2 8" stroke="#287EF7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="3" width="13" height="10" rx="1.5" stroke="#287EF7" stroke-width="1.6"/><path d="M2 4.5L8 9L14 4.5" stroke="#287EF7" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </div>
             <div>
-              <p class="fsm__step-title">We'll email your collaborator</p>
-              <p class="fsm__step-desc">They'll receive an invite to confirm their share</p>
+              <p class="fsm__step-title" :class="{ 'fsm__step-title--rls': isRLS }">We'll email your collaborators</p>
+              <p class="fsm__step-desc" :class="{ 'fsm__step-desc--rls': isRLS }">They'll receive an email about their split</p>
             </div>
           </div>
           <div class="fsm__step">
             <div class="fsm__step-icon fsm__step-icon--amber">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#F59E0B" stroke-width="2"/><path d="M8 5V8.5L10 10" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="5" r="2.75" stroke="#F59E0B" stroke-width="1.6"/><path d="M1.5 14C1.5 11.5 3.5 9.75 6.5 9.75C7.3 9.75 8.05 9.87 8.7 10.1" stroke="#F59E0B" stroke-width="1.6" stroke-linecap="round"/><path d="M12 9.5V14.5M9.5 12H14.5" stroke="#F59E0B" stroke-width="1.6" stroke-linecap="round"/></svg>
             </div>
             <div>
-              <p class="fsm__step-title">They can accept or decline</p>
-              <p class="fsm__step-desc">The split is pending until they respond</p>
+              <p class="fsm__step-title" :class="{ 'fsm__step-title--rls': isRLS }">They create a free Ditto account</p>
+              <p class="fsm__step-desc" :class="{ 'fsm__step-desc--rls': isRLS }">We'll hold onto their share until they sign up</p>
             </div>
           </div>
           <div class="fsm__step">
             <div class="fsm__step-icon fsm__step-icon--purple">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1V15M1 8H15" stroke="#6C5CE7" stroke-width="2" stroke-linecap="round"/></svg>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="4" width="13" height="8" rx="1.5" stroke="#6C5CE7" stroke-width="1.6"/><circle cx="8" cy="8" r="1.9" stroke="#6C5CE7" stroke-width="1.6"/><path d="M4 8H4.01M12 8H12.01" stroke="#6C5CE7" stroke-width="1.8" stroke-linecap="round"/></svg>
             </div>
             <div>
-              <p class="fsm__step-title">Royalties stay yours until confirmed</p>
-              <p class="fsm__step-desc">Splits only apply from the confirmation date</p>
+              <p class="fsm__step-title" :class="{ 'fsm__step-title--rls': isRLS }">Everyone gets paid</p>
+              <p class="fsm__step-desc" :class="{ 'fsm__step-desc--rls': isRLS }">Your collaborators can withdraw their royalties</p>
             </div>
           </div>
         </div>
-
-        <div v-else class="fsm__steps">
-          <div class="fsm__step">
-            <div class="fsm__step-icon fsm__step-icon--rls-success">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M14 4L6 12L2 8" stroke="#00ff99" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </div>
-            <div>
-              <p class="fsm__step-title fsm__step-title--rls">Royalties split immediately</p>
-              <p class="fsm__step-desc fsm__step-desc--rls">We'll start allocating their share right away</p>
-            </div>
-          </div>
-          <div class="fsm__step">
-            <div class="fsm__step-icon fsm__step-icon--rls-highlight">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="4" width="12" height="8" rx="1" stroke="#ffb100" stroke-width="2"/><path d="M5 8H11" stroke="#ffb100" stroke-width="2" stroke-linecap="round"/></svg>
-            </div>
-            <div>
-              <p class="fsm__step-title fsm__step-title--rls">Funds held until they register</p>
-              <p class="fsm__step-desc fsm__step-desc--rls">Their share is safely held in their placeholder account</p>
-            </div>
-          </div>
-          <div class="fsm__step">
-            <div class="fsm__step-icon fsm__step-icon--rls-accent">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2L10 6H14L11 9L12 14L8 11L4 14L5 9L2 6H6L8 2Z" stroke="#9e77ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </div>
-            <div>
-              <p class="fsm__step-title fsm__step-title--rls">They can withdraw once registered</p>
-              <p class="fsm__step-desc fsm__step-desc--rls">As soon as they create a Ditto account, they can access their earnings</p>
-            </div>
-          </div>
-        </div>
-
-        <p class="fsm__note" :class="{ 'fsm__note--rls': isRLS }">
-          {{ isRLS ? 'We\'ll notify them by email to create their account.' : 'You can resend confirmation emails from this page anytime.' }}
-        </p>
 
         <button @click="$emit('close')" class="fsm__cta" :class="{ 'fsm__cta--rls': isRLS }">Got it</button>
 
@@ -161,9 +128,6 @@ defineEmits<{
     &--blue { background: rgba($color-brand-secondary, 0.1); }
     &--amber { background: $color-amber-100; }
     &--purple { background: rgba($color-ditto-purple, 0.1); }
-    &--rls-success { background: rgba($color-rls-success, 0.2); }
-    &--rls-highlight { background: rgba($color-rls-highlight, 0.2); }
-    &--rls-accent { background: rgba($color-rls-accent, 0.2); }
   }
 
   &__step-title {
@@ -183,15 +147,6 @@ defineEmits<{
     &--rls { color: var(--rls-text-secondary); }
   }
 
-  &__note {
-    font-size: $text-xs;
-    font-family: $font-satoshi;
-    margin-bottom: 1.5rem;
-    color: var(--ditto-grey);
-
-    &--rls { color: var(--rls-text-secondary); }
-  }
-
   &__cta {
     width: 100%;
     padding: 0.75rem 1.5rem;
@@ -201,9 +156,9 @@ defineEmits<{
     font-weight: 600;
     font-family: $font-satoshi;
     transition: background 0.15s;
-    background: var(--brand-secondary);
+    background: $color-ditto-purple;
 
-    &:hover { background: rgba($color-brand-secondary, 0.9); }
+    &:hover { background: rgba($color-ditto-purple, 0.9); }
     &--rls {
       background: var(--rls-accent);
       &:hover { background: rgba($color-rls-accent, 0.9); }
@@ -216,7 +171,7 @@ defineEmits<{
     font-size: $text-sm;
     font-weight: 500;
     font-family: $font-satoshi;
-    color: var(--brand-secondary);
+    color: $color-ditto-purple;
     transition: color 0.15s;
 
     &:hover { text-decoration: underline; }
