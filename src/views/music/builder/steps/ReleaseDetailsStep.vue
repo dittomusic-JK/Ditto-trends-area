@@ -186,10 +186,10 @@
 
         <!-- Partial: the tagging itself lives in each track's credits below -->
         <p v-if="form.aiDisclosure === 'partial'" class="text-xs text-ditto-subtext mt-4 max-w-2xl">
-          Tag what was AI-generated on each track in its credits below — a track with no tags has no AI content.
+          Tick "Created with AI" on any credit in each track's credits below — a track with none ticked has no AI content.
         </p>
         <p v-if="form.aiDisclosure === 'full'" class="text-xs text-ditto-subtext mt-4 max-w-2xl">
-          The AI-generated tag will be applied to this release automatically — nothing else changes.
+          Every credit on this release will be marked as created with AI automatically — nothing else to do.
         </p>
       </div>
 
@@ -266,7 +266,7 @@
               </span>
             </div>
             <!-- Full track metadata panel -->
-            <TrackMetadataPanel v-if="editingTrack === track.id" :track="track" :partial-ai="form.aiDisclosure === 'partial'" @close="editingTrack = null" />
+            <TrackMetadataPanel v-if="editingTrack === track.id" :track="track" :ai-disclosure="form.aiDisclosure" @close="editingTrack = null" />
           </div>
         </div>
       </div>

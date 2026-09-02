@@ -108,9 +108,9 @@
         <template v-else-if="form.aiDisclosure === 'partial'">
           <span class="px-3 py-1.5 text-xs font-semibold rounded-full bg-ditto-purple/10 text-ditto-purple">Partially AI-generated</span>
           <span v-for="t in aiTaggedTracks" :key="'ait-' + t.id" class="px-3 py-1.5 text-xs font-medium rounded-full border border-gray-200 text-ditto-text">
-            "{{ t.title }}" <span class="text-ditto-subtext">— {{ t.aiTags.join(', ') }}</span>
+            "{{ t.title }}" <span class="text-ditto-subtext">— {{ aiCreditLabels(t).join(', ') }}</span>
           </span>
-          <span v-if="!aiTaggedTracks.length" class="text-xs text-ditto-subtext">No tracks tagged yet.</span>
+          <span v-if="!aiTaggedTracks.length" class="text-xs text-ditto-subtext">No credits marked as created with AI yet.</span>
         </template>
         <span v-else class="text-sm text-ditto-subtext">Not declared yet.</span>
       </div>
@@ -156,6 +156,7 @@
 <script setup lang="ts">
 import { computed, defineComponent, h } from 'vue'
 import { standardStores, chartRegions, computeReleaseType } from '../../../../data/releaseBuilderMockData'
+import type { BuilderTrack } from '../../../../data/releaseBuilderMockData'
 import type { ReleaseBuilderForm } from '../ReleaseBuilderView.vue'
 
 const props = defineProps<{
@@ -240,7 +241,20 @@ const extrasLabel = computed(() => {
   return extras.length ? extras.join(', ') : 'N/A'
 })
 
-const aiTaggedTracks = computed(() => props.form.tracks.filter(t => t.aiTags.length > 0))
+// Credits ticked "Created with AI" on a track, as review labels
+const aiCreditLabels = (t: BuilderTrack): string[] => {
+  const labels: string[] = []
+  if (t.credits.composerAi) labels.push('Composer')
+  if (t.credits.songwriter.ai) labels.push('Songwriter')
+  if (t.credits.production.ai) labels.push('Production/Engineer')
+  if (t.credits.performer.ai) labels.push('Performer')
+  for (const extra of t.credits.additional) {
+    if (extra.ai) labels.push(extra.role || extra.name || 'Additional credit')
+  }
+  return labels
+}
+
+const aiTaggedTracks = computed(() => props.form.tracks.filter(t => aiCreditLabels(t).length > 0))
 
 const selectedStoreDefs = computed(() => standardStores.filter(s => props.form.selectedStores.includes(s.id)))
 

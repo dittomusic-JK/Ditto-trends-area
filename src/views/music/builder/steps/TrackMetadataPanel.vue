@@ -177,6 +177,13 @@
               :class="fieldClass(track.metadataTouched && !track.credits.composer.trim())"
             />
             <p v-if="track.metadataTouched && !track.credits.composer.trim()" class="text-xs text-error mt-1">Please enter a Composer name.</p>
+            <label v-if="showAiCheckbox" :class="['flex items-center gap-2 mt-2 select-none w-fit', aiLocked ? 'cursor-not-allowed' : 'cursor-pointer']">
+              <input type="checkbox" class="sr-only" :checked="aiLocked || track.credits.composerAi" :disabled="aiLocked" @change="track.credits.composerAi = !track.credits.composerAi" />
+              <span :class="['w-4 h-4 rounded border flex items-center justify-center transition-colors flex-shrink-0', (aiLocked || track.credits.composerAi) ? 'border-ditto-purple bg-ditto-purple' : 'border-gray-300 bg-white', aiLocked ? 'opacity-60' : '']">
+                <svg v-if="aiLocked || track.credits.composerAi" class="w-2.5 h-2.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </span>
+              <span :class="['text-xs', aiLocked ? 'text-ditto-subtext' : 'text-ditto-text']">Created with AI</span>
+            </label>
           </div>
         </div>
 
@@ -190,6 +197,13 @@
               :class="fieldClass(track.metadataTouched && !track.credits[cat.key].name.trim())"
             />
             <p v-if="track.metadataTouched && !track.credits[cat.key].name.trim()" class="text-xs text-error mt-1">Please enter a {{ cat.label }} name.</p>
+            <label v-if="showAiCheckbox" :class="['flex items-center gap-2 mt-2 select-none w-fit', aiLocked ? 'cursor-not-allowed' : 'cursor-pointer']">
+              <input type="checkbox" class="sr-only" :checked="aiLocked || track.credits[cat.key].ai" :disabled="aiLocked" @change="track.credits[cat.key].ai = !track.credits[cat.key].ai" />
+              <span :class="['w-4 h-4 rounded border flex items-center justify-center transition-colors flex-shrink-0', (aiLocked || track.credits[cat.key].ai) ? 'border-ditto-purple bg-ditto-purple' : 'border-gray-300 bg-white', aiLocked ? 'opacity-60' : '']">
+                <svg v-if="aiLocked || track.credits[cat.key].ai" class="w-2.5 h-2.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </span>
+              <span :class="['text-xs', aiLocked ? 'text-ditto-subtext' : 'text-ditto-text']">Created with AI</span>
+            </label>
           </div>
           <div>
             <label class="block text-xs font-semibold text-ditto-text mb-1.5">Role</label>
@@ -209,6 +223,13 @@
           <div>
             <label class="block text-xs font-semibold text-ditto-text mb-1.5">Additional Credit</label>
             <input v-model="extra.name" type="text" placeholder="Name" :class="fieldClass(false)" />
+            <label v-if="showAiCheckbox" :class="['flex items-center gap-2 mt-2 select-none w-fit', aiLocked ? 'cursor-not-allowed' : 'cursor-pointer']">
+              <input type="checkbox" class="sr-only" :checked="aiLocked || extra.ai" :disabled="aiLocked" @change="extra.ai = !extra.ai" />
+              <span :class="['w-4 h-4 rounded border flex items-center justify-center transition-colors flex-shrink-0', (aiLocked || extra.ai) ? 'border-ditto-purple bg-ditto-purple' : 'border-gray-300 bg-white', aiLocked ? 'opacity-60' : '']">
+                <svg v-if="aiLocked || extra.ai" class="w-2.5 h-2.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </span>
+              <span :class="['text-xs', aiLocked ? 'text-ditto-subtext' : 'text-ditto-text']">Created with AI</span>
+            </label>
           </div>
           <div>
             <div class="flex items-center justify-between mb-1.5">
@@ -225,7 +246,7 @@
         </div>
 
         <button
-          @click="track.credits.additional.push({ name: '', role: '' })"
+          @click="track.credits.additional.push({ name: '', role: '', ai: false })"
           class="flex items-center gap-2 px-4 py-2 text-sm font-medium border border-gray-200 rounded-full text-ditto-text hover:border-ditto-purple hover:text-ditto-purple transition-colors"
         >
           <span class="w-4 h-4 rounded-full bg-ditto-text flex items-center justify-center">
@@ -234,42 +255,6 @@
           Add more
         </button>
 
-        <!-- AI disclosure: on a partially-AI release each track tags what was AI-generated -->
-        <div v-if="partialAi" class="border-t border-gray-200 pt-5">
-          <p class="text-sm font-semibold text-ditto-text mb-1">What was AI-generated on this track?</p>
-          <p class="text-xs text-ditto-subtext mb-3">Pick any that apply or add your own — leave empty if this track has no AI content.</p>
-          <div class="flex flex-wrap items-center gap-2">
-            <button
-              v-for="tag in aiTagSuggestions"
-              :key="tag"
-              type="button"
-              @click="toggleAiTag(tag)"
-              :class="[
-                'px-3.5 py-2 text-sm font-medium rounded-full border transition-colors select-none',
-                track.aiTags.includes(tag)
-                  ? 'border-ditto-purple bg-ditto-purple/10 text-ditto-purple'
-                  : 'border-gray-200 text-ditto-text hover:border-ditto-purple/50'
-              ]"
-            >{{ tag }}</button>
-            <span
-              v-for="tag in customAiTags"
-              :key="'custom-' + tag"
-              class="flex items-center gap-1.5 px-3.5 py-2 text-sm font-medium rounded-full border border-ditto-purple bg-ditto-purple/10 text-ditto-purple select-none"
-            >
-              {{ tag }}
-              <button type="button" @click="toggleAiTag(tag)" class="hover:opacity-70" aria-label="Remove tag">
-                <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-              </button>
-            </span>
-            <input
-              v-model="customAiTagDraft"
-              @keydown.enter.prevent="addCustomAiTag"
-              @blur="addCustomAiTag"
-              placeholder="Add your own…"
-              class="px-3.5 py-2 text-sm rounded-full border border-dashed border-gray-300 outline-none focus:border-ditto-purple w-36 bg-transparent"
-            />
-          </div>
-        </div>
       </div>
     </div>
 
@@ -291,28 +276,18 @@
 
 <script setup lang="ts">
 import { computed, ref, defineComponent, h, onUnmounted } from 'vue'
-import { copyrightYears, isTrackMetadataComplete, songwriterRoles, productionRoles, performerRoles, allCreditRoles, aiTagSuggestions } from '../../../../data/releaseBuilderMockData'
+import { copyrightYears, isTrackMetadataComplete, songwriterRoles, productionRoles, performerRoles, allCreditRoles } from '../../../../data/releaseBuilderMockData'
 import type { BuilderTrack, TrackArtists } from '../../../../data/releaseBuilderMockData'
 import VideoArtistsStep from '../../../videos/steps/VideoArtistsStep.vue'
 import SearchableSelect from '../../../videos/steps/SearchableSelect.vue'
 
-const props = defineProps<{ track: BuilderTrack; partialAi?: boolean }>()
+const props = defineProps<{ track: BuilderTrack; aiDisclosure?: '' | 'none' | 'partial' | 'full' }>()
 
-// AI disclosure tags for this track (empty list = no AI on this track)
-const customAiTagDraft = ref('')
-const customAiTags = computed(() => props.track.aiTags.filter(t => !aiTagSuggestions.includes(t)))
+// AI disclosure: partial releases tick "Created with AI" per credit;
+// entirely-AI releases lock every credit's checkbox on.
+const showAiCheckbox = computed(() => props.aiDisclosure === 'partial' || props.aiDisclosure === 'full')
+const aiLocked = computed(() => props.aiDisclosure === 'full')
 
-const toggleAiTag = (tag: string) => {
-  const i = props.track.aiTags.indexOf(tag)
-  if (i === -1) props.track.aiTags.push(tag)
-  else props.track.aiTags.splice(i, 1)
-}
-
-const addCustomAiTag = () => {
-  const tag = customAiTagDraft.value.trim()
-  if (tag && !props.track.aiTags.includes(tag)) props.track.aiTags.push(tag)
-  customAiTagDraft.value = ''
-}
 
 const emit = defineEmits<{
   (e: 'close'): void

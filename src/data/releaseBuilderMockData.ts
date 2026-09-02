@@ -18,10 +18,13 @@ export interface TrackArtists {
 export interface TrackCredit {
   name: string
   role: string
+  /** AI disclosure: this credit was created with AI (partial releases; entirely-AI releases lock every credit on) */
+  ai: boolean
 }
 
 export interface TrackCredits {
   composer: string
+  composerAi: boolean
   songwriter: TrackCredit
   production: TrackCredit
   performer: TrackCredit
@@ -40,8 +43,6 @@ export interface BuilderTrack {
   previewStart: number
   customIsrc: boolean
   customIsrcValue: string
-  /** AI disclosure (partially-AI releases tag the AI tracks) */
-  aiTags: string[] // AI disclosure: what was AI-generated on this track (empty = no AI)
   addLyrics: boolean
   fingerprint: boolean
   explicit: boolean
@@ -69,7 +70,6 @@ export const makeBuilderTrack = (id: string, title: string, duration: string, du
   previewStart: 30,
   customIsrc: false,
   customIsrcValue: '',
-  aiTags: [],
   addLyrics: false,
   fingerprint: false,
   explicit: false,
@@ -81,9 +81,10 @@ export const makeBuilderTrack = (id: string, title: string, duration: string, du
   artistsCustomized: false,
   credits: {
     composer: '',
-    songwriter: { name: '', role: '' },
-    production: { name: '', role: '' },
-    performer: { name: '', role: '' },
+    composerAi: false,
+    songwriter: { name: '', role: '', ai: false },
+    production: { name: '', role: '', ai: false },
+    performer: { name: '', role: '', ai: false },
     additional: [],
   },
   metadataTouched: false,
@@ -264,6 +265,3 @@ export const chartRegions = [
   { id: 'australia', label: 'Australia', price: 25 },
   { id: 'worldwide', label: 'Worldwide', price: 69 },
 ]
-
-// AI disclosure: suggested tags for what was AI-generated on a track
-export const aiTagSuggestions = ['Vocals', 'Lyrics', 'Composition', 'Instrumentation', 'Drums', 'Artwork', 'Mixing & Mastering']
