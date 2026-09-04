@@ -14,7 +14,7 @@
       <h1 class="font-satoshi font-black text-xl sm:text-3xl lg:text-[42px] tracking-[-0.03em] text-ditto-text">
         Your Releases <span>💿</span>
       </h1>
-      <button @click="$emit('navigate', 'music-builder')" class="flex items-center gap-2 px-5 py-2.5 bg-ditto-purple btn-pop-purple text-white text-sm font-medium rounded-full hover:opacity-95 transition-all flex-shrink-0 lg:mr-[24.75rem]">
+      <button @click="$emit('navigate', 'music-builder')" class="flex items-center gap-2 px-5 py-2.5 bg-ditto-purple btn-pop-purple text-white text-sm font-medium rounded-full hover:opacity-95 transition-all flex-shrink-0" :class="navStyle === 'side' ? 'lg:mr-[24.75rem]' : ''">
         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>
         </svg>
@@ -98,7 +98,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, inject } from 'vue'
+
+// The side-nav search overlay (GlobalSearch) needs clearance; top nav doesn't
+const navStyle = inject<'top' | 'side'>('navStyle', 'top')
 import EmptyState from '../components/common/EmptyState.vue'
 import LiquidTabs from '../components/common/LiquidTabs.vue'
 import SearchInput from '../components/common/SearchInput.vue'

@@ -9,7 +9,7 @@
         </h1>
         <p class="text-sm text-ditto-subtext mt-1.5">{{ isNewUser ? "Let's get your first release out into the world." : "Here's what's happening with your music." }}</p>
       </div>
-      <button @click="emit('navigate', 'music-builder')" class="flex items-center gap-2 px-5 h-10 bg-ditto-purple btn-pop-purple text-white text-sm font-medium rounded-full hover:opacity-95 transition-all flex-shrink-0 lg:mr-[24.75rem]">
+      <button @click="emit('navigate', 'music-builder')" class="flex items-center gap-2 px-5 h-10 bg-ditto-purple btn-pop-purple text-white text-sm font-medium rounded-full hover:opacity-95 transition-all flex-shrink-0" :class="navStyle === 'side' ? 'lg:mr-[24.75rem]' : ''">
         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>
         </svg>
@@ -244,7 +244,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, inject } from 'vue'
+
+// The side-nav search overlay (GlobalSearch) needs clearance; top nav doesn't
+const navStyle = inject<'top' | 'side'>('navStyle', 'top')
 import { releaseCatalog } from '../../data/releaseDetailMockData'
 import { artists } from '../../data/artistsMockData'
 import { homeGuides, exploreTiles } from '../../data/homeMockData'

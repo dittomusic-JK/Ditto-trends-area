@@ -9,7 +9,8 @@
         </h1>
         <button
           @click="showCreateModal = true"
-          class="flex items-center gap-2 px-5 py-2.5 text-white text-sm font-medium rounded-full hover:opacity-90 transition-all hover:shadow-lg hover:shadow-ditto-purple/30 flex-shrink-0 lg:mr-[24.75rem]"
+          class="flex items-center gap-2 px-5 py-2.5 text-white text-sm font-medium rounded-full hover:opacity-90 transition-all hover:shadow-lg hover:shadow-ditto-purple/30 flex-shrink-0"
+          :class="navStyle === 'side' ? 'lg:mr-[24.75rem]' : ''"
           style="background: linear-gradient(135deg, #5f1fff, #8640f4, #a855f7)"
         >
           <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -199,7 +200,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, inject } from 'vue'
+
+// The side-nav search overlay (GlobalSearch) needs clearance; top nav doesn't
+const navStyle = inject<'top' | 'side'>('navStyle', 'top')
 import EmptyState from '../../components/common/EmptyState.vue'
 import LiquidTabs from '../../components/common/LiquidTabs.vue'
 import SearchInput from '../../components/common/SearchInput.vue'
