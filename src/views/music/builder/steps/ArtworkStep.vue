@@ -71,12 +71,16 @@
         </p>
       </div>
     </div>
+
+    <!-- ── Motion artwork (Apple Music, optional) — the moving version of this cover ── -->
+    <MotionArtworkUpload v-if="form.artwork && !uploading" :form="form" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
 import type { ReleaseBuilderForm } from '../ReleaseBuilderView.vue'
+import MotionArtworkUpload from './MotionArtworkUpload.vue'
 
 const props = defineProps<{ form: ReleaseBuilderForm }>()
 

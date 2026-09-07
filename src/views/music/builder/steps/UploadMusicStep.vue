@@ -81,9 +81,6 @@
       </div>
     </div>
 
-    <!-- ── Motion artwork (Apple Music, optional) ── -->
-    <MotionArtworkUpload :form="form" />
-
     <!-- ── Add a License modal ── -->
     <Teleport to="body">
       <div v-if="licenseModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4" @click.self="licenseModal = null">
@@ -118,7 +115,6 @@ import { ref } from 'vue'
 import { makeBuilderTrack } from '../../../../data/releaseBuilderMockData'
 import type { BuilderTrack } from '../../../../data/releaseBuilderMockData'
 import type { ReleaseBuilderForm } from '../ReleaseBuilderView.vue'
-import MotionArtworkUpload from './MotionArtworkUpload.vue'
 
 const props = defineProps<{ form: ReleaseBuilderForm }>()
 

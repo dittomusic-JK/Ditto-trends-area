@@ -126,7 +126,7 @@ export interface ReleaseBuilderForm {
   artwork: string | null
   artworkFileName: string
   artworkConfirmed: boolean
-  /** Optional Apple Music motion artwork (Upload step toggle). Invalid blocks the step. */
+  /** Optional Apple Music motion artwork (Artwork step toggle). Invalid blocks the step. */
   motionArtwork: MotionArtwork
   // Details
   title: string
@@ -222,11 +222,11 @@ const visitedSteps = reactive(new Set<number>([0]))
 const validateStep = (stepIndex: number): boolean => {
   switch (stepIndex) {
     case 0:
-      // Motion artwork is optional, but an invalid file blocks until removed or replaced
-      return formData.tracks.length > 0 &&
-        (!formData.motionArtwork.enabled || !['invalid', 'checking'].includes(formData.motionArtwork.status))
+      return formData.tracks.length > 0
     case 1:
-      return formData.artwork !== null && formData.artworkConfirmed
+      // Motion artwork is optional, but an invalid file blocks until removed or replaced
+      return formData.artwork !== null && formData.artworkConfirmed &&
+        (!formData.motionArtwork.enabled || !['invalid', 'checking'].includes(formData.motionArtwork.status))
     case 2:
       return formData.title.trim().length > 0 &&
         formData.copyrightHolder.trim().length >= 2 &&

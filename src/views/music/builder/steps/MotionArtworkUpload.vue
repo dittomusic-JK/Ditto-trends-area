@@ -1,6 +1,6 @@
 <template>
-  <!-- Optional Apple Music motion artwork. Lives on the Upload step behind a
-       toggle — no extra stage. Delivered to Apple Music only. -->
+  <!-- Optional Apple Music motion artwork. Lives on the Artwork step behind a
+       toggle, beneath the still cover — no extra stage. Apple Music only. -->
   <div class="mt-14 max-w-4xl mx-auto border-t border-gray-200 pt-10">
     <div class="flex items-start justify-between gap-6">
       <div>
