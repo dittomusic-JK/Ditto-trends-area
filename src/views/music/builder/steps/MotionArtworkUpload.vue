@@ -5,7 +5,7 @@
     <div class="flex items-start justify-between gap-6">
       <div>
         <h2 class="font-satoshi font-black text-xl lg:text-2xl tracking-[-0.03em] text-ditto-text flex items-center flex-wrap gap-x-3 gap-y-1">
-          Add <span class="text-ditto-purple">motion artwork</span> for Apple Music?
+          <span>Add <span class="text-ditto-purple">motion artwork</span> for Apple Music?</span>
           <span class="inline-flex items-center text-[10px] font-bold uppercase tracking-[1.4px] text-ditto-subtext bg-ditto-light-grey rounded-full px-2 py-0.5 font-sans">Optional</span>
         </h2>
         <p class="text-sm text-ditto-subtext mt-2 max-w-xl leading-relaxed">
