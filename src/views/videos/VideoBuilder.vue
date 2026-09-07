@@ -81,6 +81,7 @@
       <PlanReleaseStep
         v-else-if="currentStep === 3"
         v-model:schedule="formData.schedule"
+        :visited="visitedSteps.has(3)"
       />
 
       <!-- Step 5: Content Check -->
@@ -155,6 +156,10 @@ defineEmits<{
 }>()
 
 const currentStep = ref(0)
+
+// Steps the user has moved on from — required errors only show after that
+// (fields validate on leaving, not while the step is first being filled in).
+const visitedSteps = reactive(new Set<number>())
 
 const steps = [
   { id: 'upload', label: 'Upload' },
@@ -312,6 +317,7 @@ const getStepNumberClasses = (index: number): string => {
 const canGoBack = computed(() => currentStep.value > 0)
 
 const navigateToStep = (index: number) => {
+  visitedSteps.add(currentStep.value)
   currentStep.value = index
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
@@ -326,6 +332,7 @@ const handleLinkReleaseRedirect = () => {
 
 const handleBack = () => {
   if (currentStep.value > 0) {
+    visitedSteps.add(currentStep.value)
     currentStep.value--
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
@@ -333,6 +340,7 @@ const handleBack = () => {
 
 const handleNext = () => {
   if (currentStep.value < 5) {
+    visitedSteps.add(currentStep.value)
     currentStep.value++
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }

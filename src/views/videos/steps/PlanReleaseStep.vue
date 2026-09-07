@@ -3,11 +3,26 @@
     <h2 class="font-satoshi font-black tracking-[-0.03em] text-xl lg:text-2xl text-ditto-text mb-2">Plan your release</h2>
     <p class="text-sm text-ditto-subtext mb-6">Choose when and how you want to release your video.</p>
 
-    <!-- Desktop: side-by-side | Mobile: stacked -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 mb-6">
-      <!-- Left: Calendar -->
+    <!-- One column: label, chosen date, then the calendar -->
+    <div class="max-w-md mb-6">
+      <label class="block text-sm font-medium text-ditto-text mb-3">Release Date</label>
+
+      <!-- Chosen date above the calendar; a quiet empty state until one is picked.
+           The required error only appears after the user has moved on without a date. -->
+      <div v-if="schedule.releaseDate" class="flex items-center gap-3 text-ditto-text mb-4 p-4 rounded-xl bg-ditto-light-grey/60">
+        <svg class="w-6 h-6 text-ditto-purple flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+        <span class="text-lg lg:text-xl font-semibold">{{ formatDate(schedule.releaseDate) }}</span>
+      </div>
+      <div v-else class="flex items-center gap-3 mb-4 p-4 rounded-xl border border-dashed" :class="visited ? 'border-error/40' : 'border-gray-200'">
+        <svg class="w-6 h-6 flex-shrink-0" :class="visited ? 'text-error' : 'text-ditto-subtext'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+        <span class="text-sm" :class="visited ? 'text-error' : 'text-ditto-subtext'">{{ visited ? 'Please select a release date' : 'Select a date below' }}</span>
+      </div>
+
       <div>
-        <label class="block text-sm font-medium text-ditto-text mb-3">Release Date</label>
         <div class="rounded-2xl border border-gray-200 p-4">
           <!-- Calendar Header -->
           <div class="flex items-center justify-between mb-3">
@@ -41,8 +56,9 @@
               :class="[
                 'aspect-square flex items-center justify-center text-xs rounded-full relative transition-all',
                 !day.date ? 'invisible' :
-                day.disabled ? 'text-gray-300 cursor-not-allowed' :
+                day.disabled ? (day.isToday ? 'text-ditto-purple font-bold ring-1 ring-inset ring-ditto-purple/40 cursor-not-allowed' : 'text-gray-300 cursor-not-allowed') :
                 isSelectedDate(day.date) ? 'bg-ditto-purple text-white font-medium' :
+                day.isToday ? 'text-ditto-purple font-bold ring-1 ring-inset ring-ditto-purple/40 hover:bg-ditto-light-grey' :
                 'text-ditto-text hover:bg-ditto-light-grey',
                 !day.isCurrentMonth && day.date ? 'text-gray-400' : ''
               ]"
@@ -50,22 +66,6 @@
               {{ day.dayNumber }}
             </button>
           </div>
-        </div>
-      </div>
-
-      <!-- Right: Selected date -->
-      <div class="flex flex-col">
-        <div v-if="schedule.releaseDate" class="flex items-center gap-3 text-ditto-text mb-4 p-4 rounded-xl bg-ditto-light-grey/60">
-          <svg class="w-6 h-6 text-ditto-purple flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
-          </svg>
-          <span class="text-lg lg:text-xl font-semibold">{{ formatDate(schedule.releaseDate) }}</span>
-        </div>
-        <div v-else class="flex items-center gap-2 text-sm text-warning mb-4 p-3 rounded-xl bg-warning/5 border border-dashed border-warning/30">
-          <svg class="w-4 h-4 text-warning flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
-          </svg>
-          <span>Release date is required</span>
         </div>
       </div>
     </div>
@@ -202,6 +202,8 @@ interface Schedule {
 
 const props = defineProps<{
   schedule: Schedule
+  /** True once the user has left this step — required errors only show from then on */
+  visited?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -224,6 +226,7 @@ interface CalendarDay {
   date: Date | null
   isCurrentMonth: boolean
   disabled: boolean
+  isToday: boolean
 }
 
 const calendarDays = computed<CalendarDay[]>(() => {
@@ -244,6 +247,7 @@ const calendarDays = computed<CalendarDay[]>(() => {
       date,
       isCurrentMonth: false,
       disabled: true,
+      isToday: false,
     })
   }
 
@@ -257,6 +261,7 @@ const calendarDays = computed<CalendarDay[]>(() => {
       date,
       isCurrentMonth: true,
       disabled: diffDays <= 0,
+      isToday: diffDays === 0,
     })
   }
 
@@ -268,6 +273,7 @@ const calendarDays = computed<CalendarDay[]>(() => {
       date: new Date(calendarYear.value, calendarMonth.value + 1, i),
       isCurrentMonth: false,
       disabled: true,
+      isToday: false,
     })
   }
 
