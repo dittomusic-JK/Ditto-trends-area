@@ -3,55 +3,17 @@
     <h2 class="font-satoshi font-black tracking-[-0.03em] text-xl lg:text-2xl text-ditto-text mb-2">Plan your release</h2>
     <p class="text-sm text-ditto-subtext mb-6">Choose when and how you want to release your video.</p>
 
-    <!-- Date picker: same anatomy as the music builder — underline trigger,
-         calendar dropdown on click. Required error only after leaving the step. -->
+    <!-- Date picker: shared builder component (music-builder anatomy).
+         Required error only after leaving the step. -->
     <div class="mb-6">
       <label class="block text-sm font-medium text-ditto-text mb-3">Release Date</label>
-      <div class="relative max-w-xs" ref="calendarWrap">
-        <button
-          @click="showCalendar = !showCalendar"
-          :class="[
-            'w-full flex items-center gap-2.5 border-0 border-b px-0 py-2.5 text-sm bg-transparent transition-colors focus:outline-none',
-            schedule.releaseDate || !visited ? 'border-gray-300 hover:border-ditto-purple' : 'border-error'
-          ]"
-        >
-          <svg class="w-4 h-4 flex-shrink-0" :class="schedule.releaseDate || !visited ? 'text-ditto-purple' : 'text-error'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-          <span :class="schedule.releaseDate ? 'text-ditto-text font-medium' : 'text-ditto-subtext'">{{ schedule.releaseDate ? formatDate(schedule.releaseDate) : 'Select date' }}</span>
-          <svg class="w-3.5 h-3.5 text-ditto-subtext ml-auto transition-transform" :class="showCalendar ? 'rotate-180' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
-
-        <!-- Calendar dropdown -->
-        <div v-if="showCalendar" class="absolute left-0 top-full mt-2 w-72 bg-white rounded-2xl shadow-xl border border-gray-200 p-4 z-30">
-          <div class="flex items-center justify-between mb-3">
-            <button @click="prevMonth" class="w-7 h-7 flex items-center justify-center rounded-lg text-ditto-subtext hover:bg-ditto-light-grey transition-colors">
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-            </button>
-            <p class="text-sm font-bold text-ditto-text">{{ monthLabel }}</p>
-            <button @click="nextMonth" class="w-7 h-7 flex items-center justify-center rounded-lg text-ditto-subtext hover:bg-ditto-light-grey transition-colors">
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-            </button>
-          </div>
-          <div class="grid grid-cols-7 gap-y-1 text-center text-xs">
-            <span v-for="d in ['Mo','Tu','We','Th','Fr','Sa','Su']" :key="d" class="font-semibold text-ditto-subtext py-1">{{ d }}</span>
-            <button
-              v-for="cell in calendarCells"
-              :key="cell.key"
-              :disabled="cell.disabled || !cell.inMonth"
-              @click="selectDate(cell.date)"
-              :class="[
-                'relative h-8 rounded-lg text-[13px] transition-colors',
-                !cell.inMonth ? 'text-gray-300' :
-                isSelectedDate(cell.date) ? 'bg-ditto-purple text-white font-bold' :
-                cell.isToday ? 'text-ditto-purple font-bold ring-1 ring-inset ring-ditto-purple/40' :
-                cell.disabled ? 'text-gray-300 cursor-not-allowed' :
-                'text-ditto-text hover:bg-ditto-light-grey'
-              ]"
-            >
-              {{ cell.day }}
-            </button>
-          </div>
-        </div>
-      </div>
+      <DatePickerDropdown
+        class="max-w-xs"
+        :model-value="schedule.releaseDate"
+        :error="visited && !schedule.releaseDate"
+        mode="future"
+        @update:model-value="updateField('releaseDate', $event)"
+      />
       <p v-if="visited && !schedule.releaseDate" class="text-xs text-error mt-2">Release date is required.</p>
     </div>
 
@@ -160,11 +122,12 @@
         </button>
       </div>
       <div v-if="schedule.hasOriginalDate">
-        <input
-          type="date"
-          :value="schedule.originalReleaseDate ? formatDateInput(schedule.originalReleaseDate) : ''"
-          @input="handleOriginalDateChange"
-          class="px-0 py-2 border-0 border-b border-gray-300 text-sm text-ditto-text bg-transparent focus:outline-none focus:border-ditto-purple transition-colors"
+        <DatePickerDropdown
+          class="max-w-xs"
+          :model-value="schedule.originalReleaseDate"
+          mode="past"
+          placeholder="Select original date"
+          @update:model-value="updateField('originalReleaseDate', $event)"
         />
       </div>
     </div>
@@ -172,8 +135,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed } from 'vue'
 import CountryRestrictionsModal from './CountryRestrictionsModal.vue'
+import DatePickerDropdown from './DatePickerDropdown.vue'
 import UnderlineSelect from './UnderlineSelect.vue'
 
 interface Schedule {
@@ -199,43 +163,12 @@ const emit = defineEmits<{
 const today = new Date()
 today.setHours(0, 0, 0, 0)
 
-// Calendar dropdown (music-builder picker anatomy)
-const showCalendar = ref(false)
-const calendarWrap = ref<HTMLElement | null>(null)
-const viewMonth = ref(new Date(today.getFullYear(), today.getMonth(), 1))
-
-const monthLabel = computed(() =>
-  viewMonth.value.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })
-)
-
 const showCountryModal = ref(false)
 
 // Release-time options
 const hourOptions = Array.from({ length: 24 }, (_, h) => String(h).padStart(2, '0'))
 const minuteOptions = ['00', '15', '30', '45']
 const zoneOptions = ['Local to each store', 'UTC', 'BST (UK)', 'EST (US)']
-
-const dayMs = 86400000
-const daysFromToday = (d: Date) => Math.round((d.getTime() - today.getTime()) / dayMs)
-
-const calendarCells = computed(() => {
-  const first = viewMonth.value
-  const startOffset = (first.getDay() + 6) % 7 // Monday-first
-  const cells = []
-  for (let i = 0; i < 42; i++) {
-    const date = new Date(first.getFullYear(), first.getMonth(), 1 - startOffset + i)
-    const diff = daysFromToday(date)
-    cells.push({
-      key: date.toISOString(),
-      date,
-      day: date.getDate(),
-      inMonth: date.getMonth() === first.getMonth(),
-      isToday: diff === 0,
-      disabled: diff <= 0,
-    })
-  }
-  return cells
-})
 
 // Check if selected date is within 3 days (show processing notice)
 const isWithin3Days = computed(() => {
@@ -244,38 +177,6 @@ const isWithin3Days = computed(() => {
   return diff > 0 && diff <= 3
 })
 
-
-const prevMonth = () => { viewMonth.value = new Date(viewMonth.value.getFullYear(), viewMonth.value.getMonth() - 1, 1) }
-const nextMonth = () => { viewMonth.value = new Date(viewMonth.value.getFullYear(), viewMonth.value.getMonth() + 1, 1) }
-
-const selectDate = (date: Date) => {
-  emit('update:schedule', { ...props.schedule, releaseDate: date })
-  showCalendar.value = false
-}
-
-const handleClickOutside = (e: MouseEvent) => {
-  if (showCalendar.value && calendarWrap.value && !calendarWrap.value.contains(e.target as Node)) {
-    showCalendar.value = false
-  }
-}
-onMounted(() => document.addEventListener('click', handleClickOutside))
-onUnmounted(() => document.removeEventListener('click', handleClickOutside))
-
-const isSelectedDate = (date: Date | null) => {
-  if (!date || !props.schedule.releaseDate) return false
-  return date.getTime() === props.schedule.releaseDate.getTime()
-}
-
-const formatDate = (date: Date) => {
-  return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
-}
-
-const formatDateInput = (date: Date) => {
-  const y = date.getFullYear()
-  const m = String(date.getMonth() + 1).padStart(2, '0')
-  const d = String(date.getDate()).padStart(2, '0')
-  return `${y}-${m}-${d}`
-}
 
 const updateField = (key: keyof Schedule, value: any) => {
   emit('update:schedule', { ...props.schedule, [key]: value })
@@ -289,11 +190,5 @@ const updateTime = (key: 'hour' | 'minute' | 'zone', value: string) => {
   emit('update:schedule', { ...props.schedule, releaseTime: { ...props.schedule.releaseTime, [key]: value } })
 }
 
-const handleOriginalDateChange = (event: Event) => {
-  const input = event.target as HTMLInputElement
-  if (input.value) {
-    updateField('originalReleaseDate', new Date(input.value))
-  }
-}
 </script>
 
