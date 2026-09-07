@@ -447,7 +447,7 @@ defineEmits<{
   (e: 'complete'): void
 }>()
 
-const stepNames = ['Upload', 'Details', 'Stores', 'Schedule', 'Content Check', 'Review']
+const stepNames = ['Upload', 'Details', 'Stores', 'Schedule', 'Review']
 
 const assetSourceLabel = computed(() => {
   const labels: Record<string, string> = {
@@ -486,12 +486,16 @@ const vevoChannelDisplayName = computed(() => {
 const errorStages = computed(() => {
   const errors: { index: number; name: string; message: string }[] = []
 
-  if (!props.formData.videoFile || !props.formData.thumbnailFile || !props.formData.artworkFile) {
-    const issues = []
-    if (!props.formData.videoFile) issues.push('video not uploaded')
-    if (!props.formData.thumbnailFile) issues.push('thumbnail not uploaded')
-    if (!props.formData.artworkFile) issues.push('album artwork not uploaded')
-    errors.push({ index: 0, name: stepNames[0], message: issues.join(', ') })
+  const c = props.formData.contentChecks
+  const contentConfirmed = c.video && c.thumbnail && (!props.formData.metadata.isLyricVideo || c.noLyrics)
+  const uploadIssues = []
+  if (!props.formData.videoFile) uploadIssues.push('video not uploaded')
+  if (!props.formData.thumbnailFile) uploadIssues.push('thumbnail not uploaded')
+  if (!props.formData.artworkFile) uploadIssues.push('album artwork not uploaded')
+  if (!contentConfirmed) uploadIssues.push('content not confirmed')
+  if (!props.formData.assetSource.type) uploadIssues.push('video source not selected')
+  if (uploadIssues.length > 0) {
+    errors.push({ index: 0, name: stepNames[0], message: uploadIssues.join(', ') })
   }
 
   const metaIssues = []
@@ -511,15 +515,6 @@ const errorStages = computed(() => {
 
   if (!props.formData.schedule.releaseDate) {
     errors.push({ index: 3, name: stepNames[3], message: 'release date not set' })
-  }
-
-  const c = props.formData.contentChecks
-  const contentConfirmed = c.video && c.thumbnail && (!props.formData.metadata.isLyricVideo || c.noLyrics)
-  if (!contentConfirmed || !props.formData.assetSource.type) {
-    const issues = []
-    if (!contentConfirmed) issues.push('content not confirmed')
-    if (!props.formData.assetSource.type) issues.push('video source not selected')
-    errors.push({ index: 4, name: stepNames[4], message: issues.join(', ') })
   }
 
   return errors

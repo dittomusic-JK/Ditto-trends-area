@@ -38,16 +38,37 @@
 
     <!-- Step Content -->
     <div class="px-4 sm:px-6 lg:px-20 py-8 lg:py-10 max-w-5xl mx-auto">
-      <!-- Step 1: Upload (video + thumbnail + album artwork) -->
+      <!-- Step 1: Upload — assets on the left, their content check alongside,
+           video source full width beneath (folds the old Content Check stage in) -->
       <div v-if="currentStep === 0" class="space-y-10">
-        <UploadVideoStep v-model:videoFile="formData.videoFile" />
+        <div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_320px] gap-10 lg:gap-12 items-start">
+          <div class="space-y-10 min-w-0">
+            <UploadVideoStep v-model:videoFile="formData.videoFile" />
+            <div class="border-t border-gray-200"></div>
+            <UploadThumbnailStep
+              v-model:thumbnailFile="formData.thumbnailFile"
+              :video-file="formData.videoFile"
+            />
+            <div class="border-t border-gray-200"></div>
+            <UploadArtworkStep v-model:artworkFile="formData.artworkFile" />
+          </div>
+          <aside class="lg:sticky lg:top-28">
+            <CheckContentStep
+              section="checks"
+              v-model:checks="formData.contentChecks"
+              v-model:assetSource="formData.assetSource"
+              :is-lyric-video="formData.metadata.isLyricVideo"
+            />
+          </aside>
+        </div>
         <div class="border-t border-gray-200"></div>
-        <UploadThumbnailStep
-          v-model:thumbnailFile="formData.thumbnailFile"
-          :video-file="formData.videoFile"
+        <CheckContentStep
+          section="source"
+          v-model:checks="formData.contentChecks"
+          v-model:assetSource="formData.assetSource"
+          :is-lyric-video="formData.metadata.isLyricVideo"
+          :visited="visitedSteps.has(0)"
         />
-        <div class="border-t border-gray-200"></div>
-        <UploadArtworkStep v-model:artworkFile="formData.artworkFile" />
       </div>
 
       <!-- Step 2: Details (link release + metadata + artists + credits) -->
@@ -84,17 +105,9 @@
         :visited="visitedSteps.has(3)"
       />
 
-      <!-- Step 5: Content Check -->
-      <CheckContentStep
-        v-else-if="currentStep === 4"
-        v-model:checks="formData.contentChecks"
-        v-model:assetSource="formData.assetSource"
-        :is-lyric-video="formData.metadata.isLyricVideo"
-      />
-
-      <!-- Step 6: Review -->
+      <!-- Step 5: Review -->
       <ReviewStep
-        v-else-if="currentStep === 5"
+        v-else-if="currentStep === 4"
         :form-data="formData"
         :step-errors="stepErrors"
         @go-to-step="navigateToStep"
@@ -111,12 +124,12 @@
           class="px-8 py-2.5 text-sm font-medium rounded-full border border-gray-200 text-ditto-text hover:bg-ditto-light-grey transition-colors"
         >Back</button>
         <button
-          v-if="currentStep < 5"
+          v-if="currentStep < 4"
           @click="handleNext"
           class="px-8 py-2.5 bg-ditto-purple text-white text-sm font-medium rounded-full hover:bg-ditto-purple/90 transition-colors"
         >Next</button>
         <button
-          v-if="currentStep === 5"
+          v-if="currentStep === 4"
           @click="handleComplete"
           :disabled="hasAnyErrors"
           :class="[
@@ -166,7 +179,6 @@ const steps = [
   { id: 'details', label: 'Details' },
   { id: 'stores', label: 'Stores' },
   { id: 'schedule', label: 'Schedule' },
-  { id: 'content', label: 'Content Check' },
   { id: 'review', label: 'Review' },
 ]
 
@@ -259,7 +271,11 @@ const validateStep = (stepIndex: number): boolean => {
     case 0:
       return formData.videoFile !== null &&
         formData.thumbnailFile !== null &&
-        formData.artworkFile !== null
+        formData.artworkFile !== null &&
+        formData.contentChecks.video &&
+        formData.contentChecks.thumbnail &&
+        (!formData.metadata.isLyricVideo || formData.contentChecks.noLyrics) &&
+        formData.assetSource.type !== ''
     case 1:
       return formData.metadata.title.length > 0 &&
         formData.metadata.copyrightHolder.length >= 2 &&
@@ -272,11 +288,6 @@ const validateStep = (stepIndex: number): boolean => {
     case 3:
       return formData.schedule.releaseDate !== null
     case 4:
-      return formData.contentChecks.video &&
-        formData.contentChecks.thumbnail &&
-        (!formData.metadata.isLyricVideo || formData.contentChecks.noLyrics) &&
-        formData.assetSource.type !== ''
-    case 5:
       return !hasAnyErrors.value
     default:
       return false
@@ -297,7 +308,7 @@ const isStepComplete = (index: number): boolean => {
 }
 
 const hasAnyErrors = computed(() => {
-  return [0, 1, 2, 3, 4].some(i => !validateStep(i))
+  return [0, 1, 2, 3].some(i => !validateStep(i))
 })
 
 const getStepClasses = (index: number): string => {
@@ -339,7 +350,7 @@ const handleBack = () => {
 }
 
 const handleNext = () => {
-  if (currentStep.value < 5) {
+  if (currentStep.value < 4) {
     visitedSteps.add(currentStep.value)
     currentStep.value++
     window.scrollTo({ top: 0, behavior: 'smooth' })

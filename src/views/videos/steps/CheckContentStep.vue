@@ -1,9 +1,11 @@
 <template>
+  <!-- Lives inside the Upload step: section="checks" renders the requirement
+       confirmations (beside the uploads), section="source" the video-source
+       declaration (full width beneath them). -->
   <div>
-    <h2 class="font-satoshi font-black tracking-[-0.03em] text-xl lg:text-2xl text-ditto-text mb-2">Check your content</h2>
-    <p class="text-sm text-ditto-subtext mb-6">
-      Confirm your video and thumbnail meet our content requirements, then tell us how the video was made.
-    </p>
+    <template v-if="section === 'checks'">
+    <h2 class="font-satoshi font-black tracking-[-0.03em] text-xl lg:text-2xl text-ditto-text mb-1">Content check</h2>
+    <p class="text-sm text-ditto-subtext mb-5">Confirm your video and thumbnail meet our content requirements.</p>
 
     <!-- Video Content -->
     <div class="flex items-center gap-2 mb-3">
@@ -83,16 +85,20 @@
       </div>
     </label>
 
+    <!-- Status -->
+    <div v-if="allConfirmed" class="mt-4 p-4 rounded-xl bg-success/10 border border-success/20 flex items-center gap-3">
+      <svg class="w-5 h-5 text-success flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M22 11.08V12a10 10 0 11-5.93-9.14" stroke-linecap="round" stroke-linejoin="round"/>
+        <polyline points="22,4 12,14.01 9,11.01" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <p class="text-sm font-medium text-success">Content requirements confirmed.</p>
+    </div>
+    </template>
+
     <!-- Video Asset Source Type -->
-    <div class="mt-8 border-t border-gray-200 pt-6">
-      <div class="flex items-center gap-2 mb-1.5">
-        <svg class="w-4 h-4 text-ditto-subtext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path d="M9 12h6M9 16h6M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9l-7-7z"/><path d="M13 2v7h7"/>
-        </svg>
-        <h3 class="text-xs font-semibold text-ditto-subtext uppercase tracking-wide">Video Source</h3>
-        <span class="text-error text-xs">*</span>
-      </div>
-      <p class="text-sm text-ditto-subtext mb-4">Let us know how your video was made.</p>
+    <div v-else>
+      <h2 class="font-satoshi font-black tracking-[-0.03em] text-xl lg:text-2xl text-ditto-text mb-1">Video source <span class="text-error text-base align-top">*</span></h2>
+      <p class="text-sm text-ditto-subtext mb-5">Let us know how your video was made.</p>
 
       <div class="space-y-2">
         <!-- Original -->
@@ -278,22 +284,8 @@
         </div>
       </div>
 
-      <!-- Source not selected warning -->
-      <div v-if="!assetSource.type" class="mt-3 p-3 rounded-xl bg-warning/10 border border-warning/20 flex items-center gap-2">
-        <svg class="w-4 h-4 text-warning flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
-        </svg>
-        <p class="text-xs text-warning">Please select a video source to continue.</p>
-      </div>
-    </div>
-
-    <!-- Status -->
-    <div v-if="allConfirmed && assetSource.type" class="mt-6 p-4 rounded-xl bg-success/10 border border-success/20 flex items-center gap-3">
-      <svg class="w-5 h-5 text-success flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M22 11.08V12a10 10 0 11-5.93-9.14" stroke-linecap="round" stroke-linejoin="round"/>
-        <polyline points="22,4 12,14.01 9,11.01" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      <p class="text-sm font-medium text-success">All content requirements confirmed. You may proceed.</p>
+      <!-- Source not selected: only once the user has moved on without choosing -->
+      <p v-if="visited && !assetSource.type" class="text-xs text-error mt-3">Please select a video source.</p>
     </div>
   </div>
 </template>
@@ -319,9 +311,12 @@ interface AssetSource {
 }
 
 const props = defineProps<{
+  section: 'checks' | 'source'
   checks: Record<CheckKeys, boolean>
   assetSource: AssetSource
   isLyricVideo: boolean
+  /** True once the user has left the Upload step — required errors only show from then on */
+  visited?: boolean
 }>()
 
 const emit = defineEmits<{
