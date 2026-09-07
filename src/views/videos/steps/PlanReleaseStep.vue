@@ -85,11 +85,11 @@
           ]"></span>
         </button>
       </div>
-      <!-- Same time controls as the music builder: hour / minute / timezone -->
-      <div v-if="schedule.timedRelease" class="flex items-center gap-2 max-w-md">
-        <select :value="schedule.releaseTime.hour" @change="updateTime('hour', ($event.target as HTMLSelectElement).value)" class="builder-select w-20"><option value="" disabled></option><option v-for="hh in 24" :key="hh" :value="String(hh - 1).padStart(2, '0')">{{ String(hh - 1).padStart(2, '0') }}</option></select>
-        <select :value="schedule.releaseTime.minute" @change="updateTime('minute', ($event.target as HTMLSelectElement).value)" class="builder-select w-20"><option value="" disabled></option><option value="00">00</option><option value="15">15</option><option value="30">30</option><option value="45">45</option></select>
-        <select :value="schedule.releaseTime.zone" @change="updateTime('zone', ($event.target as HTMLSelectElement).value)" class="builder-select flex-1"><option value="" disabled></option><option>Local to each store</option><option>UTC</option><option>BST (UK)</option><option>EST (US)</option></select>
+      <!-- Hour / minute / timezone — custom dropdowns in the release-date trigger's format -->
+      <div v-if="schedule.timedRelease" class="flex items-center gap-3 max-w-md">
+        <UnderlineSelect class="w-20" :model-value="schedule.releaseTime.hour" :options="hourOptions" placeholder="HH" @update:model-value="updateTime('hour', $event)" />
+        <UnderlineSelect class="w-20" :model-value="schedule.releaseTime.minute" :options="minuteOptions" placeholder="MM" @update:model-value="updateTime('minute', $event)" />
+        <UnderlineSelect class="flex-1" :model-value="schedule.releaseTime.zone" :options="zoneOptions" placeholder="Timezone" @update:model-value="updateTime('zone', $event)" />
       </div>
     </div>
 
@@ -174,6 +174,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import CountryRestrictionsModal from './CountryRestrictionsModal.vue'
+import UnderlineSelect from './UnderlineSelect.vue'
 
 interface Schedule {
   releaseDate: Date | null
@@ -208,6 +209,11 @@ const monthLabel = computed(() =>
 )
 
 const showCountryModal = ref(false)
+
+// Release-time options
+const hourOptions = Array.from({ length: 24 }, (_, h) => String(h).padStart(2, '0'))
+const minuteOptions = ['00', '15', '30', '45']
+const zoneOptions = ['Local to each store', 'UTC', 'BST (UK)', 'EST (US)']
 
 const dayMs = 86400000
 const daysFromToday = (d: Date) => Math.round((d.getTime() - today.getTime()) / dayMs)
@@ -291,20 +297,3 @@ const handleOriginalDateChange = (event: Event) => {
 }
 </script>
 
-<style scoped>
-/* Underline select matching the builder field idiom (same as the music builder) */
-.builder-select {
-  border: 0;
-  border-bottom: 1px solid #d1d5db;
-  border-radius: 0;
-  padding: 0.625rem 0;
-  font-size: 0.875rem;
-  color: var(--ditto-colors-light-dark-ditto-text-fill);
-  background: transparent;
-  transition: border-color 0.15s ease;
-}
-.builder-select:focus {
-  outline: none;
-  border-bottom-color: var(--ditto-purple);
-}
-</style>
