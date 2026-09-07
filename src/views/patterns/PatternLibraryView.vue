@@ -387,7 +387,7 @@
             </button>
             <h4 class="font-satoshi font-black tracking-[-0.03em] text-xl text-ditto-text text-center pr-6 mb-6">Modal title</h4>
             <div class="flex items-center justify-center gap-3">
-              <button class="px-8 py-2.5 rounded-full bg-ditto-light-grey text-sm font-semibold text-ditto-text hover:bg-gray-200 transition-colors">Cancel</button>
+              <button class="px-6 py-2.5 rounded-full text-sm font-semibold text-ditto-text hover:bg-ditto-light-grey transition-colors">Cancel</button>
               <button class="px-8 py-2.5 rounded-full text-sm font-semibold bg-ditto-purple btn-pop-purple text-white hover:opacity-95 transition-all">Confirm</button>
             </div>
           </div>

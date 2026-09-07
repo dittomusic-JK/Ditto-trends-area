@@ -29,9 +29,10 @@
       />
 
       <div class="flex items-center justify-center gap-4 mt-9">
+        <!-- Quiet secondary: no fill, so it can't be mistaken for the disabled primary -->
         <button
           @click="$emit('close')"
-          class="px-10 py-3 rounded-full bg-ditto-light-grey text-sm font-semibold text-ditto-text hover:bg-gray-200 transition-colors"
+          class="px-8 py-3 rounded-full text-sm font-semibold text-ditto-text hover:bg-ditto-light-grey transition-colors"
         >Cancel</button>
         <button
           @click="submit"
