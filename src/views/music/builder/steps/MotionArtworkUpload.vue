@@ -4,10 +4,11 @@
   <div class="mt-14 max-w-4xl mx-auto border-t border-gray-200 pt-10">
     <div class="flex items-start justify-between gap-6">
       <div>
-        <p class="text-sm font-semibold text-ditto-text">Add <span class="font-black">motion artwork</span> for Apple Music?
-          <span class="ml-2 inline-flex items-center gap-1 align-middle text-[10px] font-bold uppercase tracking-[1.4px] text-ditto-subtext bg-ditto-light-grey rounded-full px-2 py-0.5">Optional</span>
-        </p>
-        <p class="text-xs text-ditto-subtext mt-1 max-w-xl leading-relaxed">
+        <h2 class="font-satoshi font-black text-xl lg:text-2xl tracking-[-0.03em] text-ditto-text flex items-center flex-wrap gap-x-3 gap-y-1">
+          Add <span class="text-ditto-purple">motion artwork</span> for Apple Music?
+          <span class="inline-flex items-center text-[10px] font-bold uppercase tracking-[1.4px] text-ditto-subtext bg-ditto-light-grey rounded-full px-2 py-0.5 font-sans">Optional</span>
+        </h2>
+        <p class="text-sm text-ditto-subtext mt-2 max-w-xl leading-relaxed">
           A short looping video version of your cover. It's only distributed to Apple Music — every other store keeps the still artwork.
           <a href="https://help.apple.com/itc/albummotionguide/en.lproj/static.html" target="_blank" rel="noopener" class="text-ditto-purple hover:underline">Apple's motion artwork guide</a>
         </p>
