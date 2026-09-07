@@ -62,14 +62,6 @@
             </svg>
           </button>
         </div>
-        <ul class="mt-4 space-y-2">
-          <li v-for="rule in artworkRules" :key="rule" class="flex items-center gap-2.5 text-xs text-ditto-subtext">
-            <span class="w-4 h-4 rounded-full border border-ditto-subtext/50 flex items-center justify-center flex-shrink-0">
-              <svg class="w-2 h-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-            </span>
-            {{ rule }}
-          </li>
-        </ul>
       </div>
     </div>
 
@@ -120,12 +112,6 @@ const emit = defineEmits<{
   (e: 'update:artworkFile', file: File | null): void
 }>()
 
-// Same store rules the music builder's artwork step lists
-const artworkRules = [
-  'No social media or music platform logos.',
-  'No copyrighted, explicit or pixelated images.',
-  'No QR codes, web addresses or URLs.',
-]
 
 const isDragging = ref(false)
 const isUploading = ref(false)
