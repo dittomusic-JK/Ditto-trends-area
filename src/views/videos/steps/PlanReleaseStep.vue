@@ -3,71 +3,56 @@
     <h2 class="font-satoshi font-black tracking-[-0.03em] text-xl lg:text-2xl text-ditto-text mb-2">Plan your release</h2>
     <p class="text-sm text-ditto-subtext mb-6">Choose when and how you want to release your video.</p>
 
-    <!-- One column: label, chosen date, then the calendar -->
-    <div class="max-w-md mb-6">
+    <!-- Date picker: same anatomy as the music builder — underline trigger,
+         calendar dropdown on click. Required error only after leaving the step. -->
+    <div class="mb-6">
       <label class="block text-sm font-medium text-ditto-text mb-3">Release Date</label>
+      <div class="relative max-w-xs" ref="calendarWrap">
+        <button
+          @click="showCalendar = !showCalendar"
+          :class="[
+            'w-full flex items-center gap-2.5 border-0 border-b px-0 py-2.5 text-sm bg-transparent transition-colors focus:outline-none',
+            schedule.releaseDate || !visited ? 'border-gray-300 hover:border-ditto-purple' : 'border-error'
+          ]"
+        >
+          <svg class="w-4 h-4 flex-shrink-0" :class="schedule.releaseDate || !visited ? 'text-ditto-purple' : 'text-error'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          <span :class="schedule.releaseDate ? 'text-ditto-text font-medium' : 'text-ditto-subtext'">{{ schedule.releaseDate ? formatDate(schedule.releaseDate) : 'Select date' }}</span>
+          <svg class="w-3.5 h-3.5 text-ditto-subtext ml-auto transition-transform" :class="showCalendar ? 'rotate-180' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
 
-      <!-- Chosen date above the calendar; a quiet empty state until one is picked.
-           The required error only appears after the user has moved on without a date. -->
-      <div v-if="schedule.releaseDate" class="flex items-center gap-3 text-ditto-text mb-4 p-4 rounded-xl bg-ditto-light-grey/60">
-        <svg class="w-6 h-6 text-ditto-purple flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
-        </svg>
-        <span class="text-lg lg:text-xl font-semibold">{{ formatDate(schedule.releaseDate) }}</span>
-      </div>
-      <div v-else class="flex items-center gap-3 mb-4 p-4 rounded-xl border border-dashed" :class="visited ? 'border-error/40' : 'border-gray-200'">
-        <svg class="w-6 h-6 flex-shrink-0" :class="visited ? 'text-error' : 'text-ditto-subtext'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
-        </svg>
-        <span class="text-sm" :class="visited ? 'text-error' : 'text-ditto-subtext'">{{ visited ? 'Please select a release date' : 'Select a date below' }}</span>
-      </div>
-
-      <div>
-        <div class="rounded-2xl border border-gray-200 p-4">
-          <!-- Calendar Header -->
+        <!-- Calendar dropdown -->
+        <div v-if="showCalendar" class="absolute left-0 top-full mt-2 w-72 bg-white rounded-2xl shadow-xl border border-gray-200 p-4 z-30">
           <div class="flex items-center justify-between mb-3">
-            <button @click="prevMonth" class="w-8 h-8 rounded-full hover:bg-ditto-light-grey flex items-center justify-center transition-colors">
-              <svg class="w-4 h-4 text-ditto-text" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M15 18l-6-6 6-6" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
+            <button @click="prevMonth" class="w-7 h-7 flex items-center justify-center rounded-lg text-ditto-subtext hover:bg-ditto-light-grey transition-colors">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
             </button>
-            <span class="text-sm font-semibold text-ditto-text">{{ monthNames[calendarMonth] }} {{ calendarYear }}</span>
-            <button @click="nextMonth" class="w-8 h-8 rounded-full hover:bg-ditto-light-grey flex items-center justify-center transition-colors">
-              <svg class="w-4 h-4 text-ditto-text" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M9 18l6-6-6-6" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
+            <p class="text-sm font-bold text-ditto-text">{{ monthLabel }}</p>
+            <button @click="nextMonth" class="w-7 h-7 flex items-center justify-center rounded-lg text-ditto-subtext hover:bg-ditto-light-grey transition-colors">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
             </button>
           </div>
-
-          <!-- Day Headers -->
-          <div class="grid grid-cols-7 mb-1">
-            <div v-for="day in dayNames" :key="day" class="text-center text-[10px] font-medium text-ditto-subtext py-1">
-              {{ day }}
-            </div>
-          </div>
-
-          <!-- Calendar Days -->
-          <div class="grid grid-cols-7 gap-y-0.5">
+          <div class="grid grid-cols-7 gap-y-1 text-center text-xs">
+            <span v-for="d in ['Mo','Tu','We','Th','Fr','Sa','Su']" :key="d" class="font-semibold text-ditto-subtext py-1">{{ d }}</span>
             <button
-              v-for="(day, index) in calendarDays"
-              :key="index"
-              @click="day.date && !day.disabled ? selectDate(day.date) : null"
-              :disabled="!day.date || day.disabled"
+              v-for="cell in calendarCells"
+              :key="cell.key"
+              :disabled="cell.disabled || !cell.inMonth"
+              @click="selectDate(cell.date)"
               :class="[
-                'aspect-square flex items-center justify-center text-xs rounded-full relative transition-all',
-                !day.date ? 'invisible' :
-                day.disabled ? (day.isToday ? 'text-ditto-purple font-bold ring-1 ring-inset ring-ditto-purple/40 cursor-not-allowed' : 'text-gray-300 cursor-not-allowed') :
-                isSelectedDate(day.date) ? 'bg-ditto-purple text-white font-medium' :
-                day.isToday ? 'text-ditto-purple font-bold ring-1 ring-inset ring-ditto-purple/40 hover:bg-ditto-light-grey' :
-                'text-ditto-text hover:bg-ditto-light-grey',
-                !day.isCurrentMonth && day.date ? 'text-gray-400' : ''
+                'relative h-8 rounded-lg text-[13px] transition-colors',
+                !cell.inMonth ? 'text-gray-300' :
+                isSelectedDate(cell.date) ? 'bg-ditto-purple text-white font-bold' :
+                cell.isToday ? 'text-ditto-purple font-bold ring-1 ring-inset ring-ditto-purple/40' :
+                cell.disabled ? 'text-gray-300 cursor-not-allowed' :
+                'text-ditto-text hover:bg-ditto-light-grey'
               ]"
             >
-              {{ day.dayNumber }}
+              {{ cell.day }}
             </button>
           </div>
         </div>
       </div>
+      <p v-if="visited && !schedule.releaseDate" class="text-xs text-error mt-2">Release date is required.</p>
     </div>
 
     <!-- Store Processing Notice (shown when date is within 3 days) -->
@@ -187,7 +172,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import CountryRestrictionsModal from './CountryRestrictionsModal.vue'
 
 interface Schedule {
@@ -210,74 +195,40 @@ const emit = defineEmits<{
   (e: 'update:schedule', schedule: Schedule): void
 }>()
 
-const dayNames = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
-const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-
 const today = new Date()
 today.setHours(0, 0, 0, 0)
 
-const calendarMonth = ref(today.getMonth())
-const calendarYear = ref(today.getFullYear())
+// Calendar dropdown (music-builder picker anatomy)
+const showCalendar = ref(false)
+const calendarWrap = ref<HTMLElement | null>(null)
+const viewMonth = ref(new Date(today.getFullYear(), today.getMonth(), 1))
+
+const monthLabel = computed(() =>
+  viewMonth.value.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })
+)
 
 const showCountryModal = ref(false)
 
-interface CalendarDay {
-  dayNumber: number
-  date: Date | null
-  isCurrentMonth: boolean
-  disabled: boolean
-  isToday: boolean
-}
+const dayMs = 86400000
+const daysFromToday = (d: Date) => Math.round((d.getTime() - today.getTime()) / dayMs)
 
-const calendarDays = computed<CalendarDay[]>(() => {
-  const days: CalendarDay[] = []
-  const firstDay = new Date(calendarYear.value, calendarMonth.value, 1)
-  const lastDay = new Date(calendarYear.value, calendarMonth.value + 1, 0)
-
-  let startDayOfWeek = firstDay.getDay() - 1
-  if (startDayOfWeek < 0) startDayOfWeek = 6
-
-  // Previous month padding
-  const prevMonthLastDay = new Date(calendarYear.value, calendarMonth.value, 0).getDate()
-  for (let i = startDayOfWeek - 1; i >= 0; i--) {
-    const dayNum = prevMonthLastDay - i
-    const date = new Date(calendarYear.value, calendarMonth.value - 1, dayNum)
-    days.push({
-      dayNumber: dayNum,
+const calendarCells = computed(() => {
+  const first = viewMonth.value
+  const startOffset = (first.getDay() + 6) % 7 // Monday-first
+  const cells = []
+  for (let i = 0; i < 42; i++) {
+    const date = new Date(first.getFullYear(), first.getMonth(), 1 - startOffset + i)
+    const diff = daysFromToday(date)
+    cells.push({
+      key: date.toISOString(),
       date,
-      isCurrentMonth: false,
-      disabled: true,
-      isToday: false,
+      day: date.getDate(),
+      inMonth: date.getMonth() === first.getMonth(),
+      isToday: diff === 0,
+      disabled: diff <= 0,
     })
   }
-
-  // Current month
-  for (let i = 1; i <= lastDay.getDate(); i++) {
-    const date = new Date(calendarYear.value, calendarMonth.value, i)
-    date.setHours(0, 0, 0, 0)
-    const diffDays = Math.ceil((date.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
-    days.push({
-      dayNumber: i,
-      date,
-      isCurrentMonth: true,
-      disabled: diffDays <= 0,
-      isToday: diffDays === 0,
-    })
-  }
-
-  // Next month padding
-  const remaining = 42 - days.length
-  for (let i = 1; i <= remaining; i++) {
-    days.push({
-      dayNumber: i,
-      date: new Date(calendarYear.value, calendarMonth.value + 1, i),
-      isCurrentMonth: false,
-      disabled: true,
-      isToday: false,
-    })
-  }
-
-  return days
+  return cells
 })
 
 // Check if selected date is within 3 days (show processing notice)
@@ -288,27 +239,21 @@ const isWithin3Days = computed(() => {
 })
 
 
-const prevMonth = () => {
-  if (calendarMonth.value === 0) {
-    calendarMonth.value = 11
-    calendarYear.value--
-  } else {
-    calendarMonth.value--
-  }
-}
-
-const nextMonth = () => {
-  if (calendarMonth.value === 11) {
-    calendarMonth.value = 0
-    calendarYear.value++
-  } else {
-    calendarMonth.value++
-  }
-}
+const prevMonth = () => { viewMonth.value = new Date(viewMonth.value.getFullYear(), viewMonth.value.getMonth() - 1, 1) }
+const nextMonth = () => { viewMonth.value = new Date(viewMonth.value.getFullYear(), viewMonth.value.getMonth() + 1, 1) }
 
 const selectDate = (date: Date) => {
   emit('update:schedule', { ...props.schedule, releaseDate: date })
+  showCalendar.value = false
 }
+
+const handleClickOutside = (e: MouseEvent) => {
+  if (showCalendar.value && calendarWrap.value && !calendarWrap.value.contains(e.target as Node)) {
+    showCalendar.value = false
+  }
+}
+onMounted(() => document.addEventListener('click', handleClickOutside))
+onUnmounted(() => document.removeEventListener('click', handleClickOutside))
 
 const isSelectedDate = (date: Date | null) => {
   if (!date || !props.schedule.releaseDate) return false
@@ -316,7 +261,7 @@ const isSelectedDate = (date: Date | null) => {
 }
 
 const formatDate = (date: Date) => {
-  return date.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
+  return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
 const formatDateInput = (date: Date) => {
