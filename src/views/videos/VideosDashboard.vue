@@ -168,8 +168,9 @@
     <div class="h-8"></div>
 
     <!-- Create Video Modal -->
-    <CreateVideoModal
+    <CreateReleaseModal
       v-if="showCreateModal"
+      heading="Create a New Video Release"
       @close="showCreateModal = false"
       @create="handleCreateVideo"
     />
@@ -207,7 +208,7 @@ const navStyle = inject<'top' | 'side'>('navStyle', 'top')
 import EmptyState from '../../components/common/EmptyState.vue'
 import LiquidTabs from '../../components/common/LiquidTabs.vue'
 import SearchInput from '../../components/common/SearchInput.vue'
-import CreateVideoModal from './CreateVideoModal.vue'
+import CreateReleaseModal from '../music/builder/CreateMusicReleaseModal.vue'
 import GlobalSearch from '../../components/layout/GlobalSearch.vue'
 import VideoBuilder from './VideoBuilder.vue'
 import { videoReleases } from '../../data/videoMockData'

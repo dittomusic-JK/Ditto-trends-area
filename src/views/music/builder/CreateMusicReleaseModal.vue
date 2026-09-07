@@ -1,6 +1,7 @@
 <template>
-  <!-- Every release is named before the wizard starts, so the draft is logged
-       from the first step (mirrors the live dashboard). -->
+  <!-- Every release is named before its wizard starts, so the draft is logged
+       from the first step (mirrors the live dashboard). Shared by the music
+       and video builders — the heading is the only thing that differs. -->
   <div class="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-4" @click.self="$emit('close')">
     <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg px-10 py-9 relative">
       <button
@@ -14,7 +15,7 @@
       </button>
 
       <h2 class="font-satoshi font-black tracking-[-0.03em] text-2xl text-ditto-text text-center pr-8 mb-9">
-        Create a New Music Release
+        {{ heading }}
       </h2>
 
       <input
@@ -49,6 +50,8 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+
+withDefaults(defineProps<{ heading?: string }>(), { heading: 'Create a New Music Release' })
 
 const emit = defineEmits<{
   (e: 'close'): void
