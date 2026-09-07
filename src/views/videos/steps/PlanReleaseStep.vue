@@ -68,8 +68,8 @@
       </div>
     </div>
 
-    <!-- Release Time -->
-    <div class="mb-6 border-t border-gray-200 pt-5">
+    <!-- Release Time (no top rule — it would double up with the date field's underline) -->
+    <div class="mb-6 pt-2">
       <div class="flex items-center justify-between mb-3">
         <span class="text-sm text-ditto-text">Set a specific release time?</span>
         <button
