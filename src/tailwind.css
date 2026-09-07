@@ -89,6 +89,7 @@
   --split-confirmed: #00e785;
   --split-pending: #f59e0b;
   --split-unclaimed: #f97316;
+  --split-verification: #8b5cf6;
   --split-rejected: #ee404c;
 
   --error: #ee404c;

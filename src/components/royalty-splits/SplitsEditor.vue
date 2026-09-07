@@ -109,7 +109,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue'
-import type { Collaborator, TrackSplit } from './types'
+import type { Collaborator, TrackSplit, SplitStatus } from './types'
 import SplitRow from './SplitRow.vue'
 
 interface StagedSplit {
@@ -117,7 +117,7 @@ interface StagedSplit {
   name: string
   email: string
   share: number
-  status?: 'active' | 'pending' | 'rejected' | 'unclaimed'
+  status?: SplitStatus
   activeSince?: string
   originalShare?: number
   hasAccount?: boolean

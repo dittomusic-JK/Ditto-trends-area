@@ -10,7 +10,7 @@ export interface ReleaseTrack {
   duration: string
 }
 
-export type SplitStatus = 'active' | 'pending' | 'unclaimed'
+export type SplitStatus = 'active' | 'pending' | 'unclaimed' | 'verification'
 
 export interface SplitCollaborator {
   id: string
@@ -148,6 +148,7 @@ const curated: Record<string, Partial<ReleaseDetail>> = {
       ]},
       { trackId: 't5', collaborators: [
         c('s3', 'Davido', 'davido@dmwrecords.com', 25, 'pending'),
+        c('s4', 'Rvssian', 'rvssian@headconcussion.com', 10, 'verification'),
         c('s4', 'Rvssian', 'rvssian@headconcussion.co', 20, 'unclaimed'),
       ]},
     ],

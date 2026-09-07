@@ -57,6 +57,13 @@
       />
       <div v-else class="sr__email-ro">
         <span class="sr__val" :class="{ 'sr__val--struck': isDeleted }">{{ email }}</span>
+        <!-- Edit email — unclaimed collaborators, right where the address is -->
+        <div v-if="!isEditingShare && !isDeleted && status === 'unclaimed'" class="sr__act-wrap">
+          <button @click="$emit('edit-email')" class="sr__icon-btn sr__icon-btn--inline" :class="{ 'sr__icon-btn--rls': isRLS }" aria-label="Edit email">
+            <EditIcon />
+          </button>
+          <div class="sr__mini-tip" :class="{ 'sr__mini-tip--rls': isRLS }">Edit email</div>
+        </div>
         <!-- Unregistered indicator -->
         <div v-if="!isRLS && hasAccount === false" class="sr__unreg-wrap">
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none" class="sr__unreg-icon">
@@ -130,24 +137,22 @@
 
     <!-- Action buttons -->
     <div class="sr__actions">
-      <div v-if="!isEditable && !isEditingShare && !isDeleted && (status === 'active' || status === 'pending' || (isRLS && status === 'unclaimed'))" class="sr__act-wrap">
+      <div v-if="!isEditable && !isEditingShare && !isDeleted && (status === 'active' || status === 'pending' || status === 'verification' || (isRLS && status === 'unclaimed'))" class="sr__act-wrap">
         <button @click="isNew ? $emit('re-edit') : startShareEdit()" class="sr__icon-btn" :class="{ 'sr__icon-btn--rls': isRLS }">
           <EditIcon />
         </button>
         <div class="sr__mini-tip" :class="{ 'sr__mini-tip--rls': isRLS }">Edit split</div>
       </div>
 
-      <!-- Edit email — only for unclaimed (RLS) collaborators -->
-      <div v-if="!isEditable && !isEditingShare && !isDeleted && status === 'unclaimed'" class="sr__act-wrap">
-        <button @click="$emit('edit-email')" class="sr__icon-btn" :class="{ 'sr__icon-btn--rls': isRLS }">
-          <MailIcon />
-        </button>
-        <div class="sr__mini-tip" :class="{ 'sr__mini-tip--rls': isRLS }">Edit email</div>
-      </div>
-
       <div v-if="!isEditable && !isEditingShare && status === 'pending' && !isRLS" class="sr__act-wrap">
         <button @click="$emit('resend')" class="sr__icon-btn"><SendIcon /></button>
         <div class="sr__mini-tip">Resend confirmation email</div>
+      </div>
+
+      <!-- Resend verification — the collaborator hasn't verified their email yet -->
+      <div v-if="!isEditable && !isEditingShare && !isDeleted && status === 'verification'" class="sr__act-wrap">
+        <button @click="$emit('resend')" class="sr__icon-btn" :class="{ 'sr__icon-btn--rls': isRLS }"><SendIcon /></button>
+        <div class="sr__mini-tip" :class="{ 'sr__mini-tip--rls': isRLS }">Resend verification email</div>
       </div>
 
       <!-- Resend invitation — unclaimed collaborators can be re-invited -->
@@ -225,7 +230,10 @@
         class="sr__input"
         @input="emitUpdate"
       />
-      <span v-else class="sr__val">{{ email }}</span>
+      <div v-else class="sr__email-ro">
+        <span class="sr__val">{{ email }}</span>
+        <button v-if="status === 'unclaimed'" @click="$emit('edit-email')" class="sr__icon-btn sr__icon-btn--inline" :class="{ 'sr__icon-btn--rls': isRLS }" aria-label="Edit email"><EditIcon /></button>
+      </div>
     </div>
 
     <div v-if="!isEditable" class="sr-m__footer">
@@ -237,8 +245,7 @@
 
       <div class="sr-m__btns">
         <button v-if="status === 'active' || status === 'rejected'" @click="$emit('edit-share')" class="sr__icon-btn"><EditIcon /></button>
-        <button v-if="status === 'unclaimed'" @click="$emit('edit-email')" class="sr__icon-btn" :class="{ 'sr__icon-btn--rls': isRLS }"><MailIcon /></button>
-        <button v-if="status === 'pending' || status === 'unclaimed'" @click="$emit('resend')" class="sr__icon-btn"><SendIcon /></button>
+        <button v-if="status === 'pending' || status === 'unclaimed' || status === 'verification'" @click="$emit('resend')" class="sr__icon-btn"><SendIcon /></button>
         <button @click="$emit('remove')" class="sr__icon-btn sr__icon-btn--delete"><TrashIcon /></button>
       </div>
     </div>
@@ -252,7 +259,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, nextTick } from 'vue'
 import type { SplitStatus } from './types'
-import { EditIcon, TrashIcon, SendIcon, MailIcon } from './icons'
+import { EditIcon, TrashIcon, SendIcon } from './icons'
 
 export interface KnownCollaborator {
   name: string
@@ -429,6 +436,7 @@ const statusDotClass = computed(() => {
     case 'pending': return 'sr__dot--pending'
     case 'rejected': return 'sr__dot--rejected'
     case 'unclaimed': return props.isRLS ? 'sr__dot--unclaimed-rls' : 'sr__dot--unclaimed'
+    case 'verification': return 'sr__dot--verification'
     default: return 'sr__dot--default'
   }
 })
@@ -443,6 +451,8 @@ const statusText = computed(() => {
       return 'Rejected'
     case 'unclaimed':
       return 'Unclaimed'
+    case 'verification':
+      return 'Requires verification'
     default:
       return ''
   }
@@ -474,6 +484,8 @@ const statusTooltip = computed(() => {
       return 'The collaborator declined this split offer. Edit to send a new offer.'
     case 'unclaimed':
       return 'This collaborator needs to log in or create a Ditto account to claim their split.'
+    case 'verification':
+      return 'This collaborator needs to verify their email address before the split goes live.'
     default:
       return ''
   }
@@ -604,6 +616,7 @@ const emitUpdate = () => {
   &--rejected { background: var(--split-rejected); }
   &--unclaimed { background: var(--split-unclaimed); }
   &--unclaimed-rls { background: var(--split-unclaimed); }
+  &--verification { background: var(--split-verification); }
   &--default { background: var(--ditto-grey); }
 }
 
@@ -672,6 +685,13 @@ const emitUpdate = () => {
   &--rls {
     color: var(--rls-text-secondary);
     &:hover { color: var(--rls-accent); }
+  }
+  &--inline {
+    padding: 0.125rem;
+    margin-left: 0.125rem;
+    display: inline-flex;
+    align-items: center;
+    svg { width: 0.875rem; height: 0.875rem; }
   }
   &--delete {
     color: var(--error);

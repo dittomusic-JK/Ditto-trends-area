@@ -366,6 +366,8 @@ const handleResendConfirmation = (trackId: string, splitId: string) => {
   if (split) {
     if (split.status === 'unclaimed') {
       showToast(`Invitation resent to ${split.email}`, 'info')
+    } else if (split.status === 'verification') {
+      showToast(`Verification email resent to ${split.email}`, 'info')
     } else {
       showToast(`Confirmation email sent to ${split.email}`, 'info')
     }

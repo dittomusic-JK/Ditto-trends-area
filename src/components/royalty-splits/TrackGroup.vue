@@ -167,7 +167,8 @@ const getOtherTracksWithSplits = (currentTrackId: string): TrackSplit[] => {
 const rowStatus = (track: TrackSplit): 'none' | 'confirmed' | 'pending' | 'rejected' | 'unclaimed' => {
   if (track.splits.length === 0) return 'none'
   const hasActive = track.splits.some(s => s.status === 'active')
-  const hasPending = track.splits.some(s => s.status === 'pending')
+  // Awaiting email verification reads as pending at track level
+  const hasPending = track.splits.some(s => s.status === 'pending' || s.status === 'verification')
   const hasRejected = track.splits.some(s => s.status === 'rejected')
   const hasUnclaimed = track.splits.some(s => s.status === 'unclaimed')
   
@@ -209,7 +210,7 @@ const getConfirmedShare = (track: TrackSplit): number => {
 }
 
 const getPendingCount = (track: TrackSplit): number => {
-  return track.splits.filter(s => s.status === 'pending').length
+  return track.splits.filter(s => s.status === 'pending' || s.status === 'verification').length
 }
 
 const getUnclaimedCount = (track: TrackSplit): number => {

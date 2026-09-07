@@ -2,7 +2,7 @@
 // ditto-services project (ditto_royalty_splits).
 
 export type UserType = 'subscription' | 'rls'
-export type SplitStatus = 'active' | 'pending' | 'rejected' | 'unclaimed'
+export type SplitStatus = 'active' | 'pending' | 'rejected' | 'unclaimed' | 'verification' // verification: collaborator must verify their email before the split goes live
 
 export interface Collaborator {
   id: string
