@@ -31,6 +31,21 @@
             <span class="text-xs font-medium">No artwork uploaded</span>
           </div>
         </div>
+        <!-- Motion artwork (Apple Music) -->
+        <div v-if="form.motionArtwork.enabled && form.motionArtwork.status" class="mt-4 flex items-start gap-3">
+          <div class="w-12 flex-shrink-0 rounded-lg overflow-hidden bg-ditto-light-grey" :class="form.motionArtwork.orientation === 'portrait' ? 'aspect-[3/4]' : 'aspect-square'">
+            <video v-if="form.motionArtwork.previewUrl && form.motionArtwork.status === 'valid'" :src="form.motionArtwork.previewUrl" class="w-full h-full object-cover" autoplay muted loop playsinline></video>
+          </div>
+          <div class="min-w-0">
+            <p class="text-xs font-semibold text-ditto-text flex items-center gap-1.5">
+              Motion artwork <span class="text-ditto-subtext font-normal">· Apple Music only</span>
+              <WarnDot v-if="form.motionArtwork.status === 'invalid'" tip="Motion artwork doesn't meet Apple's specification — remove or replace it" />
+              <WarnDot v-else-if="!form.selectedStores.includes('apple-music')" tip="Apple Music isn't selected, so this motion artwork won't be delivered" />
+            </p>
+            <p class="text-xs text-ditto-subtext truncate">{{ form.motionArtwork.fileName }}<template v-if="form.motionArtwork.summary"> · {{ form.motionArtwork.summary }}</template></p>
+          </div>
+        </div>
+
         <!-- Artwork Issues panel: warns but never blocks completion -->
         <div v-if="artworkIssues.length" class="mt-4 rounded-xl border border-warning/40 bg-warning/10 p-4">
           <p class="flex items-center gap-2 text-sm font-bold text-ditto-text">

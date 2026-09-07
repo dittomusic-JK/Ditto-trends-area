@@ -105,6 +105,19 @@ const steps = [
   { id: 'review', label: 'Review' },
 ]
 
+export interface MotionArtwork {
+  enabled: boolean
+  file: File | null
+  previewUrl: string | null
+  fileName: string
+  fileSize: string
+  status: '' | 'checking' | 'valid' | 'invalid'
+  errors: string[]
+  summary: string
+  unverified: string
+  orientation: 'square' | 'portrait'
+}
+
 export interface ReleaseBuilderForm {
   // Upload
   tracks: BuilderTrack[]
@@ -113,6 +126,8 @@ export interface ReleaseBuilderForm {
   artwork: string | null
   artworkFileName: string
   artworkConfirmed: boolean
+  /** Optional Apple Music motion artwork (Upload step toggle). Invalid blocks the step. */
+  motionArtwork: MotionArtwork
   // Details
   title: string
   copyrightHolder: string
@@ -163,6 +178,7 @@ const formData = reactive<ReleaseBuilderForm>({
   artwork: null,
   artworkFileName: '',
   artworkConfirmed: false,
+  motionArtwork: { enabled: false, file: null, previewUrl: null, fileName: '', fileSize: '', status: '', errors: [], summary: '', unverified: '', orientation: 'square' },
   title: props.initialTitle ?? '',
   copyrightHolder: '',
   copyrightYear: 2026,
@@ -206,7 +222,9 @@ const visitedSteps = reactive(new Set<number>([0]))
 const validateStep = (stepIndex: number): boolean => {
   switch (stepIndex) {
     case 0:
-      return formData.tracks.length > 0
+      // Motion artwork is optional, but an invalid file blocks until removed or replaced
+      return formData.tracks.length > 0 &&
+        (!formData.motionArtwork.enabled || !['invalid', 'checking'].includes(formData.motionArtwork.status))
     case 1:
       return formData.artwork !== null && formData.artworkConfirmed
     case 2:

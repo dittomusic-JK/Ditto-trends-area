@@ -41,6 +41,10 @@
         </button>
       </div>
       <p v-if="form.selectedStores.length === 0" class="text-xs text-error mt-4">Select at least one store to continue.</p>
+      <p v-else-if="form.motionArtwork.status === 'valid' && !form.selectedStores.includes('apple-music')" class="text-xs text-[#92400e] bg-warning/15 rounded-lg px-3 py-2 mt-4 inline-flex items-center gap-2">
+        <svg class="w-3.5 h-3.5 text-warning flex-shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+        Your motion artwork only delivers to Apple Music — it won't be used unless Apple Music is selected.
+      </p>
     </div>
 
     <!-- ── Advanced stores ── -->
