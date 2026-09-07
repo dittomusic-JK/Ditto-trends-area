@@ -1,12 +1,10 @@
 <template>
-  <!-- Lives inside the Upload step: section="checks" renders the requirement
-       confirmations (beside the uploads), section="source" the video-source
-       declaration (full width beneath them). -->
+  <!-- Lives inside the Upload step: section="video" | "thumbnail" | "artwork"
+       renders that asset's requirement confirmation (placed beside its upload);
+       section="source" renders the video-source declaration (full width beneath). -->
   <div>
-    <template v-if="section === 'checks'">
-    <h2 class="font-satoshi font-black tracking-[-0.03em] text-xl lg:text-2xl text-ditto-text mb-1">Content check</h2>
-    <p class="text-sm text-ditto-subtext mb-5">Confirm your video and thumbnail meet our content requirements.</p>
-
+    <!-- One asset's check card: sits beside that asset's upload on the Upload step -->
+    <template v-if="section === 'video'">
     <!-- Video Content -->
     <div class="flex items-center gap-2 mb-3">
       <svg class="w-4 h-4 text-ditto-subtext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -15,10 +13,10 @@
       <h3 class="text-xs font-semibold text-ditto-subtext uppercase tracking-wide">Video Content</h3>
     </div>
     <label
-      class="block p-4 rounded-xl border transition-colors cursor-pointer mb-3"
+      class="block p-5 rounded-xl border transition-colors cursor-pointer"
       :class="checks.video ? 'bg-ditto-purple/5 border-ditto-purple/20' : 'border-gray-200 hover:border-ditto-purple/30'"
     >
-      <ul class="space-y-1.5 mb-4">
+      <ul class="space-y-2 mb-4">
         <li v-for="req in videoRequirements" :key="req" class="flex items-start gap-2 text-xs text-ditto-subtext">
           <svg class="w-3.5 h-3.5 text-ditto-subtext/70 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20,6 9,17 4,12" stroke-linecap="round" stroke-linejoin="round"/></svg>
           {{ req }}
@@ -39,7 +37,7 @@
     <!-- No Lyrics (lyric videos only) -->
     <label
       v-if="isLyricVideo"
-      class="flex items-start gap-3 p-4 rounded-xl border transition-colors cursor-pointer mb-8"
+      class="flex items-start gap-3 p-5 rounded-xl border transition-colors cursor-pointer mt-4"
       :class="checks.noLyrics ? 'bg-ditto-purple/5 border-ditto-purple/20' : 'border-gray-200 hover:border-ditto-purple/30'"
     >
       <input type="checkbox" :checked="checks.noLyrics" @change="toggleCheck('noLyrics')" class="hidden" />
@@ -54,8 +52,9 @@
         <p class="text-xs text-ditto-subtext mt-0.5">Video contains NO lyrics overlaid on the visuals.</p>
       </div>
     </label>
-    <div v-else class="mb-8"></div>
+    </template>
 
+    <template v-else-if="section === 'thumbnail'">
     <!-- Thumbnail Content -->
     <div class="flex items-center gap-2 mb-3">
       <svg class="w-4 h-4 text-ditto-subtext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -64,10 +63,10 @@
       <h3 class="text-xs font-semibold text-ditto-subtext uppercase tracking-wide">Thumbnail Content</h3>
     </div>
     <label
-      class="block p-4 rounded-xl border transition-colors cursor-pointer"
+      class="block p-5 rounded-xl border transition-colors cursor-pointer"
       :class="checks.thumbnail ? 'bg-ditto-purple/5 border-ditto-purple/20' : 'border-gray-200 hover:border-ditto-purple/30'"
     >
-      <ul class="space-y-1.5 mb-4">
+      <ul class="space-y-2 mb-4">
         <li v-for="req in thumbnailRequirements" :key="req" class="flex items-start gap-2 text-xs text-ditto-subtext">
           <svg class="w-3.5 h-3.5 text-ditto-subtext/70 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20,6 9,17 4,12" stroke-linecap="round" stroke-linejoin="round"/></svg>
           {{ req }}
@@ -84,15 +83,37 @@
         <p class="text-sm font-medium text-ditto-text">I confirm my thumbnail meets all of the above requirements</p>
       </div>
     </label>
+    </template>
 
-    <!-- Status -->
-    <div v-if="allConfirmed" class="mt-4 p-4 rounded-xl bg-success/10 border border-success/20 flex items-center gap-3">
-      <svg class="w-5 h-5 text-success flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M22 11.08V12a10 10 0 11-5.93-9.14" stroke-linecap="round" stroke-linejoin="round"/>
-        <polyline points="22,4 12,14.01 9,11.01" stroke-linecap="round" stroke-linejoin="round"/>
+    <template v-else-if="section === 'artwork'">
+    <!-- Album Artwork -->
+    <div class="flex items-center gap-2 mb-3">
+      <svg class="w-4 h-4 text-ditto-subtext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 8v8M8 12h8"/>
       </svg>
-      <p class="text-sm font-medium text-success">Content requirements confirmed.</p>
+      <h3 class="text-xs font-semibold text-ditto-subtext uppercase tracking-wide">Album Artwork</h3>
     </div>
+    <label
+      class="block p-5 rounded-xl border transition-colors cursor-pointer"
+      :class="checks.artwork ? 'bg-ditto-purple/5 border-ditto-purple/20' : 'border-gray-200 hover:border-ditto-purple/30'"
+    >
+      <ul class="space-y-2 mb-4">
+        <li v-for="req in artworkRequirements" :key="req" class="flex items-start gap-2 text-xs text-ditto-subtext">
+          <svg class="w-3.5 h-3.5 text-ditto-subtext/70 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20,6 9,17 4,12" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          {{ req }}
+        </li>
+      </ul>
+      <div class="flex items-start gap-3 pt-3 border-t border-gray-100">
+        <input type="checkbox" :checked="checks.artwork" @change="toggleCheck('artwork')" class="hidden" />
+        <div :class="[
+          'w-5 h-5 rounded border-2 flex items-center justify-center transition-all flex-shrink-0 mt-0.5',
+          checks.artwork ? 'bg-ditto-purple border-ditto-purple' : 'border-gray-300 bg-white'
+        ]">
+          <svg v-if="checks.artwork" class="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20,6 9,17 4,12"/></svg>
+        </div>
+        <p class="text-sm font-medium text-ditto-text">I confirm my artwork meets all of the above requirements</p>
+      </div>
+    </label>
     </template>
 
     <!-- Video Asset Source Type -->
@@ -291,9 +312,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 
-type CheckKeys = 'video' | 'thumbnail' | 'noLyrics'
+type CheckKeys = 'video' | 'thumbnail' | 'artwork' | 'noLyrics'
 
 interface AssetSource {
   type: '' | 'original' | 'licensed' | 'previously-distributed' | 'commissioned'
@@ -311,7 +331,7 @@ interface AssetSource {
 }
 
 const props = defineProps<{
-  section: 'checks' | 'source'
+  section: 'video' | 'thumbnail' | 'artwork' | 'source'
   checks: Record<CheckKeys, boolean>
   assetSource: AssetSource
   isLyricVideo: boolean
@@ -337,11 +357,13 @@ const thumbnailRequirements = [
   'High resolution (min. 1920×1080) with appropriate imagery',
 ]
 
-const allConfirmed = computed(() =>
-  props.checks.video &&
-  props.checks.thumbnail &&
-  (!props.isLyricVideo || props.checks.noLyrics)
-)
+const artworkRequirements = [
+  'Square JPG or JPEG, at least 3000×3000px',
+  'No social media or music platform logos',
+  'No copyrighted, explicit or pixelated images',
+  'No QR codes, web addresses or URLs',
+]
+
 
 const toggleCheck = (key: CheckKeys) => {
   emit('update:checks', { ...props.checks, [key]: !props.checks[key] })

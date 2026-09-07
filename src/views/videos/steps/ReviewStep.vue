@@ -487,7 +487,7 @@ const errorStages = computed(() => {
   const errors: { index: number; name: string; message: string }[] = []
 
   const c = props.formData.contentChecks
-  const contentConfirmed = c.video && c.thumbnail && (!props.formData.metadata.isLyricVideo || c.noLyrics)
+  const contentConfirmed = c.video && c.thumbnail && c.artwork && (!props.formData.metadata.isLyricVideo || c.noLyrics)
   const uploadIssues = []
   if (!props.formData.videoFile) uploadIssues.push('video not uploaded')
   if (!props.formData.thumbnailFile) uploadIssues.push('thumbnail not uploaded')

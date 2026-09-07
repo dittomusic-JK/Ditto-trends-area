@@ -37,29 +37,26 @@
     </div>
 
     <!-- Step Content -->
-    <div class="px-4 sm:px-6 lg:px-20 py-8 lg:py-10 max-w-5xl mx-auto">
-      <!-- Step 1: Upload — assets on the left, their content check alongside,
+    <div class="px-4 sm:px-6 lg:px-20 py-8 lg:py-10 max-w-6xl mx-auto">
+      <!-- Step 1: Upload — each asset with its own content check alongside,
            video source full width beneath (folds the old Content Check stage in) -->
       <div v-if="currentStep === 0" class="space-y-10">
-        <div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_320px] gap-10 lg:gap-12 items-start">
-          <div class="space-y-10 min-w-0">
-            <UploadVideoStep v-model:videoFile="formData.videoFile" />
-            <div class="border-t border-gray-200"></div>
-            <UploadThumbnailStep
-              v-model:thumbnailFile="formData.thumbnailFile"
-              :video-file="formData.videoFile"
-            />
-            <div class="border-t border-gray-200"></div>
-            <UploadArtworkStep v-model:artworkFile="formData.artworkFile" />
-          </div>
-          <aside class="lg:sticky lg:top-28">
-            <CheckContentStep
-              section="checks"
-              v-model:checks="formData.contentChecks"
-              v-model:assetSource="formData.assetSource"
-              :is-lyric-video="formData.metadata.isLyricVideo"
-            />
-          </aside>
+        <div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_360px] gap-8 lg:gap-16 items-start">
+          <UploadVideoStep v-model:videoFile="formData.videoFile" />
+          <CheckContentStep class="lg:pt-12" section="video" v-model:checks="formData.contentChecks" v-model:assetSource="formData.assetSource" :is-lyric-video="formData.metadata.isLyricVideo" />
+        </div>
+        <div class="border-t border-gray-200"></div>
+        <div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_360px] gap-8 lg:gap-16 items-start">
+          <UploadThumbnailStep
+            v-model:thumbnailFile="formData.thumbnailFile"
+            :video-file="formData.videoFile"
+          />
+          <CheckContentStep class="lg:pt-12" section="thumbnail" v-model:checks="formData.contentChecks" v-model:assetSource="formData.assetSource" :is-lyric-video="formData.metadata.isLyricVideo" />
+        </div>
+        <div class="border-t border-gray-200"></div>
+        <div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_360px] gap-8 lg:gap-16 items-start">
+          <UploadArtworkStep v-model:artworkFile="formData.artworkFile" />
+          <CheckContentStep class="lg:pt-12" section="artwork" v-model:checks="formData.contentChecks" v-model:assetSource="formData.assetSource" :is-lyric-video="formData.metadata.isLyricVideo" />
         </div>
         <div class="border-t border-gray-200"></div>
         <CheckContentStep
@@ -117,7 +114,7 @@
 
     <!-- Bottom Navigation -->
     <div class="sticky bottom-0 bg-white border-t border-gray-200 px-4 sm:px-6 lg:px-20 py-4">
-      <div class="max-w-5xl mx-auto flex items-center justify-center gap-4">
+      <div class="max-w-6xl mx-auto flex items-center justify-center gap-4">
         <button
           v-if="canGoBack"
           @click="handleBack"
@@ -191,6 +188,7 @@ const formData = reactive({
   contentChecks: {
     video: false,
     thumbnail: false,
+    artwork: false,
     noLyrics: false,
   },
   assetSource: {
@@ -274,6 +272,7 @@ const validateStep = (stepIndex: number): boolean => {
         formData.artworkFile !== null &&
         formData.contentChecks.video &&
         formData.contentChecks.thumbnail &&
+        formData.contentChecks.artwork &&
         (!formData.metadata.isLyricVideo || formData.contentChecks.noLyrics) &&
         formData.assetSource.type !== ''
     case 1:
