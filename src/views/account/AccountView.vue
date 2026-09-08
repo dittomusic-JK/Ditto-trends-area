@@ -1,11 +1,14 @@
 <template>
   <div class="max-w-[1100px]">
-    <!-- Header + the three tabs (same liquid tabs as Royalties) -->
-    <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6">
-      <div>
-        <h1 class="font-satoshi font-black text-xl sm:text-3xl lg:text-[42px] tracking-tight text-ditto-text">Your Account</h1>
-        <p class="text-sm text-ditto-subtext mt-1">Member since {{ profile.memberSince }}</p>
+    <!-- Header: title left, member info right; tabs on their own row beneath (Royalties pattern) -->
+    <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-5">
+      <h1 class="font-satoshi font-black text-xl sm:text-3xl lg:text-[42px] tracking-tight text-ditto-text">Your Account</h1>
+      <div class="sm:text-right">
+        <p class="text-sm font-semibold text-ditto-text">{{ profile.name }}</p>
+        <p class="text-xs text-ditto-subtext">{{ billing.planName }} · Member since {{ profile.memberSince }}</p>
       </div>
+    </div>
+    <div class="mb-6">
       <LiquidTabs :tabs="tabs" :active="activeTab" @select="activeTab = $event as AccountTab" />
     </div>
 
