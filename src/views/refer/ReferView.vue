@@ -37,7 +37,7 @@
           <p v-if="profile.referrals.length === 0" class="text-sm text-white/75">
             Share your link below to earn your first ${{ REWARD_PER_REFERRAL }}.
           </p>
-          <button v-else class="px-6 py-3 bg-white/15 text-white text-sm font-semibold rounded-full hover:bg-white/25 transition-colors">
+          <button v-else @click="emit('open-royalties', 'payouts')" class="px-6 py-3 bg-white/15 text-white text-sm font-semibold rounded-full hover:bg-white/25 transition-colors">
             View your balance
           </button>
         </div>
@@ -241,6 +241,11 @@ import {
   type ReferralStatus,
 } from '../../data/referMockData'
 import { useCountUp } from '../../composables/useCountUp'
+
+// "View your balance" hands off to Royalties › Payouts
+const emit = defineEmits<{
+  (e: 'open-royalties', section: string): void
+}>()
 
 // Demo state: ?refer=new|progress|power, defaulting to mid-programme
 const urlParams = new URLSearchParams(window.location.search)

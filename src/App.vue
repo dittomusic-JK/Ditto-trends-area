@@ -150,7 +150,7 @@
     <!-- Refer a Friend Section -->
     <div v-if="appSection === 'refer'" class="relative px-4 py-4 sm:px-6 sm:py-6 lg:px-16 lg:py-8 w-full max-w-full box-border">
       <GlobalSearch />
-      <ReferView />
+      <ReferView @open-royalties="handleOpenRoyalties" />
     </div>
 
     <!-- Pattern Library (internal style guide) -->
