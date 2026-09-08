@@ -4,7 +4,7 @@ export type TrendsType = 'streaming' | 'download' | 'fingerprint' | 'content' | 
 
 export interface Filter {
   id: string
-  type: 'label' | 'artist' | 'release' | 'track' | 'country' | 'store'
+  type: 'label' | 'artist' | 'release' | 'track' | 'country' | 'store' | 'video' | 'videoType' | 'platform'
   label: string
   value: string
 }

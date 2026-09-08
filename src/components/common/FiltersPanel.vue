@@ -35,8 +35,8 @@
         
         <!-- Filter Sections -->
         <div class="flex-1 overflow-y-auto">
-          <!-- Data Type (mobile only) -->
-          <div class="border-b border-ditto-border-grey/50 sm:hidden">
+          <!-- Data Type (mobile only; music analytics only) -->
+          <div v-if="mode !== 'video'" class="border-b border-ditto-border-grey/50 sm:hidden">
             <button 
               @click="toggleSection('dataType')"
               class="w-full flex items-center justify-between px-4 py-4 hover:bg-ditto-light-grey transition-colors"
@@ -74,222 +74,39 @@
             </div>
           </div>
           
-          <!-- Label -->
-          <div class="border-b border-ditto-border-grey/50">
+          <!-- Filter sections (music or video set) -->
+          <div v-for="section in sections" :key="section.type" class="border-b border-ditto-border-grey/50">
             <button 
-              @click="toggleSection('label')"
+              @click="toggleSection(section.type)"
               class="w-full flex items-center justify-between px-4 sm:px-6 py-4 hover:bg-ditto-light-grey transition-colors"
             >
-              <span class="font-semibold text-ditto-text">Label</span>
+              <span class="font-semibold text-ditto-text">{{ section.title }}</span>
               <svg 
-                :class="['w-5 h-5 text-ditto-subtext transition-transform', expandedSection === 'label' ? 'rotate-180' : '']" 
+                :class="['w-5 h-5 text-ditto-subtext transition-transform', expandedSection === section.type ? 'rotate-180' : '']" 
                 viewBox="0 0 20 20" fill="none"
               >
                 <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </button>
-            <div v-if="expandedSection === 'label'" class="px-4 sm:px-6 pb-4">
+            <div v-if="expandedSection === section.type" class="px-4 sm:px-6 pb-4">
               <button 
-                v-for="label in filterOptions.labels" 
-                :key="label.id"
-                @click="toggleFilter('label', label.id, label.name)"
+                v-for="option in section.options" 
+                :key="option.id"
+                @click="toggleFilter(section.type, option.id, option.name, section.title)"
                 class="w-full flex items-center justify-between py-2 text-left hover:text-ditto-purple transition-colors"
               >
                 <div class="flex items-center gap-3">
                   <span :class="[
                     'w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors',
-                    isSelected('label', label.id) ? 'border-ditto-purple bg-ditto-purple' : 'border-ditto-border-grey'
+                    isSelected(section.type, option.id) ? 'border-ditto-purple bg-ditto-purple' : 'border-ditto-border-grey'
                   ]">
-                    <svg v-if="isSelected('label', label.id)" class="w-3 h-3 text-white" viewBox="0 0 12 12" fill="none">
+                    <svg v-if="isSelected(section.type, option.id)" class="w-3 h-3 text-white" viewBox="0 0 12 12" fill="none">
                       <path d="M2 6L5 9L10 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                   </span>
-                  <span :class="['text-sm', isSelected('label', label.id) ? 'text-ditto-purple font-medium' : 'text-ditto-text']">{{ label.name }}</span>
+                  <span :class="['text-sm', isSelected(section.type, option.id) ? 'text-ditto-purple font-medium' : 'text-ditto-text']">{{ option.name }}</span>
                 </div>
-                <span class="text-sm text-ditto-subtext">[{{ label.count }}]</span>
-              </button>
-            </div>
-          </div>
-          
-          <!-- Artists -->
-          <div class="border-b border-ditto-border-grey/50">
-            <button 
-              @click="toggleSection('artist')"
-              class="w-full flex items-center justify-between px-4 sm:px-6 py-4 hover:bg-ditto-light-grey transition-colors"
-            >
-              <span class="font-semibold text-ditto-text">Artists</span>
-              <svg 
-                :class="['w-5 h-5 text-ditto-subtext transition-transform', expandedSection === 'artist' ? 'rotate-180' : '']" 
-                viewBox="0 0 20 20" fill="none"
-              >
-                <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </button>
-            <div v-if="expandedSection === 'artist'" class="px-4 sm:px-6 pb-4">
-              <button 
-                v-for="artist in filterOptions.artists" 
-                :key="artist.id"
-                @click="toggleFilter('artist', artist.id, artist.name)"
-                class="w-full flex items-center justify-between py-2 text-left hover:text-ditto-purple transition-colors"
-              >
-                <div class="flex items-center gap-3">
-                  <span :class="[
-                    'w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors',
-                    isSelected('artist', artist.id) ? 'border-ditto-purple bg-ditto-purple' : 'border-ditto-border-grey'
-                  ]">
-                    <svg v-if="isSelected('artist', artist.id)" class="w-3 h-3 text-white" viewBox="0 0 12 12" fill="none">
-                      <path d="M2 6L5 9L10 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                  </span>
-                  <span :class="['text-sm', isSelected('artist', artist.id) ? 'text-ditto-purple font-medium' : 'text-ditto-text']">{{ artist.name }}</span>
-                </div>
-                <span class="text-sm text-ditto-subtext">[{{ artist.count }}]</span>
-              </button>
-            </div>
-          </div>
-          
-          <!-- Release -->
-          <div class="border-b border-ditto-border-grey/50">
-            <button 
-              @click="toggleSection('release')"
-              class="w-full flex items-center justify-between px-4 sm:px-6 py-4 hover:bg-ditto-light-grey transition-colors"
-            >
-              <span class="font-semibold text-ditto-text">Release</span>
-              <svg 
-                :class="['w-5 h-5 text-ditto-subtext transition-transform', expandedSection === 'release' ? 'rotate-180' : '']" 
-                viewBox="0 0 20 20" fill="none"
-              >
-                <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </button>
-            <div v-if="expandedSection === 'release'" class="px-4 sm:px-6 pb-4">
-              <button 
-                v-for="release in filterOptions.releases" 
-                :key="release.id"
-                @click="toggleFilter('release', release.id, release.name)"
-                class="w-full flex items-center justify-between py-2 text-left hover:text-ditto-purple transition-colors"
-              >
-                <div class="flex items-center gap-3">
-                  <span :class="[
-                    'w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors',
-                    isSelected('release', release.id) ? 'border-ditto-purple bg-ditto-purple' : 'border-ditto-border-grey'
-                  ]">
-                    <svg v-if="isSelected('release', release.id)" class="w-3 h-3 text-white" viewBox="0 0 12 12" fill="none">
-                      <path d="M2 6L5 9L10 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                  </span>
-                  <span :class="['text-sm', isSelected('release', release.id) ? 'text-ditto-purple font-medium' : 'text-ditto-text']">{{ release.name }}</span>
-                </div>
-                <span class="text-sm text-ditto-subtext">[{{ release.count }}]</span>
-              </button>
-            </div>
-          </div>
-          
-          <!-- Track -->
-          <div class="border-b border-ditto-border-grey/50">
-            <button 
-              @click="toggleSection('track')"
-              class="w-full flex items-center justify-between px-4 sm:px-6 py-4 hover:bg-ditto-light-grey transition-colors"
-            >
-              <span class="font-semibold text-ditto-text">Track</span>
-              <svg 
-                :class="['w-5 h-5 text-ditto-subtext transition-transform', expandedSection === 'track' ? 'rotate-180' : '']" 
-                viewBox="0 0 20 20" fill="none"
-              >
-                <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </button>
-            <div v-if="expandedSection === 'track'" class="px-4 sm:px-6 pb-4">
-              <button 
-                v-for="track in filterOptions.tracks" 
-                :key="track.id"
-                @click="toggleFilter('track', track.id, track.name)"
-                class="w-full flex items-center justify-between py-2 text-left hover:text-ditto-purple transition-colors"
-              >
-                <div class="flex items-center gap-3">
-                  <span :class="[
-                    'w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors',
-                    isSelected('track', track.id) ? 'border-ditto-purple bg-ditto-purple' : 'border-ditto-border-grey'
-                  ]">
-                    <svg v-if="isSelected('track', track.id)" class="w-3 h-3 text-white" viewBox="0 0 12 12" fill="none">
-                      <path d="M2 6L5 9L10 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                  </span>
-                  <span :class="['text-sm', isSelected('track', track.id) ? 'text-ditto-purple font-medium' : 'text-ditto-text']">{{ track.name }}</span>
-                </div>
-              </button>
-            </div>
-          </div>
-          
-          <!-- Country -->
-          <div class="border-b border-ditto-border-grey/50">
-            <button 
-              @click="toggleSection('country')"
-              class="w-full flex items-center justify-between px-4 sm:px-6 py-4 hover:bg-ditto-light-grey transition-colors"
-            >
-              <span class="font-semibold text-ditto-text">Country</span>
-              <svg 
-                :class="['w-5 h-5 text-ditto-subtext transition-transform', expandedSection === 'country' ? 'rotate-180' : '']" 
-                viewBox="0 0 20 20" fill="none"
-              >
-                <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </button>
-            <div v-if="expandedSection === 'country'" class="px-4 sm:px-6 pb-4">
-              <button 
-                v-for="country in filterOptions.countries" 
-                :key="country.id"
-                @click="toggleFilter('country', country.id, country.name)"
-                class="w-full flex items-center justify-between py-2 text-left hover:text-ditto-purple transition-colors"
-              >
-                <div class="flex items-center gap-3">
-                  <span :class="[
-                    'w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors',
-                    isSelected('country', country.id) ? 'border-ditto-purple bg-ditto-purple' : 'border-ditto-border-grey'
-                  ]">
-                    <svg v-if="isSelected('country', country.id)" class="w-3 h-3 text-white" viewBox="0 0 12 12" fill="none">
-                      <path d="M2 6L5 9L10 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                  </span>
-                  <span :class="['text-sm', isSelected('country', country.id) ? 'text-ditto-purple font-medium' : 'text-ditto-text']">{{ country.name }}</span>
-                </div>
-                <span class="text-sm text-ditto-subtext">[{{ country.count }}]</span>
-              </button>
-            </div>
-          </div>
-          
-          <!-- Store -->
-          <div class="border-b border-ditto-border-grey/50">
-            <button 
-              @click="toggleSection('store')"
-              class="w-full flex items-center justify-between px-4 sm:px-6 py-4 hover:bg-ditto-light-grey transition-colors"
-            >
-              <span class="font-semibold text-ditto-text">Store</span>
-              <svg 
-                :class="['w-5 h-5 text-ditto-subtext transition-transform', expandedSection === 'store' ? 'rotate-180' : '']" 
-                viewBox="0 0 20 20" fill="none"
-              >
-                <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </button>
-            <div v-if="expandedSection === 'store'" class="px-4 sm:px-6 pb-4">
-              <button 
-                v-for="store in filterOptions.stores" 
-                :key="store.id"
-                @click="toggleFilter('store', store.id, store.name)"
-                class="w-full flex items-center justify-between py-2 text-left hover:text-ditto-purple transition-colors"
-              >
-                <div class="flex items-center gap-3">
-                  <span :class="[
-                    'w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors',
-                    isSelected('store', store.id) ? 'border-ditto-purple bg-ditto-purple' : 'border-ditto-border-grey'
-                  ]">
-                    <svg v-if="isSelected('store', store.id)" class="w-3 h-3 text-white" viewBox="0 0 12 12" fill="none">
-                      <path d="M2 6L5 9L10 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                  </span>
-                  <span :class="['text-sm', isSelected('store', store.id) ? 'text-ditto-purple font-medium' : 'text-ditto-text']">{{ store.name }}</span>
-                </div>
+                <span v-if="option.count !== undefined" class="text-sm text-ditto-subtext">[{{ option.count.toLocaleString() }}]</span>
               </button>
             </div>
           </div>
@@ -320,6 +137,8 @@ const props = defineProps<{
   isOpen: boolean
   currentFilters: Filter[]
   currentDataType?: TrendsType
+  /** Which set of sections to show — music analytics (default) or the Videos ranking */
+  mode?: 'music' | 'video'
 }>()
 
 const emit = defineEmits<{
@@ -329,12 +148,15 @@ const emit = defineEmits<{
 }>()
 
 // Filter options (mock data)
-const filterOptions = {
-  labels: [
+interface FilterOption { id: string; name: string; count?: number }
+interface FilterSection { type: Filter['type']; title: string; options: FilterOption[] }
+
+const musicSections: FilterSection[] = [
+  { type: 'label', title: 'Label', options: [
     { id: 'l1', name: 'Kaiga Records', count: 45 },
     { id: 'l2', name: 'Independent', count: 23 },
-  ],
-  artists: [
+  ] },
+  { type: 'artist', title: 'Artists', options: [
     { id: 'a1', name: 'Chris Kaiga', count: 48 },
     { id: 'a2', name: 'Bensoul', count: 12 },
     { id: 'a3', name: 'Nviiri the Storyteller', count: 18 },
@@ -343,32 +165,32 @@ const filterOptions = {
     { id: 'a6', name: 'Chimano', count: 14 },
     { id: 'a7', name: 'Nyashinski', count: 9 },
     { id: 'a8', name: 'Sauti Sol', count: 16 },
-  ],
-  releases: [
+  ] },
+  { type: 'release', title: 'Release', options: [
     { id: 'r1', name: 'Adventures of Chris Kaiga', count: 8 },
     { id: 'r2', name: 'Zimenice', count: 1 },
     { id: 'r3', name: 'Chain Chain', count: 1 },
     { id: 'r4', name: 'Niko on', count: 1 },
     { id: 'r5', name: 'Kameshika Signal', count: 1 },
     { id: 'r6', name: 'Mwazzara', count: 1 },
-  ],
-  tracks: [
-    { id: 't1', name: 'I Want', count: 48214 },
-    { id: 't2', name: 'Zimenice', count: 16374 },
-    { id: 't3', name: 'Kwa Ceiling', count: 10794 },
-    { id: 't4', name: 'Chain Chain', count: 9205 },
-    { id: 't5', name: 'Niko on', count: 8400 },
-    { id: 't6', name: 'Kameshika Signal', count: 6112 },
-  ],
-  countries: [
+  ] },
+  { type: 'track', title: 'Track', options: [
+    { id: 't1', name: 'I Want' },
+    { id: 't2', name: 'Zimenice' },
+    { id: 't3', name: 'Kwa Ceiling' },
+    { id: 't4', name: 'Chain Chain' },
+    { id: 't5', name: 'Niko on' },
+    { id: 't6', name: 'Kameshika Signal' },
+  ] },
+  { type: 'country', title: 'Country', options: [
     { id: 'c1', name: 'Kenya', count: 62 },
     { id: 'c2', name: 'United Kingdom', count: 12 },
     { id: 'c3', name: 'United States', count: 8 },
     { id: 'c4', name: 'Nigeria', count: 6 },
     { id: 'c5', name: 'Tanzania', count: 4 },
     { id: 'c6', name: 'Uganda', count: 3 },
-  ],
-  stores: [
+  ] },
+  { type: 'store', title: 'Store', options: [
     { id: 's1', name: 'Spotify' },
     { id: 's2', name: 'Apple Music' },
     { id: 's3', name: 'YouTube Music' },
@@ -377,8 +199,53 @@ const filterOptions = {
     { id: 's6', name: 'SoundCloud' },
     { id: 's7', name: 'Deezer' },
     { id: 's8', name: 'Boomplay' },
-  ]
-}
+  ] },
+]
+
+// Video analytics: no data type, no release/track; video, video type and platform instead
+const videoSections: FilterSection[] = [
+  { type: 'label', title: 'Label', options: [
+    { id: 'vl1', name: 'Golden Boy Entertainment', count: 12 },
+  ] },
+  { type: 'artist', title: 'Artists', options: [
+    { id: 'va1', name: 'Darkoo', count: 7 },
+    { id: 'va2', name: 'Almost Joey', count: 5 },
+    { id: 'va3', name: 'Ruger', count: 1 },
+    { id: 'va4', name: 'Rema', count: 1 },
+  ] },
+  { type: 'video', title: 'Video', options: [
+    { id: 'vv1', name: 'Summer Vibes (Official Video)', count: 13326386 },
+    { id: 'vv2', name: 'My Baby (Obimo) [Official Video]', count: 9765416 },
+    { id: 'vv3', name: 'Favourite Girl (with Rema) — Official Video', count: 8181010 },
+    { id: 'vv4', name: 'Solar (Visualiser)', count: 7455554 },
+    { id: 'vv5', name: 'Midnight Run (Live Performance)', count: 6902113 },
+    { id: 'vv6', name: 'RHUDE GYAL! (with JELEEL!) — Official Video', count: 5410880 },
+  ] },
+  { type: 'videoType', title: 'Video type', options: [
+    { id: 'vt1', name: 'Official Video', count: 6 },
+    { id: 'vt2', name: 'Lyric Video', count: 1 },
+    { id: 'vt3', name: 'Visualiser', count: 3 },
+    { id: 'vt4', name: 'Live Performance', count: 2 },
+  ] },
+  { type: 'country', title: 'Country', options: [
+    { id: 'c2', name: 'United Kingdom', count: 34 },
+    { id: 'c4', name: 'Nigeria', count: 27 },
+    { id: 'c3', name: 'United States', count: 14 },
+    { id: 'c7', name: 'Ghana', count: 8 },
+    { id: 'c8', name: 'France', count: 5 },
+    { id: 'c9', name: 'Germany', count: 3 },
+  ] },
+  { type: 'platform', title: 'Platform', options: [
+    { id: 'vp1', name: 'YouTube' },
+    { id: 'vp2', name: 'VEVO' },
+    { id: 'vp3', name: 'Apple Music' },
+    { id: 'vp4', name: 'TikTok' },
+    { id: 'vp5', name: 'Facebook' },
+    { id: 'vp6', name: 'Instagram' },
+  ] },
+]
+
+const sections = computed(() => props.mode === 'video' ? videoSections : musicSections)
 
 const expandedSection = ref<string | null>(null)
 
@@ -420,7 +287,7 @@ const isSelected = (type: string, id: string): boolean => {
   return selectedFilters.value.some(f => f.type === type && f.id === id)
 }
 
-const toggleFilter = (type: string, id: string, name: string) => {
+const toggleFilter = (type: string, id: string, name: string, title?: string) => {
   const existingIndex = selectedFilters.value.findIndex(f => f.type === type && f.id === id)
   if (existingIndex >= 0) {
     selectedFilters.value.splice(existingIndex, 1)
@@ -428,7 +295,7 @@ const toggleFilter = (type: string, id: string, name: string) => {
     selectedFilters.value.push({
       id,
       type: type as Filter['type'],
-      label: type.charAt(0).toUpperCase() + type.slice(1),
+      label: title ?? type.charAt(0).toUpperCase() + type.slice(1),
       value: name
     })
   }

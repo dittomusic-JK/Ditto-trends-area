@@ -12,8 +12,8 @@
         @update:model-value="$emit('update:dateRange', $event)"
       />
       
-      <!-- Type Dropdown - hidden on mobile, shown in filters instead -->
-      <div class="relative hidden sm:block">
+      <!-- Type Dropdown - hidden on mobile, shown in filters instead. Not shown for video analytics. -->
+      <div v-if="!hideTrendsType" class="relative hidden sm:block">
         <button 
           @click="showTypeDropdown = !showTypeDropdown"
           :class="[
@@ -73,6 +73,7 @@ defineProps<{
   trendsType: TrendsType
   showStreamsDropdown?: boolean
   highlightTypeDropdown?: boolean
+  hideTrendsType?: boolean
 }>()
 
 const emit = defineEmits<{

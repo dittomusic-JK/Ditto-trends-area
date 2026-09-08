@@ -20,6 +20,7 @@
         :date-range="dateRange" 
         :trends-type="trendsType"
         :highlight-type-dropdown="showTypeHighlight"
+        :hide-trends-type="activeView === 'videos'"
         @open-filters="showFiltersModal = true"
         @update:date-range="updateDateRange"
         @update:trends-type="updateTrendsType"
@@ -107,6 +108,7 @@
       :is-open="showFiltersModal"
       :current-filters="activeFilters"
       :current-data-type="trendsType"
+      :mode="activeView === 'videos' ? 'video' : 'music'"
       @close="showFiltersModal = false"
       @apply="applyFilters"
       @update:data-type="updateTrendsType"
@@ -369,7 +371,7 @@ const activeView = ref<ViewType>('metrics')
 // "View analytics" on a video: open Analytics on the Videos ranking
 const handleViewVideoAnalytics = () => {
   appSection.value = 'analytics'
-  activeView.value = 'videos'
+  setActiveView('videos')
 }
 
 // Side-nav mode replaces the analytics left sidebar with a tab row
@@ -434,6 +436,8 @@ const metricsData = computed<MetricsData>(() => {
 
 // Methods
 const setActiveView = (view: ViewType) => {
+  // Music and video filters are different sets — drop them when crossing over
+  if ((view === 'videos') !== (activeView.value === 'videos')) activeFilters.value = []
   activeView.value = view
 }
 
