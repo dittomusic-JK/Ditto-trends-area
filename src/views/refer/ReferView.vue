@@ -85,6 +85,10 @@
           <img src="/img/suite/perks.svg" alt="" class="w-6 h-6 flex-shrink-0" />
           <p class="text-sm text-ditto-subtext">
             <span class="font-semibold text-ditto-text">Your friend gets {{ FRIEND_DISCOUNT_PERCENT }}% off Ditto Pro</span> when they sign up through your link.
+            <a :href="PRO_URL" target="_blank" rel="noreferrer" class="inline-flex items-center gap-1 font-medium text-ditto-purple hover:underline whitespace-nowrap">
+              Find out more about Pro
+              <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+            </a>
           </p>
         </div>
       </div>
@@ -279,6 +283,8 @@ const copyLink = async () => {
   }, 2200)
 }
 
+const PRO_URL = 'https://dittomusic.com/en/pro'
+
 const shareText = computed(() =>
   encodeURIComponent(`Join me on Ditto and get ${FRIEND_DISCOUNT_PERCENT}% off Ditto Pro: https://${profile.value.link}`)
 )
@@ -333,7 +339,7 @@ const faqs = [
   },
   {
     q: 'What does my friend get?',
-    a: `${FRIEND_DISCOUNT_PERCENT}% off Ditto Pro when they sign up through your link — the discount is applied automatically at checkout.`,
+    a: `${FRIEND_DISCOUNT_PERCENT}% off Ditto Pro when they sign up through your link — the discount is applied automatically at checkout. Pro is our full distribution plan: unlimited releases, all stores, and every growth tool. See dittomusic.com/pro for the details.`,
   },
   {
     q: 'Who can take part?',
