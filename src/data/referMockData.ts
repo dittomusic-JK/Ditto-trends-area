@@ -1,150 +1,83 @@
 // Refer a Friend — mock data for the in-house referral programme prototype.
-// Three demo states drive the page: a fresh account, one mid-programme, and
-// one that has hit the $50 cap (where the affiliate upsell takes over).
+// Programme: the friend gets 40% off Ditto Pro; the referrer earns $10 cash,
+// deposited one month after the friend signs up (a holding period that limits
+// abuse). No cap on referrals. Three demo states: fresh, mid-programme, and a
+// heavy referrer.
 
 export type ReferralStatus =
-  | 'earned' // friend subscribed, $10 in the referrer's balance
-  | 'clearing' // friend subscribed, reward held for the refund window
-  | 'signed_up' // friend created an account but hasn't subscribed yet
-  | 'capped' // friend subscribed after the cap — tracked, no cash reward
+  | 'paid' // holding period over — $10 deposited into the referrer's balance
+  | 'pending' // friend has signed up; $10 lands one month after their sign-up date
+  | 'joined' // friend created an account but hasn't taken the Pro offer yet
 
 export interface Referral {
   id: string
   name: string
   email: string
+  /** Friend's sign-up date */
   date: string
   status: ReferralStatus
-  /** For 'clearing' rewards: when the $10 becomes withdrawable */
-  availableOn?: string
+  /** For 'pending': the deposit date (sign-up + 1 month) */
+  depositOn?: string
 }
 
 export interface ReferProfile {
   /** The user's referral code — the tail of their share link */
   code: string
   link: string
+  /** Cash already deposited */
   totalEarned: number
-  successful: number
+  /** Cash in the one-month holding period */
+  pending: number
   referrals: Referral[]
 }
 
-export type ReferDemoState = 'new' | 'progress' | 'capped'
+export type ReferDemoState = 'new' | 'progress' | 'power'
 
 export const REWARD_PER_REFERRAL = 10
-export const REFERRAL_CAP = 5
-export const CAP_AMOUNT = REWARD_PER_REFERRAL * REFERRAL_CAP
+export const FRIEND_DISCOUNT_PERCENT = 40
+export const HOLDING_PERIOD_LABEL = '1 month'
 
 const code = 'goldenboy'
 const link = `dittomusic.com/r/${code}`
 
+const r = (id: string, name: string, email: string, date: string, status: ReferralStatus, depositOn?: string): Referral =>
+  ({ id, name, email, date, status, depositOn })
+
 export const referDemoStates: Record<ReferDemoState, ReferProfile> = {
-  new: {
-    code,
-    link,
-    totalEarned: 0,
-    successful: 0,
-    referrals: [],
-  },
+  new: { code, link, totalEarned: 0, pending: 0, referrals: [] },
 
   progress: {
     code,
     link,
-    totalEarned: 30,
-    successful: 3,
+    totalEarned: 20,
+    pending: 20,
     referrals: [
-      {
-        id: 'r6',
-        name: 'Amara Okafor',
-        email: 'am***@gmail.com',
-        date: '8 Aug 2026',
-        status: 'signed_up',
-      },
-      {
-        id: 'r5',
-        name: 'Callum Reid',
-        email: 'ca***@outlook.com',
-        date: '2 Aug 2026',
-        status: 'clearing',
-        availableOn: '1 Sep 2026',
-      },
-      {
-        id: 'r4',
-        name: 'Jess Whitfield',
-        email: 'je***@gmail.com',
-        date: '19 Jul 2026',
-        status: 'signed_up',
-      },
-      {
-        id: 'r3',
-        name: 'Theo Marsh',
-        email: 'th***@icloud.com',
-        date: '28 Jun 2026',
-        status: 'earned',
-      },
-      {
-        id: 'r2',
-        name: 'Nadia Silva',
-        email: 'na***@gmail.com',
-        date: '14 Jun 2026',
-        status: 'earned',
-      },
+      r('r6', 'Amara Okafor', 'am***@gmail.com', '28 Aug 2026', 'joined'),
+      r('r5', 'Callum Reid', 'ca***@outlook.com', '20 Aug 2026', 'pending', '20 Sep 2026'),
+      r('r4', 'Jess Whitfield', 'je***@gmail.com', '11 Aug 2026', 'pending', '11 Sep 2026'),
+      r('r3', 'Theo Marsh', 'th***@icloud.com', '28 Jun 2026', 'paid'),
+      r('r2', 'Nadia Silva', 'na***@gmail.com', '14 Jun 2026', 'paid'),
     ],
   },
 
-  capped: {
+  power: {
     code,
     link,
-    totalEarned: 50,
-    successful: 5,
+    totalEarned: 90,
+    pending: 30,
     referrals: [
-      {
-        id: 'c7',
-        name: 'Ryan Doyle',
-        email: 'ry***@gmail.com',
-        date: '9 Aug 2026',
-        status: 'capped',
-      },
-      {
-        id: 'c6',
-        name: 'Priya Anand',
-        email: 'pr***@outlook.com',
-        date: '31 Jul 2026',
-        status: 'capped',
-      },
-      {
-        id: 'c5',
-        name: 'Callum Reid',
-        email: 'ca***@outlook.com',
-        date: '22 Jul 2026',
-        status: 'earned',
-      },
-      {
-        id: 'c4',
-        name: 'Amara Okafor',
-        email: 'am***@gmail.com',
-        date: '10 Jul 2026',
-        status: 'earned',
-      },
-      {
-        id: 'c3',
-        name: 'Jess Whitfield',
-        email: 'je***@gmail.com',
-        date: '27 Jun 2026',
-        status: 'earned',
-      },
-      {
-        id: 'c2',
-        name: 'Theo Marsh',
-        email: 'th***@icloud.com',
-        date: '15 Jun 2026',
-        status: 'earned',
-      },
-      {
-        id: 'c1',
-        name: 'Nadia Silva',
-        email: 'na***@gmail.com',
-        date: '2 Jun 2026',
-        status: 'earned',
-      },
+      r('p12', 'Ryan Doyle', 'ry***@gmail.com', '3 Sep 2026', 'joined'),
+      r('p11', 'Priya Anand', 'pr***@outlook.com', '30 Aug 2026', 'pending', '30 Sep 2026'),
+      r('p10', 'Marcus Bell', 'ma***@gmail.com', '24 Aug 2026', 'pending', '24 Sep 2026'),
+      r('p9', 'Sofia Reyes', 'so***@icloud.com', '15 Aug 2026', 'pending', '15 Sep 2026'),
+      r('p8', 'Callum Reid', 'ca***@outlook.com', '22 Jul 2026', 'paid'),
+      r('p7', 'Amara Okafor', 'am***@gmail.com', '10 Jul 2026', 'paid'),
+      r('p6', 'Jess Whitfield', 'je***@gmail.com', '27 Jun 2026', 'paid'),
+      r('p5', 'Theo Marsh', 'th***@icloud.com', '15 Jun 2026', 'paid'),
+      r('p4', 'Nadia Silva', 'na***@gmail.com', '2 Jun 2026', 'paid'),
+      r('p3', 'Leon Baptiste', 'le***@gmail.com', '21 May 2026', 'paid'),
+      r('p2', 'Hana Yusuf', 'ha***@outlook.com', '9 May 2026', 'paid'),
+      r('p1', 'Owen Clarke', 'ow***@gmail.com', '26 Apr 2026', 'paid'),
     ],
   },
 }

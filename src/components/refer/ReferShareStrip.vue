@@ -15,7 +15,7 @@
             Refer a friend, earn ${{ REWARD_PER_REFERRAL }}
           </p>
           <p class="text-sm text-white/70 truncate">
-            {{ profile.successful }} of {{ REFERRAL_CAP }} friends joined · ${{ CAP_AMOUNT - profile.totalEarned }} still to earn
+            {{ profile.referrals.length }} friends joined · ${{ profile.totalEarned }} earned<template v-if="profile.pending"> · ${{ profile.pending }} on the way</template> · {{ FRIEND_DISCOUNT_PERCENT }}% off Pro for them
           </p>
         </div>
       </div>
@@ -49,12 +49,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import {
-  referDemoStates,
-  REWARD_PER_REFERRAL,
-  REFERRAL_CAP,
-  CAP_AMOUNT,
-} from '../../data/referMockData'
+import { referDemoStates, REWARD_PER_REFERRAL, FRIEND_DISCOUNT_PERCENT } from '../../data/referMockData'
 
 const emit = defineEmits<{
   (e: 'navigate', section: string): void

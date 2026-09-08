@@ -6,39 +6,8 @@
         Refer a <span class="text-ditto-purple">Friend</span>
       </h1>
       <p class="text-sm sm:text-base text-ditto-subtext max-w-xl">
-        ${{ REWARD_PER_REFERRAL }} for you, ${{ REWARD_PER_REFERRAL }} for them — every time a friend joins on a paid plan, up to ${{ CAP_AMOUNT }}.
+        ${{ REWARD_PER_REFERRAL }} cash for you, {{ FRIEND_DISCOUNT_PERCENT }}% off Pro for them — every time a friend joins. No limit on how many.
       </p>
-    </div>
-
-    <!-- Post-cap: the affiliate upsell takes over the top of the page -->
-    <div
-      v-if="isCapped"
-      class="relative overflow-hidden rounded-3xl p-6 sm:p-8 mb-6 text-white affiliate-banner"
-    >
-      <span class="absolute inset-0 rounded-3xl ring-1 ring-inset ring-white/15 pointer-events-none"></span>
-      <div class="relative flex flex-col sm:flex-row sm:items-center gap-5">
-        <div class="flex-1">
-          <span class="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide bg-[#E6FF3A] text-[#0a0a0a] px-2.5 py-1 rounded-full mb-3">
-            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2z"/></svg>
-            You've earned the full ${{ CAP_AMOUNT }}
-          </span>
-          <h2 class="font-satoshi font-black tracking-[-0.03em] text-2xl sm:text-3xl mb-2">Want to keep earning?</h2>
-          <p class="text-sm sm:text-base text-white/75 max-w-lg">
-            You clearly know people. Join the Ditto Affiliate Programme and earn
-            <span class="font-semibold text-white">uncapped commission</span> on every artist you bring to Ditto.
-          </p>
-        </div>
-        <div class="flex-shrink-0">
-          <a
-            href="https://dittomusic.com/affiliates"
-            target="_blank"
-            rel="noreferrer"
-            class="inline-block px-7 py-3.5 bg-[#E6FF3A] text-[#0a0a0a] text-base font-semibold rounded-full hover:-translate-y-0.5 transition-transform"
-          >
-            Join the Affiliate Programme
-          </a>
-        </div>
-      </div>
     </div>
 
     <!-- Earnings + share link -->
@@ -49,31 +18,23 @@
         <span class="absolute inset-0 rounded-3xl ring-1 ring-inset ring-white/15 pointer-events-none"></span>
 
         <p class="relative text-sm text-white/65 mb-2">Referral earnings</p>
-        <p class="relative text-6xl sm:text-7xl font-satoshi font-black tracking-[-0.03em] mb-8">
+        <p class="relative text-6xl sm:text-7xl font-satoshi font-black tracking-[-0.03em] mb-6">
           ${{ animatedEarned }}<span class="text-3xl align-top">.00</span>
         </p>
 
-        <!-- One segment per possible referral -->
-        <div class="relative flex gap-1.5 h-3 mb-3">
-          <div
-            v-for="i in REFERRAL_CAP"
-            :key="i"
-            class="flex-1 rounded-full transition-colors duration-700"
-            :class="i <= profile.successful ? 'bg-[#E6FF3A]' : 'bg-white/15'"
-            :style="{ transitionDelay: `${i * 90}ms` }"
-          ></div>
-        </div>
-
-        <div class="relative flex items-center justify-between text-sm mb-1">
+        <div class="relative flex flex-wrap items-center gap-x-6 gap-y-2 text-sm mb-1">
           <span class="text-white">
-            <span class="font-semibold">{{ profile.successful }} of {{ REFERRAL_CAP }}</span> friends joined
+            <span class="font-semibold">{{ profile.referrals.length }}</span> {{ profile.referrals.length === 1 ? 'friend' : 'friends' }} joined
           </span>
-          <span v-if="!isCapped" class="text-white/65">${{ CAP_AMOUNT - profile.totalEarned }} still to earn</span>
-          <span v-else class="text-[#E6FF3A] font-semibold">Complete</span>
+          <span v-if="profile.pending > 0" class="inline-flex items-center gap-1.5 text-white/85">
+            <span class="w-1.5 h-1.5 rounded-full bg-[#E6FF3A]"></span>
+            <span class="font-semibold text-white">${{ profile.pending }}</span> on the way
+          </span>
         </div>
+        <p class="relative text-xs text-white/60">Every friend counts — there's no limit. Each ${{ REWARD_PER_REFERRAL }} lands {{ HOLDING_PERIOD_LABEL }} after they sign up.</p>
 
-        <div v-if="profile.successful === 0 || isCapped" class="relative mt-auto pt-6">
-          <p v-if="profile.successful === 0" class="text-sm text-white/75">
+        <div class="relative mt-auto pt-6">
+          <p v-if="profile.referrals.length === 0" class="text-sm text-white/75">
             Share your link below to earn your first ${{ REWARD_PER_REFERRAL }}.
           </p>
           <button v-else class="px-6 py-3 bg-white/15 text-white text-sm font-semibold rounded-full hover:bg-white/25 transition-colors">
@@ -123,7 +84,7 @@
         <div class="mt-auto flex items-center gap-2.5 pt-4">
           <img src="/img/suite/perks.svg" alt="" class="w-6 h-6 flex-shrink-0" />
           <p class="text-sm text-ditto-subtext">
-            <span class="font-semibold text-ditto-text">Your friend gets ${{ REWARD_PER_REFERRAL }} too</span> — Ditto credit to spend on the platform when they join.
+            <span class="font-semibold text-ditto-text">Your friend gets {{ FRIEND_DISCOUNT_PERCENT }}% off Ditto Pro</span> when they sign up through your link.
           </p>
         </div>
       </div>
@@ -166,7 +127,7 @@
         </span>
         <p class="text-base font-semibold text-ditto-text mb-1">No referrals yet</p>
         <p class="text-sm text-ditto-subtext max-w-sm mx-auto">
-          Share your link with friends who make music. When one of them joins on a paid subscription, you'll see them here — and ${{ REWARD_PER_REFERRAL }} in your balance.
+          Share your link with friends who make music. When one of them signs up, you'll see them here — and ${{ REWARD_PER_REFERRAL }} lands in your balance {{ HOLDING_PERIOD_LABEL }} later.
         </p>
       </div>
 
@@ -202,6 +163,15 @@
         </div>
       </div>
 
+    </div>
+
+    <!-- Heavy referrers: quiet pointer to the affiliate programme -->
+    <div v-if="profile.referrals.length >= 10" class="mb-14 flex flex-col sm:flex-row sm:items-center gap-4 rounded-2xl border border-gray-200 bg-white p-6">
+      <div class="flex-1">
+        <p class="text-base font-bold text-ditto-text">Referring a lot? There's an affiliate programme too.</p>
+        <p class="text-sm text-ditto-subtext mt-1">Earn commission on every artist you bring to Ditto, on top of your referral rewards.</p>
+      </div>
+      <a href="https://dittomusic.com/affiliates" target="_blank" rel="noreferrer" class="flex-shrink-0 px-5 py-2.5 rounded-full border border-gray-200 text-sm font-semibold text-ditto-text hover:border-ditto-purple hover:text-ditto-purple transition-colors">Find out more</a>
     </div>
 
     <!-- FAQs (two independent columns so an open answer only grows its own side) -->
@@ -260,15 +230,15 @@ import Toast from '../../components/ui/Toast.vue'
 import {
   referDemoStates,
   REWARD_PER_REFERRAL,
-  REFERRAL_CAP,
-  CAP_AMOUNT,
+  FRIEND_DISCOUNT_PERCENT,
+  HOLDING_PERIOD_LABEL,
   type ReferDemoState,
   type Referral,
   type ReferralStatus,
 } from '../../data/referMockData'
 import { useCountUp } from '../../composables/useCountUp'
 
-// Demo state: ?refer=new|progress|capped, defaulting to mid-programme
+// Demo state: ?refer=new|progress|power, defaulting to mid-programme
 const urlParams = new URLSearchParams(window.location.search)
 const paramState = urlParams.get('refer') as ReferDemoState | null
 const demoState = ref<ReferDemoState>(
@@ -278,11 +248,10 @@ const demoState = ref<ReferDemoState>(
 const demoStateOptions: { id: ReferDemoState; label: string }[] = [
   { id: 'new', label: 'New' },
   { id: 'progress', label: 'In progress' },
-  { id: 'capped', label: 'Capped' },
+  { id: 'power', label: 'Heavy referrer' },
 ]
 
 const profile = computed(() => referDemoStates[demoState.value])
-const isCapped = computed(() => profile.value.successful >= REFERRAL_CAP)
 
 // Headline figure counts up on load; switching demo states just snaps
 const countUp = useCountUp(profile.value.totalEarned)
@@ -311,7 +280,7 @@ const copyLink = async () => {
 }
 
 const shareText = computed(() =>
-  encodeURIComponent(`Join me on Ditto and we both get $${REWARD_PER_REFERRAL}: https://${profile.value.link}`)
+  encodeURIComponent(`Join me on Ditto and get ${FRIEND_DISCOUNT_PERCENT}% off Ditto Pro: https://${profile.value.link}`)
 )
 const shareUrl = computed(() => encodeURIComponent(`https://${profile.value.link}`))
 
@@ -333,7 +302,7 @@ const shareChannels = computed(() => [
   },
   {
     label: 'Email',
-    href: `mailto:?subject=${encodeURIComponent('Join me on Ditto Music — we both get $10')}&body=${shareText.value}`,
+    href: `mailto:?subject=${encodeURIComponent(`Join me on Ditto Music — ${FRIEND_DISCOUNT_PERCENT}% off Pro`)}&body=${shareText.value}`,
     icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7" stroke-linecap="round" stroke-linejoin="round"/></svg>',
   },
 ])
@@ -347,24 +316,24 @@ const howItWorks = [
   },
   {
     icon: '/img/suite/add-artist.svg',
-    title: 'They join Ditto',
-    body: 'Any paid plan counts.',
+    title: 'They sign up and save',
+    body: `${FRIEND_DISCOUNT_PERCENT}% off Ditto Pro, applied at checkout.`,
   },
   {
     icon: '/img/suite/Royalties.svg',
-    title: 'You both get paid',
-    body: `$${REWARD_PER_REFERRAL} cash for you, $${REWARD_PER_REFERRAL} Ditto credit for them.`,
+    title: 'You get $10 cash',
+    body: `Deposited into your balance ${HOLDING_PERIOD_LABEL} after they sign up. No limit.`,
   },
 ]
 
 const faqs = [
   {
     q: 'How much can I earn?',
-    a: `$${REWARD_PER_REFERRAL} for each friend who signs up with your link and buys any paid Ditto subscription, up to $${CAP_AMOUNT} (${REFERRAL_CAP} friends). After that, our Affiliate Programme offers uncapped commission.`,
+    a: `$${REWARD_PER_REFERRAL} in cash for every friend who signs up through your link — there's no cap on how many friends you can refer or how much you can earn.`,
   },
   {
     q: 'What does my friend get?',
-    a: `$${REWARD_PER_REFERRAL} of Ditto credit once they've joined on a paid subscription through your link — usable toward anything on the platform, though it can't be withdrawn as cash.`,
+    a: `${FRIEND_DISCOUNT_PERCENT}% off Ditto Pro when they sign up through your link — the discount is applied automatically at checkout.`,
   },
   {
     q: 'Who can take part?',
@@ -372,7 +341,7 @@ const faqs = [
   },
   {
     q: 'When do I get my reward?',
-    a: `Your $${REWARD_PER_REFERRAL} is confirmed once your friend's first subscription payment clears its 30-day refund window. It's then added to your Ditto balance, ready to withdraw through the normal payout flow.`,
+    a: `Your $${REWARD_PER_REFERRAL} is deposited into your Ditto balance ${HOLDING_PERIOD_LABEL} after your friend signs up. The holding period lets us check the referral is genuine; you'll see the exact deposit date next to each friend in your list.`,
   },
   {
     q: 'How long does my link last?',
@@ -388,7 +357,7 @@ const faqs = [
   },
   {
     q: 'Are there any rules?',
-    a: 'Referrals must be genuine new Ditto customers — self-referrals, duplicate accounts and anything that looks like gaming the programme won\'t be rewarded. Rewards may be reversed if a referred subscription is refunded.',
+    a: 'Referrals must be genuine new Ditto customers — self-referrals, duplicate accounts and anything that looks like gaming the programme won\'t be rewarded, and a pending reward can be cancelled during the holding period if that\'s what we find.',
   },
 ]
 
@@ -397,18 +366,16 @@ const initials = (name: string) =>
   name.split(' ').map(part => part[0]).slice(0, 2).join('').toUpperCase()
 
 const statusMeta: Record<ReferralStatus, { pill: string; amount: string; amountClass: string }> = {
-  earned: { pill: 'bg-success/15 text-success', amount: `+$${REWARD_PER_REFERRAL}`, amountClass: 'text-ditto-text' },
-  clearing: { pill: 'bg-info/15 text-info', amount: `+$${REWARD_PER_REFERRAL}`, amountClass: 'text-ditto-subtext' },
-  signed_up: { pill: 'bg-warning/15 text-warning', amount: '—', amountClass: 'text-ditto-subtext' },
-  capped: { pill: 'bg-ditto-light-grey text-ditto-subtext', amount: '$0', amountClass: 'text-ditto-subtext' },
+  paid: { pill: 'bg-success/15 text-success', amount: `+$${REWARD_PER_REFERRAL}`, amountClass: 'text-ditto-text' },
+  pending: { pill: 'bg-info/15 text-info', amount: `+$${REWARD_PER_REFERRAL}`, amountClass: 'text-ditto-subtext' },
+  joined: { pill: 'bg-warning/15 text-warning', amount: '—', amountClass: 'text-ditto-subtext' },
 }
 
 const statusLabel = (referral: Referral): string => {
   switch (referral.status) {
-    case 'earned': return 'Reward earned'
-    case 'clearing': return `Clearing · available ${referral.availableOn}`
-    case 'signed_up': return 'Signed up — not subscribed yet'
-    case 'capped': return 'Joined after cap'
+    case 'paid': return 'Deposited'
+    case 'pending': return `Deposits ${referral.depositOn}`
+    case 'joined': return 'Signed up — Pro offer not taken yet'
   }
 }
 
