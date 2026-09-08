@@ -197,10 +197,9 @@ const formData = reactive({
     ownershipConfirmed: false,
     // Licensed
     licenseHolder: '',
-    licenseType: '' as '' | 'exclusive' | 'non-exclusive',
     licenseValidUntil: '',
     licenseTerritory: 'global' as 'global' | 'selected',
-    licenseReference: '',
+    licenseDocument: null as File | null,
     licenseConfirmed: false,
     // Previously Distributed
     previousDistributor: '',

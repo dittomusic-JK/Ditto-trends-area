@@ -378,10 +378,9 @@ interface FormData {
     type: '' | 'original' | 'licensed' | 'previously-distributed' | 'commissioned'
     ownershipConfirmed: boolean
     licenseHolder: string
-    licenseType: '' | 'exclusive' | 'non-exclusive'
     licenseValidUntil: string
     licenseTerritory: 'global' | 'selected'
-    licenseReference: string
+    licenseDocument: File | null
     licenseConfirmed: boolean
     previousDistributor: string
     takedownConfirmed: boolean
