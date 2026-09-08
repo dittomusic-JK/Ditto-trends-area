@@ -43,15 +43,16 @@ const videoPerformance = (total: number, peakMonth: number): PerformanceDataPoin
   }))
 }
 
-// Platform mix varies by where the video was pushed hardest
+// Platform mix varies by where the video was pushed hardest.
+// Ditto delivers video to five stores: Spotify, Apple Music, VEVO, TIDAL, Amazon Music.
+const STORE_NAMES: Record<string, string> = { vevo: 'VEVO', spotify: 'Spotify', 'apple-music': 'Apple Music', tidal: 'TIDAL', 'amazon-music': 'Amazon Music' }
+const storeKey = (name: string) => Object.keys(STORE_NAMES).find(k => STORE_NAMES[k] === name) ?? 'vevo'
 const storeMix = (views: number, lead: string): Store[] => {
-  const base: Record<string, number> = { youtube: 58, vevo: 24, 'apple-music': 9, tiktok: 5, facebook: 2.5, instagram: 1.5 }
-  const key = lead === 'VEVO' ? 'vevo' : lead === 'Apple Music' ? 'apple-music' : lead === 'TikTok' ? 'tiktok' : 'youtube'
-  base[key] += 22
+  const base: Record<string, number> = { vevo: 46, spotify: 24, 'apple-music': 17, tidal: 8, 'amazon-music': 5 }
+  base[storeKey(lead)] += 22
   const sum = Object.values(base).reduce((a, b) => a + b, 0)
-  const names: Record<string, string> = { youtube: 'YouTube', vevo: 'VEVO', 'apple-music': 'Apple Music', tiktok: 'TikTok', facebook: 'Facebook', instagram: 'Instagram' }
   return Object.entries(base)
-    .map(([id, w]) => ({ id, name: names[id], icon: id === 'vevo' ? 'youtube' : id, proportion: Math.round((w / sum) * 1000) / 10, streams: Math.round((views * w) / sum) }))
+    .map(([id, w]) => ({ id, name: STORE_NAMES[id], icon: id, proportion: Math.round((w / sum) * 1000) / 10, streams: Math.round((views * w) / sum) }))
     .sort((a, b) => b.proportion - a.proportion)
 }
 
@@ -60,17 +61,17 @@ const total = rawViews.reduce((a, b) => a + b, 0)
 
 const titles: [string, string, string][] = [
   ['Summer Vibes (Official Video)', 'Darkoo', 'VEVO'],
-  ['My Baby (Obimo) [Official Video]', 'Almost Joey', 'YouTube'],
+  ['My Baby (Obimo) [Official Video]', 'Almost Joey', 'Spotify'],
   ['Favourite Girl (with Rema) — Official Video', 'Darkoo', 'VEVO'],
-  ['Solar (Visualiser)', 'Darkoo & Ruger', 'YouTube'],
-  ['Midnight Run (Live Performance)', 'Almost Joey', 'YouTube'],
+  ['Solar (Visualiser)', 'Darkoo & Ruger', 'Apple Music'],
+  ['Midnight Run (Live Performance)', 'Almost Joey', 'VEVO'],
   ['RHUDE GYAL! (with JELEEL!) — Official Video', 'Darkoo', 'VEVO'],
-  ['Your Number (Lyric Video)', 'Darkoo', 'YouTube'],
+  ['Your Number (Lyric Video)', 'Darkoo', 'Spotify'],
   ['Like Dat (Official Video)', 'Darkoo', 'Apple Music'],
-  ['Golden Hour (Visualiser)', 'Almost Joey', 'YouTube'],
+  ['Golden Hour (Visualiser)', 'Almost Joey', 'TIDAL'],
   ['Obimo (Official Video)', 'Almost Joey', 'VEVO'],
-  ['Right Now (with Davido & Rvssian)', 'Darkoo', 'YouTube'],
-  ['Your Waist (Official Video)', 'Almost Joey', 'TikTok'],
+  ['Right Now (with Davido & Rvssian)', 'Darkoo', 'VEVO'],
+  ['Your Waist (Official Video)', 'Almost Joey', 'Amazon Music'],
 ]
 
 export const videoAnalyticsData: VideoAnalyticsData = {
@@ -94,11 +95,10 @@ export const videoAnalyticsData: VideoAnalyticsData = {
     stores: storeMix(rawViews[i], platform),
   })),
   stores: [
-    { id: 'youtube', name: 'YouTube', icon: 'youtube', proportion: 58.4, streams: Math.round(total * 0.584) },
-    { id: 'vevo', name: 'VEVO', icon: 'youtube', proportion: 24.1, streams: Math.round(total * 0.241) },
-    { id: 'apple-music', name: 'Apple Music', icon: 'apple-music', proportion: 9.2, streams: Math.round(total * 0.092) },
-    { id: 'tiktok', name: 'TikTok', icon: 'tiktok', proportion: 5.1, streams: Math.round(total * 0.051) },
-    { id: 'facebook', name: 'Facebook', icon: 'facebook', proportion: 2.0, streams: Math.round(total * 0.02) },
-    { id: 'instagram', name: 'Instagram', icon: 'instagram', proportion: 1.2, streams: Math.round(total * 0.012) },
+    { id: 'vevo', name: 'VEVO', icon: 'vevo', proportion: 47.6, streams: Math.round(total * 0.476) },
+    { id: 'spotify', name: 'Spotify', icon: 'spotify', proportion: 23.8, streams: Math.round(total * 0.238) },
+    { id: 'apple-music', name: 'Apple Music', icon: 'apple-music', proportion: 16.1, streams: Math.round(total * 0.161) },
+    { id: 'tidal', name: 'TIDAL', icon: 'tidal', proportion: 8.0, streams: Math.round(total * 0.08) },
+    { id: 'amazon-music', name: 'Amazon Music', icon: 'amazon-music', proportion: 4.5, streams: Math.round(total * 0.045) },
   ],
 }

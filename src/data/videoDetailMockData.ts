@@ -34,7 +34,7 @@ const seeds: Record<string, Partial<VideoDetail>> = {
     labelcampId: '611005',
     releaseDate: '2026-06-06',
     associatedTrack: { title: 'Summer Vibes', album: '$exy Girl $ummer (Vol.1)', isrc: 'GXLF52643441', length: '03:42' },
-    storeIds: ['youtube', 'vevo', 'apple', 'tiktok'],
+    storeIds: ['spotify', 'apple', 'vevo', 'tidal', 'amazon'],
     splits: [
       c('v1', 'Femi Adeyemi', 'femi.director@gmail.com', 20, 'active', '6 Jun 2026'),
       c('v2', 'Kraizee', 'kraizee@beats.co', 10, 'pending'),
@@ -51,7 +51,7 @@ const seeds: Record<string, Partial<VideoDetail>> = {
     labelcampId: '611231',
     releaseDate: '2026-04-18',
     associatedTrack: { title: 'Midnight Run', album: 'Midnight Run', isrc: 'GXLF52643502', length: '04:12' },
-    storeIds: ['youtube', 'vevo'],
+    storeIds: ['vevo', 'apple'],
     splits: [c('v3', 'Studio 45 Sessions', 'bookings@studio45.co.uk', 15, 'verification')],
   },
 }
@@ -71,7 +71,7 @@ export const getVideoDetail = (video: VideoRelease): VideoDetail => {
     labelcampId: `61${n}0`,
     releaseDate: `${video.year}-03-14`,
     associatedTrack: { title: video.title.replace(/\s*\([^)]*\)\s*$/, ''), album: video.title.replace(/\s*\([^)]*\)\s*$/, ''), isrc: `GXLF52643${n}`, length: '03:28' },
-    storeIds: ['youtube', 'vevo', 'apple'],
+    storeIds: ['spotify', 'apple', 'vevo'],
     splits: [],
     ...seed,
   }

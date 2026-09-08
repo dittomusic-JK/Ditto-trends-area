@@ -19,7 +19,7 @@
             All videos
           </button>
         </div>
-        <p v-else class="text-xs text-ditto-subtext">Across {{ data.videos.length }} videos · {{ data.stores.length }} platforms</p>
+        <p v-else class="text-xs text-ditto-subtext">Across {{ data.videos.length }} videos · {{ data.stores.length }} stores</p>
       </div>
       <PerformanceChart :data="chartData" :key="focusedId ?? 'all'" />
     </div>
@@ -28,7 +28,7 @@
     <div class="hidden lg:grid grid-cols-[40px_1fr_160px_110px_120px] gap-4 px-4 py-3 text-xs text-ditto-subtext">
       <div></div>
       <div>Video</div>
-      <div class="text-center">Platform</div>
+      <div class="text-center">Top store</div>
       <div class="text-center">Proportion</div>
       <div class="text-center">Views</div>
     </div>
@@ -78,7 +78,7 @@
 
     <!-- Store breakdown (same table as Metrics) -->
     <div class="mt-10">
-      <StoresTable :stores="storesData" :selected-store="selectedStore" :title="focused ? `Views by platform · ${focused.title}` : 'Views by platform'" metric-label="Views" @select="selectedStore = $event" />
+      <StoresTable :stores="storesData" :selected-store="selectedStore" :title="focused ? `Views by store · ${focused.title}` : 'Views by store'" metric-label="Views" @select="selectedStore = $event" />
     </div>
   </div>
 </template>

@@ -19,6 +19,7 @@ const storeIconMap: Record<string, string> = {
   'apple-music': '/img/apple-music-icon.svg',
   'deezer': '/img/deezer-icon.svg',
   'youtube': '/img/youtube-icon.svg',
+  'vevo': '/img/vevo-icon.svg',
   'amazon-music': '/img/amazonmusic-icon.svg',
   'soundcloud': '/img/soundcloud_icon.svg',
   'tidal': '/img/tidal-icon.svg',

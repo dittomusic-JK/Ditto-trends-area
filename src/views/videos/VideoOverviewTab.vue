@@ -64,7 +64,7 @@
     <div class="bg-white rounded-2xl border border-gray-200">
       <div class="px-6 py-4 border-b border-gray-100 flex items-baseline justify-between">
         <h3 class="font-satoshi font-black tracking-[-0.03em] text-lg text-ditto-text">Delivered to</h3>
-        <span class="text-xs text-ditto-subtext">{{ platforms.length }} platforms</span>
+        <span class="text-xs text-ditto-subtext">{{ platforms.length }} stores</span>
       </div>
       <div class="px-6 py-4 flex flex-wrap gap-2">
         <span v-for="p in platforms" :key="p.id" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-ditto-light-grey text-sm font-medium text-ditto-text">
@@ -97,12 +97,11 @@ const metaItems = computed(() => [
 ])
 
 const storeNames: Record<string, { name: string; icon: string }> = {
-  youtube: { name: 'YouTube', icon: 'youtube' },
-  vevo: { name: 'VEVO', icon: 'youtube' },
+  spotify: { name: 'Spotify', icon: 'spotify' },
   apple: { name: 'Apple Music', icon: 'apple-music' },
-  tiktok: { name: 'TikTok', icon: 'tiktok' },
-  facebook: { name: 'Facebook', icon: 'facebook' },
-  instagram: { name: 'Instagram', icon: 'instagram' },
+  vevo: { name: 'VEVO', icon: 'vevo' },
+  tidal: { name: 'TIDAL', icon: 'tidal' },
+  amazon: { name: 'Amazon Music', icon: 'amazon-music' },
 }
 const platforms = computed(() => props.video.storeIds.map(id => ({ id, ...(storeNames[id] ?? { name: id, icon: id }) })))
 </script>

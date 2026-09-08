@@ -235,13 +235,12 @@ const videoSections: FilterSection[] = [
     { id: 'c8', name: 'France', count: 5 },
     { id: 'c9', name: 'Germany', count: 3 },
   ] },
-  { type: 'platform', title: 'Platform', options: [
-    { id: 'vp1', name: 'YouTube' },
-    { id: 'vp2', name: 'VEVO' },
-    { id: 'vp3', name: 'Apple Music' },
-    { id: 'vp4', name: 'TikTok' },
-    { id: 'vp5', name: 'Facebook' },
-    { id: 'vp6', name: 'Instagram' },
+  { type: 'platform', title: 'Store', options: [
+    { id: 'vp1', name: 'Spotify' },
+    { id: 'vp2', name: 'Apple Music' },
+    { id: 'vp3', name: 'VEVO' },
+    { id: 'vp4', name: 'TIDAL' },
+    { id: 'vp5', name: 'Amazon Music' },
   ] },
 ]
 
