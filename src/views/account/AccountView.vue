@@ -27,7 +27,6 @@
           <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="9" stroke-width="1.8"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
           Email not verified
         </button>
-        <span class="mt-3 text-[10px] font-semibold px-2 py-0.5 rounded-md bg-ditto-purple/15 text-ditto-purple">{{ billing.planTag }}</span>
 
         <div class="w-full border-t border-gray-100 mt-7 pt-2 text-[15px] divide-y divide-gray-100">
           <div class="flex items-center justify-between py-3">
@@ -56,9 +55,9 @@
           <div class="grid grid-cols-1 md:grid-cols-[220px_1fr] gap-6">
             <div class="relative overflow-hidden rounded-2xl p-5 text-white plan-tile min-h-[150px] flex flex-col justify-end">
               <span class="absolute inset-0 rounded-2xl ring-1 ring-inset ring-white/15 pointer-events-none"></span>
-              <span class="relative inline-flex self-start text-[10px] font-bold uppercase tracking-[0.14em] bg-[#E6FF3A] text-[#0a0a0a] px-2.5 py-1 rounded-full mb-2">{{ billing.planTag }}</span>
+              <span class="relative inline-flex self-start text-[10px] font-bold uppercase tracking-[0.14em] bg-[#E6FF3A] text-[#0a0a0a] px-2.5 py-1 rounded-full mb-2">Your plan</span>
               <p class="relative font-satoshi font-black text-3xl tracking-[-0.03em]">{{ billing.planName }}</p>
-              <p class="relative text-xs text-white/70">{{ profile.currency.symbol }}{{ billing.amountDue }}/year</p>
+              <p class="relative text-xs text-white/70">{{ profile.currency.symbol }}{{ billing.amountDue }}/year · renews {{ billing.renewsOn }}</p>
             </div>
             <div>
               <p class="text-[15px] text-ditto-text leading-relaxed">{{ billing.planBlurb }}</p>
