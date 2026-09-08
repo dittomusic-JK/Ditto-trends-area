@@ -4,10 +4,7 @@
        layered on: current plan locked, downgrades gated by Plan Artists. -->
   <div class="pricing">
     <div class="pricing-head">
-      <h1 class="h-mega">
-        Subscription.<br />
-        <span class="purple-deep">Pick a plan.</span>
-      </h1>
+      <h1 class="h-mega">Pick your <span class="purple-deep">plan.</span></h1>
       <div class="pricing-cap">
         <strong>One price. Unlimited releases.</strong>
         100% royalties and our industry-leading artist tools. Included with every plan.
