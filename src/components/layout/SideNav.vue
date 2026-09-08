@@ -203,8 +203,8 @@
           <p class="text-sm font-semibold text-ditto-text">Goldenboy Entertainment</p>
           <span class="inline-block mt-0.5 text-[10px] font-semibold px-2 py-0.5 rounded-md bg-ditto-purple/15 text-ditto-purple">DITTO PLUS - RLS</span>
         </div>
-        <button class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-ditto-text hover:bg-ditto-light-grey transition-colors text-left">
-          <img src="/img/nav-settings.svg" alt="" class="w-4 h-4 opacity-60" /> Account Settings
+        <button @click="closeFlyout(); emit('navigate', 'account')" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-ditto-text hover:bg-ditto-light-grey transition-colors text-left">
+          <img src="/img/nav-settings.svg" alt="" class="w-4 h-4 opacity-60" /> Your Account
         </button>
         <button class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-ditto-text hover:bg-ditto-light-grey transition-colors text-left">
           <img src="/img/nav-clock-history.svg" alt="" class="w-4 h-4 opacity-60" /> Order History

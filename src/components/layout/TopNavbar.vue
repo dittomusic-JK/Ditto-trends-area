@@ -56,8 +56,8 @@
               <span :class="['absolute top-[2px] w-[14px] h-[14px] rounded-full shadow transition-all', isNewUser ? 'left-[18px] bg-ditto-purple' : 'left-[2px] bg-white']"></span>
             </span>
           </button>
-          <button class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-ditto-text hover:bg-ditto-light-grey transition-colors">
-            <img src="/img/nav-settings.svg" alt="" class="w-4 h-4 opacity-60" /> Account Settings
+          <button @click="emit('navigate', 'account'); showMobileMenu = false" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-ditto-text hover:bg-ditto-light-grey transition-colors">
+            <img src="/img/nav-settings.svg" alt="" class="w-4 h-4 opacity-60" /> Your Account
           </button>
           <button @click="emit('navigate', 'refer'); showMobileMenu = false" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-ditto-text hover:bg-ditto-light-grey transition-colors">
             <img src="/img/nav-refer-friend.svg" alt="" class="w-4 h-4 opacity-60" /> Refer a Friend
@@ -294,9 +294,9 @@
             </div>
           </div>
           <!-- Menu Items -->
-          <button class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-ditto-text hover:bg-ditto-light-grey transition-colors text-left">
+          <button @click="showAvatarMenu = false; emit('navigate', 'account')" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-ditto-text hover:bg-ditto-light-grey transition-colors text-left">
             <img src="/img/nav-settings.svg" alt="" class="w-4 h-4 opacity-60" />
-            Account Settings
+            Your Account
           </button>
           <button @click="showAvatarMenu = false; emit('navigate', 'subscriptions')" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-ditto-text hover:bg-ditto-light-grey transition-colors text-left">
             <svg class="w-4 h-4 opacity-60 text-ditto-text" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2z"/></svg>
