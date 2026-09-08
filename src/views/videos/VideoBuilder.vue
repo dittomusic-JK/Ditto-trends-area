@@ -282,8 +282,19 @@ const validateStep = (stepIndex: number): boolean => {
         formData.metadata.primaryGenre.length > 0 &&
         formData.artists.primary.length > 0 &&
         formData.credits.slice(0, 4).every(c => c.name.trim() !== '' && (c.category === 'composer' || c.role !== ''))
-    case 2:
-      return formData.stores.selected.length > 0
+    case 2: {
+      if (formData.stores.selected.length === 0) return false
+      // VEVO: an existing channel needs its name; a new one needs the artist name and
+      // (if set) a channel name that is alphanumeric and contains the artist name
+      if (!formData.stores.selected.includes('vevo')) return true
+      const st = formData.stores
+      if (st.vevoHasChannel === null) return false
+      if (st.vevoHasChannel === true) return st.vevoChannelName.trim().length > 0
+      if (!st.vevoArtistName.trim()) return false
+      if (!st.vevoChannelName) return true
+      const artist = st.vevoArtistName.replace(/[^A-Za-z0-9]/g, '').toLowerCase()
+      return /^[A-Za-z0-9]+$/.test(st.vevoChannelName) && st.vevoChannelName.toLowerCase().includes(artist)
+    }
     case 3:
       return formData.schedule.releaseDate !== null
     case 4:

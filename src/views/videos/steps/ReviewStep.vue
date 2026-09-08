@@ -476,8 +476,9 @@ const vevoChannelDisplayName = computed(() => {
     return props.formData.stores.vevoChannelName || 'Not entered'
   }
   if (props.formData.stores.vevoHasChannel === false) {
+    if (props.formData.stores.vevoChannelName) return props.formData.stores.vevoChannelName
     return props.formData.stores.vevoArtistName
-      ? props.formData.stores.vevoArtistName.replace(/\s+/g, '') + 'VEVO'
+      ? props.formData.stores.vevoArtistName.replace(/[^A-Za-z0-9]/g, '') + 'VEVO (auto)'
       : 'Will be auto-generated'
   }
   return 'Not configured'

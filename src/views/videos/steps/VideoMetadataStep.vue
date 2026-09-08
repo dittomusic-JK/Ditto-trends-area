@@ -319,8 +319,11 @@
         </div>
 
         <!-- 18+ -->
-        <div class="flex items-center justify-between">
-          <span class="text-sm text-ditto-text">18+ only?</span>
+        <div class="flex items-center justify-between gap-4">
+          <div>
+            <span class="text-sm text-ditto-text">18+ only?</span>
+            <p class="text-xs text-ditto-subtext mt-0.5">Visuals unsuitable for under-18s — nudity, graphic violence or drug use. Stores will age-gate the video.</p>
+          </div>
           <button
             @click="updateField('is18Plus', !metadata.is18Plus)"
             :class="[
@@ -336,8 +339,11 @@
         </div>
 
         <!-- Explicit -->
-        <div class="flex items-center justify-between">
-          <span class="text-sm text-ditto-text">Explicit content?</span>
+        <div class="flex items-center justify-between gap-4">
+          <div>
+            <span class="text-sm text-ditto-text">Explicit content?</span>
+            <p class="text-xs text-ditto-subtext mt-0.5">Strong language in the audio or on screen. Leave off for a clean version.</p>
+          </div>
           <button
             @click="updateField('isExplicit', !metadata.isExplicit)"
             :class="[

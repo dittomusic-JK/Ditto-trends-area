@@ -161,9 +161,9 @@
         <div v-if="stores.vevoHasChannel === false" class="border-t border-ditto-purple/10 pt-5 space-y-4">
           <h4 class="text-sm font-semibold text-ditto-text">Channel Details</h4>
 
-          <!-- Artist Name -->
+          <!-- Artist Name (required — the channel name is built from it) -->
           <div>
-            <label class="block text-xs font-medium text-ditto-subtext mb-1">Artist Name</label>
+            <label class="block text-xs font-medium text-ditto-subtext mb-1">Artist Name <span class="text-error">*</span></label>
             <input
               :value="stores.vevoArtistName"
               @input="updateField('vevoArtistName', ($event.target as HTMLInputElement).value)"
@@ -173,13 +173,26 @@
             />
           </div>
 
-          <!-- Channel Name (auto generated preview) -->
+          <!-- Channel Name (optional, editable; defaults to the artist name) -->
           <div>
-            <label class="block text-xs font-medium text-ditto-subtext mb-1">Channel Name</label>
-            <div class="flex items-center gap-2 py-2.5 border-b border-gray-200">
-              <span class="text-sm text-ditto-subtext">{{ stores.vevoArtistName ? stores.vevoArtistName.replace(/\s+/g, '') + 'VEVO' : 'Will be auto-generated' }}</span>
-              <span v-if="stores.vevoArtistName" class="text-[10px] text-ditto-purple bg-ditto-purple/10 px-1.5 py-0.5 rounded">Auto</span>
+            <label class="block text-xs font-medium text-ditto-subtext mb-1">Channel Name <span class="font-normal">(optional)</span></label>
+            <div class="relative">
+              <input
+                :value="stores.vevoChannelName"
+                @input="updateField('vevoChannelName', ($event.target as HTMLInputElement).value)"
+                type="text"
+                :placeholder="autoChannelName || 'Enter your artist name first'"
+                :class="[
+                  'w-full px-0 py-2.5 pr-14 border-0 border-b text-sm text-ditto-text bg-transparent focus:outline-none transition-colors',
+                  channelNameError ? 'border-error focus:border-error' : 'border-gray-300 focus:border-ditto-purple'
+                ]"
+              />
+              <span v-if="!stores.vevoChannelName && autoChannelName" class="absolute right-0 top-1/2 -translate-y-1/2 text-[10px] text-ditto-purple bg-ditto-purple/10 px-1.5 py-0.5 rounded">Auto</span>
             </div>
+            <p v-if="channelNameError" class="text-xs text-error mt-1.5">{{ channelNameError }}</p>
+            <p v-else class="text-[11px] text-ditto-subtext mt-1.5 leading-relaxed">
+              Leave this blank and we'll use <strong class="text-ditto-text">{{ autoChannelName || 'your artist name' }}</strong>. If you set your own, it must include your artist name and use letters and numbers only — no spaces, symbols or special characters.
+            </p>
           </div>
 
           <!-- Biography -->
@@ -367,6 +380,20 @@ const priceBands = [
 ]
 
 const isSelected = (id: string) => props.stores.selected.includes(id)
+
+// VEVO channel name: auto-generated from the artist name unless the user sets one.
+// A custom name must contain the artist name and be alphanumeric only.
+const compact = (v: string) => v.replace(/[^A-Za-z0-9]/g, '')
+const autoChannelName = computed(() => props.stores.vevoArtistName ? compact(props.stores.vevoArtistName) + 'VEVO' : '')
+const channelNameError = computed(() => {
+  if (props.stores.vevoHasChannel !== false) return null
+  const name = props.stores.vevoChannelName
+  if (!name) return null
+  if (!/^[A-Za-z0-9]+$/.test(name)) return 'Letters and numbers only — remove spaces, symbols or special characters.'
+  const artist = compact(props.stores.vevoArtistName)
+  if (artist && !name.toLowerCase().includes(artist.toLowerCase())) return `Your channel name must include your artist name (${artist}).`
+  return null
+})
 
 const isStoreDisabled = (id: string) => {
   if (id === 'spotify' && !hasSpotifyReleases) return true

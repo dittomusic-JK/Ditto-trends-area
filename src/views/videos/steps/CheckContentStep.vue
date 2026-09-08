@@ -119,7 +119,7 @@
     <!-- Video Asset Source Type -->
     <div v-else>
       <h2 class="font-satoshi font-black tracking-[-0.03em] text-xl lg:text-2xl text-ditto-text mb-1">Video source <span class="text-error text-base align-top">*</span></h2>
-      <p class="text-sm text-ditto-subtext mb-5">Let us know how your video was made.</p>
+      <p class="text-sm text-ditto-subtext mb-5">Let us know how your video was made. This covers everything on screen — footage, stock clips, overlays, graphics, fonts, logos and any third-party material — as well as the music.</p>
 
       <div class="space-y-2">
         <!-- Original -->
@@ -130,7 +130,7 @@
           <input type="radio" name="assetSource" value="original" :checked="assetSource.type === 'original'" @change="updateSource('type', 'original')" class="mt-0.5 accent-ditto-purple" />
           <div>
             <p class="text-sm font-medium text-ditto-text">Original Content</p>
-            <p class="text-xs text-ditto-subtext mt-0.5">I created this video myself or with my team. I own all rights to the footage.</p>
+            <p class="text-xs text-ditto-subtext mt-0.5">I created this video myself or with my team, and nothing in it comes from a stock library, another creator, or a third-party brand.</p>
           </div>
         </label>
         <!-- Original confirmation -->
@@ -142,7 +142,7 @@
             </div>
             <div>
               <p class="text-sm text-ditto-text">I confirm I own all necessary rights</p>
-              <p class="text-xs text-ditto-subtext mt-0.5">This includes the rights to the music, the lyrics, and all video footage.</p>
+              <p class="text-xs text-ditto-subtext mt-0.5">This includes the music and lyrics, all footage, and any overlays, graphics, fonts, logos or effects used in the edit.</p>
             </div>
           </label>
         </div>
@@ -155,7 +155,7 @@
           <input type="radio" name="assetSource" value="licensed" :checked="assetSource.type === 'licensed'" @change="updateSource('type', 'licensed')" class="mt-0.5 accent-ditto-purple" />
           <div class="flex-1">
             <p class="text-sm font-medium text-ditto-text">Licensed Content</p>
-            <p class="text-xs text-ditto-subtext mt-0.5">I have a license or rights agreement to use this video content.</p>
+            <p class="text-xs text-ditto-subtext mt-0.5">Some or all of the video uses licensed material — stock footage or clips, overlays, templates, graphics, fonts, or footage shot by someone else — under a licence or rights agreement.</p>
           </div>
         </label>
         <!-- Licensed fields -->

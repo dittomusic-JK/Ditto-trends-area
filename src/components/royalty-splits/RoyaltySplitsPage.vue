@@ -2,8 +2,12 @@
   <div class="rsp">
     <!-- Page header -->
     <div class="rsp__header">
-      <div>
+      <div class="rsp__heading">
         <h1 class="rsp__title">Royalty Splits</h1>
+        <a :href="SPLITS_HELP_URL" target="_blank" rel="noopener" class="rsp__help">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Need help with splits?
+        </a>
       </div>
 
       <!-- Legend -->
@@ -126,6 +130,9 @@ import FirstSplitModal from './FirstSplitModal.vue'
 import EditEmailModal from './EditEmailModal.vue'
 import UnsavedChangesModal from './UnsavedChangesModal.vue'
 import Toast from '../ui/Toast.vue'
+
+// Permanent FAQ entry point — the onboarding popup only shows once, this is always here
+const SPLITS_HELP_URL = 'https://support.dittomusic.com/en/collections/royalty-splits'
 
 const props = defineProps<{
   releaseData: Release
@@ -561,6 +568,27 @@ const handleCancelUnsavedChanges = () => {
       align-items: center;
       justify-content: space-between;
     }
+  }
+
+  &__heading {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem 1rem;
+  }
+
+  &__help {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-family: $font-satoshi;
+    font-size: $text-sm;
+    font-weight: 500;
+    color: var(--purple);
+    text-decoration: none;
+    white-space: nowrap;
+
+    &:hover { text-decoration: underline; }
   }
 
   &__title {
