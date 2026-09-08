@@ -132,6 +132,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import type { Filter, TrendsType } from '../../types'
+import { videoAnalyticsData } from '../../data/videoAnalyticsMockData'
 
 const props = defineProps<{
   isOpen: boolean
@@ -213,14 +214,7 @@ const videoSections: FilterSection[] = [
     { id: 'va3', name: 'Ruger', count: 1 },
     { id: 'va4', name: 'Rema', count: 1 },
   ] },
-  { type: 'video', title: 'Video', options: [
-    { id: 'vv1', name: 'Summer Vibes (Official Video)', count: 13326386 },
-    { id: 'vv2', name: 'My Baby (Obimo) [Official Video]', count: 9765416 },
-    { id: 'vv3', name: 'Favourite Girl (with Rema) — Official Video', count: 8181010 },
-    { id: 'vv4', name: 'Solar (Visualiser)', count: 7455554 },
-    { id: 'vv5', name: 'Midnight Run (Live Performance)', count: 6902113 },
-    { id: 'vv6', name: 'RHUDE GYAL! (with JELEEL!) — Official Video', count: 5410880 },
-  ] },
+  { type: 'video', title: 'Video', options: videoAnalyticsData.videos.map(v => ({ id: v.id, name: v.title, count: v.views })) },
   { type: 'videoType', title: 'Video type', options: [
     { id: 'vt1', name: 'Official Video', count: 6 },
     { id: 'vt2', name: 'Lyric Video', count: 1 },

@@ -12,6 +12,7 @@ export interface VideoRanking {
   views: number
   proportion: number
   platform: string
+  type: string
   /** This video's monthly views vs its previous period — drives the chart when focused */
   performance: PerformanceDataPoint[]
   /** This video's own platform mix */
@@ -24,8 +25,6 @@ export interface VideoAnalyticsData {
   videos: VideoRanking[]
   stores: Store[]
 }
-
-const thumb = (i: number) => videoReleases[i % videoReleases.length].artwork
 
 const months = ['Oct 25', 'Nov 25', 'Dec 25', 'Jan 26', 'Feb 26', 'Mar 26', 'Apr 26', 'May 26', 'Jun 26', 'Jul 26', 'Aug 26', 'Sep 26']
 
@@ -56,23 +55,12 @@ const storeMix = (views: number, lead: string): Store[] => {
     .sort((a, b) => b.proportion - a.proportion)
 }
 
+// Ranked views, biggest first; rows come from the video catalogue so ids, titles
+// and artwork line up with the Videos area (filters and click-throughs share ids).
 const rawViews = [13326386, 9765416, 8181010, 7455554, 6902113, 5410880, 4823001, 3781230, 3109808, 3067643, 2493951, 1911266]
-const total = rawViews.reduce((a, b) => a + b, 0)
-
-const titles: [string, string, string][] = [
-  ['Summer Vibes (Official Video)', 'Darkoo', 'VEVO'],
-  ['My Baby (Obimo) [Official Video]', 'Almost Joey', 'Spotify'],
-  ['Favourite Girl (with Rema) — Official Video', 'Darkoo', 'VEVO'],
-  ['Solar (Visualiser)', 'Darkoo & Ruger', 'Apple Music'],
-  ['Midnight Run (Live Performance)', 'Almost Joey', 'VEVO'],
-  ['RHUDE GYAL! (with JELEEL!) — Official Video', 'Darkoo', 'VEVO'],
-  ['Your Number (Lyric Video)', 'Darkoo', 'Spotify'],
-  ['Like Dat (Official Video)', 'Darkoo', 'Apple Music'],
-  ['Golden Hour (Visualiser)', 'Almost Joey', 'TIDAL'],
-  ['Obimo (Official Video)', 'Almost Joey', 'VEVO'],
-  ['Right Now (with Davido & Rvssian)', 'Darkoo', 'VEVO'],
-  ['Your Waist (Official Video)', 'Almost Joey', 'Amazon Music'],
-]
+const catalogueOrder = ['vr-001', 'vr-005', 'vr-003', 'vr-002', 'vr-006', 'vr-008', 'vr-007', 'vr-010', 'vr-009', 'vr-004']
+const ranked = catalogueOrder.map(id => videoReleases.find(v => v.id === id)!).filter(Boolean)
+const total = rawViews.slice(0, ranked.length).reduce((a, b) => a + b, 0)
 
 export const videoAnalyticsData: VideoAnalyticsData = {
   totalViews: total,
@@ -82,17 +70,18 @@ export const videoAnalyticsData: VideoAnalyticsData = {
     ['Feb 26', 6.6, 5.2], ['Mar 26', 8.1, 5.9], ['Apr 26', 7.4, 5.6], ['May 26', 6.3, 5.3],
     ['Jun 26', 5.9, 5.1], ['Jul 26', 5.2, 4.7], ['Aug 26', 5.6, 4.9], ['Sep 26', 4.9, 4.4],
   ].map(([day, c, p]) => ({ day: day as string, current: Math.round((c as number) * 1_000_000), previous: Math.round((p as number) * 1_000_000) })),
-  videos: titles.map(([title, artist, platform], i) => ({
-    id: `va-${i + 1}`,
+  videos: ranked.map((video, i) => ({
+    id: video.id,
     rank: i + 1,
-    title,
-    artist,
-    thumbnail: thumb(i),
+    title: video.title,
+    artist: video.artist,
+    thumbnail: video.artwork,
     views: rawViews[i],
     proportion: Math.round((rawViews[i] / total) * 1000) / 10,
-    platform,
-    performance: videoPerformance(rawViews[i], [5, 2, 8, 0, 6, 3, 9, 1, 7, 4, 10, 2][i]),
-    stores: storeMix(rawViews[i], platform),
+    platform: video.platform,
+    type: video.type,
+    performance: videoPerformance(rawViews[i], [5, 2, 8, 0, 6, 3, 9, 1, 7, 4][i]),
+    stores: storeMix(rawViews[i], video.platform),
   })),
   stores: [
     { id: 'vevo', name: 'VEVO', icon: 'vevo', proportion: 47.6, streams: Math.round(total * 0.476) },

@@ -14,14 +14,10 @@
             <p class="text-sm font-medium text-ditto-text truncate">{{ focused.title }}</p>
             <p class="text-xs text-ditto-purple">{{ focused.artist }} · {{ focused.proportion }}% of all views</p>
           </div>
-          <button @click="focusedId = null" class="ml-1 flex items-center gap-1 px-3 h-8 rounded-full border border-gray-200 text-xs font-medium text-ditto-text hover:border-ditto-purple hover:text-ditto-purple transition-colors flex-shrink-0">
-            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-            All videos
-          </button>
         </div>
-        <p v-else class="text-xs text-ditto-subtext">Across {{ data.videos.length }} videos · {{ data.stores.length }} stores</p>
+        <p v-else class="text-xs text-ditto-subtext">Across {{ visibleVideos.length }} of {{ data.videos.length }} videos · {{ storesData.length }} stores</p>
       </div>
-      <PerformanceChart :data="chartData" :key="focusedId ?? 'all'" />
+      <PerformanceChart :data="chartData" :key="chartKey" />
     </div>
 
     <!-- Rankings -->
@@ -33,15 +29,19 @@
       <div class="text-center">Views</div>
     </div>
 
-    <div v-for="video in data.videos" :key="video.id" class="mb-1">
+    <div v-if="visibleVideos.length === 0" class="rounded-2xl border border-dashed border-gray-200 px-6 py-10 text-center mb-2">
+      <p class="text-sm font-medium text-ditto-text">No videos match these filters</p>
+      <p class="text-xs text-ditto-subtext mt-1">Remove a filter above to see more of your catalogue.</p>
+    </div>
+
+    <div v-for="video in visibleVideos" :key="video.id" class="mb-1">
       <!-- Desktop row -->
       <div
-        @click="toggleFocus(video.id)"
-        :class="['hidden lg:grid grid-cols-[40px_1fr_160px_110px_120px] gap-4 px-4 py-4 items-center rounded-2xl transition-colors cursor-pointer',
-          focusedId === video.id ? 'bg-ditto-purple/5 ring-1 ring-ditto-purple/30' : 'hover:bg-ditto-light-grey',
-          focusedId && focusedId !== video.id ? 'opacity-50' : '']"
+        @click="selectVideo(video)"
+        :class="['hidden lg:grid grid-cols-[40px_1fr_160px_110px_120px] gap-4 px-4 py-4 items-center rounded-2xl transition-colors',
+          focused?.id === video.id ? 'bg-ditto-purple/5 ring-1 ring-ditto-purple/30' : 'hover:bg-ditto-light-grey cursor-pointer']"
       >
-        <div :class="['text-lg', focusedId === video.id ? 'text-ditto-purple font-semibold' : 'text-ditto-text']">{{ video.rank }}</div>
+        <div :class="['text-lg', focused?.id === video.id ? 'text-ditto-purple font-semibold' : 'text-ditto-text']">{{ video.rank }}</div>
         <div class="flex items-center gap-4 min-w-0">
           <img :src="video.thumbnail" :alt="video.title" class="w-[88px] h-[50px] rounded-lg object-cover flex-shrink-0" />
           <div class="min-w-0">
@@ -61,10 +61,9 @@
 
       <!-- Mobile row -->
       <div
-        @click="toggleFocus(video.id)"
-        :class="['lg:hidden flex items-center gap-3 px-2 py-3 rounded-xl transition-colors cursor-pointer',
-          focusedId === video.id ? 'bg-ditto-purple/5 ring-1 ring-ditto-purple/30' : 'hover:bg-ditto-light-grey',
-          focusedId && focusedId !== video.id ? 'opacity-50' : '']"
+        @click="selectVideo(video)"
+        :class="['lg:hidden flex items-center gap-3 px-2 py-3 rounded-xl transition-colors',
+          focused?.id === video.id ? 'bg-ditto-purple/5 ring-1 ring-ditto-purple/30' : 'hover:bg-ditto-light-grey cursor-pointer']"
       >
         <span class="text-base font-medium text-ditto-subtext w-6 text-center flex-shrink-0">{{ video.rank }}</span>
         <img :src="video.thumbnail" :alt="video.title" class="w-16 h-9 rounded-lg object-cover flex-shrink-0" />
@@ -87,22 +86,53 @@
 import { computed, ref } from 'vue'
 import PerformanceChart from '../components/common/PerformanceChart.vue'
 import StoresTable from '../components/common/StoresTable.vue'
-import type { VideoAnalyticsData } from '../data/videoAnalyticsMockData'
+import type { Filter } from '../types'
+import type { VideoAnalyticsData, VideoRanking } from '../data/videoAnalyticsMockData'
 
-const props = defineProps<{ data: VideoAnalyticsData }>()
+const props = defineProps<{ data: VideoAnalyticsData; filters: Filter[] }>()
+const emit = defineEmits<{ (e: 'select-video', video: { id: string; title: string }): void }>()
 
 const selectedStore = ref<string | null>(null)
 
-// Clicking a video focuses the headline, chart and platform mix on it; click again to clear
-const focusedId = ref<string | null>(null)
-const focused = computed(() => props.data.videos.find(v => v.id === focusedId.value) ?? null)
-const toggleFocus = (id: string) => {
-  focusedId.value = focusedId.value === id ? null : id
-  selectedStore.value = null
+// The active filter chips are the single source of truth: a video chip focuses the
+// page on that video; artist / type chips narrow the ranking; store chips narrow the table.
+const filtersOf = (type: Filter['type']) => props.filters.filter(f => f.type === type)
+
+const visibleVideos = computed(() => {
+  const videoIds = filtersOf('video').map(f => f.id)
+  const artists = filtersOf('artist').map(f => f.value.toLowerCase())
+  const types = filtersOf('videoType').map(f => f.value)
+  return props.data.videos.filter(v =>
+    (videoIds.length === 0 || videoIds.includes(v.id)) &&
+    (artists.length === 0 || artists.some(a => v.artist.toLowerCase().includes(a))) &&
+    (types.length === 0 || types.includes(v.type))
+  )
+})
+
+const focused = computed(() => (filtersOf('video').length > 0 && visibleVideos.value.length === 1) ? visibleVideos.value[0] : null)
+
+const selectVideo = (video: VideoRanking) => {
+  if (focused.value?.id === video.id) return
+  emit('select-video', { id: video.id, title: video.title })
 }
-const headlineViews = computed(() => focused.value ? focused.value.views : props.data.totalViews)
-const chartData = computed(() => focused.value ? focused.value.performance : props.data.performance)
-const storesData = computed(() => focused.value ? focused.value.stores : props.data.stores)
+
+const headlineViews = computed(() => focused.value ? focused.value.views : visibleVideos.value.reduce((sum, v) => sum + v.views, 0))
+const chartData = computed(() => {
+  if (focused.value) return focused.value.performance
+  if (visibleVideos.value.length === props.data.videos.length) return props.data.performance
+  // Sum the visible videos' series so the chart reflects the filtered set
+  return props.data.performance.map((point, i) => ({
+    day: point.day,
+    current: visibleVideos.value.reduce((sum, v) => sum + (v.performance[i]?.current ?? 0), 0),
+    previous: visibleVideos.value.reduce((sum, v) => sum + (v.performance[i]?.previous ?? 0), 0),
+  }))
+})
+const chartKey = computed(() => focused.value?.id ?? `set-${visibleVideos.value.map(v => v.id).join(',')}`)
+const storesData = computed(() => {
+  const base = focused.value ? focused.value.stores : props.data.stores
+  const wanted = filtersOf('platform').map(f => f.value)
+  return wanted.length ? base.filter(st => wanted.includes(st.name)) : base
+})
 
 const formatShort = (num: number): string => {
   if (num >= 1000000) return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M'

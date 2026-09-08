@@ -199,7 +199,7 @@
     :videos="videos"
     @back="currentView = 'list'"
     @switch-video="openedVideo = $event"
-    @view-analytics="emit('view-analytics')"
+    @view-analytics="emit('view-analytics', $event)"
   />
   <VideoBuilder
     v-else-if="currentView === 'builder'"
@@ -230,7 +230,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'create-consumed'): void
-  (e: 'view-analytics'): void
+  (e: 'view-analytics', video: VideoRelease): void
 }>()
 
 const { isNewUser } = useDemoUser()

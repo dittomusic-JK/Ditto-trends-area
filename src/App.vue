@@ -81,6 +81,8 @@
           <VideosAnalyticsView
             v-else-if="activeView === 'videos'"
             :data="videoAnalyticsData"
+            :filters="activeFilters"
+            @select-video="setVideoFilter"
           />
           <PlaylistsView 
             v-else-if="activeView === 'playlists'" 
@@ -103,6 +105,9 @@
       </div>
     </div>
     
+    <!-- Filter reset notice when crossing between music and video analytics -->
+    <Toast :visible="toast.visible" :message="toast.message" type="info" @close="toast.visible = false" />
+
     <!-- Filters Panel -->
     <FiltersPanel 
       :is-open="showFiltersModal"
@@ -192,7 +197,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, provide, markRaw, nextTick } from 'vue'
+import { reactive, ref, computed, provide, markRaw, nextTick } from 'vue'
 import { IconMetrics, IconReleases, IconTracks, IconVideos, IconPlaylists, IconAudience, IconSource } from './components/icons'
 import type { ViewType, Filter, DateRange, MetricsData, TrendsType, AppSection } from './types'
 
@@ -205,6 +210,7 @@ import LeftSidebar from './components/layout/LeftSidebar.vue'
 import PageHeader from './components/layout/PageHeader.vue'
 import FilterChip from './components/layout/FilterChip.vue'
 import FiltersPanel from './components/common/FiltersPanel.vue'
+import Toast from './components/ui/Toast.vue'
 import LiquidTabs from './components/common/LiquidTabs.vue'
 import NewUserEmptyState from './components/common/NewUserEmptyState.vue'
 import { useDemoUser } from './composables/useDemoUser'
@@ -236,6 +242,7 @@ import NeighbouringRightsView from './views/NeighbouringRightsView.vue'
 import ReferView from './views/refer/ReferView.vue'
 import VideosAnalyticsView from './views/VideosAnalyticsView.vue'
 import { videoAnalyticsData } from './data/videoAnalyticsMockData'
+import type { VideoRelease } from './data/videoMockData'
 import SubscriptionView from './views/account/SubscriptionView.vue'
 import AccountView from './views/account/AccountView.vue'
 
@@ -369,9 +376,10 @@ const handleOpenLivePerformances = () => {
 const activeView = ref<ViewType>('metrics')
 
 // "View analytics" on a video: open Analytics on the Videos ranking
-const handleViewVideoAnalytics = () => {
+const handleViewVideoAnalytics = (video: VideoRelease) => {
   appSection.value = 'analytics'
   setActiveView('videos')
+  setVideoFilter(video)
 }
 
 // Side-nav mode replaces the analytics left sidebar with a tab row
@@ -435,10 +443,31 @@ const metricsData = computed<MetricsData>(() => {
 })
 
 // Methods
+// Music and video filters are different sets — drop them when crossing over, and say so
+const toast = reactive({ visible: false, message: '' })
+let toastTimer: ReturnType<typeof setTimeout> | undefined
+const showToast = (message: string) => {
+  toast.message = message
+  toast.visible = true
+  clearTimeout(toastTimer)
+  toastTimer = setTimeout(() => { toast.visible = false }, 3200)
+}
+
 const setActiveView = (view: ViewType) => {
-  // Music and video filters are different sets — drop them when crossing over
-  if ((view === 'videos') !== (activeView.value === 'videos')) activeFilters.value = []
+  const crossing = (view === 'videos') !== (activeView.value === 'videos')
+  if (crossing && activeFilters.value.length > 0) {
+    activeFilters.value = []
+    showToast(view === 'videos' ? 'Filters reset for video analytics' : 'Filters reset for streaming analytics')
+  }
   activeView.value = view
+}
+
+// A single video chip focuses the Videos analytics on that video (row click or click-through)
+const setVideoFilter = (video: { id: string; title: string }) => {
+  activeFilters.value = [
+    ...activeFilters.value.filter(f => f.type !== 'video'),
+    { id: video.id, type: 'video', label: 'Video', value: video.title },
+  ]
 }
 
 const removeFilter = (id: string) => {

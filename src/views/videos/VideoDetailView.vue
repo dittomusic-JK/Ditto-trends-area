@@ -32,7 +32,7 @@
               <LiquidTabs :tabs="sectionTabs" :active="activeSection" @select="activeSection = $event" />
             </div>
             <button
-              @click="$emit('view-analytics')"
+              @click="$emit('view-analytics', video)"
               class="ml-auto flex items-center gap-2 px-3.5 h-9 rounded-full border border-gray-200 text-sm font-medium text-ditto-text hover:border-ditto-purple hover:text-ditto-purple transition-colors flex-shrink-0"
             >
               <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
@@ -64,7 +64,7 @@ const props = defineProps<{ video: VideoRelease; videos: VideoRelease[] }>()
 defineEmits<{
   (e: 'back'): void
   (e: 'switch-video', video: VideoRelease): void
-  (e: 'view-analytics'): void
+  (e: 'view-analytics', video: VideoRelease): void
 }>()
 
 const navStyle = inject<'top' | 'side'>('navStyle', 'top')
