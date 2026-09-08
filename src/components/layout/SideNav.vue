@@ -94,6 +94,7 @@
     <div class="flex-shrink-0 border-t border-gray-100 px-3 py-3 space-y-1">
       <!-- Upgrade (brand lime, reserved for conversion moments) -->
       <button
+        @click="emit('navigate', 'subscriptions')"
         @mouseenter="showTip($event, 'Upgrade')"
         @mouseleave="hideTip"
         :class="[

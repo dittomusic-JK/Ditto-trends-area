@@ -38,7 +38,7 @@
 
         <!-- User subnav -->
         <div v-show="showUserMenu" class="px-4 py-3 border-b border-gray-100 space-y-0.5 bg-ditto-light-grey/40">
-          <button class="w-full mb-2 px-3.5 py-2.5 text-xs font-bold rounded-full bg-[#E6FF3A] text-[#0a0a0a] flex items-center justify-center gap-1.5">
+          <button @click="emit('navigate', 'subscriptions'); showMobileMenu = false" class="w-full mb-2 px-3.5 py-2.5 text-xs font-bold rounded-full bg-[#E6FF3A] text-[#0a0a0a] flex items-center justify-center gap-1.5">
             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2z"/></svg>
             Upgrade
           </button>
@@ -209,7 +209,7 @@
     <!-- Right side actions -->
     <div class="flex items-center gap-3">
       <!-- Brand lime: reserved for conversion moments (btn-lime — lime bg, ink text, hover lift) -->
-      <button class="px-3.5 py-1.5 text-xs font-bold rounded-full bg-[#E6FF3A] text-[#0a0a0a] hover:-translate-y-0.5 transition-transform flex items-center gap-1.5">
+      <button @click="emit('navigate', 'subscriptions')" class="px-3.5 py-1.5 text-xs font-bold rounded-full bg-[#E6FF3A] text-[#0a0a0a] hover:-translate-y-0.5 transition-transform flex items-center gap-1.5">
         <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2z"/></svg>
         Upgrade
       </button>
@@ -297,6 +297,10 @@
           <button class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-ditto-text hover:bg-ditto-light-grey transition-colors text-left">
             <img src="/img/nav-settings.svg" alt="" class="w-4 h-4 opacity-60" />
             Account Settings
+          </button>
+          <button @click="showAvatarMenu = false; emit('navigate', 'subscriptions')" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-ditto-text hover:bg-ditto-light-grey transition-colors text-left">
+            <svg class="w-4 h-4 opacity-60 text-ditto-text" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2z"/></svg>
+            Subscription
           </button>
           <button class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-ditto-text hover:bg-ditto-light-grey transition-colors text-left">
             <img src="/img/nav-clock-history.svg" alt="" class="w-4 h-4 opacity-60" />
