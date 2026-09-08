@@ -100,7 +100,7 @@ const progressOffset = computed(() => {
     width: 3rem;
     height: 3rem;
 
-    &--wide {
+    &.rh__artwork--wide {
       width: 5.333rem;
       aspect-ratio: 16 / 9;
       height: auto;
