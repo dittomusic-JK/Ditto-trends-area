@@ -2,14 +2,14 @@
   <div class="rh">
     <div class="rh__row">
       <div class="rh__left">
-        <img :src="artwork" :alt="title" class="rh__artwork" />
+        <img :src="artwork" :alt="title" class="rh__artwork" :class="{ 'rh__artwork--wide': artworkAspect === 'video' }" />
 
         <div class="rh__info">
           <h2 class="rh__title">{{ title }}</h2>
           <p class="rh__subtitle">{{ accountHolder }}</p>
         </div>
 
-        <div v-if="totalTracks > 0" class="rh__progress">
+        <div v-if="totalTracks > 1" class="rh__progress">
           <div class="rh__progress-text">
             <p class="rh__progress-num">
               {{ tracksWithSplits }}<span class="rh__progress-total">/{{ totalTracks }}</span>
@@ -53,6 +53,8 @@ const props = defineProps<{
   userType: UserType
   totalTracks: number
   tracksWithSplits: number
+  /** Square cover (default) or 16:9 video frame */
+  artworkAspect?: 'square' | 'video'
 }>()
 
 const circumference = 2 * Math.PI * 18 // r=18
@@ -97,6 +99,16 @@ const progressOffset = computed(() => {
   &__artwork {
     width: 3rem;
     height: 3rem;
+
+    &--wide {
+      width: 5.333rem;
+      aspect-ratio: 16 / 9;
+      height: auto;
+
+      @include sm {
+        width: 7.111rem;
+      }
+    }
     border-radius: $radius-lg;
     object-fit: cover;
     flex-shrink: 0;

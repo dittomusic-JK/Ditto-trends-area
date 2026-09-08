@@ -4,10 +4,10 @@
   <aside class="w-[280px] flex-shrink-0 border-r border-gray-200 flex flex-col h-full bg-white">
     <div class="px-4 py-4 border-b border-gray-200">
       <div class="flex items-baseline justify-between mb-3">
-        <h2 class="text-base font-semibold text-ditto-text">{{ navStyle === 'side' ? 'All releases' : 'Your releases' }}</h2>
+        <h2 class="text-base font-semibold text-ditto-text">{{ navStyle === 'side' ? 'All ' : 'Your ' }}{{ noun ?? 'releases' }}</h2>
         <span class="text-xs text-ditto-subtext tabular-nums">{{ filtered.length }} of {{ releases.length }}</span>
       </div>
-      <SearchInput v-model="query" placeholder="Search for a release" width-class="w-full" />
+      <SearchInput v-model="query" :placeholder="`Search for a ${singular ?? 'release'}`" width-class="w-full" />
     </div>
 
     <div class="flex-1 overflow-y-auto py-1.5">
@@ -28,8 +28,11 @@
         <img
           :src="item.artwork"
           :alt="item.title"
-          class="w-10 h-10 rounded-lg object-cover flex-shrink-0 ring-2 ring-transparent"
-          :class="{ 'ring-ditto-purple': isCurrent(item) }"
+          :class="[
+            'rounded-lg object-cover flex-shrink-0 ring-2 ring-transparent',
+            singular === 'video' ? 'w-[64px] h-9' : 'w-10 h-10',
+            { 'ring-ditto-purple': isCurrent(item) }
+          ]"
           loading="lazy"
         />
         <span class="flex-1 min-w-0">
@@ -58,6 +61,9 @@ const navStyle = inject<'top' | 'side'>('navStyle', 'top')
 const props = defineProps<{
   releases: ReleaseListItem[]
   current: { title: string; artist: string; status: string }
+  /** Plural / singular nouns for the heading and search, e.g. "videos" / "video" */
+  noun?: string
+  singular?: string
 }>()
 
 defineEmits<{

@@ -113,7 +113,7 @@
     />
     <ul v-else-if="!isNewUser" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 list-none p-0 px-4 sm:px-6 lg:px-16 pt-6">
       <li v-for="video in filteredVideos" :key="video.id">
-        <div class="group cursor-pointer">
+        <div class="group cursor-pointer" @click="openVideo(video)">
           <!-- Thumbnail (16:9) -->
           <div class="relative aspect-video rounded-2xl overflow-hidden mb-3 bg-gray-100">
             <span :class="[
@@ -193,6 +193,14 @@
   </div>
 
   <!-- Video Builder -->
+  <VideoDetailView
+    v-else-if="currentView === 'detail' && openedVideo"
+    :video="openedVideo"
+    :videos="videos"
+    @back="currentView = 'list'"
+    @switch-video="openedVideo = $event"
+    @view-analytics="emit('view-analytics')"
+  />
   <VideoBuilder
     v-else-if="currentView === 'builder'"
     :initial-title="builderTitle"
@@ -211,6 +219,7 @@ import SearchInput from '../../components/common/SearchInput.vue'
 import CreateReleaseModal from '../music/builder/CreateMusicReleaseModal.vue'
 import GlobalSearch from '../../components/layout/GlobalSearch.vue'
 import VideoBuilder from './VideoBuilder.vue'
+import VideoDetailView from './VideoDetailView.vue'
 import { videoReleases } from '../../data/videoMockData'
 import type { VideoRelease } from '../../data/videoMockData'
 import { useDemoUser } from '../../composables/useDemoUser'
@@ -221,6 +230,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'create-consumed'): void
+  (e: 'view-analytics'): void
 }>()
 
 const { isNewUser } = useDemoUser()
@@ -228,7 +238,15 @@ const { isNewUser } = useDemoUser()
 const searchQuery = ref('')
 const activeStatus = ref('all')
 const showCreateModal = ref(false)
-const currentView = ref<'list' | 'builder'>('list')
+const currentView = ref<'list' | 'builder' | 'detail'>('list')
+const openedVideo = ref<VideoRelease | null>(null)
+
+// Finished videos open the detail area; drafts go back into the builder
+const openVideo = (video: VideoRelease) => {
+  if (video.status === 'In Progress' || video.status === 'Processing') { editVideo(video); return }
+  openedVideo.value = video
+  currentView.value = 'detail'
+}
 const builderTitle = ref('')
 
 // Local copy so drafts can be deleted from the catalog

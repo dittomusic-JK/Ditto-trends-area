@@ -1,4 +1,4 @@
-export type ViewType = 'metrics' | 'releases' | 'tracks' | 'playlists' | 'audience' | 'source'
+export type ViewType = 'metrics' | 'releases' | 'tracks' | 'playlists' | 'audience' | 'source' | 'videos'
 
 export type TrendsType = 'streaming' | 'download' | 'fingerprint' | 'content' | 'preorder'
 

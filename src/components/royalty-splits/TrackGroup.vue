@@ -3,7 +3,7 @@
     <!-- Table header (desktop) -->
     <div class="tg__head" :class="{ 'tg__head--rls': isRLS }">
       <span class="tg__th tg__th--num" :class="{ 'tg__th--rls': isRLS }">#</span>
-      <span class="tg__th" :class="{ 'tg__th--rls': isRLS }">Track</span>
+      <span class="tg__th" :class="{ 'tg__th--rls': isRLS }">{{ itemLabel ?? 'Track' }}</span>
       <span class="tg__th tg__th--splits" :class="{ 'tg__th--rls': isRLS }">Splits</span>
       <span class="tg__th tg__th--dist" :class="{ 'tg__th--rls': isRLS }">Distribution</span>
       <span class="tg__th tg__th--act" :class="{ 'tg__th--rls': isRLS }">Actions</span>
@@ -43,7 +43,7 @@
 
           <div class="tg__actions">
             <button
-              v-if="track.splits.length > 0"
+              v-if="track.splits.length > 0 && tracks.length > 1"
               @click.stop="$emit('copy-to', track.trackId)"
               class="tg__copy-btn"
               title="Copy splits to other tracks"
@@ -91,7 +91,7 @@
             </div>
             <div class="tg__m-btns">
               <button
-                v-if="track.splits.length > 0"
+                v-if="track.splits.length > 0 && tracks.length > 1"
                 @click.stop="$emit('copy-to', track.trackId)"
                 class="tg__m-copy"
                 title="Copy splits"
@@ -148,6 +148,7 @@ const props = defineProps<{
   knownCollaborators?: { name: string; email: string }[]
   isRLS?: boolean
   saveRequested?: number
+  itemLabel?: string
 }>()
 
 defineEmits<{

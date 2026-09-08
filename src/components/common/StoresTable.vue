@@ -1,13 +1,13 @@
 <template>
   <div>
-    <h3 class="font-satoshi font-black tracking-[-0.03em] text-lg sm:text-xl text-ditto-text mb-3 sm:mb-4">Stores</h3>
+    <h3 class="font-satoshi font-black tracking-[-0.03em] text-lg sm:text-xl text-ditto-text mb-3 sm:mb-4">{{ title }}</h3>
     
     <table class="w-full">
       <thead class="hidden sm:table-header-group">
         <tr class="text-xs text-ditto-subtext">
           <th class="text-left font-normal pb-3 pl-4">Platform</th>
           <th class="text-center font-normal pb-3">Proportion</th>
-          <th class="text-right font-normal pb-3 pr-4">Streams</th>
+          <th class="text-right font-normal pb-3 pr-4">{{ metricLabel }}</th>
         </tr>
       </thead>
       <tbody>
@@ -56,10 +56,12 @@ const formatStreams = (num: number): string => {
   return num.toLocaleString()
 }
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   stores: Store[]
   selectedStore: string | null
-}>()
+  title?: string
+  metricLabel?: string
+}>(), { title: 'Stores', metricLabel: 'Streams' })
 
 const emit = defineEmits<{
   (e: 'select', store: string | null): void

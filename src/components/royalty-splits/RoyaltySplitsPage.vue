@@ -31,6 +31,7 @@
       user-type="subscription"
       :total-tracks="release.tracks.length"
       :tracks-with-splits="tracksWithSplits.length"
+      :artwork-aspect="itemLabel === 'Video' ? 'video' : 'square'"
     />
 
     <!-- Empty state -->
@@ -44,7 +45,7 @@
       </div>
       <h3 class="rsp__empty-title">No splits configured yet</h3>
       <p class="rsp__empty-desc">
-        Add collaborators to share royalties from this release. Click "Add Split" on any track below to get started.
+        Add collaborators to share royalties from this {{ itemLabel === 'Video' ? 'video' : 'release' }}. Click "Add Split" {{ itemLabel === 'Video' ? 'below' : 'on any track below' }} to get started.
       </p>
     </div>
 
@@ -57,6 +58,7 @@
       :known-collaborators="knownCollaborators"
       :is-r-l-s="false"
       :save-requested="saveRequestCounter"
+      :item-label="itemLabel"
       @toggle="toggleTrack"
       @save="handleBatchSave"
       @resend-confirmation="handleResendConfirmation"
@@ -127,6 +129,8 @@ import Toast from '../ui/Toast.vue'
 
 const props = defineProps<{
   releaseData: Release
+  /** What a row represents — "Track" (default) or e.g. "Video" */
+  itemLabel?: string
 }>()
 
 const expandedTrackId = ref<string | null>(null)

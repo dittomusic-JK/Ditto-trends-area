@@ -22,7 +22,7 @@
 
 <script setup lang="ts">
 import type { ViewType } from '../../types'
-import { IconMetrics, IconReleases, IconTracks, IconPlaylists, IconAudience, IconSource } from '../icons'
+import { IconMetrics, IconReleases, IconTracks, IconVideos, IconPlaylists, IconAudience, IconSource } from '../icons'
 import { markRaw } from 'vue'
 
 defineProps<{
@@ -40,5 +40,6 @@ const sidebarItems = [
   { id: 'playlists' as ViewType, label: 'Playlists', icon: markRaw(IconPlaylists) },
   { id: 'audience' as ViewType, label: 'Audience', icon: markRaw(IconAudience) },
   { id: 'source' as ViewType, label: 'Source', icon: markRaw(IconSource) },
+  { id: 'videos' as ViewType, label: 'Videos', icon: markRaw(IconVideos) },
 ]
 </script>

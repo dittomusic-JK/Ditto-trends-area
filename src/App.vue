@@ -77,6 +77,10 @@
             :tracks="tracksData" 
             :trends-type="trendsType"
           />
+          <VideosAnalyticsView
+            v-else-if="activeView === 'videos'"
+            :data="videoAnalyticsData"
+          />
           <PlaylistsView 
             v-else-if="activeView === 'playlists'" 
             :playlists="playlistsData" 
@@ -139,6 +143,7 @@
       v-if="appSection === 'videos'"
       :auto-open-create="videoCreateRequested"
       @create-consumed="videoCreateRequested = false"
+      @view-analytics="handleViewVideoAnalytics"
     />
 
     <!-- Neighbouring Rights Section -->
@@ -186,7 +191,7 @@
 
 <script setup lang="ts">
 import { ref, computed, provide, markRaw, nextTick } from 'vue'
-import { IconMetrics, IconReleases, IconTracks, IconPlaylists, IconAudience, IconSource } from './components/icons'
+import { IconMetrics, IconReleases, IconTracks, IconVideos, IconPlaylists, IconAudience, IconSource } from './components/icons'
 import type { ViewType, Filter, DateRange, MetricsData, TrendsType, AppSection } from './types'
 
 // Layout Components
@@ -227,6 +232,8 @@ import NeighbouringRightsView from './views/NeighbouringRightsView.vue'
 
 // Refer a Friend
 import ReferView from './views/refer/ReferView.vue'
+import VideosAnalyticsView from './views/VideosAnalyticsView.vue'
+import { videoAnalyticsData } from './data/videoAnalyticsMockData'
 import SubscriptionView from './views/account/SubscriptionView.vue'
 import AccountView from './views/account/AccountView.vue'
 
@@ -359,6 +366,12 @@ const handleOpenLivePerformances = () => {
 }
 const activeView = ref<ViewType>('metrics')
 
+// "View analytics" on a video: open Analytics on the Videos ranking
+const handleViewVideoAnalytics = () => {
+  appSection.value = 'analytics'
+  activeView.value = 'videos'
+}
+
 // Side-nav mode replaces the analytics left sidebar with a tab row
 const analyticsTabs = [
   { id: 'metrics', label: 'Metrics', icon: markRaw(IconMetrics) },
@@ -367,6 +380,7 @@ const analyticsTabs = [
   { id: 'playlists', label: 'Playlists', icon: markRaw(IconPlaylists) },
   { id: 'audience', label: 'Audience', icon: markRaw(IconAudience) },
   { id: 'source', label: 'Source', icon: markRaw(IconSource) },
+  { id: 'videos', label: 'Videos', icon: markRaw(IconVideos) },
 ]
 const showFiltersModal = ref(false)
 
