@@ -77,7 +77,7 @@
             ></video>
             <div v-else class="w-full aspect-square rounded-xl bg-ditto-light-grey flex flex-col items-center justify-center gap-2 text-center px-3">
               <svg class="w-6 h-6 text-ditto-subtext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><polygon points="10,8 16,12 10,16"/></svg>
-              <p class="text-[11px] text-ditto-subtext leading-snug">ProRes previews aren't playable in the browser — we'll preview it after delivery.</p>
+              <p class="text-[11px] text-ditto-subtext leading-snug">ProRes can't play in the browser — the preview appears after delivery.</p>
             </div>
           </div>
           <div class="flex-1 min-w-0 w-full">
@@ -117,10 +117,10 @@
             Drag and drop your motion artwork here or
             <button @click="triggerFileInput" class="text-ditto-purple font-medium hover:underline">browse your files</button>
           </p>
-          <p class="text-xs text-ditto-subtext">.mov · Apple ProRes · 15–35 seconds · no audio</p>
+          <p class="text-xs text-ditto-subtext">.mov or .mp4 · ProRes 422/4444 or H.264 · 8–35 seconds · no audio</p>
         </div>
 
-        <input ref="fileInputRef" type="file" accept=".mov,video/quicktime" class="hidden" @change="handleFileSelect" />
+        <input ref="fileInputRef" type="file" accept=".mov,.mp4,video/quicktime,video/mp4" class="hidden" @change="handleFileSelect" />
       </div>
 
       <!-- ── Right: the specification ── -->
@@ -143,20 +143,22 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import type { ReleaseBuilderForm } from '../ReleaseBuilderView.vue'
+import { probeMotionArtwork, ALLOWED_CODEC_TAGS } from '../motionArtworkProbe'
 
 const props = defineProps<{ form: ReleaseBuilderForm }>()
 const ma = computed(() => props.form.motionArtwork)
 
-type SpecKey = 'format' | 'codec' | 'resolution' | 'fps' | 'colour' | 'duration' | 'audio' | 'pixels'
+type SpecKey = 'format' | 'codec' | 'resolution' | 'fps' | 'colour' | 'duration' | 'audio' | 'pixels' | 'bitrate'
 const specs: { key: SpecKey; label: string; value: string }[] = [
-  { key: 'format', label: 'Format', value: '.mov (QuickTime)' },
-  { key: 'codec', label: 'Codec', value: 'Apple ProRes 4444, 422, 422 HQ or 422 LT' },
-  { key: 'resolution', label: 'Resolution', value: '2048×2732 portrait or 3840×3840 square' },
+  { key: 'format', label: 'File type', value: '.mov or .mp4' },
+  { key: 'codec', label: 'Codec', value: 'Apple ProRes 422 / 4444, or H.264' },
+  { key: 'resolution', label: 'Resolution', value: '3840×3840 (1:1) or 2048×2732 (3:4)' },
   { key: 'fps', label: 'Frame rate', value: '23.976, 24, 25, 29.97 or 30 fps' },
-  { key: 'colour', label: 'Colour space', value: 'Rec. 709 or sRGB' },
-  { key: 'duration', label: 'Duration', value: '15 to 35 seconds' },
+  { key: 'duration', label: 'Length', value: '8 to 35 seconds' },
   { key: 'audio', label: 'Audio', value: 'No audio track' },
-  { key: 'pixels', label: 'Pixels', value: 'Square pixels (1:1)' },
+  { key: 'colour', label: 'Colour profile', value: 'Rec. 709 or sRGB' },
+  { key: 'pixels', label: 'Pixel aspect', value: '1:1 (square pixels)' },
+  { key: 'bitrate', label: 'Bitrate', value: '45–100 Mbps (H.264 exports)' },
 ]
 
 const failedKeys = ref<Set<SpecKey>>(new Set())
@@ -190,23 +192,10 @@ const removeFile = () => {
   if (fileInputRef.value) fileInputRef.value.value = ''
 }
 
-// Read what the browser can: dimensions, duration, audio presence. Codec, frame
-// rate and colour space aren't exposed to web pages, so a decodable file is
-// accepted on those with a note; an undecodable .mov (ProRes) is treated the same.
-const probeVideo = (url: string) => new Promise<{ w: number; h: number; d: number; audio: boolean | null } | null>((resolve) => {
-  const v = document.createElement('video')
-  v.preload = 'metadata'; v.muted = true
-  const done = (val: { w: number; h: number; d: number; audio: boolean | null } | null) => { v.src = ''; resolve(val) }
-  v.onloadedmetadata = () => {
-    const anyV = v as HTMLVideoElement & { mozHasAudio?: boolean; webkitAudioDecodedByteCount?: number; audioTracks?: { length: number } }
-    let audio: boolean | null = null
-    if (typeof anyV.mozHasAudio === 'boolean') audio = anyV.mozHasAudio
-    else if (anyV.audioTracks) audio = anyV.audioTracks.length > 0
-    done({ w: v.videoWidth, h: v.videoHeight, d: v.duration, audio })
-  }
-  v.onerror = () => done(null)
-  v.src = url
-})
+// Validation reads the container header directly (see motionArtworkProbe.ts), so a
+// ProRes file the browser can't decode is still checked against every spec Apple lists.
+const ALLOWED_FPS = [23.976, 24, 25, 29.97, 30]
+const near = (a: number, b: number, tol = 0.02) => Math.abs(a - b) <= tol
 
 const handleFile = async (file: File) => {
   const m = props.form.motionArtwork
@@ -218,30 +207,56 @@ const handleFile = async (file: File) => {
   m.status = 'checking'
   m.errors = []
   m.unverified = ''
+  m.summary = ''
   m.previewUrl = URL.createObjectURL(file)
   progress.value = 0
   const tick = setInterval(() => { progress.value = Math.min(90, progress.value + 12 + Math.round(Math.random() * 10)) }, 120)
 
   const errors: string[] = []
   const failed = new Set<SpecKey>()
-  const okExt = /\.mov$/i.test(file.name)
-  const okMime = file.type === 'video/quicktime' || file.type === ''
-  if (!okExt || !okMime) { errors.push('File must be a .mov (QuickTime) — this is ' + (file.name.split('.').pop() || 'an unknown type') + '.'); failed.add('format') }
+  const ext = (file.name.split('.').pop() || '').toLowerCase()
+  if (!['mov', 'mp4'].includes(ext)) { errors.push(`File must be a .mov or .mp4 — this is ${ext ? '.' + ext : 'an unknown type'}.`); failed.add('format') }
 
-  const meta = okExt ? await probeVideo(m.previewUrl) : null
-  if (meta) {
-    const square = meta.w === 3840 && meta.h === 3840
-    const portrait = meta.w === 2048 && meta.h === 2732
-    if (!square && !portrait) { errors.push(`Resolution is ${meta.w}×${meta.h} — it must be 2048×2732 (portrait) or 3840×3840 (square).`); failed.add('resolution') }
-    if (Number.isFinite(meta.d) && (meta.d < 15 || meta.d > 35)) { errors.push(`Duration is ${meta.d.toFixed(1)}s — it must be between 15 and 35 seconds.`); failed.add('duration') }
-    if (meta.audio === true) { errors.push('The file has an audio track — motion artwork must be silent.'); failed.add('audio') }
+  const probe = errors.length ? null : await probeMotionArtwork(file).catch(() => null)
+  if (!errors.length && !probe) { errors.push("We couldn't read this file as a QuickTime or MP4 container."); failed.add('format') }
+
+  if (probe) {
+    if (!probe.codecTag || !ALLOWED_CODEC_TAGS.has(probe.codecTag)) {
+      errors.push(`Codec is ${probe.codecLabel} — it must be Apple ProRes 422 or 4444, or H.264.`); failed.add('codec')
+    }
+    const square = probe.width === 3840 && probe.height === 3840
+    const portrait = probe.width === 2048 && probe.height === 2732
+    if (!square && !portrait) { errors.push(`Resolution is ${probe.width}×${probe.height} — it must be 3840×3840 (1:1) or 2048×2732 (3:4).`); failed.add('resolution') }
+    if (probe.fps !== null && !ALLOWED_FPS.some(f => near(probe.fps as number, f))) {
+      errors.push(`Frame rate is ${+probe.fps.toFixed(3)} fps — it must be 23.976, 24, 25, 29.97 or 30 fps.`); failed.add('fps')
+    }
+    if (probe.duration !== null && (probe.duration < 8 || probe.duration > 35)) {
+      errors.push(`Length is ${probe.duration.toFixed(1)}s — it must be between 8 and 35 seconds.`); failed.add('duration')
+    }
+    if (probe.hasAudio) { errors.push('The file has an audio track — deliver motion artwork without audio.'); failed.add('audio') }
+    if (probe.colour && !(probe.colour.primaries === 1 && [1, 13].includes(probe.colour.transfer))) {
+      errors.push('Colour profile isn\'t Rec. 709 or sRGB.'); failed.add('colour')
+    }
+    if (probe.pixelAspect && probe.pixelAspect.h !== probe.pixelAspect.v) {
+      errors.push(`Pixel aspect ratio is ${probe.pixelAspect.h}:${probe.pixelAspect.v} — pixels must be square (1:1).`); failed.add('pixels')
+    }
+    const isH264 = probe.codecTag === 'avc1' || probe.codecTag === 'avc3'
+    if (isH264 && probe.bitrateMbps !== null && (probe.bitrateMbps < 45 || probe.bitrateMbps > 100)) {
+      errors.push(`Bitrate is ${Math.round(probe.bitrateMbps)} Mbps — H.264 must be between 45 and 100 Mbps.`); failed.add('bitrate')
+    }
+
     m.orientation = portrait ? 'portrait' : 'square'
-    m.summary = `${meta.w}×${meta.h} · ${Number.isFinite(meta.d) ? meta.d.toFixed(0) + 's' : '—'}`
-    m.unverified = 'Codec, frame rate and colour space are confirmed when we deliver to Apple Music.'
-  } else if (okExt) {
-    // ProRes won't decode in a browser — we can't read its metadata here.
-    m.summary = 'QuickTime · ProRes'
-    m.unverified = 'This file can\'t be decoded in the browser, so resolution, duration, frame rate and colour space are confirmed when we deliver to Apple Music.'
+    m.summary = [
+      probe.codecLabel,
+      `${probe.width}×${probe.height}`,
+      probe.fps !== null ? `${+probe.fps.toFixed(3)} fps` : null,
+      probe.duration !== null ? `${+probe.duration.toFixed(1)}s` : null,
+      probe.bitrateMbps !== null ? `${Math.round(probe.bitrateMbps)} Mbps` : null,
+    ].filter(Boolean).join(' · ')
+    const notes: string[] = []
+    if (!probe.colour) notes.push('no colour profile is tagged in the file, so Rec. 709/sRGB is confirmed on delivery')
+    if (!isH264 && probe.bitrateMbps !== null) notes.push(`Apple's 45–100 Mbps range applies to H.264 exports; this ProRes file is ${Math.round(probe.bitrateMbps)} Mbps`)
+    if (notes.length) m.unverified = notes.join('. ').replace(/^./, c => c.toUpperCase()) + '.'
   }
 
   clearInterval(tick)
