@@ -1,129 +1,81 @@
 <template>
-  <div class="max-w-[1200px]">
-    <!-- Header — the marketing page's "Pricing. Pick a plan." adapted -->
-    <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-8 lg:mb-10">
-      <h1 class="font-satoshi font-black text-4xl sm:text-5xl lg:text-[64px] leading-[0.95] tracking-[-0.04em] text-ditto-text">
+  <!-- Straight port of the marketing pricing block (ditto-web PricingBlock +
+       styles/homepage.css .pricing / .tier) with the live dashboard's rules
+       layered on: current plan locked, downgrades gated by Plan Artists. -->
+  <div class="pricing">
+    <div class="pricing-head">
+      <h1 class="h-mega">
         Subscription.<br />
-        <span class="text-ditto-purple">Pick a plan.</span>
+        <span class="purple-deep">Pick a plan.</span>
       </h1>
-      <div class="lg:text-right lg:max-w-xs lg:border-t lg:border-gray-200 lg:pt-4">
-        <p class="text-sm font-bold text-ditto-text">One price. Unlimited releases.</p>
-        <p class="text-sm text-ditto-subtext mt-1">100% royalties and our industry-leading artist tools. Included with every plan.</p>
+      <div class="pricing-cap">
+        <strong>One price. Unlimited releases.</strong>
+        100% royalties and our industry-leading artist tools. Included with every plan.
       </div>
     </div>
 
-    <!-- Plan cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-5 items-start">
+    <div class="tier-grid">
       <div
         v-for="plan in plans"
         :key="plan.id"
-        :class="[
-          'relative rounded-3xl p-7 flex flex-col',
-          plan.id === 'starter' ? 'bg-white border border-gray-200' :
-          plan.id === 'pro' ? 'bg-[#E6FF3A] text-[#0a0a0a] md:-mt-3' :
-          'bg-[#0a0a0a] text-white'
-        ]"
+        class="tier"
+        :class="{ pro: plan.id === 'pro', labels: plan.id === 'label', current: isCurrent(plan) }"
       >
-        <!-- Most popular tab -->
-        <span
-          v-if="plan.mostPopular"
-          class="absolute -top-3 left-6 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0a0a0a] text-white text-[10px] font-bold uppercase tracking-[0.14em]"
-        >
-          <svg class="w-2.5 h-2.5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2z"/></svg>
-          Most popular
-        </span>
-        <!-- Current plan tab -->
-        <span
-          v-if="isCurrent(plan)"
-          class="absolute -top-3 right-6 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-ditto-purple text-white text-[10px] font-bold uppercase tracking-[0.14em]"
-        >
-          <svg class="w-2.5 h-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          Current plan
-        </span>
+        <span v-if="plan.mostPopular" class="badge">★ Most popular</span>
+        <span v-if="isCurrent(plan)" class="badge badge--current">Current plan</span>
 
-        <p class="font-mono text-[11px] font-bold uppercase tracking-[0.18em]" :class="plan.id === 'label' ? 'text-white/70' : 'text-ditto-subtext'">// // {{ plan.eyebrow }}</p>
+        <div class="tier-name">// // {{ plan.eyebrow }}</div>
 
-        <!-- Price -->
-        <p class="mt-4 flex items-baseline gap-1">
-          <span class="font-satoshi font-black text-5xl lg:text-[56px] tracking-[-0.04em] leading-none">£{{ displayPrice(plan) }}</span>
-          <span class="text-sm font-medium" :class="plan.id === 'label' ? 'text-white/70' : 'text-ditto-subtext'">/year</span>
-        </p>
-        <p v-if="plan.id === 'label'" class="text-sm mt-2 text-white/85">For up to <span class="font-black text-white">{{ labelTier.artists }}</span> artists</p>
+        <div class="tier-price">
+          <div class="num"><span class="currency">£</span>{{ displayPrice(plan) }}</div>
+          <div class="per">/year</div>
+        </div>
+        <p v-if="plan.id === 'label'" class="labels-count">For up to <strong>{{ labelTier.artists }}</strong> artists</p>
+        <p class="tier-tag">{{ plan.blurb }}</p>
 
-        <p class="text-sm mt-3 leading-relaxed" :class="plan.id === 'label' ? 'text-white/75' : plan.id === 'pro' ? 'text-[#0a0a0a]/75' : 'text-ditto-subtext'">{{ plan.blurb }}</p>
-
-        <!-- Labels: artist slider -->
-        <div v-if="plan.id === 'label'" class="mt-5">
+        <!-- Labels: artist-count slider (same anatomy as the marketing LabelsSlider) -->
+        <div v-if="plan.id === 'label'" class="labels-slider">
           <input
             v-model.number="labelTierIndex"
             type="range"
             min="0"
             :max="labelTiers.length - 1"
             step="1"
-            class="label-slider w-full"
-            aria-label="Number of artists"
+            class="labels-slider-input"
+            aria-label="Choose how many artists you want to manage"
           />
-          <div class="flex justify-between mt-1.5 px-0.5">
-            <span
-              v-for="(tier, i) in labelTiers"
-              :key="tier.artists"
-              class="text-[11px] font-semibold tabular-nums"
-              :class="i === labelTierIndex ? 'text-[#E6FF3A]' : 'text-white/50'"
-            >{{ tier.artists }}</span>
+          <div class="labels-slider-scale" aria-hidden="true">
+            <span v-for="(tier, i) in labelTiers" :key="tier.artists" :class="{ active: i === labelTierIndex }">{{ tier.artists }}</span>
           </div>
         </div>
 
-        <!-- CTA (dashboard rules decide the label and state) -->
+        <!-- CTA: dashboard rules decide label + state -->
         <button
+          class="tier-cta"
+          :class="{ 'tier-cta--disabled': cta(plan).disabled }"
           :disabled="cta(plan).disabled"
           @click="choose(plan)"
-          :class="[
-            'mt-6 w-full py-3.5 rounded-full text-sm font-bold uppercase tracking-[0.08em] transition-transform',
-            cta(plan).disabled
-              ? (plan.id === 'label' ? 'border border-white/30 text-white/50 cursor-not-allowed' : 'border border-gray-300 text-ditto-subtext cursor-not-allowed')
-              : plan.id === 'label' ? 'bg-[#E6FF3A] text-[#0a0a0a] hover:-translate-y-0.5' : 'bg-[#0a0a0a] text-white hover:-translate-y-0.5'
-          ]"
         >{{ cta(plan).label }}</button>
 
-        <!-- Downgrade blocked: the dashboard's Plan Artists rule -->
-        <div
-          v-if="cta(plan).blocked"
-          class="mt-4 rounded-xl border border-error/50 bg-error/5 p-3.5 flex items-start gap-2.5"
-        >
-          <svg class="w-4 h-4 text-error flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-          <p class="text-xs leading-relaxed" :class="plan.id === 'label' ? 'text-white/85' : 'text-ditto-text'">
-            You have more Plan Artists ({{ subscription.planArtists }}) than this plan allows ({{ planArtistLimit(plan) }}). Remove some Plan Artists before downgrading.
-          </p>
+        <div v-if="cta(plan).blocked" class="tier-warn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <span>You have more Plan Artists ({{ subscription.planArtists }}) than this plan allows ({{ planArtistLimit(plan) }}). Remove some Plan Artists before downgrading.</span>
         </div>
 
-        <!-- Features -->
-        <p class="mt-7 text-sm font-bold" :class="plan.id === 'label' ? 'text-white' : ''">{{ plan.featuresIntro }}</p>
-        <ul class="mt-3 space-y-2.5">
-          <li v-for="feature in planFeatures(plan)" :key="feature" class="flex items-start gap-2.5 text-sm">
-            <span
-              class="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
-              :class="plan.id === 'label' ? 'bg-ditto-purple text-white' : 'bg-[#E6FF3A] text-[#0a0a0a] ring-1 ring-inset ring-[#0a0a0a]/10'"
-            >
-              <svg class="w-2.5 h-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-            </span>
-            <span :class="plan.id === 'label' ? 'text-white/85' : plan.id === 'pro' ? 'text-[#0a0a0a]/85' : 'text-ditto-text'">{{ feature }}</span>
-          </li>
+        <ul>
+          <li v-if="plan.id !== 'starter'" class="muted">{{ plan.featuresIntro.replace(', plus:', '') }}</li>
+          <li v-for="feature in planFeatures(plan)" :key="feature">{{ feature }}</li>
         </ul>
       </div>
     </div>
 
-    <!-- Perks strip -->
-    <div class="flex flex-wrap justify-center gap-x-8 gap-y-2 mt-8 mb-6">
-      <span v-for="perk in perks" :key="perk" class="inline-flex items-center gap-2 text-xs font-semibold text-ditto-text">
-        <span class="flex gap-0.5"><span class="w-1 h-1 rounded-full bg-ditto-purple"></span><span class="w-1 h-1 rounded-full bg-ditto-purple"></span></span>
-        {{ perk }}
-      </span>
+    <div class="pricing-foot">
+      <span v-for="perk in perks" :key="perk">{{ perk }}</span>
     </div>
 
-    <!-- Renewal note for the current plan -->
-    <p class="text-center text-xs text-ditto-subtext mb-14">
-      You're on <span class="font-semibold text-ditto-text">{{ currentPlanName }}</span> — renews {{ subscription.renewsOn }}.
-      Upgrades and downgrades are prorated, and you can pay renewals from your royalty balance in Account Settings.
+    <p class="pricing-note">
+      You're on <strong>{{ currentPlanName }}</strong> — renews {{ subscription.renewsOn }}.
+      Upgrades and downgrades are prorated, and renewals can be paid from your royalty balance in Account Settings.
     </p>
 
     <Toast :visible="toast.visible" :message="toast.message" type="success" @close="toast.visible = false" />
@@ -210,32 +162,213 @@ const choose = (plan: Plan) => {
 </script>
 
 <style scoped>
-/* Labels slider: purple fill on the black card, lime thumb */
-.label-slider {
+/* Tokens from ditto-web styles/theme.css */
+.pricing {
+  --ink: #0a0a0a;
+  --ink-soft: #3a3a3a;
+  --line: #262626;
+  --line-light: #e6e6e2;
+  --lime: #e6ff3a;
+  --purple: #a06bff;
+  --purple-deep: #4a00ff;
+  --muted-2: #cfcfcf;
+  max-width: 1160px;
+  color: var(--ink);
+  font-family: 'Satoshi', 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+/* Head */
+.pricing-head {
+  display: grid;
+  grid-template-columns: 1.4fr auto;
+  gap: 48px;
+  align-items: end;
+  margin-bottom: 56px;
+}
+.h-mega {
+  font-weight: 900;
+  font-size: clamp(44px, 6.2vw, 84px);
+  line-height: 0.94;
+  letter-spacing: -3px;
+  margin: 0;
+}
+.h-mega .purple-deep { color: var(--purple-deep); }
+.pricing-cap {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  max-width: 280px;
+  text-align: right;
+  border-top: 1px solid var(--line-light);
+  padding-top: 20px;
+}
+.pricing-cap strong {
+  color: var(--ink);
+  font-weight: 700;
+  display: block;
+  margin-bottom: 6px;
+  letter-spacing: -0.2px;
+}
+
+/* Tiers — equal heights come from grid stretch + the feature list flexing */
+.tier-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  align-items: stretch;
+}
+.tier {
+  background: #fff;
+  border: 1.5px solid var(--line-light);
+  border-radius: 24px;
+  padding: 40px 36px 36px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: transform 0.25s ease, border-color 0.25s ease;
+}
+.tier:hover { transform: translateY(-4px); border-color: var(--ink); }
+.tier .tier-name {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2.4px;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin-bottom: 24px;
+}
+.tier .tier-price { display: flex; align-items: flex-end; gap: 8px; margin-bottom: 14px; }
+.tier .tier-price .num {
+  font-weight: 900;
+  font-size: 84px;
+  line-height: 0.9;
+  letter-spacing: -3.5px;
+  color: var(--ink);
+}
+.tier .tier-price .num .currency { font-size: 42px; line-height: 1; letter-spacing: 0; vertical-align: top; margin-right: 2px; }
+.tier .tier-price .per { font-size: 14px; font-weight: 600; color: var(--ink-soft); padding-bottom: 12px; }
+.tier .tier-tag { font-size: 15px; line-height: 1.5; color: var(--ink-soft); margin: 0 0 28px 0; max-width: 280px; }
+.tier .tier-cta {
+  display: block;
+  width: 100%;
+  text-align: center;
+  background: var(--ink);
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  padding: 18px 24px;
+  border-radius: 60px;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+.tier .tier-cta:hover:not(:disabled) { transform: translateY(-2px); }
+.tier .tier-cta--disabled { background: transparent; color: var(--ink-soft); border: 1.5px solid var(--line-light); cursor: not-allowed; }
+.tier ul {
+  list-style: none;
+  padding: 28px 0 0;
+  margin: 32px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  border-top: 1px solid var(--line-light);
+  flex: 1;
+}
+.tier ul li { font-size: 14px; line-height: 1.5; color: var(--ink); padding-left: 28px; position: relative; font-weight: 500; }
+.tier ul li::before { content: ''; position: absolute; left: 0; top: 4px; width: 18px; height: 18px; border-radius: 50%; background: var(--lime); }
+.tier ul li::after { content: ''; position: absolute; left: 5px; top: 9px; width: 8px; height: 4px; border-left: 2px solid var(--ink); border-bottom: 2px solid var(--ink); transform: rotate(-45deg); }
+.tier ul li.muted { color: var(--ink-soft); font-weight: 400; }
+
+/* Blocked-downgrade warning (dashboard rule) */
+.tier .tier-warn {
+  margin-top: 14px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  border: 1px solid rgba(238, 64, 76, 0.55);
+  background: rgba(238, 64, 76, 0.06);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--ink);
+}
+.tier .tier-warn svg { width: 16px; height: 16px; flex-shrink: 0; margin-top: 1px; color: #ee404c; }
+
+/* Badges */
+.tier .badge {
+  position: absolute;
+  top: -14px;
+  left: 36px;
+  background: var(--ink);
+  color: var(--lime);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  padding: 8px 14px;
+  border-radius: 30px;
+}
+.tier .badge--current { left: auto; right: 36px; background: var(--purple-deep); color: #fff; }
+
+/* Pro */
+.tier.pro { background: var(--lime); border-color: var(--lime); transform: translateY(-12px); }
+.tier.pro:hover { transform: translateY(-16px); }
+.tier.pro ul { border-top-color: rgba(10, 10, 10, 0.18); }
+.tier.pro ul li::before { background: var(--ink); }
+.tier.pro ul li::after { border-color: var(--lime); }
+.tier.pro .tier-cta { background: var(--ink); color: var(--lime); }
+.tier.pro .tier-cta--disabled { background: transparent; color: rgba(10, 10, 10, 0.55); border-color: rgba(10, 10, 10, 0.25); }
+.tier.pro .tier-cta:hover:not(:disabled) { background: #000; }
+
+/* Labels */
+.tier.labels { background: var(--ink); color: #fff; border-color: var(--ink); }
+.tier.labels .tier-name, .tier.labels .tier-price .num { color: #fff; }
+.tier.labels .tier-price .per, .tier.labels .tier-tag { color: var(--muted-2); }
+.tier.labels ul { border-top-color: var(--line); }
+.tier.labels ul li { color: #fff; }
+.tier.labels ul li.muted { color: var(--muted-2); }
+.tier.labels ul li::before { background: var(--purple); }
+.tier.labels ul li::after { border-color: var(--ink); }
+.tier.labels .tier-cta { background: var(--lime); color: var(--ink); }
+.tier.labels .tier-cta--disabled { background: transparent; color: rgba(255, 255, 255, 0.55); border-color: rgba(255, 255, 255, 0.28); }
+.tier.labels .tier-warn { color: #fff; background: rgba(238, 64, 76, 0.14); }
+.labels-count { margin: -6px 0 10px; font-size: 14px; color: rgba(255, 255, 255, 0.85); }
+.labels-count strong { color: var(--lime); font-weight: 800; font-size: 16px; }
+.labels-slider { display: flex; flex-direction: column; gap: 10px; margin: -8px 0 22px; }
+.labels-slider-input {
   -webkit-appearance: none;
   appearance: none;
+  width: 100%;
   height: 6px;
-  border-radius: 9999px;
+  border-radius: 999px;
   background: rgba(255, 255, 255, 0.18);
   outline: none;
+  margin: 4px 0 0;
 }
-.label-slider::-webkit-slider-thumb {
+.labels-slider-input::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: #E6FF3A;
-  border: 3px solid #0a0a0a;
-  box-shadow: 0 0 0 2px #E6FF3A;
-  cursor: pointer;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--lime); border: 2px solid #0a0a0a; cursor: pointer; transition: transform 150ms ease;
 }
-.label-slider::-moz-range-thumb {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: #E6FF3A;
-  border: 3px solid #0a0a0a;
-  box-shadow: 0 0 0 2px #E6FF3A;
-  cursor: pointer;
+.labels-slider-input::-webkit-slider-thumb:hover { transform: scale(1.1); }
+.labels-slider-input::-moz-range-thumb { width: 22px; height: 22px; border-radius: 50%; background: var(--lime); border: 2px solid #0a0a0a; cursor: pointer; }
+.labels-slider-scale { display: flex; justify-content: space-between; font-size: 11px; color: rgba(255, 255, 255, 0.5); letter-spacing: 0.04em; }
+.labels-slider-scale .active { color: var(--lime); font-weight: 700; }
+
+/* Footer strip + note */
+.pricing-foot { margin-top: 48px; display: flex; justify-content: center; align-items: center; gap: 32px; font-size: 13px; color: var(--ink-soft); flex-wrap: wrap; }
+.pricing-foot span { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; }
+.pricing-foot span::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--purple-deep); }
+.pricing-note { margin: 20px 0 56px; text-align: center; font-size: 13px; color: var(--ink-soft); }
+.pricing-note strong { color: var(--ink); font-weight: 700; }
+
+@media (max-width: 1023px) {
+  .pricing-head { grid-template-columns: 1fr; gap: 20px; margin-bottom: 36px; }
+  .pricing-cap { text-align: left; max-width: none; }
+  .tier-grid { grid-template-columns: 1fr; }
+  .tier.pro { transform: none; }
+  .tier.pro:hover { transform: translateY(-4px); }
+  .tier { padding: 32px 26px 28px; }
+  .tier .tier-price .num { font-size: 64px; }
 }
 </style>
