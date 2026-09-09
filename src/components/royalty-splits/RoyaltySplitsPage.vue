@@ -72,6 +72,15 @@
       @edit-email="openEditEmailModal"
     />
 
+    <ApplySplitsModal
+      v-if="applyModal.show"
+      :source-track-name="applyModal.sourceTrackName"
+      :source-user-share="applyModal.sourceUserShare"
+      :source-splits="applyModal.sourceSplits"
+      :matches="applyModal.matches"
+      @close="applyModal.show = false"
+      @confirm="handleApplyConfirm"
+    />
     <CopySplitsModal
       v-if="copyModal.show"
       :mode="copyModal.mode"
@@ -121,11 +130,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
-import type { Release, TrackSplit, Collaborator } from './types'
+import { watch, ref, reactive, computed, onMounted, onUnmounted } from 'vue'
+import type { Release, TrackSplit, Collaborator, IsrcMatch, UserType } from './types'
 import ReleaseHeader from './ReleaseHeader.vue'
 import TrackGroup from './TrackGroup.vue'
 import CopySplitsModal from './CopySplitsModal.vue'
+import ApplySplitsModal from './ApplySplitsModal.vue'
 import FirstSplitModal from './FirstSplitModal.vue'
 import EditEmailModal from './EditEmailModal.vue'
 import UnsavedChangesModal from './UnsavedChangesModal.vue'
@@ -138,6 +148,8 @@ const props = defineProps<{
   releaseData: Release
   /** What a row represents — "Track" (default) or e.g. "Video" */
   itemLabel?: string
+  /** Ditto + RLS accounts apply same-ISRC splits silently; subscription users confirm */
+  userType?: UserType
 }>()
 
 const expandedTrackId = ref<string | null>(null)
@@ -353,6 +365,10 @@ const handleBatchSave = (trackId: string, changes: { added: Collaborator[], edit
   // Check if this is the first split being saved on the release
   const isFirstSplit = !releaseHadSplitsBefore && track.splits.length > 0 && !hasShownFirstSplitModal.value
 
+  // Same-ISRC tracks elsewhere? Offer to apply there too (after the first-split modal, if that shows)
+  if (isFirstSplit) pendingApply.value = { track, changes }
+  else offerApplyToIsrcMatches(track, changes)
+
   // Show first split modal if this is the first one, otherwise show toast
   if (isFirstSplit) {
     hasShownFirstSplitModal.value = true
@@ -400,6 +416,53 @@ const openCopyFromModal = (currentTrackId: string) => {
   copyModal.sourceUserShare = 100
   copyModal.sourceSplits = []
   copyModal.show = true
+}
+
+// ---- Apply splits to same-ISRC tracks on other releases (BA-136) ----
+const applyModal = reactive<{
+  show: boolean
+  sourceTrackName: string
+  sourceUserShare: number
+  sourceSplits: Collaborator[]
+  matches: IsrcMatch[]
+}>({ show: false, sourceTrackName: '', sourceUserShare: 100, sourceSplits: [], matches: [] })
+
+const applySplitsToMatches = (track: TrackSplit, matches: IsrcMatch[]) => {
+  // Prototype: the other releases live outside this page, so we just record that they now mirror this track
+  matches.forEach(m => { m.existingSplits = track.splits.length })
+  showToast(`Splits applied to ${matches.length} track${matches.length !== 1 ? 's' : ''}`)
+}
+
+/** After a save with added/updated splits: RLS applies silently, subscription users confirm. Returns true if a popup opened. */
+const offerApplyToIsrcMatches = (track: TrackSplit, changes: { added: Collaborator[], edited: Collaborator[] }): boolean => {
+  const matches = props.releaseData.isrcMatches?.[track.trackId] ?? []
+  if (matches.length === 0 || (changes.added.length === 0 && changes.edited.length === 0)) return false
+  if (props.userType === 'rls') {
+    applySplitsToMatches(track, matches)
+    return false
+  }
+  applyModal.sourceTrackName = track.trackName
+  applyModal.sourceUserShare = track.userShare
+  applyModal.sourceSplits = track.splits
+  applyModal.matches = matches
+  applyModal.show = true
+  return true
+}
+
+const pendingApply = ref<{ track: TrackSplit; changes: { added: Collaborator[], edited: Collaborator[] } } | null>(null)
+watch(showFirstSplitModal, (open) => {
+  if (!open && pendingApply.value) {
+    const { track, changes } = pendingApply.value
+    pendingApply.value = null
+    offerApplyToIsrcMatches(track, changes)
+  }
+})
+
+const handleApplyConfirm = (trackIds: string[]) => {
+  const chosen = applyModal.matches.filter(m => trackIds.includes(m.trackId))
+  const track = release.tracks.find(t => t.trackName === applyModal.sourceTrackName)
+  if (track && chosen.length) applySplitsToMatches(track, chosen)
+  applyModal.show = false
 }
 
 // Open copy to specific tracks modal (pre-selected source)

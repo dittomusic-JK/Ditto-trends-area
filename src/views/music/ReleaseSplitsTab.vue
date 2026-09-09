@@ -17,6 +17,11 @@ const splitsRelease = computed<SplitsRelease>(() => ({
   title: props.release.title,
   artwork: props.release.artwork,
   accountHolder: 'Goldenboy Entertainment (me)',
+  // Same-ISRC tracks on other releases (BA-136): the first two tracks also sit on a deluxe and a compilation
+  isrcMatches: Object.fromEntries(props.release.tracks.slice(0, 2).map((t, i) => [t.id, [
+    { releaseId: 'rel-deluxe', releaseTitle: `${props.release.title} (Deluxe)`, trackId: `${t.id}-dlx`, trackName: t.title, existingSplits: i === 0 ? 2 : 0 },
+    { releaseId: 'rel-comp', releaseTitle: 'Afrobeats Now 2026', trackId: `${t.id}-comp`, trackName: t.title, existingSplits: 0 },
+  ]])),
   tracks: props.release.tracks.map(t => {
     const seed = props.release.splits.find(s => s.trackId === t.id)
     const splits = (seed?.collaborators ?? []).map(c => ({
