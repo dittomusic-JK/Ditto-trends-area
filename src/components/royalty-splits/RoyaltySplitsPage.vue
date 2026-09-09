@@ -24,6 +24,10 @@
           <div class="rsp__dot rsp__dot--pending" />
           <span class="rsp__legend-label">Pending</span>
         </div>
+        <div class="rsp__legend-item">
+          <div class="rsp__dot rsp__dot--verification" />
+          <span class="rsp__legend-label">Requires verification</span>
+        </div>
       </div>
     </div>
 
@@ -674,6 +678,7 @@ const handleCancelUnsavedChanges = () => {
   }
 
   &__legend-item {
+    white-space: nowrap;
     display: flex;
     align-items: center;
     gap: 0.375rem;
@@ -689,6 +694,7 @@ const handleCancelUnsavedChanges = () => {
     &--yours { background: var(--brand-secondary); }
     &--collab { background: var(--success); }
     &--pending { background: $color-amber-500; }
+    &--verification { background: var(--split-verification); }
   }
 
   /* Empty state */
