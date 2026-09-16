@@ -186,7 +186,7 @@
 
         <!-- Partial: the tagging itself lives in each track's credits below -->
         <p v-if="form.aiDisclosure === 'partial'" class="text-xs text-ditto-subtext mt-4 max-w-2xl">
-          Tick "Created with AI" on any credit in each track's credits below — a track with none ticked has no AI content.
+          Set the AI level on each credit in the track's credits below — No AI, Partly AI or Fully AI. Credits default to No AI.
         </p>
         <p v-if="form.aiDisclosure === 'full'" class="text-xs text-ditto-subtext mt-4 max-w-2xl">
           Every credit on this release will be marked as created with AI automatically — nothing else to do.

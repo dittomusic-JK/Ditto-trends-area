@@ -125,7 +125,7 @@
           <span v-for="t in aiTaggedTracks" :key="'ait-' + t.id" class="px-3 py-1.5 text-xs font-medium rounded-full border border-gray-200 text-ditto-text">
             "{{ t.title }}" <span class="text-ditto-subtext">— {{ aiCreditLabels(t).join(', ') }}</span>
           </span>
-          <span v-if="!aiTaggedTracks.length" class="text-xs text-ditto-subtext">No credits marked as created with AI yet.</span>
+          <span v-if="!aiTaggedTracks.length" class="text-xs text-ditto-subtext">All credits are set to No AI so far.</span>
         </template>
         <span v-else class="text-sm text-ditto-subtext">Not declared yet.</span>
       </div>
@@ -256,15 +256,16 @@ const extrasLabel = computed(() => {
   return extras.length ? extras.join(', ') : 'N/A'
 })
 
-// Credits ticked "Created with AI" on a track, as review labels
+// Credits with an AI level set on a track, as review labels ("Songwriter · Partly AI")
+const levelLabel = (level: string) => level === 'full' ? 'Fully AI' : level === 'partial' ? 'Partly AI' : ''
 const aiCreditLabels = (t: BuilderTrack): string[] => {
   const labels: string[] = []
-  if (t.credits.composerAi) labels.push('Composer')
-  if (t.credits.songwriter.ai) labels.push('Songwriter')
-  if (t.credits.production.ai) labels.push('Production/Engineer')
-  if (t.credits.performer.ai) labels.push('Performer')
+  if (t.credits.composerAi !== 'none') labels.push(`Composer · ${levelLabel(t.credits.composerAi)}`)
+  if (t.credits.songwriter.ai !== 'none') labels.push(`Songwriter · ${levelLabel(t.credits.songwriter.ai)}`)
+  if (t.credits.production.ai !== 'none') labels.push(`Production/Engineer · ${levelLabel(t.credits.production.ai)}`)
+  if (t.credits.performer.ai !== 'none') labels.push(`Performer · ${levelLabel(t.credits.performer.ai)}`)
   for (const extra of t.credits.additional) {
-    if (extra.ai) labels.push(extra.role || extra.name || 'Additional credit')
+    if (extra.ai !== 'none') labels.push(`${extra.role || extra.name || 'Additional credit'} · ${levelLabel(extra.ai)}`)
   }
   return labels
 }

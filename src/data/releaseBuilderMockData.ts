@@ -15,16 +15,25 @@ export interface TrackArtists {
   showRemixer: boolean
 }
 
+/** Per-credit AI level, set on partially-AI releases. Entirely-AI releases lock every credit to 'full'. */
+export type CreditAiLevel = 'none' | 'partial' | 'full'
+
+export const creditAiLevels: { value: CreditAiLevel; label: string }[] = [
+  { value: 'none', label: 'No AI' },
+  { value: 'partial', label: 'Partly AI' },
+  { value: 'full', label: 'Fully AI' },
+]
+
 export interface TrackCredit {
   name: string
   role: string
-  /** AI disclosure: this credit was created with AI (partial releases; entirely-AI releases lock every credit on) */
-  ai: boolean
+  /** AI disclosure level for this credit (stores need none / partly / fully per contribution) */
+  ai: CreditAiLevel
 }
 
 export interface TrackCredits {
   composer: string
-  composerAi: boolean
+  composerAi: CreditAiLevel
   songwriter: TrackCredit
   production: TrackCredit
   performer: TrackCredit
@@ -81,10 +90,10 @@ export const makeBuilderTrack = (id: string, title: string, duration: string, du
   artistsCustomized: false,
   credits: {
     composer: '',
-    composerAi: false,
-    songwriter: { name: '', role: '', ai: false },
-    production: { name: '', role: '', ai: false },
-    performer: { name: '', role: '', ai: false },
+    composerAi: 'none',
+    songwriter: { name: '', role: '', ai: 'none' },
+    production: { name: '', role: '', ai: 'none' },
+    performer: { name: '', role: '', ai: 'none' },
     additional: [],
   },
   metadataTouched: false,

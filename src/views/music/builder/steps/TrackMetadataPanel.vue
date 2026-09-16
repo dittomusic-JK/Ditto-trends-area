@@ -177,13 +177,7 @@
               :class="fieldClass(track.metadataTouched && !track.credits.composer.trim())"
             />
             <p v-if="track.metadataTouched && !track.credits.composer.trim()" class="text-xs text-error mt-1">Please enter a Composer name.</p>
-            <label v-if="showAiCheckbox" :class="['flex items-center gap-2 mt-2 select-none w-fit', aiLocked ? 'cursor-not-allowed' : 'cursor-pointer']">
-              <input type="checkbox" class="sr-only" :checked="aiLocked || track.credits.composerAi" :disabled="aiLocked" @change="track.credits.composerAi = !track.credits.composerAi" />
-              <span :class="['w-4 h-4 rounded border flex items-center justify-center transition-colors flex-shrink-0', (aiLocked || track.credits.composerAi) ? 'border-ditto-purple bg-ditto-purple' : 'border-gray-300 bg-white', aiLocked ? 'opacity-60' : '']">
-                <svg v-if="aiLocked || track.credits.composerAi" class="w-2.5 h-2.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-              </span>
-              <span :class="['text-xs', aiLocked ? 'text-ditto-subtext' : 'text-ditto-text']">Created with AI</span>
-            </label>
+            <CreditAiSelect v-if="showAiSelect" v-model="track.credits.composerAi" :locked="aiLocked" />
           </div>
         </div>
 
@@ -197,13 +191,7 @@
               :class="fieldClass(track.metadataTouched && !track.credits[cat.key].name.trim())"
             />
             <p v-if="track.metadataTouched && !track.credits[cat.key].name.trim()" class="text-xs text-error mt-1">Please enter a {{ cat.label }} name.</p>
-            <label v-if="showAiCheckbox" :class="['flex items-center gap-2 mt-2 select-none w-fit', aiLocked ? 'cursor-not-allowed' : 'cursor-pointer']">
-              <input type="checkbox" class="sr-only" :checked="aiLocked || track.credits[cat.key].ai" :disabled="aiLocked" @change="track.credits[cat.key].ai = !track.credits[cat.key].ai" />
-              <span :class="['w-4 h-4 rounded border flex items-center justify-center transition-colors flex-shrink-0', (aiLocked || track.credits[cat.key].ai) ? 'border-ditto-purple bg-ditto-purple' : 'border-gray-300 bg-white', aiLocked ? 'opacity-60' : '']">
-                <svg v-if="aiLocked || track.credits[cat.key].ai" class="w-2.5 h-2.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-              </span>
-              <span :class="['text-xs', aiLocked ? 'text-ditto-subtext' : 'text-ditto-text']">Created with AI</span>
-            </label>
+            <CreditAiSelect v-if="showAiSelect" v-model="track.credits[cat.key].ai" :locked="aiLocked" />
           </div>
           <div>
             <label class="block text-xs font-semibold text-ditto-text mb-1.5">Role</label>
@@ -223,13 +211,7 @@
           <div>
             <label class="block text-xs font-semibold text-ditto-text mb-1.5">Additional Credit</label>
             <input v-model="extra.name" type="text" placeholder="Name" :class="fieldClass(false)" />
-            <label v-if="showAiCheckbox" :class="['flex items-center gap-2 mt-2 select-none w-fit', aiLocked ? 'cursor-not-allowed' : 'cursor-pointer']">
-              <input type="checkbox" class="sr-only" :checked="aiLocked || extra.ai" :disabled="aiLocked" @change="extra.ai = !extra.ai" />
-              <span :class="['w-4 h-4 rounded border flex items-center justify-center transition-colors flex-shrink-0', (aiLocked || extra.ai) ? 'border-ditto-purple bg-ditto-purple' : 'border-gray-300 bg-white', aiLocked ? 'opacity-60' : '']">
-                <svg v-if="aiLocked || extra.ai" class="w-2.5 h-2.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-              </span>
-              <span :class="['text-xs', aiLocked ? 'text-ditto-subtext' : 'text-ditto-text']">Created with AI</span>
-            </label>
+            <CreditAiSelect v-if="showAiSelect" v-model="extra.ai" :locked="aiLocked" />
           </div>
           <div>
             <div class="flex items-center justify-between mb-1.5">
@@ -246,7 +228,7 @@
         </div>
 
         <button
-          @click="track.credits.additional.push({ name: '', role: '', ai: false })"
+          @click="track.credits.additional.push({ name: '', role: '', ai: 'none' })"
           class="flex items-center gap-2 px-4 py-2 text-sm font-medium border border-gray-200 rounded-full text-ditto-text hover:border-ditto-purple hover:text-ditto-purple transition-colors"
         >
           <span class="w-4 h-4 rounded-full bg-ditto-text flex items-center justify-center">
@@ -280,12 +262,13 @@ import { copyrightYears, isTrackMetadataComplete, songwriterRoles, productionRol
 import type { BuilderTrack, TrackArtists } from '../../../../data/releaseBuilderMockData'
 import VideoArtistsStep from '../../../videos/steps/VideoArtistsStep.vue'
 import SearchableSelect from '../../../videos/steps/SearchableSelect.vue'
+import CreditAiSelect from './CreditAiSelect.vue'
 
 const props = defineProps<{ track: BuilderTrack; aiDisclosure?: '' | 'none' | 'partial' | 'full' }>()
 
-// AI disclosure: partial releases tick "Created with AI" per credit;
-// entirely-AI releases lock every credit's checkbox on.
-const showAiCheckbox = computed(() => props.aiDisclosure === 'partial' || props.aiDisclosure === 'full')
+// AI disclosure: partially-AI releases set a level (No / Partly / Fully AI) on every credit;
+// entirely-AI releases lock every credit to Fully AI. Not AI hides the control.
+const showAiSelect = computed(() => props.aiDisclosure === 'partial' || props.aiDisclosure === 'full')
 const aiLocked = computed(() => props.aiDisclosure === 'full')
 
 
