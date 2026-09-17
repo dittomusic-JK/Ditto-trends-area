@@ -1,13 +1,13 @@
 // Refer a Friend — mock data for the in-house referral programme prototype.
-// Programme: the friend gets 40% off Ditto Pro; the referrer earns $10 cash,
-// deposited one month after the friend signs up (a holding period that limits
-// abuse). No cap on referrals. Three demo states: fresh, mid-programme, and a
+// Programme: the friend gets 40% off Ditto Pro (any plan counts, only Pro is
+// discounted); the referrer earns $10 cash, deposited one month after the friend
+// buys a subscription (a holding period that limits abuse). No cap on referrals. Three demo states: fresh, mid-programme, and a
 // heavy referrer.
 
 export type ReferralStatus =
   | 'paid' // holding period over — $10 deposited into the referrer's balance
-  | 'pending' // friend has signed up; $10 lands one month after their sign-up date
-  | 'joined' // friend created an account but hasn't taken the Pro offer yet
+  | 'pending' // friend has subscribed; $10 lands one month after their purchase
+  | 'joined' // friend created an account but hasn't bought a subscription yet
 
 export interface Referral {
   id: string
@@ -16,7 +16,7 @@ export interface Referral {
   /** Friend's sign-up date */
   date: string
   status: ReferralStatus
-  /** For 'pending': the deposit date (sign-up + 1 month) */
+  /** For 'pending': the deposit date (purchase + 1 month) */
   depositOn?: string
 }
 

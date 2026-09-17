@@ -31,7 +31,7 @@
             <span class="font-semibold text-white">${{ profile.pending }}</span> on the way
           </span>
         </div>
-        <p class="relative text-xs text-white/60">Every friend counts — there's no limit. Each ${{ REWARD_PER_REFERRAL }} lands {{ HOLDING_PERIOD_LABEL }} after they sign up.</p>
+        <p class="relative text-xs text-white/60">Every friend counts — there's no limit. Each ${{ REWARD_PER_REFERRAL }} lands {{ HOLDING_PERIOD_LABEL }} after they subscribe.</p>
 
         <div class="relative mt-auto pt-6">
           <p v-if="profile.referrals.length === 0" class="text-sm text-white/75">
@@ -131,7 +131,7 @@
         </span>
         <p class="text-base font-semibold text-ditto-text mb-1">No referrals yet</p>
         <p class="text-sm text-ditto-subtext max-w-sm mx-auto">
-          Share your link with friends who make music. When one of them signs up, you'll see them here — and ${{ REWARD_PER_REFERRAL }} lands in your balance {{ HOLDING_PERIOD_LABEL }} later.
+          Share your link with friends who make music. When one of them signs up, you'll see them here — and ${{ REWARD_PER_REFERRAL }} lands in your balance {{ HOLDING_PERIOD_LABEL }} after they subscribe later.
         </p>
       </div>
 
@@ -328,23 +328,23 @@ const howItWorks = [
   {
     icon: '/img/suite/add-artist.svg',
     title: 'They sign up and save',
-    body: `${FRIEND_DISCOUNT_PERCENT}% off Ditto Pro, applied at checkout.`,
+    body: `Any plan counts — and it's ${FRIEND_DISCOUNT_PERCENT}% off if they pick Ditto Pro.`,
   },
   {
     icon: '/img/suite/Royalties.svg',
     title: 'You get $10 cash',
-    body: `Deposited into your balance ${HOLDING_PERIOD_LABEL} after they sign up. No limit.`,
+    body: `Deposited into your balance ${HOLDING_PERIOD_LABEL} after they subscribe. No limit.`,
   },
 ]
 
 const faqs = [
   {
     q: 'How much can I earn?',
-    a: `$${REWARD_PER_REFERRAL} in cash for every friend who signs up through your link — there's no cap on how many friends you can refer or how much you can earn.`,
+    a: `$${REWARD_PER_REFERRAL} in cash for every friend who signs up through your link and buys any Ditto subscription — there's no cap on how many friends you can refer or how much you can earn.`,
   },
   {
     q: 'What does my friend get?',
-    a: `${FRIEND_DISCOUNT_PERCENT}% off Ditto Pro when they sign up through your link — the discount is applied automatically at checkout. Pro is our full distribution plan: unlimited releases, all stores, and every growth tool. See dittomusic.com/pro for the details.`,
+    a: `${FRIEND_DISCOUNT_PERCENT}% off their first year of Ditto Pro when they sign up through your link — applied automatically at checkout. They can choose any plan, but the discount only applies to Pro. Pro is our full distribution plan: unlimited releases, all stores, and every growth tool. See dittomusic.com/pro for the details.`,
   },
   {
     q: 'Who can take part?',
@@ -352,7 +352,7 @@ const faqs = [
   },
   {
     q: 'When do I get my reward?',
-    a: `Your $${REWARD_PER_REFERRAL} is deposited into your Ditto balance ${HOLDING_PERIOD_LABEL} after your friend signs up. The holding period lets us check the referral is genuine; you'll see the exact deposit date next to each friend in your list.`,
+    a: `Your $${REWARD_PER_REFERRAL} is deposited into your Ditto balance ${HOLDING_PERIOD_LABEL} after your friend buys their subscription. The holding period lets us check the referral is genuine; you'll see the exact deposit date next to each friend in your list.`,
   },
   {
     q: 'How long does my link last?',
@@ -386,7 +386,7 @@ const statusLabel = (referral: Referral): string => {
   switch (referral.status) {
     case 'paid': return 'Deposited'
     case 'pending': return `Deposits ${referral.depositOn}`
-    case 'joined': return 'Signed up — Pro offer not taken yet'
+    case 'joined': return 'Signed up — no subscription yet'
   }
 }
 
