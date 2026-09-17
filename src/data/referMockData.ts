@@ -37,7 +37,7 @@ export const REWARD_PER_REFERRAL = 10
 export const FRIEND_DISCOUNT_PERCENT = 40
 export const HOLDING_PERIOD_LABEL = '1 month'
 
-const code = 'goldenboy'
+const code = 'k7x2qd' // randomly assigned — codes aren't chosen or editable
 const link = `dittomusic.com/r/${code}`
 
 const r = (id: string, name: string, email: string, date: string, status: ReferralStatus, depositOn?: string): Referral =>
