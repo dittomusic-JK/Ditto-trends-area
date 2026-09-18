@@ -308,7 +308,7 @@
         <div class="border-t border-gray-300 px-5 py-4 flex items-center justify-between">
           <span class="text-base text-ditto-text">Has this artist ever released music before?</span>
           <button
-            @click="newArtistHasReleased = !newArtistHasReleased"
+            @click="toggleHasReleased"
             :class="[
               'w-[51px] h-[31px] rounded-full relative transition-colors flex-shrink-0',
               newArtistHasReleased ? 'bg-[#34c759]' : 'bg-[#e9e9eb]'
@@ -324,18 +324,35 @@
         <!-- Connect Artist Profiles -->
         <h4 class="font-bold text-base text-ditto-text px-5 pt-5 pb-2.5">Connect Artist Profiles</h4>
 
-        <!-- Spotify ID -->
+        <!-- Spotify ID — required for subscribers when the artist has released before,
+             unless they say the artist isn't on Spotify (Spotify then creates a profile) -->
         <div class="border-t border-gray-300 px-5 py-4 flex flex-col gap-1.5">
-          <label class="text-[13px] font-medium text-ditto-subtext">Spotify ID</label>
-          <div class="flex items-center gap-2.5">
+          <label class="text-[13px] font-medium text-ditto-subtext flex items-center gap-2">
+            Spotify ID
+            <span v-if="spotifyIdRequired" class="text-[10px] font-semibold uppercase tracking-[1px] text-ditto-subtext/70">Required</span>
+          </label>
+          <div v-if="!newArtistNotOnSpotify" class="flex items-center gap-2.5">
             <img src="/img/spotify-icon.svg" alt="Spotify" class="w-5 h-5 flex-shrink-0" />
             <input
               v-model="newArtistSpotifyId"
               type="text"
               placeholder="1Xyo4u8uXC1ZmMpatF05PJ"
-              class="flex-1 text-base text-ditto-text bg-transparent border-0 outline-none placeholder:text-gray-400"
+              :class="['flex-1 text-base bg-transparent border-0 outline-none placeholder:text-gray-400', spotifyIdMissing ? 'text-error' : 'text-ditto-text']"
             />
           </div>
+          <!-- Declared not on Spotify: the field gives way to a one-line note -->
+          <div v-else class="flex items-center gap-2.5">
+            <img src="/img/spotify-icon.svg" alt="Spotify" class="w-5 h-5 flex-shrink-0 opacity-40" />
+            <p class="flex-1 text-sm text-ditto-subtext">
+              Not on Spotify yet — Spotify will create a new profile for this artist on delivery.
+              <button @click="newArtistNotOnSpotify = false" class="text-ditto-purple font-medium hover:underline ml-1">Add an ID instead</button>
+            </p>
+          </div>
+          <!-- Only shows once they try to add without an ID -->
+          <p v-if="spotifyIdMissing" class="text-xs text-error mt-0.5">
+            Spotify ID is required for artists who've released before.
+            <button @click="declareNotOnSpotify" class="text-ditto-purple font-medium hover:underline ml-1">Not on Spotify yet?</button>
+          </p>
         </div>
 
         <!-- Apple Music ID -->
@@ -437,6 +454,25 @@ const newArtistSpotifyId = ref('')
 const newArtistAppleId = ref('')
 const newArtistIsPlan = ref(false)
 
+// Spotify ID rule: subscribers adding an artist who has released before must link a
+// Spotify profile, so releases land on the right artist instead of a duplicate. The
+// one legitimate exception — released before, but never to Spotify — is a declared
+// escape hatch rather than a silently empty field.
+const isSubscriber = true // prototype user has an active subscription
+const newArtistNotOnSpotify = ref(false)
+const newArtistAddAttempted = ref(false)
+const spotifyIdRequired = computed(() => isSubscriber && newArtistHasReleased.value && !newArtistNotOnSpotify.value)
+const spotifyIdMissing = computed(() => spotifyIdRequired.value && newArtistAddAttempted.value && !newArtistSpotifyId.value.trim())
+const toggleHasReleased = () => {
+  newArtistHasReleased.value = !newArtistHasReleased.value
+  newArtistNotOnSpotify.value = false
+  newArtistAddAttempted.value = false
+}
+const declareNotOnSpotify = () => {
+  newArtistNotOnSpotify.value = true
+  newArtistAddAttempted.value = false
+}
+
 const allArtists = ref([...mockArtists])
 
 // Resolve an artist's brand colour for their avatar (mock + newly added).
@@ -514,6 +550,11 @@ const toggleSection = (key: 'showFeatured' | 'showRemixer') => {
 
 const addNewArtist = () => {
   if (!newArtistName.value.trim()) return
+  // Block the add (and surface the message) while a required Spotify ID is missing
+  if (spotifyIdRequired.value && !newArtistSpotifyId.value.trim()) {
+    newArtistAddAttempted.value = true
+    return
+  }
 
   const name = newArtistName.value.trim()
   const id = 'new_' + Date.now()
@@ -535,6 +576,8 @@ const addNewArtist = () => {
   newArtistSpotifyId.value = ''
   newArtistAppleId.value = ''
   newArtistIsPlan.value = false
+  newArtistNotOnSpotify.value = false
+  newArtistAddAttempted.value = false
   showAddNewModal.value = false
 }
 </script>
