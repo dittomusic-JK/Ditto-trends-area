@@ -105,8 +105,8 @@ const steps = [
   { id: 'review', label: 'Review' },
 ]
 
-export interface MotionArtwork {
-  enabled: boolean
+/** One motion artwork deliverable (Apple needs a 1:1 and a 3:4 version) */
+export interface MotionArtworkFile {
   file: File | null
   previewUrl: string | null
   fileName: string
@@ -115,7 +115,17 @@ export interface MotionArtwork {
   errors: string[]
   summary: string
   unverified: string
-  orientation: 'square' | 'portrait'
+}
+
+const emptyMotionFile = (): MotionArtworkFile =>
+  ({ file: null, previewUrl: null, fileName: '', fileSize: '', status: '', errors: [], summary: '', unverified: '' })
+
+export interface MotionArtwork {
+  enabled: boolean
+  /** 3840×3840 — Mac, iPad, smart TVs */
+  square: MotionArtworkFile
+  /** 2048×2732 — iPhone, Android */
+  portrait: MotionArtworkFile
 }
 
 export interface ReleaseBuilderForm {
@@ -178,7 +188,7 @@ const formData = reactive<ReleaseBuilderForm>({
   artwork: null,
   artworkFileName: '',
   artworkConfirmed: false,
-  motionArtwork: { enabled: false, file: null, previewUrl: null, fileName: '', fileSize: '', status: '', errors: [], summary: '', unverified: '', orientation: 'square' },
+  motionArtwork: { enabled: false, square: emptyMotionFile(), portrait: emptyMotionFile() },
   title: props.initialTitle ?? '',
   copyrightHolder: '',
   copyrightYear: 2026,
@@ -219,14 +229,23 @@ const formData = reactive<ReleaseBuilderForm>({
 const currentStep = ref(0)
 const visitedSteps = reactive(new Set<number>([0]))
 
+const motionArtworkOk = computed(() => {
+  const ma = formData.motionArtwork
+  if (!ma.enabled) return true
+  const slots = [ma.square, ma.portrait]
+  if (slots.some(f => f.status === 'invalid' || f.status === 'checking')) return false
+  const provided = slots.filter(f => f.status === 'valid').length
+  return provided === 0 || provided === 2
+})
+
 const validateStep = (stepIndex: number): boolean => {
   switch (stepIndex) {
     case 0:
       return formData.tracks.length > 0
     case 1:
-      // Motion artwork is optional, but an invalid file blocks until removed or replaced
-      return formData.artwork !== null && formData.artworkConfirmed &&
-        (!formData.motionArtwork.enabled || !['invalid', 'checking'].includes(formData.motionArtwork.status))
+      // Motion artwork is optional, but once started Apple needs both versions: an invalid
+      // or checking file blocks, and so does having only one of the two.
+      return formData.artwork !== null && formData.artworkConfirmed && motionArtworkOk.value
     case 2:
       return formData.title.trim().length > 0 &&
         formData.copyrightHolder.trim().length >= 2 &&

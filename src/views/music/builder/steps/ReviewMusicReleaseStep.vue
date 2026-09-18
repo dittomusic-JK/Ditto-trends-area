@@ -31,18 +31,19 @@
             <span class="text-xs font-medium">No artwork uploaded</span>
           </div>
         </div>
-        <!-- Motion artwork (Apple Music) -->
-        <div v-if="form.motionArtwork.enabled && form.motionArtwork.status" class="mt-4 flex items-start gap-3">
-          <div class="w-12 flex-shrink-0 rounded-lg overflow-hidden bg-ditto-light-grey" :class="form.motionArtwork.orientation === 'portrait' ? 'aspect-[3/4]' : 'aspect-square'">
-            <video v-if="form.motionArtwork.previewUrl && form.motionArtwork.status === 'valid'" :src="form.motionArtwork.previewUrl" class="w-full h-full object-cover" autoplay muted loop playsinline></video>
-          </div>
-          <div class="min-w-0">
-            <p class="text-xs font-semibold text-ditto-text flex items-center gap-1.5">
-              Motion artwork <span class="text-ditto-subtext font-normal">· Apple Music only</span>
-              <WarnDot v-if="form.motionArtwork.status === 'invalid'" tip="Motion artwork doesn't meet Apple's specification — remove or replace it" />
-              <WarnDot v-else-if="!form.selectedStores.includes('apple-music')" tip="Apple Music isn't selected, so this motion artwork won't be delivered" />
-            </p>
-            <p class="text-xs text-ditto-subtext truncate">{{ form.motionArtwork.fileName }}<template v-if="form.motionArtwork.summary"> · {{ form.motionArtwork.summary }}</template></p>
+        <!-- Motion artwork (Apple Music): both deliverables -->
+        <div v-if="form.motionArtwork.enabled && motionFiles.length" class="mt-4">
+          <p class="text-xs font-semibold text-ditto-text flex items-center gap-1.5 mb-2">
+            Motion artwork <span class="text-ditto-subtext font-normal">· Apple Music only</span>
+            <WarnDot v-if="motionFiles.some(f => f.file.status === 'invalid')" tip="Motion artwork doesn't meet Apple's specification — remove or replace it" />
+            <WarnDot v-else-if="motionFiles.length === 1" tip="Apple needs both the 1:1 and the 3:4 version" />
+            <WarnDot v-else-if="!form.selectedStores.includes('apple-music')" tip="Apple Music isn't selected, so this motion artwork won't be delivered" />
+          </p>
+          <div v-for="f in motionFiles" :key="f.label" class="flex items-center gap-3 mt-1.5">
+            <div class="w-10 flex-shrink-0 rounded-lg overflow-hidden bg-ditto-light-grey" :class="f.portrait ? 'aspect-[3/4]' : 'aspect-square'">
+              <video v-if="f.file.previewUrl && f.file.status === 'valid'" :src="f.file.previewUrl" class="w-full h-full object-cover" autoplay muted loop playsinline></video>
+            </div>
+            <p class="text-xs text-ditto-subtext truncate min-w-0"><span class="font-medium text-ditto-text">{{ f.label }}</span> · {{ f.file.fileName }}<template v-if="f.file.summary"> · {{ f.file.summary }}</template></p>
           </div>
         </div>
 
@@ -269,6 +270,12 @@ const aiCreditLabels = (t: BuilderTrack): string[] => {
   }
   return labels
 }
+
+// Motion artwork files that have been added (either slot)
+const motionFiles = computed(() => [
+  { label: '1:1', portrait: false, file: props.form.motionArtwork.square },
+  { label: '3:4', portrait: true, file: props.form.motionArtwork.portrait },
+].filter(f => f.file.status))
 
 const aiTaggedTracks = computed(() => props.form.tracks.filter(t => aiCreditLabels(t).length > 0))
 
