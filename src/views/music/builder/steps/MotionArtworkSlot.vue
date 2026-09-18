@@ -4,7 +4,7 @@
     <div class="flex items-center gap-3 mb-3">
       <!-- Shape glyph (filled, so it never reads as a checkbox) -->
       <span class="flex-shrink-0 w-8 h-8 rounded-lg bg-ditto-light-grey flex items-center justify-center" aria-hidden="true">
-        <span class="rounded-[3px] bg-ditto-purple/70" :class="ratio === 'portrait' ? 'w-[12px] h-4' : 'w-4 h-4'"></span>
+        <span class="rounded-[3px] bg-ditto-purple opacity-70 block" :style="ratio === 'portrait' ? 'width:12px;height:16px' : 'width:16px;height:16px'"></span>
       </span>
       <div class="min-w-0">
         <p class="text-sm font-semibold text-ditto-text leading-tight">{{ meta.title }} <span class="font-normal text-ditto-subtext">· {{ meta.ratioLabel }}</span></p>
