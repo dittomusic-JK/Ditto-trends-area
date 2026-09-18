@@ -192,7 +192,7 @@ const formData = reactive({
     noLyrics: false,
   },
   assetSource: {
-    type: '' as '' | 'original' | 'licensed' | 'previously-distributed' | 'commissioned',
+    type: '' as '' | 'original' | 'licensed',
     // Original
     ownershipConfirmed: false,
     // Licensed
@@ -201,12 +201,6 @@ const formData = reactive({
     licenseTerritory: 'global' as 'global' | 'selected',
     licenseDocument: null as File | null,
     licenseConfirmed: false,
-    // Previously Distributed
-    previousDistributor: '',
-    takedownConfirmed: false,
-    // Commissioned
-    commissionedBy: '',
-    commissionAgreement: false,
   },
   metadata: {
     title: props.initialTitle || '',

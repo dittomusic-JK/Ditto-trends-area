@@ -375,17 +375,13 @@ interface FormData {
   artworkFile: File | null
   contentChecks: Record<string, boolean>
   assetSource: {
-    type: '' | 'original' | 'licensed' | 'previously-distributed' | 'commissioned'
+    type: '' | 'original' | 'licensed'
     ownershipConfirmed: boolean
     licenseHolder: string
     licenseValidUntil: string
     licenseTerritory: 'global' | 'selected'
     licenseDocument: File | null
     licenseConfirmed: boolean
-    previousDistributor: string
-    takedownConfirmed: boolean
-    commissionedBy: string
-    commissionAgreement: boolean
   }
   metadata: {
     title: string
@@ -452,8 +448,6 @@ const assetSourceLabel = computed(() => {
   const labels: Record<string, string> = {
     'original': 'Original',
     'licensed': 'Licensed',
-    'previously-distributed': 'Re-distributed',
-    'commissioned': 'Commissioned',
   }
   return labels[props.formData.assetSource.type] || ''
 })

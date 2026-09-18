@@ -122,42 +122,45 @@
       <p class="text-sm text-ditto-subtext mb-5">Let us know how your video was made. This covers everything on screen — footage, stock clips, overlays, graphics, fonts, logos and any third-party material — as well as the music.</p>
 
       <div class="space-y-2">
-        <!-- Original -->
-        <label :class="[
-          'flex items-start gap-3 p-4 rounded-xl border cursor-pointer transition-all',
-          assetSource.type === 'original' ? 'border-ditto-purple bg-ditto-purple/5' : 'border-gray-200 hover:border-gray-300'
-        ]">
-          <input type="radio" name="assetSource" value="original" :checked="assetSource.type === 'original'" @change="updateSource('type', 'original')" class="mt-0.5 accent-ditto-purple" />
-          <div>
+        <!-- Original Content — selecting the card is the confirmation; no second tick -->
+        <button
+          type="button"
+          @click="selectSource('original')"
+          :aria-pressed="assetSource.type === 'original'"
+          :class="[
+            'w-full text-left flex items-start gap-4 p-4 rounded-xl border transition-all',
+            assetSource.type === 'original' ? 'border-ditto-purple bg-ditto-purple/5' : 'border-gray-200 hover:border-gray-300'
+          ]"
+        >
+          <div class="flex-1 min-w-0">
             <p class="text-sm font-medium text-ditto-text">Original Content</p>
             <p class="text-xs text-ditto-subtext mt-0.5">I created this video myself or with my team, and nothing in it comes from a stock library, another creator, or a third-party brand.</p>
+            <p class="text-xs text-ditto-subtext mt-2"><span class="font-medium text-ditto-text">By selecting this I confirm</span> I own all necessary rights — the music and lyrics, all footage, and any overlays, graphics, fonts, logos or effects used in the edit.</p>
           </div>
-        </label>
-        <!-- Original confirmation -->
-        <div v-if="assetSource.type === 'original'" class="ml-7 pl-4 border-l-2 border-ditto-purple/20 pt-3 pb-2">
-          <label class="flex items-start gap-3 p-3 rounded-lg bg-ditto-light-grey/60 cursor-pointer">
-            <input type="checkbox" :checked="assetSource.ownershipConfirmed" @change="updateSource('ownershipConfirmed', !assetSource.ownershipConfirmed)" class="hidden" />
-            <div :class="['w-5 h-5 rounded border-2 flex items-center justify-center transition-all flex-shrink-0 mt-0.5', assetSource.ownershipConfirmed ? 'bg-ditto-purple border-ditto-purple' : 'border-gray-300 bg-white']">
-              <svg v-if="assetSource.ownershipConfirmed" class="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20,6 9,17 4,12"/></svg>
-            </div>
-            <div>
-              <p class="text-sm text-ditto-text">I confirm I own all necessary rights</p>
-              <p class="text-xs text-ditto-subtext mt-0.5">This includes the music and lyrics, all footage, and any overlays, graphics, fonts, logos or effects used in the edit.</p>
-            </div>
-          </label>
-        </div>
+          <span :class="['w-5 h-5 rounded border-2 flex items-center justify-center transition-all flex-shrink-0 mt-0.5', assetSource.type === 'original' ? 'bg-ditto-purple border-ditto-purple' : 'border-gray-300 bg-white']">
+            <svg v-if="assetSource.type === 'original'" class="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20,6 9,17 4,12"/></svg>
+          </span>
+        </button>
 
-        <!-- Licensed -->
-        <label :class="[
-          'flex items-start gap-3 p-4 rounded-xl border cursor-pointer transition-all',
-          assetSource.type === 'licensed' ? 'border-ditto-purple bg-ditto-purple/5' : 'border-gray-200 hover:border-gray-300'
-        ]">
-          <input type="radio" name="assetSource" value="licensed" :checked="assetSource.type === 'licensed'" @change="updateSource('type', 'licensed')" class="mt-0.5 accent-ditto-purple" />
-          <div class="flex-1">
+        <!-- Licensed Content — selecting the card is the confirmation; no second tick -->
+        <button
+          type="button"
+          @click="selectSource('licensed')"
+          :aria-pressed="assetSource.type === 'licensed'"
+          :class="[
+            'w-full text-left flex items-start gap-4 p-4 rounded-xl border transition-all',
+            assetSource.type === 'licensed' ? 'border-ditto-purple bg-ditto-purple/5' : 'border-gray-200 hover:border-gray-300'
+          ]"
+        >
+          <div class="flex-1 min-w-0">
             <p class="text-sm font-medium text-ditto-text">Licensed Content</p>
             <p class="text-xs text-ditto-subtext mt-0.5">Some or all of the video uses licensed material — stock footage or clips, overlays, templates, graphics, fonts, or footage shot by someone else — under a licence or rights agreement.</p>
+            <p class="text-xs text-ditto-subtext mt-2"><span class="font-medium text-ditto-text">By selecting this I confirm</span> I hold a valid licence for this content and can supply the agreement if asked.</p>
           </div>
-        </label>
+          <span :class="['w-5 h-5 rounded border-2 flex items-center justify-center transition-all flex-shrink-0 mt-0.5', assetSource.type === 'licensed' ? 'bg-ditto-purple border-ditto-purple' : 'border-gray-300 bg-white']">
+            <svg v-if="assetSource.type === 'licensed'" class="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20,6 9,17 4,12"/></svg>
+          </span>
+        </button>
         <!-- Licensed fields -->
         <div v-if="assetSource.type === 'licensed'" class="ml-7 pl-4 border-l-2 border-ditto-purple/20 space-y-4 pt-3 pb-2">
           <div>
@@ -233,87 +236,9 @@
               <input ref="licenceInputRef" type="file" accept=".pdf,.jpg,.jpeg,.png" class="hidden" @change="handleLicenceSelect" />
             </div>
           </div>
-          <label class="flex items-start gap-3 p-3 rounded-lg bg-ditto-light-grey/60 cursor-pointer">
-            <input type="checkbox" :checked="assetSource.licenseConfirmed" @change="updateSource('licenseConfirmed', !assetSource.licenseConfirmed)" class="hidden" />
-            <div :class="['w-5 h-5 rounded border-2 flex items-center justify-center transition-all flex-shrink-0 mt-0.5', assetSource.licenseConfirmed ? 'bg-ditto-purple border-ditto-purple' : 'border-gray-300 bg-white']">
-              <svg v-if="assetSource.licenseConfirmed" class="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20,6 9,17 4,12"/></svg>
-            </div>
-            <div>
-              <p class="text-sm text-ditto-text">I confirm I hold a valid license for this content</p>
-              <p class="text-xs text-ditto-subtext mt-0.5">Without the licence document, stores may reject a video that uses licensed material.</p>
-            </div>
-          </label>
+          <p class="text-xs text-ditto-subtext">Without the licence document, stores may reject a video that uses licensed material.</p>
         </div>
 
-        <!-- Previously Distributed -->
-        <label :class="[
-          'flex items-start gap-3 p-4 rounded-xl border cursor-pointer transition-all',
-          assetSource.type === 'previously-distributed' ? 'border-ditto-purple bg-ditto-purple/5' : 'border-gray-200 hover:border-gray-300'
-        ]">
-          <input type="radio" name="assetSource" value="previously-distributed" :checked="assetSource.type === 'previously-distributed'" @change="updateSource('type', 'previously-distributed')" class="mt-0.5 accent-ditto-purple" />
-          <div>
-            <p class="text-sm font-medium text-ditto-text">Previously Distributed</p>
-            <p class="text-xs text-ditto-subtext mt-0.5">This video was previously distributed through another service or platform.</p>
-          </div>
-        </label>
-        <!-- Previously Distributed fields -->
-        <div v-if="assetSource.type === 'previously-distributed'" class="ml-7 pl-4 border-l-2 border-ditto-purple/20 space-y-3 pt-3 pb-2">
-          <div>
-            <label class="block text-xs font-medium text-ditto-subtext mb-1">Previous Distributor</label>
-            <input
-              :value="assetSource.previousDistributor"
-              @input="updateSource('previousDistributor', ($event.target as HTMLInputElement).value)"
-              type="text"
-              placeholder="e.g. DistroKid, TuneCore, CD Baby"
-              class="w-full px-0 py-2 border-0 border-b border-gray-300 text-sm text-ditto-text bg-transparent focus:outline-none focus:border-ditto-purple transition-colors"
-            />
-          </div>
-          <label class="flex items-start gap-3 p-3 rounded-lg bg-warning/5 border border-warning/10 cursor-pointer">
-            <input type="checkbox" :checked="assetSource.takedownConfirmed" @change="updateSource('takedownConfirmed', !assetSource.takedownConfirmed)" class="hidden" />
-            <div :class="['w-5 h-5 rounded border-2 flex items-center justify-center transition-all flex-shrink-0 mt-0.5', assetSource.takedownConfirmed ? 'bg-ditto-purple border-ditto-purple' : 'border-gray-300 bg-white']">
-              <svg v-if="assetSource.takedownConfirmed" class="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20,6 9,17 4,12"/></svg>
-            </div>
-            <div>
-              <p class="text-sm text-ditto-text">I confirm the previous release has been taken down</p>
-              <p class="text-xs text-ditto-subtext mt-0.5">You must remove the video from your previous distributor before re-distributing through Ditto.</p>
-            </div>
-          </label>
-        </div>
-
-        <!-- Commissioned -->
-        <label :class="[
-          'flex items-start gap-3 p-4 rounded-xl border cursor-pointer transition-all',
-          assetSource.type === 'commissioned' ? 'border-ditto-purple bg-ditto-purple/5' : 'border-gray-200 hover:border-gray-300'
-        ]">
-          <input type="radio" name="assetSource" value="commissioned" :checked="assetSource.type === 'commissioned'" @change="updateSource('type', 'commissioned')" class="mt-0.5 accent-ditto-purple" />
-          <div>
-            <p class="text-sm font-medium text-ditto-text">Commissioned Content</p>
-            <p class="text-xs text-ditto-subtext mt-0.5">This video was commissioned from a third-party production company or freelancer.</p>
-          </div>
-        </label>
-        <!-- Commissioned fields -->
-        <div v-if="assetSource.type === 'commissioned'" class="ml-7 pl-4 border-l-2 border-ditto-purple/20 space-y-3 pt-3 pb-2">
-          <div>
-            <label class="block text-xs font-medium text-ditto-subtext mb-1">Who made the video?</label>
-            <input
-              :value="assetSource.commissionedBy"
-              @input="updateSource('commissionedBy', ($event.target as HTMLInputElement).value)"
-              type="text"
-              placeholder="Production company or creator name"
-              class="w-full px-0 py-2 border-0 border-b border-gray-300 text-sm text-ditto-text bg-transparent focus:outline-none focus:border-ditto-purple transition-colors"
-            />
-          </div>
-          <label class="flex items-start gap-3 p-3 rounded-lg bg-ditto-light-grey/60 cursor-pointer">
-            <input type="checkbox" :checked="assetSource.commissionAgreement" @change="updateSource('commissionAgreement', !assetSource.commissionAgreement)" class="hidden" />
-            <div :class="['w-5 h-5 rounded border-2 flex items-center justify-center transition-all flex-shrink-0 mt-0.5', assetSource.commissionAgreement ? 'bg-ditto-purple border-ditto-purple' : 'border-gray-300 bg-white']">
-              <svg v-if="assetSource.commissionAgreement" class="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20,6 9,17 4,12"/></svg>
-            </div>
-            <div>
-              <p class="text-sm text-ditto-text">I have an agreement giving me the right to distribute this video</p>
-              <p class="text-xs text-ditto-subtext mt-0.5">You may be asked to provide a copy of this agreement.</p>
-            </div>
-          </label>
-        </div>
       </div>
 
       <!-- Source not selected: only once the user has moved on without choosing -->
@@ -328,17 +253,13 @@ import { ref } from 'vue'
 type CheckKeys = 'video' | 'thumbnail' | 'artwork' | 'noLyrics'
 
 interface AssetSource {
-  type: '' | 'original' | 'licensed' | 'previously-distributed' | 'commissioned'
+  type: '' | 'original' | 'licensed'
   ownershipConfirmed: boolean
   licenseHolder: string
   licenseValidUntil: string
   licenseTerritory: 'global' | 'selected'
   licenseDocument: File | null
   licenseConfirmed: boolean
-  previousDistributor: string
-  takedownConfirmed: boolean
-  commissionedBy: string
-  commissionAgreement: boolean
 }
 
 const props = defineProps<{
@@ -402,6 +323,16 @@ const handleLicenceSelect = (e: Event) => {
 const handleLicenceDrop = (e: DragEvent) => {
   isDraggingLicence.value = false
   if (e.dataTransfer?.files?.[0]) acceptLicence(e.dataTransfer.files[0])
+}
+
+// Choosing a source is the confirmation — the flags are set with the type
+const selectSource = (type: 'original' | 'licensed') => {
+  emit('update:assetSource', {
+    ...props.assetSource,
+    type,
+    ownershipConfirmed: type === 'original',
+    licenseConfirmed: type === 'licensed',
+  })
 }
 
 const updateSource = (key: keyof AssetSource, value: any) => {
