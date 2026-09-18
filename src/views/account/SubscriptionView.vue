@@ -21,7 +21,7 @@
         <span v-if="plan.mostPopular" class="badge">★ Most popular</span>
         <span v-if="isCurrent(plan)" class="badge badge--current">Current plan</span>
 
-        <div class="tier-name">// // {{ plan.eyebrow }}</div>
+        <div class="tier-name">// {{ plan.eyebrow }}</div>
 
         <div class="tier-price">
           <div class="num"><span class="currency">£</span>{{ displayPrice(plan) }}</div>
