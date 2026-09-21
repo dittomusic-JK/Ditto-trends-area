@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2 class="font-satoshi font-black tracking-[-0.03em] text-xl lg:text-2xl text-ditto-text mb-5">Upload your thumbnail</h2>
+    <h2 class="font-satoshi font-black tracking-[-0.03em] text-xl lg:text-2xl text-ditto-text mb-5">Upload your thumbnail <span class="text-error text-base align-top">*</span></h2>
 
     <!-- Source Tabs -->
     <div class="flex gap-1 p-1 bg-ditto-light-grey rounded-xl mb-6 w-fit">

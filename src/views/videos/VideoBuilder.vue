@@ -199,7 +199,7 @@ const formData = reactive({
     licenseHolder: '',
     licenseValidUntil: '',
     licenseTerritory: 'global' as 'global' | 'selected',
-    licenseDocument: null as File | null,
+    licenseDocuments: [] as File[],
     licenseConfirmed: false,
   },
   metadata: {

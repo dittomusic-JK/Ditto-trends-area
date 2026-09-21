@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2 class="font-satoshi font-black tracking-[-0.03em] text-xl lg:text-2xl text-ditto-text mb-1">Upload your album artwork</h2>
+    <h2 class="font-satoshi font-black tracking-[-0.03em] text-xl lg:text-2xl text-ditto-text mb-1">Upload your album artwork <span class="text-error text-base align-top">*</span></h2>
     <p class="text-sm text-ditto-subtext mb-6">Stores show this square cover alongside your video — it's separate from the video thumbnail above.</p>
 
     <!-- Error state -->

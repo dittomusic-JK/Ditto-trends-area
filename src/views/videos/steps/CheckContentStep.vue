@@ -201,42 +201,49 @@
               </label>
             </div>
           </div>
-          <!-- Licence document (mirrors the music builder's licence upload) -->
+          <!-- Licence documents — a video can draw on several licences (stock clips, fonts,
+               footage), so any number of files can be added -->
           <div>
-            <label class="block text-xs font-medium text-ditto-subtext mb-1.5">Licence document</label>
-            <div v-if="assetSource.licenseDocument" class="flex items-center gap-3 p-3 rounded-xl bg-white border border-gray-200">
-              <div class="w-9 h-9 rounded-lg bg-ditto-purple/10 flex items-center justify-center flex-shrink-0">
-                <svg class="w-4 h-4 text-ditto-purple" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-              </div>
-              <div class="flex-1 min-w-0">
-                <p class="text-sm font-medium text-ditto-text truncate">{{ assetSource.licenseDocument.name }}</p>
-                <p class="text-xs text-ditto-subtext">{{ formatFileSize(assetSource.licenseDocument.size) }} · Licence added</p>
-              </div>
-              <button @click="updateSource('licenseDocument', null)" class="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors flex-shrink-0" aria-label="Remove licence document">
-                <svg class="w-4 h-4 text-ditto-subtext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-              </button>
-            </div>
+            <label class="block text-xs font-medium text-ditto-subtext mb-1.5">
+              Licence documents
+              <span v-if="assetSource.licenseDocuments.length" class="text-ditto-subtext/70 font-normal">· {{ assetSource.licenseDocuments.length }} added</span>
+            </label>
+            <ul v-if="assetSource.licenseDocuments.length" class="space-y-2 mb-2.5">
+              <li v-for="(doc, i) in assetSource.licenseDocuments" :key="doc.name + doc.size + i" class="flex items-center gap-3 p-3 rounded-xl bg-white border border-gray-200">
+                <div class="w-9 h-9 rounded-lg bg-ditto-purple/10 flex items-center justify-center flex-shrink-0">
+                  <svg class="w-4 h-4 text-ditto-purple" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-sm font-medium text-ditto-text truncate">{{ doc.name }}</p>
+                  <p class="text-xs text-ditto-subtext">{{ formatFileSize(doc.size) }} · Licence added</p>
+                </div>
+                <button @click="removeLicence(i)" class="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors flex-shrink-0" :aria-label="`Remove ${doc.name}`">
+                  <svg class="w-4 h-4 text-ditto-subtext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+              </li>
+            </ul>
+            <!-- The drop zone stays, shrinking once there's at least one file -->
             <div
-              v-else
               @dragover.prevent="isDraggingLicence = true"
               @dragleave="isDraggingLicence = false"
               @drop.prevent="handleLicenceDrop"
               :class="[
-                'rounded-xl border-2 border-dashed px-4 py-5 text-center transition-colors',
+                'rounded-xl border-2 border-dashed px-4 text-center transition-colors',
+                assetSource.licenseDocuments.length ? 'py-3' : 'py-5',
                 isDraggingLicence ? 'border-ditto-purple bg-ditto-purple/5' : 'border-gray-300 bg-white hover:border-ditto-purple/50'
               ]"
             >
-              <svg class="w-6 h-6 mx-auto mb-2 text-ditto-subtext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <svg v-if="!assetSource.licenseDocuments.length" class="w-6 h-6 mx-auto mb-2 text-ditto-subtext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
               <p class="text-sm text-ditto-text">
-                Drag and drop your licence agreement or
+                {{ assetSource.licenseDocuments.length ? 'Add another licence — drag and drop or' : 'Drag and drop your licence agreements or' }}
                 <button @click="licenceInputRef?.click()" class="text-ditto-purple font-medium hover:underline">browse your files</button>
               </p>
-              <p class="text-xs text-ditto-subtext mt-1">PDF, JPG or PNG &middot; max 10 MB</p>
+              <p v-if="!assetSource.licenseDocuments.length" class="text-xs text-ditto-subtext mt-1">PDF, JPG or PNG &middot; max 10 MB each &middot; add as many as you need</p>
               <p v-if="licenceError" class="text-xs text-error mt-2">{{ licenceError }}</p>
-              <input ref="licenceInputRef" type="file" accept=".pdf,.jpg,.jpeg,.png" class="hidden" @change="handleLicenceSelect" />
+              <input ref="licenceInputRef" type="file" multiple accept=".pdf,.jpg,.jpeg,.png" class="hidden" @change="handleLicenceSelect" />
             </div>
           </div>
-          <p class="text-xs text-ditto-subtext">Without the licence document, stores may reject a video that uses licensed material.</p>
+          <p class="text-xs text-ditto-subtext">Without the licence documents, stores may reject a video that uses licensed material.</p>
         </div>
 
       </div>
@@ -258,7 +265,7 @@ interface AssetSource {
   licenseHolder: string
   licenseValidUntil: string
   licenseTerritory: 'global' | 'selected'
-  licenseDocument: File | null
+  licenseDocuments: File[]
   licenseConfirmed: boolean
 }
 
@@ -309,20 +316,32 @@ const licenceError = ref<string | null>(null)
 
 const formatFileSize = (bytes: number) => bytes >= 1048576 ? (bytes / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(bytes / 1024)) + ' KB'
 
-const acceptLicence = (file: File) => {
+// Accept any number of files; bad ones are skipped with a message, good ones are appended
+const acceptLicences = (files: File[]) => {
   licenceError.value = null
-  if (!/\.(pdf|jpe?g|png)$/i.test(file.name)) { licenceError.value = 'Please upload a PDF, JPG or PNG.'; return }
-  if (file.size > MAX_LICENCE_SIZE) { licenceError.value = `That file is ${formatFileSize(file.size)} — the limit is 10 MB.`; return }
-  updateSource('licenseDocument', file)
+  const current = props.assetSource.licenseDocuments
+  const accepted: File[] = []
+  const problems: string[] = []
+  for (const file of files) {
+    if (!/\.(pdf|jpe?g|png)$/i.test(file.name)) { problems.push(`${file.name} isn't a PDF, JPG or PNG`); continue }
+    if (file.size > MAX_LICENCE_SIZE) { problems.push(`${file.name} is ${formatFileSize(file.size)} — the limit is 10 MB`); continue }
+    if ([...current, ...accepted].some(f => f.name === file.name && f.size === file.size)) { problems.push(`${file.name} is already added`); continue }
+    accepted.push(file)
+  }
+  if (accepted.length) updateSource('licenseDocuments', [...current, ...accepted])
+  if (problems.length) licenceError.value = problems.join('. ') + '.'
+}
+const removeLicence = (index: number) => {
+  updateSource('licenseDocuments', props.assetSource.licenseDocuments.filter((_, i) => i !== index))
 }
 const handleLicenceSelect = (e: Event) => {
   const input = e.target as HTMLInputElement
-  if (input.files?.[0]) acceptLicence(input.files[0])
+  if (input.files?.length) acceptLicences([...input.files])
   input.value = ''
 }
 const handleLicenceDrop = (e: DragEvent) => {
   isDraggingLicence.value = false
-  if (e.dataTransfer?.files?.[0]) acceptLicence(e.dataTransfer.files[0])
+  if (e.dataTransfer?.files?.length) acceptLicences([...e.dataTransfer.files])
 }
 
 // Choosing a source is the confirmation — the flags are set with the type

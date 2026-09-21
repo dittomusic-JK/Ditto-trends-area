@@ -380,7 +380,7 @@ interface FormData {
     licenseHolder: string
     licenseValidUntil: string
     licenseTerritory: 'global' | 'selected'
-    licenseDocument: File | null
+    licenseDocuments: File[]
     licenseConfirmed: boolean
   }
   metadata: {

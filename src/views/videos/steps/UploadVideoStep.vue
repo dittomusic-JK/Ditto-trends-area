@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2 class="font-satoshi font-black tracking-[-0.03em] text-xl lg:text-2xl text-ditto-text mb-5">Upload your video</h2>
+    <h2 class="font-satoshi font-black tracking-[-0.03em] text-xl lg:text-2xl text-ditto-text mb-5">Upload your video <span class="text-error text-base align-top">*</span></h2>
 
     <!-- Error state -->
     <div v-if="uploadError" class="border-2 border-dashed border-error/40 bg-error/5 rounded-2xl p-10 text-center">
