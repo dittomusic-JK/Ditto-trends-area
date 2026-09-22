@@ -24,10 +24,10 @@
       </button>
     </div>
 
-    <div v-if="ma.enabled" class="mt-6 grid lg:grid-cols-[minmax(0,1fr)_280px] gap-8 items-start">
+    <div v-if="ma.enabled" class="mt-6 grid lg:grid-cols-[minmax(0,1fr)_260px] gap-10 items-stretch">
       <!-- ── Left: Apple's two required deliverables, side by side ── -->
-      <div>
-        <div class="grid sm:grid-cols-2 gap-4 items-stretch">
+      <div class="flex flex-col">
+        <div class="grid sm:grid-cols-2 gap-4 items-stretch flex-1">
           <MotionArtworkSlot ref="squareSlot" :slot="ma.square" ratio="square" @checked="failedBySlot.square = $event" />
           <MotionArtworkSlot ref="portraitSlot" :slot="ma.portrait" ratio="portrait" @checked="failedBySlot.portrait = $event" />
         </div>
@@ -40,11 +40,11 @@
       </div>
 
       <!-- ── Right: the specification ── -->
-      <aside class="rounded-2xl border border-gray-200 p-5">
-        <p class="text-xs font-semibold text-ditto-subtext uppercase tracking-wide mb-3">Apple's specification</p>
-        <ul class="space-y-2">
-          <li v-for="spec in specs" :key="spec.label" class="flex items-start gap-2 text-xs">
-            <svg class="w-3.5 h-3.5 flex-shrink-0 mt-px" :class="specState(spec.key) === 'fail' ? 'text-error' : specState(spec.key) === 'pass' ? 'text-[#00b368]' : 'text-ditto-subtext/60'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <aside class="lg:border-l lg:border-gray-200 lg:pl-8 pt-1">
+        <p class="text-xs font-semibold text-ditto-subtext uppercase tracking-wide mb-4">Apple's specification</p>
+        <ul class="space-y-2.5">
+          <li v-for="spec in specs" :key="spec.label" class="flex items-start gap-2.5 text-xs leading-snug">
+            <svg class="w-3.5 h-3.5 flex-shrink-0 mt-px" :class="specState(spec.key) === 'fail' ? 'text-error' : specState(spec.key) === 'pass' ? 'text-[#00b368]' : 'text-ditto-subtext/50'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <template v-if="specState(spec.key) === 'fail'"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></template>
               <polyline v-else points="20 6 9 17 4 12"/>
             </svg>

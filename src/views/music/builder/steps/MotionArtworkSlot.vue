@@ -1,6 +1,6 @@
 <template>
   <!-- One of Apple's two required motion deliverables -->
-  <div class="rounded-2xl border border-gray-200 p-4 flex flex-col">
+  <div class="rounded-2xl border border-gray-200 p-4 flex flex-col h-full">
     <div class="flex items-center gap-3 mb-3">
       <!-- Shape glyph (filled, so it never reads as a checkbox) -->
       <span class="flex-shrink-0 w-8 h-8 rounded-lg bg-ditto-light-grey flex items-center justify-center" aria-hidden="true">
@@ -76,8 +76,9 @@
       @dragover.prevent="isDragging = true"
       @dragleave="isDragging = false"
       @drop.prevent="handleDrop"
-      :class="['border-2 border-dashed rounded-xl px-4 py-7 text-center transition-all flex-1 flex flex-col items-center justify-center', isDragging ? 'border-ditto-purple bg-ditto-purple/5' : 'border-gray-300 hover:border-ditto-purple/50']"
+      :class="['border-2 border-dashed rounded-xl px-4 py-10 text-center transition-all flex-1 flex flex-col items-center justify-center min-h-[220px]', isDragging ? 'border-ditto-purple bg-ditto-purple/5' : 'border-gray-300 hover:border-ditto-purple/50']"
     >
+      <svg class="w-8 h-8 mb-3 text-ditto-subtext/60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
       <p class="text-sm text-ditto-text">
         Drop your {{ meta.title.toLowerCase() }} file or
         <button @click="triggerFileInput" class="text-ditto-purple font-medium hover:underline">browse</button>
