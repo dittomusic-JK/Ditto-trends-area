@@ -9,7 +9,7 @@
           <span class="inline-flex items-center text-[10px] font-bold uppercase tracking-[1.4px] text-ditto-subtext bg-ditto-light-grey rounded-full px-2 py-0.5 font-sans">Optional</span>
         </h2>
         <p class="text-sm text-ditto-subtext mt-2 max-w-xl leading-relaxed">
-          A short looping video version of your cover, in two shapes: square for Mac, iPad and TVs, and 3:4 for phones. Apple needs both. It's only distributed to Apple Music — every other store keeps the still artwork.
+          A short looping version of your cover. Apple needs a square and a portrait file, and only Apple Music uses them — other stores keep the still artwork.
           <a href="https://help.apple.com/itc/albummotionguide/en.lproj/static.html" target="_blank" rel="noopener" class="text-ditto-purple hover:underline">Apple's motion artwork guide</a>
         </p>
       </div>
@@ -34,9 +34,9 @@
         <!-- Apple needs both versions: one on its own can't be delivered -->
         <p v-if="missingOther" class="mt-4 text-xs text-[#92400e] bg-warning/15 rounded-lg px-3 py-2 inline-flex items-start gap-2">
           <svg class="w-3.5 h-3.5 text-warning flex-shrink-0 mt-px" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
-          <span>Apple needs both versions. Add the <strong>{{ missingOther }}</strong> file to continue, or remove the one you've added.</span>
+          <span>Add the <strong>{{ missingOther }}</strong> file too, or remove this one — Apple needs both.</span>
         </p>
-        <p v-else-if="hasInvalid" class="mt-4 text-xs text-ditto-subtext">Your release can't continue with invalid motion artwork — replace or remove it to carry on.</p>
+        <p v-else-if="hasInvalid" class="mt-4 text-xs text-ditto-subtext">Replace or remove the invalid file to continue.</p>
       </div>
 
       <!-- ── Right: the specification ── -->
@@ -68,7 +68,7 @@ const ma = computed(() => props.form.motionArtwork)
 const specs: { key: MotionSpecKey; label: string; value: string }[] = [
   { key: 'format', label: 'File type', value: '.mov or .mp4' },
   { key: 'codec', label: 'Codec', value: 'Apple ProRes 422 / 4444, or H.264' },
-  { key: 'resolution', label: 'Resolution', value: 'Both: 3840×3840 (1:1) and 2048×2732 (3:4)' },
+  { key: 'resolution', label: 'Resolution', value: 'One 1:1 and one 3:4, sizes as shown' },
   { key: 'fps', label: 'Frame rate', value: '23.976, 24, 25, 29.97 or 30 fps' },
   { key: 'duration', label: 'Length', value: '8 to 35 seconds' },
   { key: 'audio', label: 'Audio', value: 'No audio track' },
@@ -90,8 +90,8 @@ const specState = (key: MotionSpecKey): 'idle' | 'pass' | 'fail' => {
 // Exactly one valid file and nothing in the other slot → name the missing one
 const missingOther = computed(() => {
   const sq = ma.value.square.status, po = ma.value.portrait.status
-  if (sq === 'valid' && po === '') return '3:4 (iPhone, Android)'
-  if (po === 'valid' && sq === '') return '1:1 (Mac, iPad, smart TVs)'
+  if (sq === 'valid' && po === '') return 'portrait'
+  if (po === 'valid' && sq === '') return 'square'
   return ''
 })
 

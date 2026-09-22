@@ -7,14 +7,14 @@
         <span class="rounded-[3px] bg-ditto-purple opacity-70 block" :style="ratio === 'portrait' ? 'width:12px;height:16px' : 'width:16px;height:16px'"></span>
       </span>
       <div class="min-w-0">
-        <p class="text-sm font-semibold text-ditto-text leading-tight">{{ meta.title }} <span class="font-normal text-ditto-subtext">· {{ meta.ratioLabel }}</span></p>
-        <p class="text-xs text-ditto-subtext">{{ meta.width }}×{{ meta.height }} · {{ meta.devices }}</p>
+        <p class="text-sm font-semibold text-ditto-text leading-tight">{{ meta.title }} <span class="font-normal text-ditto-subtext">· {{ meta.width }}×{{ meta.height }}</span></p>
+        <p class="text-xs text-ditto-subtext">{{ meta.devices }}</p>
       </div>
     </div>
 
     <!-- Invalid -->
     <div v-if="slot.status === 'invalid'" class="border-2 border-dashed border-error/40 bg-error/5 rounded-xl p-4 flex-1">
-      <p class="text-sm font-semibold text-error">Doesn't meet Apple's specification</p>
+      <p class="text-sm font-semibold text-error">Doesn't meet the spec</p>
       <p class="text-xs text-ditto-subtext mt-0.5 truncate">{{ slot.fileName }} · {{ slot.fileSize }}</p>
       <ul class="mt-2.5 space-y-1.5">
         <li v-for="err in slot.errors" :key="err" class="flex items-start gap-2 text-xs text-ditto-text">
@@ -51,7 +51,7 @@
           autoplay muted loop playsinline
           @error="previewFailed = true"
         ></video>
-        <div v-else class="w-full rounded-lg bg-ditto-light-grey flex items-center justify-center" :class="ratio === 'portrait' ? 'aspect-[3/4]' : 'aspect-square'" title="ProRes can't play in the browser — the preview appears after delivery.">
+        <div v-else class="w-full rounded-lg bg-ditto-light-grey flex items-center justify-center" :class="ratio === 'portrait' ? 'aspect-[3/4]' : 'aspect-square'" title="ProRes can't preview in the browser.">
           <svg class="w-5 h-5 text-ditto-subtext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><polygon points="10,8 16,12 10,16"/></svg>
         </div>
       </div>
@@ -60,7 +60,7 @@
         <p class="text-xs text-ditto-subtext">{{ slot.fileSize }}<template v-if="slot.summary"> · {{ slot.summary }}</template></p>
         <p class="mt-2 inline-flex items-center gap-1.5 text-[11px] font-medium text-[#006633] bg-[#00e785]/10 px-2.5 py-1 rounded-full">
           <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          Meets Apple's specification
+          Meets the spec
         </p>
         <p v-if="slot.unverified" class="text-[11px] text-ditto-subtext mt-1.5 leading-relaxed">{{ slot.unverified }}</p>
         <div class="flex items-center gap-3 mt-2">
@@ -79,10 +79,10 @@
       :class="['border-2 border-dashed rounded-xl px-4 py-7 text-center transition-all flex-1 flex flex-col items-center justify-center', isDragging ? 'border-ditto-purple bg-ditto-purple/5' : 'border-gray-300 hover:border-ditto-purple/50']"
     >
       <p class="text-sm text-ditto-text">
-        Drop the {{ meta.ratioLabel }} file or
+        Drop your {{ meta.title.toLowerCase() }} file or
         <button @click="triggerFileInput" class="text-ditto-purple font-medium hover:underline">browse</button>
       </p>
-      <p class="text-xs text-ditto-subtext mt-1">.mov or .mp4 · {{ meta.width }}×{{ meta.height }}</p>
+      <p class="text-xs text-ditto-subtext mt-1">.mov or .mp4</p>
     </div>
 
     <input ref="fileInputRef" type="file" accept=".mov,.mp4,video/quicktime,video/mp4" class="hidden" @change="handleFileSelect" />
@@ -148,38 +148,38 @@ const handleFile = async (file: File) => {
   const errors: string[] = []
   const failed = new Set<MotionSpecKey>()
   const ext = (file.name.split('.').pop() || '').toLowerCase()
-  if (!['mov', 'mp4'].includes(ext)) { errors.push(`File must be a .mov or .mp4 — this is ${ext ? '.' + ext : 'an unknown type'}.`); failed.add('format') }
+  if (!['mov', 'mp4'].includes(ext)) { errors.push(`File type ${ext ? '.' + ext : 'unknown'} — needs .mov or .mp4.`); failed.add('format') }
 
   const probe = errors.length ? null : await probeMotionArtwork(file).catch(() => null)
-  if (!errors.length && !probe) { errors.push("We couldn't read this file as a QuickTime or MP4 container."); failed.add('format') }
+  if (!errors.length && !probe) { errors.push("Not a readable .mov or .mp4 file."); failed.add('format') }
 
   if (probe) {
     if (!probe.codecTag || !ALLOWED_CODEC_TAGS.has(probe.codecTag)) {
-      errors.push(`Codec is ${probe.codecLabel} — it must be Apple ProRes 422 or 4444, or H.264.`); failed.add('codec')
+      errors.push(`Codec ${probe.codecLabel} — needs ProRes 422/4444 or H.264.`); failed.add('codec')
     }
     if (probe.width !== meta.value.width || probe.height !== meta.value.height) {
       const isOther = probe.width === other.value.width && probe.height === other.value.height
       errors.push(isOther
-        ? `This is the ${other.value.ratioLabel} version (${probe.width}×${probe.height}) — add it to the ${other.value.title} slot. This one needs ${meta.value.width}×${meta.value.height}.`
-        : `Resolution is ${probe.width}×${probe.height} — the ${meta.value.ratioLabel} version must be ${meta.value.width}×${meta.value.height}.`)
+        ? `This is the ${other.value.title.toLowerCase()} file — move it to the ${other.value.title} slot.`
+        : `Resolution ${probe.width}×${probe.height} — needs ${meta.value.width}×${meta.value.height}.`)
       failed.add('resolution')
     }
     if (probe.fps !== null && !ALLOWED_FPS.some(f => near(probe.fps as number, f))) {
-      errors.push(`Frame rate is ${+probe.fps.toFixed(3)} fps — it must be 23.976, 24, 25, 29.97 or 30 fps.`); failed.add('fps')
+      errors.push(`Frame rate ${+probe.fps.toFixed(3)} fps — not one of Apple's rates.`); failed.add('fps')
     }
     if (probe.duration !== null && (probe.duration < 8 || probe.duration > 35)) {
-      errors.push(`Length is ${probe.duration.toFixed(1)}s — it must be between 8 and 35 seconds.`); failed.add('duration')
+      errors.push(`Length ${probe.duration.toFixed(1)}s — needs 8 to 35 seconds.`); failed.add('duration')
     }
-    if (probe.hasAudio) { errors.push('The file has an audio track — deliver motion artwork without audio.'); failed.add('audio') }
+    if (probe.hasAudio) { errors.push('Has an audio track — remove it.'); failed.add('audio') }
     if (probe.colour && !(probe.colour.primaries === 1 && [1, 13].includes(probe.colour.transfer))) {
-      errors.push('Colour profile isn\'t Rec. 709 or sRGB.'); failed.add('colour')
+      errors.push('Colour profile — needs Rec. 709 or sRGB.'); failed.add('colour')
     }
     if (probe.pixelAspect && probe.pixelAspect.h !== probe.pixelAspect.v) {
-      errors.push(`Pixel aspect ratio is ${probe.pixelAspect.h}:${probe.pixelAspect.v} — pixels must be square (1:1).`); failed.add('pixels')
+      errors.push(`Pixel aspect ${probe.pixelAspect.h}:${probe.pixelAspect.v} — needs square pixels.`); failed.add('pixels')
     }
     const isH264 = probe.codecTag === 'avc1' || probe.codecTag === 'avc3'
     if (isH264 && probe.bitrateMbps !== null && (probe.bitrateMbps < 45 || probe.bitrateMbps > 100)) {
-      errors.push(`Bitrate is ${Math.round(probe.bitrateMbps)} Mbps — H.264 must be between 45 and 100 Mbps.`); failed.add('bitrate')
+      errors.push(`Bitrate ${Math.round(probe.bitrateMbps)} Mbps — needs 45 to 100 Mbps.`); failed.add('bitrate')
     }
 
     m.summary = [
