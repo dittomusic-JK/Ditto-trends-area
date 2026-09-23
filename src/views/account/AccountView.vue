@@ -206,7 +206,7 @@
     </div>
 
     <!-- ══════════ SETTINGS ══════════ -->
-    <div v-else class="grid grid-cols-1 lg:grid-cols-2 gap-7 items-start">
+    <div v-else-if="activeTab === 'settings'" class="grid grid-cols-1 lg:grid-cols-2 gap-7 items-start">
       <!-- Profile -->
       <div class="bg-white rounded-2xl border border-gray-200 p-7 lg:p-8">
         <h3 class="font-satoshi font-black tracking-[-0.03em] text-xl text-ditto-text mb-5">Profile</h3>
@@ -298,6 +298,9 @@
       </div>
     </div>
 
+    <!-- ══════════ ACCOUNT PERMISSIONS (DC-123) ══════════ -->
+    <AccountPermissionsTab v-if="activeTab === 'permissions'" @note="note" />
+
     <Toast :visible="toast.visible" :message="toast.message" type="success" @close="toast.visible = false" />
   </div>
 </template>
@@ -306,6 +309,7 @@
 import { computed, defineComponent, h, reactive, ref } from 'vue'
 import LiquidTabs from '../../components/common/LiquidTabs.vue'
 import Toast from '../../components/ui/Toast.vue'
+import AccountPermissionsTab from './AccountPermissionsTab.vue'
 import {
   accountProfile,
   accountSecurity,
@@ -318,15 +322,16 @@ const emit = defineEmits<{
   (e: 'navigate', section: string): void
 }>()
 
-type AccountTab = 'overview' | 'security' | 'settings'
+type AccountTab = 'overview' | 'security' | 'settings' | 'permissions'
 const tabs = [
   { id: 'overview', label: 'Overview' },
   { id: 'security', label: 'Security' },
   { id: 'settings', label: 'Settings' },
+  { id: 'permissions', label: 'Account Permissions' },
 ]
 const urlParams = new URLSearchParams(window.location.search)
 const paramTab = urlParams.get('tab') as AccountTab | null
-const activeTab = ref<AccountTab>(paramTab && ['overview', 'security', 'settings'].includes(paramTab) ? paramTab : 'overview')
+const activeTab = ref<AccountTab>(paramTab && ['overview', 'security', 'settings', 'permissions'].includes(paramTab) ? paramTab : 'overview')
 
 const profile = reactive({ ...accountProfile })
 const security = reactive({ ...accountSecurity, sessions: [...accountSecurity.sessions] })

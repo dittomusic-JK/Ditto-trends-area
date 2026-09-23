@@ -287,10 +287,27 @@
               <div class="w-10 h-10 rounded-full bg-ditto-purple overflow-hidden flex items-center justify-center flex-shrink-0">
                 <img src="/img/avatar.jpg" alt="User" class="w-full h-full object-cover" />
               </div>
-              <div>
-                <p class="text-sm font-semibold text-ditto-text">Goldenboy Entertainment</p>
-                <span class="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-ditto-purple/15 text-ditto-purple">DITTO PLUS - RLS</span>
+              <div class="min-w-0">
+                <p class="text-sm font-semibold text-ditto-text truncate">{{ currentOrganisation.name }}</p>
+                <span class="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-ditto-purple/15 text-ditto-purple">{{ currentOrganisation.plan }}</span>
               </div>
+            </div>
+            <!-- One login, several organisations: switch here (DC-123) -->
+            <div v-if="organisations.length > 1" class="mt-3">
+              <p class="text-[10px] font-semibold uppercase tracking-wide text-ditto-subtext mb-1.5">Switch organisation</p>
+              <button
+                v-for="org in organisations"
+                :key="org.id"
+                @click.stop="pickOrganisation(org)"
+                :class="['w-full flex items-center gap-2.5 px-2 py-1.5 rounded-xl text-left transition-colors', org.id === currentOrganisation.id ? 'bg-ditto-purple/[0.06]' : 'hover:bg-ditto-light-grey']"
+              >
+                <span :class="['w-7 h-7 rounded-lg flex items-center justify-center text-[10px] font-bold flex-shrink-0', org.id === currentOrganisation.id ? 'bg-ditto-purple text-white' : 'bg-ditto-light-grey text-ditto-text']">{{ org.name.split(' ').map(w => w[0]).slice(0, 2).join('') }}</span>
+                <span class="min-w-0 flex-1">
+                  <span :class="['block text-[13px] font-semibold truncate', org.id === currentOrganisation.id ? 'text-ditto-purple' : 'text-ditto-text']">{{ org.name }}</span>
+                  <span class="block text-[11px] text-ditto-subtext">{{ roleLabel(org.role) }}</span>
+                </span>
+                <svg v-if="org.id === currentOrganisation.id" class="w-3.5 h-3.5 text-ditto-purple flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </button>
             </div>
           </div>
           <!-- Menu Items -->
@@ -361,6 +378,8 @@ import type { AppSection } from '../../types'
 import { useBasketStore } from '../../composables/useBasketStore'
 import { useTheme } from '../../composables/useTheme'
 import { useDemoUser } from '../../composables/useDemoUser'
+import { organisations, type Organisation } from '../../data/accountPermissionsMockData'
+import { currentOrganisation, switchOrganisation } from '../../data/currentOrganisation'
 
 const props = defineProps<{
   activeSection?: AppSection
@@ -375,6 +394,15 @@ const emit = defineEmits<{
   (e: 'open-live-performances'): void
   (e: 'open-royalties', section: string): void
 }>()
+
+// Organisation switcher: the same login can hold different roles in different accounts
+const roleLabel = (role: Organisation['role']) => ({ owner: 'Owner', admin: 'Admin', manager: 'Manager', artist: 'Artist', reporter: 'Reporter' }[role])
+const pickOrganisation = (org: Organisation) => {
+  if (org.id === currentOrganisation.id) return
+  switchOrganisation(org)
+  showAvatarMenu.value = false
+  emit('navigate', 'home')
+}
 
 const { isDark, toggleTheme } = useTheme()
 const { isNewUser, toggleNewUser } = useDemoUser()

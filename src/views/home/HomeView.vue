@@ -5,7 +5,7 @@
     <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-12">
       <div>
         <h1 class="font-satoshi font-black text-xl sm:text-3xl lg:text-[42px] tracking-[-0.03em] text-ditto-text">
-          {{ isNewUser ? 'Welcome, Goldenboy!' : 'Hey, Goldenboy!' }} <span>👋</span>
+          {{ isNewUser ? `Welcome, ${orgShortName}!` : `Hey, ${orgShortName}!` }} <span>👋</span>
         </h1>
         <p class="text-sm text-ditto-subtext mt-1.5">{{ isNewUser ? "Let's get your first release out into the world." : "Here's what's happening with your music." }}</p>
       </div>
@@ -244,6 +244,7 @@
 </template>
 
 <script setup lang="ts">
+import { currentOrganisation } from '../../data/currentOrganisation'
 import { computed, ref, inject } from 'vue'
 
 // The side-nav search overlay (GlobalSearch) needs clearance; top nav doesn't
@@ -305,6 +306,9 @@ const statusPillClass = (status: string) => {
   if (status === 'Takedown') return 'bg-[#ee404c]/90 text-white'
   return 'bg-white/80 text-ditto-text'
 }
+
+// Greeting follows the organisation you're switched into
+const orgShortName = computed(() => currentOrganisation.name.split(' ')[0])
 </script>
 
 <style scoped>
