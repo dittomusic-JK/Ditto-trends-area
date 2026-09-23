@@ -292,22 +292,32 @@
                 <span class="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-ditto-purple/15 text-ditto-purple">{{ currentOrganisation.plan }}</span>
               </div>
             </div>
-            <!-- One login, several organisations: switch here (DC-123) -->
-            <div v-if="organisations.length > 1" class="mt-3">
-              <p class="text-[10px] font-semibold uppercase tracking-wide text-ditto-subtext mb-1.5">Switch organisation</p>
+            <!-- One login, several organisations (DC-123): a single line, expands on click -->
+            <div v-if="organisations.length > 1" class="mt-2.5">
               <button
-                v-for="org in organisations"
-                :key="org.id"
-                @click.stop="pickOrganisation(org)"
-                :class="['w-full flex items-center gap-2.5 px-2 py-1.5 rounded-xl text-left transition-colors', org.id === currentOrganisation.id ? 'bg-ditto-purple/[0.06]' : 'hover:bg-ditto-light-grey']"
+                @click.stop="orgSwitcherOpen = !orgSwitcherOpen"
+                class="w-full flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg text-left hover:bg-ditto-light-grey transition-colors"
               >
-                <span :class="['w-7 h-7 rounded-lg flex items-center justify-center text-[10px] font-bold flex-shrink-0', org.id === currentOrganisation.id ? 'bg-ditto-purple text-white' : 'bg-ditto-light-grey text-ditto-text']">{{ org.name.split(' ').map(w => w[0]).slice(0, 2).join('') }}</span>
-                <span class="min-w-0 flex-1">
-                  <span :class="['block text-[13px] font-semibold truncate', org.id === currentOrganisation.id ? 'text-ditto-purple' : 'text-ditto-text']">{{ org.name }}</span>
-                  <span class="block text-[11px] text-ditto-subtext">{{ roleLabel(org.role) }}</span>
+                <span class="text-xs text-ditto-subtext truncate">Viewing as <span class="font-semibold text-ditto-text">{{ roleLabel(currentOrganisation.role) }}</span></span>
+                <span class="inline-flex items-center gap-1 text-xs font-medium text-ditto-purple flex-shrink-0">
+                  Switch
+                  <svg :class="['w-3 h-3 transition-transform', orgSwitcherOpen ? 'rotate-180' : '']" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
                 </span>
-                <svg v-if="org.id === currentOrganisation.id" class="w-3.5 h-3.5 text-ditto-purple flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
               </button>
+              <div v-if="orgSwitcherOpen" class="mt-1 rounded-xl border border-gray-200 p-1">
+                <button
+                  v-for="org in organisations"
+                  :key="org.id"
+                  @click.stop="pickOrganisation(org)"
+                  :class="['w-full flex items-center gap-2.5 px-2 py-1.5 rounded-lg text-left transition-colors', org.id === currentOrganisation.id ? 'bg-ditto-purple/[0.06]' : 'hover:bg-ditto-light-grey']"
+                >
+                  <span :class="['w-6 h-6 rounded-md flex items-center justify-center text-[9px] font-bold flex-shrink-0', org.id === currentOrganisation.id ? 'bg-ditto-purple text-white' : 'bg-ditto-light-grey text-ditto-text']">{{ org.name.split(' ').map(w => w[0]).slice(0, 2).join('') }}</span>
+                  <span class="min-w-0 flex-1">
+                    <span :class="['block text-[13px] truncate', org.id === currentOrganisation.id ? 'text-ditto-purple font-semibold' : 'text-ditto-text']">{{ org.name }}</span>
+                  </span>
+                  <span class="text-[11px] text-ditto-subtext flex-shrink-0">{{ roleLabel(org.role) }}</span>
+                </button>
+              </div>
             </div>
           </div>
           <!-- Menu Items -->
@@ -397,7 +407,9 @@ const emit = defineEmits<{
 
 // Organisation switcher: the same login can hold different roles in different accounts
 const roleLabel = (role: Organisation['role']) => ({ owner: 'Owner', admin: 'Admin', manager: 'Manager', artist: 'Artist', reporter: 'Reporter' }[role])
+const orgSwitcherOpen = ref(false)
 const pickOrganisation = (org: Organisation) => {
+  orgSwitcherOpen.value = false
   if (org.id === currentOrganisation.id) return
   switchOrganisation(org)
   showAvatarMenu.value = false
