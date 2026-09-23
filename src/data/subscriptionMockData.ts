@@ -2,7 +2,13 @@
 // dashboard.dittomusic.com/subscriptions (current plan locked, downgrades
 // blocked while the account has more Plan Artists than the target allows).
 
-export type PlanId = 'starter' | 'pro' | 'label'
+export type PlanId = 'starter' | 'pro' | 'ultimate' | 'label'
+
+/** Video distribution bolt-on: any plan, unlimited videos to the five video stores */
+export const VIDEO_ADDON_PRICE = 99
+/** Priority Distro list price and the Ultimate member rate */
+export const PRIORITY_PRICE = 40
+export const PRIORITY_MEMBER_PRICE = 25
 
 export interface LabelTier {
   artists: number
@@ -29,6 +35,9 @@ export interface Plan {
   featuresIntro: string
   features: string[]
   mostPopular?: boolean
+  bestValue?: boolean
+  /** Ultimate: video is part of the plan, no bolt-on needed */
+  includesVideo?: boolean
 }
 
 export const plans: Plan[] = [
@@ -75,6 +84,25 @@ export const plans: Plan[] = [
     mostPopular: true,
   },
   {
+    id: 'ultimate',
+    name: 'Ultimate',
+    eyebrow: 'Ultimate',
+    price: 179,
+    artists: 2,
+    blurb: 'Everything Ditto does, one price. Music, video and every release extra.',
+    featuresIntro: 'Everything in Pro, plus:',
+    features: [
+      'Unlimited video distribution',
+      'Spotify, Apple Music, VEVO, TIDAL & Amazon',
+      'Chart registration on every release',
+      'Pre-release downloads on every release',
+      `Priority Distro at member rate (£${PRIORITY_MEMBER_PRICE})`,
+      'Ultimate Perks',
+    ],
+    bestValue: true,
+    includesVideo: true,
+  },
+  {
     id: 'label',
     name: 'Labels',
     eyebrow: 'Labels',
@@ -93,19 +121,26 @@ export interface Subscription {
   labelArtists?: number
   /** Plan Artists currently on the account — downgrades below this are blocked */
   planArtists: number
+  /** Video distribution bolt-on (£99/yr) on top of the plan */
+  videoAddon: boolean
   renewsOn: string
 }
 
-export type SubscriptionDemoState = 'starter' | 'pro' | 'label5'
+/** Can this account distribute video? Ultimate includes it; others need the bolt-on. */
+export const hasVideoDistribution = (sub: Subscription) => sub.planId === 'ultimate' || sub.videoAddon
+
+export type SubscriptionDemoState = 'starter' | 'pro' | 'proVideo' | 'ultimate' | 'label5'
 
 export const subscriptionDemoStates: Record<SubscriptionDemoState, Subscription> = {
-  starter: { planId: 'starter', planArtists: 1, renewsOn: '14 Jun 2027' },
-  pro: { planId: 'pro', planArtists: 2, renewsOn: '14 Jun 2027' },
-  label5: { planId: 'label', labelArtists: 5, planArtists: 4, renewsOn: '14 Jun 2027' },
+  starter: { planId: 'starter', planArtists: 1, videoAddon: false, renewsOn: '14 Jun 2027' },
+  pro: { planId: 'pro', planArtists: 2, videoAddon: false, renewsOn: '14 Jun 2027' },
+  proVideo: { planId: 'pro', planArtists: 2, videoAddon: true, renewsOn: '14 Jun 2027' },
+  ultimate: { planId: 'ultimate', planArtists: 2, videoAddon: false, renewsOn: '14 Jun 2027' },
+  label5: { planId: 'label', labelArtists: 5, planArtists: 4, videoAddon: false, renewsOn: '14 Jun 2027' },
 }
 
 /** Ordering for upgrade/downgrade decisions */
 export const planRank = (planId: PlanId, labelArtists = 0) =>
-  planId === 'starter' ? 1 : planId === 'pro' ? 2 : 10 + labelArtists
+  planId === 'starter' ? 1 : planId === 'pro' ? 2 : planId === 'ultimate' ? 3 : 10 + labelArtists
 
 export const perks = ['Try before you pay', 'Cancel anytime', 'Keep 100% royalties', 'Unlimited uploads']

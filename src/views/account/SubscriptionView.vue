@@ -16,16 +16,17 @@
         v-for="plan in plans"
         :key="plan.id"
         class="tier"
-        :class="{ pro: plan.id === 'pro', labels: plan.id === 'label', current: isCurrent(plan) }"
+        :class="{ pro: plan.id === 'pro', ultimate: plan.id === 'ultimate', labels: plan.id === 'label', current: isCurrent(plan) }"
       >
         <span v-if="plan.mostPopular" class="badge">★ Most popular</span>
+        <span v-else-if="plan.bestValue" class="badge badge--value">Best value</span>
         <span v-if="isCurrent(plan)" class="badge badge--current">Current plan</span>
 
         <div class="tier-name">// {{ plan.eyebrow }}</div>
 
         <div class="tier-price">
           <div class="num"><span class="currency">£</span>{{ displayPrice(plan) }}</div>
-          <div class="per">/year</div>
+          <div class="per">/year<span v-if="videoOn(plan)" class="per-note">incl. video</span></div>
         </div>
         <p v-if="plan.id === 'label'" class="labels-count">For up to <strong>{{ labelTier.artists }}</strong> artists</p>
         <p class="tier-tag">{{ plan.blurb }}</p>
@@ -45,6 +46,20 @@
             <span v-for="(tier, i) in labelTiers" :key="tier.artists" :class="{ active: i === labelTierIndex }">{{ tier.artists }}</span>
           </div>
         </div>
+
+        <!-- Video distribution: a bolt-on toggle on every plan, built into Ultimate -->
+        <div v-if="plan.includesVideo" class="video-row video-row--included">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          <span>Video distribution included</span>
+        </div>
+        <label v-else class="video-row" :class="{ 'video-row--on': videoToggle[plan.id] }">
+          <span class="video-row-text">
+            <span class="video-row-title">Add video distribution</span>
+            <span class="video-row-price">+£{{ VIDEO_ADDON_PRICE }}/year · unlimited videos</span>
+          </span>
+          <input type="checkbox" class="sr-only" :checked="videoToggle[plan.id]" @change="videoToggle[plan.id] = !videoToggle[plan.id]" />
+          <span class="switch" :class="{ 'switch--on': videoToggle[plan.id] }" aria-hidden="true"><span class="switch-knob"></span></span>
+        </label>
 
         <!-- CTA: dashboard rules decide label + state -->
         <button
@@ -71,7 +86,7 @@
     </div>
 
     <p class="pricing-note">
-      You're on <strong>{{ currentPlanName }}</strong> — renews {{ subscription.renewsOn }}.
+      You're on <strong>{{ currentPlanName }}</strong><template v-if="subscription.videoAddon"> with video distribution</template> — renews {{ subscription.renewsOn }}.
       Upgrades and downgrades are prorated, and renewals can be paid from your royalty balance in Account Settings.
     </p>
 
@@ -100,9 +115,12 @@ import {
   perks,
   planRank,
   subscriptionDemoStates,
+  VIDEO_ADDON_PRICE,
   type Plan,
+  type PlanId,
   type SubscriptionDemoState,
 } from '../../data/subscriptionMockData'
+import { accountPlan, setAccountPlan } from '../../data/accountPlan'
 
 // Demo state: ?plan=starter|pro|label5, defaulting to the label account
 const urlParams = new URLSearchParams(window.location.search)
@@ -111,9 +129,21 @@ const demoState = ref<SubscriptionDemoState>(paramState && paramState in subscri
 const demoStateOptions: { id: SubscriptionDemoState; label: string }[] = [
   { id: 'starter', label: 'On Starter' },
   { id: 'pro', label: 'On Pro' },
+  { id: 'proVideo', label: 'Pro + Video' },
+  { id: 'ultimate', label: 'On Ultimate' },
   { id: 'label5', label: 'On Label 5' },
 ]
-const subscription = computed(() => subscriptionDemoStates[demoState.value])
+// The demo switcher writes the shared account plan; the page reads from it (so an
+// added bolt-on shows up on the Videos page too)
+watch(demoState, (state) => setAccountPlan({ ...subscriptionDemoStates[state] }), { immediate: true })
+const subscription = computed(() => accountPlan)
+
+// Video toggle per card: starts from what the account already has
+const videoToggle = reactive<Record<PlanId, boolean>>({ starter: false, pro: false, ultimate: true, label: false })
+watch(subscription, (sub) => {
+  for (const id of Object.keys(videoToggle) as PlanId[]) videoToggle[id] = id === 'ultimate' ? true : (id === sub.planId && sub.videoAddon)
+}, { immediate: true, deep: true })
+const videoOn = (plan: Plan) => plan.includesVideo || videoToggle[plan.id]
 
 // Labels slider — starts on the account's own tier when it's a label plan
 const labelTierIndex = ref(0)
@@ -122,7 +152,8 @@ watch(subscription, (s) => {
 }, { immediate: true })
 const labelTier = computed(() => labelTiers[labelTierIndex.value])
 
-const displayPrice = (plan: Plan) => (plan.id === 'label' ? labelTier.value.price : plan.price)
+const basePrice = (plan: Plan) => (plan.id === 'label' ? labelTier.value.price : plan.price)
+const displayPrice = (plan: Plan) => basePrice(plan) + (!plan.includesVideo && videoToggle[plan.id] ? VIDEO_ADDON_PRICE : 0)
 const planArtistLimit = (plan: Plan) => (plan.id === 'label' ? labelTier.value.artists : plan.artists)
 const planFeatures = (plan: Plan) =>
   plan.id === 'label' ? [`Unlimited releases for ${labelTier.value.artists} artists`] : plan.features
@@ -137,13 +168,20 @@ const isCurrent = (plan: Plan) =>
   (plan.id !== 'label' || labelTier.value.artists === subscription.value.labelArtists)
 
 // Dashboard rules: current plan is locked; downgrades need the Plan Artists to fit
+const withVideo = (plan: Plan) => (!plan.includesVideo && videoToggle[plan.id] ? ' + Video' : '')
 const cta = (plan: Plan): { label: string; disabled: boolean; blocked: boolean } => {
-  if (isCurrent(plan)) return { label: `You're on ${targetName(plan)}`, disabled: true, blocked: false }
+  if (isCurrent(plan)) {
+    // Same plan: the only change on offer is the video bolt-on
+    if (!plan.includesVideo && videoToggle[plan.id] !== subscription.value.videoAddon) {
+      return { label: videoToggle[plan.id] ? 'Add video distribution' : 'Remove video distribution', disabled: false, blocked: false }
+    }
+    return { label: `You're on ${targetName(plan)}${subscription.value.videoAddon && !plan.includesVideo ? ' + Video' : ''}`, disabled: true, blocked: false }
+  }
   const target = planRank(plan.id, planArtistLimit(plan))
   const current = planRank(subscription.value.planId, subscription.value.labelArtists)
-  if (target > current) return { label: `Upgrade to ${targetName(plan)}`, disabled: false, blocked: false }
+  if (target > current) return { label: `Upgrade to ${targetName(plan)}${withVideo(plan)}`, disabled: false, blocked: false }
   if (subscription.value.planArtists > planArtistLimit(plan)) return { label: 'Not allowed', disabled: true, blocked: true }
-  return { label: `Downgrade to ${targetName(plan)}`, disabled: false, blocked: false }
+  return { label: `Downgrade to ${targetName(plan)}${withVideo(plan)}`, disabled: false, blocked: false }
 }
 
 const toast = reactive({ visible: false, message: '' })
@@ -151,6 +189,15 @@ let toastTimer: ReturnType<typeof setTimeout> | undefined
 const choose = (plan: Plan) => {
   const c = cta(plan)
   if (c.disabled) return
+  // Bolt-on only: apply it to the account so the Videos section unlocks
+  if (isCurrent(plan)) {
+    accountPlan.videoAddon = videoToggle[plan.id]
+    toast.message = accountPlan.videoAddon ? `Video distribution added — £${VIDEO_ADDON_PRICE}/year, prorated to your renewal (prototype)` : 'Video distribution removed at your next renewal (prototype)'
+    toast.visible = true
+    clearTimeout(toastTimer)
+    toastTimer = setTimeout(() => { toast.visible = false }, 2600)
+    return
+  }
   toast.message = `${c.label} — checkout would open here (prototype)`
   toast.visible = true
   clearTimeout(toastTimer)
@@ -211,15 +258,15 @@ const choose = (plan: Plan) => {
 /* Tiers — equal heights come from grid stretch + the feature list flexing */
 .tier-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
   align-items: stretch;
 }
 .tier {
   background: #fff;
   border: 1.5px solid var(--line-light);
   border-radius: 24px;
-  padding: 40px 36px 36px;
+  padding: 36px 26px 30px;
   display: flex;
   flex-direction: column;
   position: relative;
@@ -237,13 +284,14 @@ const choose = (plan: Plan) => {
 .tier .tier-price { display: flex; align-items: flex-end; gap: 8px; margin-bottom: 14px; }
 .tier .tier-price .num {
   font-weight: 900;
-  font-size: 84px;
+  font-size: 64px;
   line-height: 0.9;
-  letter-spacing: -3.5px;
+  letter-spacing: -2.5px;
   color: var(--ink);
 }
-.tier .tier-price .num .currency { font-size: 42px; line-height: 1; letter-spacing: 0; vertical-align: top; margin-right: 2px; }
-.tier .tier-price .per { font-size: 14px; font-weight: 600; color: var(--ink-soft); padding-bottom: 12px; }
+.tier .tier-price .num .currency { font-size: 32px; line-height: 1; letter-spacing: 0; vertical-align: top; margin-right: 2px; }
+.tier .tier-price .per { font-size: 14px; font-weight: 600; color: var(--ink-soft); padding-bottom: 8px; display: flex; flex-direction: column; line-height: 1.2; }
+.tier .tier-price .per-note { font-size: 11px; font-weight: 600; color: var(--purple-deep); letter-spacing: 0.2px; }
 .tier .tier-tag { font-size: 15px; line-height: 1.5; color: var(--ink-soft); margin: 0 0 28px 0; max-width: 280px; }
 .tier .tier-cta {
   display: block;
@@ -306,7 +354,59 @@ const choose = (plan: Plan) => {
   padding: 8px 14px;
   border-radius: 30px;
 }
-.tier .badge--current { left: auto; right: 36px; background: var(--purple-deep); color: #fff; }
+.tier .badge--current { left: auto; right: 26px; background: var(--purple-deep); color: #fff; }
+.tier .badge--value { background: var(--lime); color: var(--ink); }
+.tier .badge { left: 26px; }
+
+/* Video bolt-on row */
+.video-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 18px;
+  padding: 12px 14px;
+  border: 1.5px solid var(--line-light);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+.video-row:hover { border-color: var(--ink); }
+.video-row--on { border-color: var(--purple-deep); background: rgba(74, 0, 255, 0.05); }
+.video-row--included { cursor: default; border-style: dashed; color: var(--ink); font-size: 13px; font-weight: 600; justify-content: flex-start; }
+.video-row--included svg { width: 16px; height: 16px; flex-shrink: 0; }
+.video-row-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.video-row-title { font-size: 13px; font-weight: 700; color: var(--ink); }
+.video-row-price { font-size: 12px; color: var(--ink-soft); }
+.switch { width: 40px; height: 24px; border-radius: 999px; background: #d9d9d9; position: relative; flex-shrink: 0; transition: background 0.2s ease; }
+.switch-knob { position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25); transition: transform 0.2s ease; }
+.switch--on { background: var(--purple-deep); }
+.switch--on .switch-knob { transform: translateX(16px); }
+.tier.pro .video-row { border-color: rgba(10, 10, 10, 0.25); }
+.tier.pro .video-row--on { border-color: var(--ink); background: rgba(10, 10, 10, 0.06); }
+.tier.pro .switch--on { background: var(--ink); }
+.tier.pro .tier-price .per-note { color: var(--ink); }
+.tier.labels .video-row { border-color: var(--line); }
+.tier.labels .video-row--on { border-color: var(--purple); background: rgba(160, 107, 255, 0.14); }
+.tier.labels .video-row-title { color: #fff; }
+.tier.labels .video-row-price { color: var(--muted-2); }
+.tier.labels .switch--on { background: var(--purple); }
+.tier.labels .tier-price .per-note { color: var(--purple); }
+
+/* Ultimate */
+.tier.ultimate { background: var(--purple-deep); border-color: var(--purple-deep); color: #fff; }
+.tier.ultimate .tier-name, .tier.ultimate .tier-price .num { color: #fff; }
+.tier.ultimate .tier-price .per, .tier.ultimate .tier-tag { color: rgba(255, 255, 255, 0.75); }
+.tier.ultimate .video-row--included { color: #fff; border-color: rgba(255, 255, 255, 0.35); }
+.tier.ultimate ul { border-top-color: rgba(255, 255, 255, 0.25); }
+.tier.ultimate ul li { color: #fff; }
+.tier.ultimate ul li.muted { color: rgba(255, 255, 255, 0.7); }
+.tier.ultimate ul li::before { background: var(--lime); }
+.tier.ultimate ul li::after { border-color: var(--purple-deep); }
+.tier.ultimate .tier-cta { background: var(--lime); color: var(--ink); }
+.tier.ultimate .tier-cta--disabled { background: transparent; color: rgba(255, 255, 255, 0.6); border-color: rgba(255, 255, 255, 0.3); }
+.tier.ultimate .badge--current { background: var(--ink); }
+.tier.ultimate .tier-warn { color: #fff; background: rgba(238, 64, 76, 0.2); }
 
 /* Pro */
 .tier.pro { background: var(--lime); border-color: var(--lime); transform: translateY(-12px); }
@@ -360,13 +460,17 @@ const choose = (plan: Plan) => {
 .pricing-note { margin: 20px 0 56px; text-align: center; font-size: 13px; color: var(--ink-soft); }
 .pricing-note strong { color: var(--ink); font-weight: 700; }
 
+@media (max-width: 1279px) {
+  .tier-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+}
 @media (max-width: 1023px) {
   .pricing-head { grid-template-columns: 1fr; gap: 20px; margin-bottom: 36px; }
   .pricing-cap { text-align: left; max-width: none; }
-  .tier-grid { grid-template-columns: 1fr; }
   .tier.pro { transform: none; }
   .tier.pro:hover { transform: translateY(-4px); }
   .tier { padding: 32px 26px 28px; }
-  .tier .tier-price .num { font-size: 64px; }
+}
+@media (max-width: 767px) {
+  .tier-grid { grid-template-columns: 1fr; }
 }
 </style>

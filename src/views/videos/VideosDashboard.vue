@@ -8,7 +8,7 @@
           My Videos
         </h1>
         <button
-          @click="showCreateModal = true"
+          @click="startCreate"
           class="flex items-center gap-2 px-5 py-2.5 text-white text-sm font-medium rounded-full hover:opacity-90 transition-all hover:shadow-lg hover:shadow-ditto-purple/30 flex-shrink-0"
           :class="navStyle === 'side' ? 'lg:mr-[24.75rem]' : ''"
           style="background: linear-gradient(135deg, #5f1fff, #8640f4, #a855f7)"
@@ -74,7 +74,7 @@
     <div v-if="isNewUser" class="px-4 sm:px-6 lg:px-16 pb-8">
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
         <button
-          @click="showCreateModal = true"
+          @click="startCreate"
           class="aspect-video rounded-2xl bg-white shadow-[0_2px_14px_rgba(16,31,60,0.08)] hover:shadow-[0_12px_32px_rgba(95,31,255,0.18)] hover:-translate-y-1 flex flex-col items-center justify-center gap-3 transition-all duration-200 group"
         >
           <img src="/img/suite/music-video-distro.svg" alt="" class="w-11 h-11 group-hover:scale-105 transition-transform" />
@@ -167,6 +167,33 @@
 
     <div class="h-8"></div>
 
+    <!-- No video distribution on the account: the bolt-on paywall comes first -->
+    <Teleport to="body">
+      <div v-if="showPaywall" class="fixed inset-0 z-[100] bg-black/40 flex items-center justify-center p-4" @click.self="showPaywall = false">
+        <div class="w-full max-w-md bg-white rounded-3xl shadow-xl overflow-hidden">
+          <div class="px-7 pt-7 pb-6" style="background: linear-gradient(135deg, #5f1fff, #8640f4, #a855f7)">
+            <p class="text-[10px] font-bold uppercase tracking-[1.6px] text-white/70 mb-2">Video distribution</p>
+            <h3 class="font-satoshi font-black tracking-[-0.03em] text-2xl text-white leading-tight">Add video to your plan</h3>
+            <p class="text-sm text-white/80 mt-2 leading-relaxed">Unlimited music videos to the stores that matter, on top of your <strong class="text-white">{{ planLabel }}</strong> plan.</p>
+            <p class="mt-4 font-satoshi font-black text-white text-4xl tracking-[-0.03em]">£{{ VIDEO_ADDON_PRICE }}<span class="text-base font-semibold text-white/80 tracking-normal"> /year</span></p>
+          </div>
+          <div class="px-7 py-6">
+            <ul class="space-y-2.5 text-sm text-ditto-text">
+              <li v-for="line in paywallPoints" :key="line" class="flex items-start gap-2.5">
+                <svg class="w-4 h-4 text-ditto-purple flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                {{ line }}
+              </li>
+            </ul>
+            <div class="flex flex-col gap-2.5 mt-6">
+              <button @click="addVideoDistribution" class="w-full h-12 rounded-full bg-ditto-purple btn-pop-purple text-white text-sm font-semibold hover:opacity-95 transition-opacity">Add for £{{ VIDEO_ADDON_PRICE }}/year</button>
+              <button @click="showPaywall = false; emit('open-subscriptions')" class="w-full h-12 rounded-full border border-gray-200 text-sm font-medium text-ditto-text hover:bg-ditto-light-grey transition-colors">Or get everything with Ultimate</button>
+            </div>
+            <p class="text-xs text-ditto-subtext text-center mt-4">Prorated to your renewal. Cancel anytime.</p>
+          </div>
+        </div>
+      </div>
+    </Teleport>
+
     <!-- Create Video Modal -->
     <CreateReleaseModal
       v-if="showCreateModal"
@@ -223,6 +250,8 @@ import VideoDetailView from './VideoDetailView.vue'
 import { videoReleases } from '../../data/videoMockData'
 import type { VideoRelease } from '../../data/videoMockData'
 import { useDemoUser } from '../../composables/useDemoUser'
+import { accountPlan } from '../../data/accountPlan'
+import { hasVideoDistribution, VIDEO_ADDON_PRICE } from '../../data/subscriptionMockData'
 
 const props = defineProps<{
   autoOpenCreate?: boolean
@@ -231,7 +260,27 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'create-consumed'): void
   (e: 'view-analytics', video: VideoRelease): void
+  (e: 'open-subscriptions'): void
 }>()
+
+// Video distribution is a plan bolt-on (or part of Ultimate); without it, Create Video shows the paywall
+const showPaywall = ref(false)
+const planLabel = computed(() => accountPlan.planId === 'label' ? `Label ${accountPlan.labelArtists}` : accountPlan.planId.charAt(0).toUpperCase() + accountPlan.planId.slice(1))
+const paywallPoints = [
+  'Unlimited video releases, all year',
+  'Spotify, Apple Music, VEVO, TIDAL and Amazon Music',
+  'VEVO channel setup included',
+  'Video analytics alongside your music',
+]
+const startCreate = () => {
+  if (hasVideoDistribution(accountPlan)) showCreateModal.value = true
+  else showPaywall.value = true
+}
+const addVideoDistribution = () => {
+  accountPlan.videoAddon = true
+  showPaywall.value = false
+  showCreateModal.value = true
+}
 
 const { isNewUser } = useDemoUser()
 
@@ -303,7 +352,7 @@ const handleCreateVideo = (title: string) => {
 watch(() => props.autoOpenCreate, (requested) => {
   if (requested) {
     currentView.value = 'list'
-    showCreateModal.value = true
+    startCreate()
     emit('create-consumed')
   }
 }, { immediate: true })

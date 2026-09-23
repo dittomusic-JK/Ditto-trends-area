@@ -151,6 +151,7 @@
       :auto-open-create="videoCreateRequested"
       @create-consumed="videoCreateRequested = false"
       @view-analytics="handleViewVideoAnalytics"
+      @open-subscriptions="handleNavbarNavigate('subscriptions')"
     />
 
     <!-- Neighbouring Rights Section -->
