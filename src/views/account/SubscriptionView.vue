@@ -216,7 +216,7 @@ const choose = (plan: Plan) => {
   --purple: #a06bff;
   --purple-deep: #4a00ff;
   --muted-2: #cfcfcf;
-  max-width: 1160px;
+  max-width: 1440px;
   margin: 0 auto;
   color: var(--ink);
   font-family: 'Satoshi', 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
