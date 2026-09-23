@@ -130,7 +130,6 @@ const demoStateOptions: { id: SubscriptionDemoState; label: string }[] = [
   { id: 'starter', label: 'On Starter' },
   { id: 'pro', label: 'On Pro' },
   { id: 'proVideo', label: 'Pro + Video' },
-  { id: 'ultimate', label: 'On Ultimate' },
   { id: 'label5', label: 'On Label 5' },
 ]
 // The demo switcher writes the shared account plan; the page reads from it (so an
@@ -216,7 +215,7 @@ const choose = (plan: Plan) => {
   --purple: #a06bff;
   --purple-deep: #4a00ff;
   --muted-2: #cfcfcf;
-  max-width: 1440px;
+  max-width: 1160px;
   margin: 0 auto;
   color: var(--ink);
   font-family: 'Satoshi', 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -258,15 +257,15 @@ const choose = (plan: Plan) => {
 /* Tiers — equal heights come from grid stretch + the feature list flexing */
 .tier-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
   align-items: stretch;
 }
 .tier {
   background: #fff;
   border: 1.5px solid var(--line-light);
   border-radius: 24px;
-  padding: 36px 26px 30px;
+  padding: 40px 36px 36px;
   display: flex;
   flex-direction: column;
   position: relative;
@@ -284,12 +283,12 @@ const choose = (plan: Plan) => {
 .tier .tier-price { display: flex; align-items: flex-end; gap: 8px; margin-bottom: 14px; }
 .tier .tier-price .num {
   font-weight: 900;
-  font-size: 64px;
+  font-size: 84px;
   line-height: 0.9;
-  letter-spacing: -2.5px;
+  letter-spacing: -3.5px;
   color: var(--ink);
 }
-.tier .tier-price .num .currency { font-size: 32px; line-height: 1; letter-spacing: 0; vertical-align: top; margin-right: 2px; }
+.tier .tier-price .num .currency { font-size: 42px; line-height: 1; letter-spacing: 0; vertical-align: top; margin-right: 2px; }
 .tier .tier-price .per { font-size: 14px; font-weight: 600; color: var(--ink-soft); padding-bottom: 8px; display: flex; flex-direction: column; line-height: 1.2; }
 .tier .tier-price .per-note { font-size: 11px; font-weight: 600; color: var(--purple-deep); letter-spacing: 0.2px; }
 .tier .tier-tag { font-size: 15px; line-height: 1.5; color: var(--ink-soft); margin: 0 0 28px 0; max-width: 280px; }
@@ -354,9 +353,8 @@ const choose = (plan: Plan) => {
   padding: 8px 14px;
   border-radius: 30px;
 }
-.tier .badge--current { left: auto; right: 26px; background: var(--purple-deep); color: #fff; }
+.tier .badge--current { left: auto; right: 36px; background: var(--purple-deep); color: #fff; }
 .tier .badge--value { background: var(--lime); color: var(--ink); }
-.tier .badge { left: 26px; }
 
 /* Video bolt-on row */
 .video-row {
@@ -460,17 +458,13 @@ const choose = (plan: Plan) => {
 .pricing-note { margin: 20px 0 56px; text-align: center; font-size: 13px; color: var(--ink-soft); }
 .pricing-note strong { color: var(--ink); font-weight: 700; }
 
-@media (max-width: 1279px) {
-  .tier-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
-}
 @media (max-width: 1023px) {
   .pricing-head { grid-template-columns: 1fr; gap: 20px; margin-bottom: 36px; }
   .pricing-cap { text-align: left; max-width: none; }
   .tier.pro { transform: none; }
   .tier.pro:hover { transform: translateY(-4px); }
-  .tier { padding: 32px 26px 28px; }
-}
-@media (max-width: 767px) {
   .tier-grid { grid-template-columns: 1fr; }
+  .tier { padding: 32px 26px 28px; }
+  .tier .tier-price .num { font-size: 64px; }
 }
 </style>

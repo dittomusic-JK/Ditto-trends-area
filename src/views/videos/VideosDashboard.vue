@@ -186,7 +186,7 @@
             </ul>
             <div class="flex flex-col gap-2.5 mt-6">
               <button @click="addVideoDistribution" class="w-full h-12 rounded-full bg-ditto-purple btn-pop-purple text-white text-sm font-semibold hover:opacity-95 transition-opacity">Add for £{{ VIDEO_ADDON_PRICE }}/year</button>
-              <button @click="showPaywall = false; emit('open-subscriptions')" class="w-full h-12 rounded-full border border-gray-200 text-sm font-medium text-ditto-text hover:bg-ditto-light-grey transition-colors">Or get everything with Ultimate</button>
+              <button @click="showPaywall = false; emit('open-subscriptions')" class="w-full h-12 rounded-full border border-gray-200 text-sm font-medium text-ditto-text hover:bg-ditto-light-grey transition-colors">Compare plans</button>
             </div>
             <p class="text-xs text-ditto-subtext text-center mt-4">Prorated to your renewal. Cancel anytime.</p>
           </div>
