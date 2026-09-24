@@ -19,7 +19,7 @@
           <div class="flex items-start justify-between gap-4 mb-5">
             <div>
               <h3 class="font-satoshi font-black tracking-[-0.03em] text-lg text-ditto-text">{{ editing ? `Change ${editing.name}'s access` : 'Invite someone' }}</h3>
-              <p class="text-sm text-ditto-subtext mt-0.5">{{ editing ? 'Changes apply the next time they sign in.' : "They'll get an email with a link. They accept by signing in to Ditto — or creating a login from the link — and nothing changes until they do." }}</p>
+              <p class="text-sm text-ditto-subtext mt-0.5">{{ editing ? 'Changes apply the next time they sign in.' : "Already on Ditto? They get access straight away and an email to say so. Not yet? They get an invite to create a login first." }}</p>
             </div>
             <button @click="closeInvite" class="w-8 h-8 rounded-full hover:bg-ditto-light-grey flex items-center justify-center transition-colors flex-shrink-0" aria-label="Close">
               <svg class="w-4 h-4 text-ditto-subtext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -142,7 +142,7 @@
                 <p class="text-ditto-subtext mt-0.5">{{ m.lastActive }}</p>
               </template>
               <template v-else-if="m.status === 'pending'">
-                <span class="inline-flex items-center gap-1.5 text-[#92400e]"><span class="w-1.5 h-1.5 rounded-full bg-warning"></span>Waiting to sign in</span>
+                <span class="inline-flex items-center gap-1.5 text-[#92400e]"><span class="w-1.5 h-1.5 rounded-full bg-warning"></span>Invited to join Ditto</span>
                 <p class="text-ditto-subtext mt-0.5">{{ m.invitedOn }}</p>
               </template>
               <template v-else>
@@ -165,7 +165,7 @@
           </div>
         </div>
 
-        <p class="text-xs text-ditto-subtext px-1">Added by and when is kept for every change. The account owner always has full control and can't be removed.</p>
+        <p class="text-xs text-ditto-subtext px-1">People already on Ditto are active as soon as you add them. Anyone else shows as invited until they create a login. Added by and when is kept for every change; the account owner always has full control and can't be removed.</p>
       </div>
 
       <!-- ── Roles at a glance ── -->
@@ -200,7 +200,7 @@
 
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
-import { roles, capabilities, members as seedMembers, type Member, type RoleId } from '../../data/accountPermissionsMockData'
+import { roles, capabilities, members as seedMembers, registeredDittoUsers, type Member, type RoleId } from '../../data/accountPermissionsMockData'
 import { artists } from '../../data/artistsMockData'
 
 const emit = defineEmits<{ (e: 'note', message: string): void }>()
@@ -286,8 +286,14 @@ const submitInvite = () => {
     const email = form.email.trim()
     const guess = email.split('@')[0].replace(/[._-]+/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
     const name = form.role === 'artist' && form.artistIds[0] ? artistName(form.artistIds[0]) : guess
-    list.splice(1, 0, { id: `m${nextId++}`, name, email, role: form.role, scope, status: 'pending', addedOn: '23 Sep 2026', addedBy: 'James Keane', invitedOn: 'Just now' })
-    emit('note', `Invite sent to ${email} — they have 7 days to sign in and accept`)
+    // Registered Ditto users get access now and a heads-up email; everyone else is invited to sign up first
+    const registered = registeredDittoUsers.includes(email.toLowerCase())
+    list.splice(1, 0, registered
+      ? { id: `m${nextId++}`, name, email, role: form.role, scope, status: 'active', addedOn: '24 Sep 2026', addedBy: 'James Keane', lastActive: 'Not yet' }
+      : { id: `m${nextId++}`, name, email, role: form.role, scope, status: 'pending', addedOn: '24 Sep 2026', addedBy: 'James Keane', invitedOn: 'Just now' })
+    emit('note', registered
+      ? `${name} now has ${roleById(form.role).name.toLowerCase()} access — we've emailed them to let them know`
+      : `Invite sent to ${email} — they'll need to create a Ditto login to get in`)
   }
   closeInvite()
 }

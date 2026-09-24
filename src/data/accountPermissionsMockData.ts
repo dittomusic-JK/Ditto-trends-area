@@ -82,6 +82,13 @@ export const members: Member[] = [
   { id: 'm6', name: 'Hannah Moss', email: 'hannah@mosspr.co.uk', role: 'reporter', scope: 'account', status: 'active', addedOn: '12 Jan 2026', addedBy: 'James Keane', lastActive: '3 weeks ago' },
 ]
 
+/** Emails already registered with Ditto — inviting one of these grants access immediately
+ *  (they get a notification, not an invitation). Anyone else must sign up first. */
+export const registeredDittoUsers = [
+  'rema@mavin.com', 'ayra@mavin.com', 'burna@spaceship.com', 'wiz@starboy.com', 'tems@leadingvibe.com',
+  'ckay@chocolatecity.com', 'fireboy@ybnl.com', 'omah@keystoneagency.com', 'asake@ybnl.com', 'kwame@studio45.co.uk',
+]
+
 /** Organisations this login belongs to, and the role held in each (avatar switcher) */
 export interface Organisation {
   id: string
