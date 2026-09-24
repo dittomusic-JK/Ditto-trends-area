@@ -19,7 +19,7 @@
           <div class="flex items-start justify-between gap-4 mb-5">
             <div>
               <h3 class="font-satoshi font-black tracking-[-0.03em] text-lg text-ditto-text">{{ editing ? `Change ${editing.name}'s access` : 'Invite someone' }}</h3>
-              <p class="text-sm text-ditto-subtext mt-0.5">{{ editing ? 'Changes apply the next time they sign in.' : "They'll get an email with a link to accept. Nothing changes until they do." }}</p>
+              <p class="text-sm text-ditto-subtext mt-0.5">{{ editing ? 'Changes apply the next time they sign in.' : "They'll get an email with a link. They accept by signing in to Ditto — or creating a login from the link — and nothing changes until they do." }}</p>
             </div>
             <button @click="closeInvite" class="w-8 h-8 rounded-full hover:bg-ditto-light-grey flex items-center justify-center transition-colors flex-shrink-0" aria-label="Close">
               <svg class="w-4 h-4 text-ditto-subtext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -142,7 +142,7 @@
                 <p class="text-ditto-subtext mt-0.5">{{ m.lastActive }}</p>
               </template>
               <template v-else-if="m.status === 'pending'">
-                <span class="inline-flex items-center gap-1.5 text-[#92400e]"><span class="w-1.5 h-1.5 rounded-full bg-warning"></span>Invite sent</span>
+                <span class="inline-flex items-center gap-1.5 text-[#92400e]"><span class="w-1.5 h-1.5 rounded-full bg-warning"></span>Waiting to sign in</span>
                 <p class="text-ditto-subtext mt-0.5">{{ m.invitedOn }}</p>
               </template>
               <template v-else>
@@ -192,7 +192,7 @@
             </tbody>
           </table>
         </div>
-        <p class="text-[11px] text-ditto-subtext mt-4 leading-relaxed"><span class="font-semibold text-ditto-text">Own</span> means the artist's own releases and their own revenue split only. Managers and Reporters can be limited to selected artists when you invite them.</p>
+        <p class="text-[11px] text-ditto-subtext mt-4 leading-relaxed"><span class="font-semibold text-ditto-text">Own</span> means the artist's own releases and their own revenue split only. Managers and Reporters can be limited to selected artists when you invite them. Access per release is coming later.</p>
       </aside>
     </div>
   </div>
@@ -287,7 +287,7 @@ const submitInvite = () => {
     const guess = email.split('@')[0].replace(/[._-]+/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
     const name = form.role === 'artist' && form.artistIds[0] ? artistName(form.artistIds[0]) : guess
     list.splice(1, 0, { id: `m${nextId++}`, name, email, role: form.role, scope, status: 'pending', addedOn: '23 Sep 2026', addedBy: 'James Keane', invitedOn: 'Just now' })
-    emit('note', `Invite sent to ${email} — they have 7 days to accept`)
+    emit('note', `Invite sent to ${email} — they have 7 days to sign in and accept`)
   }
   closeInvite()
 }
