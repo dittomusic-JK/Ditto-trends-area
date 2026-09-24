@@ -249,7 +249,7 @@
       </div>
 
       <!-- Source not selected: only once the user has moved on without choosing -->
-      <p v-if="visited && !assetSource.type" class="text-xs text-error mt-3">Please select a video source.</p>
+      <p v-if="visited && !assetSource.type" class="text-[13px] text-[#92400e] mt-3">Choose how your video was made to continue</p>
     </div>
   </div>
 </template>

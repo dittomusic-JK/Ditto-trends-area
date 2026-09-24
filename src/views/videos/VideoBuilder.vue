@@ -41,34 +41,46 @@
       <!-- Step 1: Upload — each asset with its own content check alongside,
            video source full width beneath (folds the old Content Check stage in) -->
       <div v-if="currentStep === 0" class="space-y-10">
-        <div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_360px] gap-8 lg:gap-16 items-start">
-          <UploadVideoStep v-model:videoFile="formData.videoFile" />
-          <CheckContentStep class="lg:pt-12" section="video" v-model:checks="formData.contentChecks" v-model:assetSource="formData.assetSource" :is-lyric-video="formData.metadata.isLyricVideo" />
+        <!-- Each block gets a quiet amber edge and one line once the user has tried to
+             move on with it unfinished. Nothing shows before that. -->
+        <div id="upload-video" :class="blockClass(needs.video)">
+          <div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_360px] gap-8 lg:gap-16 items-start">
+            <UploadVideoStep v-model:videoFile="formData.videoFile" />
+            <CheckContentStep class="lg:pt-12" section="video" v-model:checks="formData.contentChecks" v-model:assetSource="formData.assetSource" :is-lyric-video="formData.metadata.isLyricVideo" />
+          </div>
+          <p v-if="needs.video" class="attention-note">{{ needs.video }}</p>
         </div>
         <div class="border-t border-gray-200"></div>
-        <div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_360px] gap-8 lg:gap-16 items-start">
-          <UploadThumbnailStep
-            v-model:thumbnailFile="formData.thumbnailFile"
-            :video-file="formData.videoFile"
+        <div id="upload-thumbnail" :class="blockClass(needs.thumbnail)">
+          <div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_360px] gap-8 lg:gap-16 items-start">
+            <UploadThumbnailStep
+              v-model:thumbnailFile="formData.thumbnailFile"
+              :video-file="formData.videoFile"
+            />
+            <CheckContentStep class="lg:pt-12" section="thumbnail" v-model:checks="formData.contentChecks" v-model:assetSource="formData.assetSource" :is-lyric-video="formData.metadata.isLyricVideo" />
+          </div>
+          <p v-if="needs.thumbnail" class="attention-note">{{ needs.thumbnail }}</p>
+        </div>
+        <div class="border-t border-gray-200"></div>
+        <div id="upload-artwork" :class="blockClass(needs.artwork)">
+          <div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_360px] gap-8 lg:gap-16 items-start">
+            <UploadArtworkStep v-model:artworkFile="formData.artworkFile" />
+            <CheckContentStep class="lg:pt-12" section="artwork" v-model:checks="formData.contentChecks" v-model:assetSource="formData.assetSource" :is-lyric-video="formData.metadata.isLyricVideo" />
+          </div>
+          <p v-if="needs.artwork" class="attention-note">{{ needs.artwork }}</p>
+        </div>
+        <div class="border-t border-gray-200"></div>
+        <div id="upload-source" :class="blockClass(needs.source)">
+          <CheckContentStep
+            section="source"
+            v-model:checks="formData.contentChecks"
+            v-model:assetSource="formData.assetSource"
+            :is-lyric-video="formData.metadata.isLyricVideo"
+            :visited="uploadAttempted"
           />
-          <CheckContentStep class="lg:pt-12" section="thumbnail" v-model:checks="formData.contentChecks" v-model:assetSource="formData.assetSource" :is-lyric-video="formData.metadata.isLyricVideo" />
         </div>
-        <div class="border-t border-gray-200"></div>
-        <div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_360px] gap-8 lg:gap-16 items-start">
-          <UploadArtworkStep v-model:artworkFile="formData.artworkFile" />
-          <CheckContentStep class="lg:pt-12" section="artwork" v-model:checks="formData.contentChecks" v-model:assetSource="formData.assetSource" :is-lyric-video="formData.metadata.isLyricVideo" />
-        </div>
-        <div class="border-t border-gray-200"></div>
-        <CheckContentStep
-          section="source"
-          v-model:checks="formData.contentChecks"
-          v-model:assetSource="formData.assetSource"
-          :is-lyric-video="formData.metadata.isLyricVideo"
-          :visited="visitedSteps.has(0)"
-        />
       </div>
 
-      <!-- Step 2: Details (link release + metadata + artists + credits) -->
       <div v-else-if="currentStep === 1" class="space-y-10">
         <LinkReleasePicker
           :release-id="formData.stores.spotifyReleaseId"
@@ -142,7 +154,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, watch, nextTick } from 'vue'
 import type { SpotifyTrack, CreditCategory } from '../../data/videoMockData'
 
 import UploadVideoStep from './steps/UploadVideoStep.vue'
@@ -352,13 +364,52 @@ const handleBack = () => {
   }
 }
 
+// ── Upload step: attention, not errors ──
+// Set the first time Next is pressed with something unfinished, or when the user comes
+// back to the step with gaps. Until then the page shows nothing extra.
+const uploadAttempted = ref(false)
+const needs = computed(() => {
+  if (!uploadAttempted.value) return { video: '', thumbnail: '', artwork: '', source: '' }
+  const line = (missing: boolean, unconfirmed: boolean, what: string) =>
+    missing && unconfirmed ? `Add your ${what} and confirm the requirements to continue`
+      : missing ? `Add your ${what} to continue`
+      : unconfirmed ? 'Confirm the requirements to continue'
+      : ''
+  return {
+    video: line(!formData.videoFile, !formData.contentChecks.video || (formData.metadata.isLyricVideo && !formData.contentChecks.noLyrics), 'video'),
+    thumbnail: line(!formData.thumbnailFile, !formData.contentChecks.thumbnail, 'thumbnail'),
+    artwork: line(!formData.artworkFile, !formData.contentChecks.artwork, 'artwork'),
+    source: formData.assetSource.type ? '' : 'Choose how your video was made',
+  }
+})
+const blockClass = (need: string) => need ? 'attention' : ''
+const scrollToFirstGap = () => {
+  const order: (keyof typeof needs.value)[] = ['video', 'thumbnail', 'artwork', 'source']
+  const first = order.find(k => needs.value[k])
+  if (!first) return
+  nextTick(() => document.getElementById(`upload-${first}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' }))
+}
+
 const handleNext = () => {
+  if (currentStep.value === 0 && !validateStep(0)) {
+    uploadAttempted.value = true
+    scrollToFirstGap()
+    return
+  }
   if (currentStep.value < 4) {
     visitedSteps.add(currentStep.value)
     currentStep.value++
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 }
+
+// Coming back to Upload with gaps lands you on the first one
+watch(currentStep, (step, prev) => {
+  if (step === 0 && prev !== 0 && !validateStep(0)) {
+    uploadAttempted.value = true
+    setTimeout(scrollToFirstGap, 250)
+  }
+})
 
 const handleCopyMetadata = (track: SpotifyTrack) => {
   // Copy metadata from selected Spotify track
@@ -398,3 +449,22 @@ const handleComplete = () => {
   }
 }
 </script>
+
+<style scoped>
+/* Unfinished block after an attempt: a warm edge and a faint tint, no red */
+.attention {
+  position: relative;
+  margin-left: -1.25rem;
+  padding: 1rem 1.25rem 1rem 1.25rem;
+  border-left: 3px solid #f5b400;
+  border-radius: 0 1rem 1rem 0;
+  background: rgba(245, 180, 0, 0.05);
+  scroll-margin-top: 7rem;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+.attention-note {
+  margin-top: 0.75rem;
+  font-size: 0.8125rem;
+  color: #92400e;
+}
+</style>
