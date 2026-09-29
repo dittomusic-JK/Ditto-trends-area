@@ -62,7 +62,6 @@
           <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
           Meets the spec
         </p>
-        <p v-if="slot.unverified" class="text-[11px] text-ditto-subtext mt-1.5 leading-relaxed">{{ slot.unverified }}</p>
         <div class="flex items-center gap-3 mt-2">
           <button @click="triggerFileInput" class="text-xs font-medium text-ditto-purple hover:underline">Replace</button>
           <button @click="removeFile" class="text-xs font-medium text-ditto-subtext hover:text-error">Remove</button>
@@ -113,7 +112,9 @@ const fileInputRef = ref<HTMLInputElement | null>(null)
 const triggerFileInput = () => fileInputRef.value?.click()
 
 const formatFileSize = (bytes: number) =>
-  bytes >= 1048576 ? (bytes / 1048576).toFixed(1) + ' MB' : (bytes / 1024).toFixed(0) + ' KB'
+  bytes >= 1073741824 ? (bytes / 1073741824).toFixed(2) + ' GB'
+    : bytes >= 1048576 ? (bytes / 1048576).toFixed(1) + ' MB'
+    : (bytes / 1024).toFixed(0) + ' KB'
 
 const removeFile = () => {
   const m = props.slot
@@ -183,17 +184,11 @@ const handleFile = async (file: File) => {
       errors.push(`Bitrate ${Math.round(probe.bitrateMbps)} Mbps — needs 45 to 100 Mbps.`); failed.add('bitrate')
     }
 
+    // Only what the slot header (resolution) and the spec panel (every rule) don't already say
     m.summary = [
-      probe.codecLabel,
-      `${probe.width}×${probe.height}`,
-      probe.fps !== null ? `${+probe.fps.toFixed(3)} fps` : null,
+      probe.codecLabel.replace(/^Apple /, ''),
       probe.duration !== null ? `${+probe.duration.toFixed(1)}s` : null,
-      probe.bitrateMbps !== null ? `${Math.round(probe.bitrateMbps)} Mbps` : null,
     ].filter(Boolean).join(' · ')
-    const notes: string[] = []
-    if (!probe.colour) notes.push('no colour profile is tagged in the file, so Rec. 709/sRGB is confirmed on delivery')
-    if (!isH264 && probe.bitrateMbps !== null) notes.push(`Apple's 45–100 Mbps range applies to H.264 exports; this ProRes file is ${Math.round(probe.bitrateMbps)} Mbps`)
-    if (notes.length) m.unverified = notes.join('. ').replace(/^./, c => c.toUpperCase()) + '.'
   }
 
   clearInterval(tick)
