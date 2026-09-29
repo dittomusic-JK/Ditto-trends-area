@@ -279,7 +279,10 @@ const validateStep = (stepIndex: number): boolean => {
         formData.contentChecks.thumbnail &&
         formData.contentChecks.artwork &&
         (!formData.metadata.isLyricVideo || formData.contentChecks.noLyrics) &&
-        formData.assetSource.type !== ''
+        formData.assetSource.type !== '' &&
+        // Licensed content needs the licensor and at least one licence document
+        (formData.assetSource.type !== 'licensed' ||
+          (formData.assetSource.licenseHolder.trim() !== '' && formData.assetSource.licenseDocuments.length > 0))
     case 1:
       return formData.metadata.title.length > 0 &&
         formData.metadata.copyrightHolder.length >= 2 &&
@@ -379,7 +382,9 @@ const needs = computed(() => {
     video: line(!formData.videoFile, !formData.contentChecks.video || (formData.metadata.isLyricVideo && !formData.contentChecks.noLyrics), 'video'),
     thumbnail: line(!formData.thumbnailFile, !formData.contentChecks.thumbnail, 'thumbnail'),
     artwork: line(!formData.artworkFile, !formData.contentChecks.artwork, 'artwork'),
-    source: formData.assetSource.type ? '' : 'Choose how your video was made',
+    source: !formData.assetSource.type ? 'Choose how your video was made'
+      : formData.assetSource.type === 'licensed' && (!formData.assetSource.licenseHolder.trim() || !formData.assetSource.licenseDocuments.length) ? 'licensed'
+      : '',
   }
 })
 const blockClass = (need: string) => need ? 'attention' : ''

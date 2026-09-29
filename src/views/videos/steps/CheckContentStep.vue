@@ -164,7 +164,7 @@
         <!-- Licensed fields -->
         <div v-if="assetSource.type === 'licensed'" class="ml-7 pl-4 border-l-2 border-ditto-purple/20 space-y-4 pt-3 pb-2">
           <div>
-            <label class="block text-xs font-medium text-ditto-subtext mb-1">Who licensed it to you?</label>
+            <label class="block text-xs font-medium text-ditto-subtext mb-1">Who licensed it to you? <span class="text-error">*</span></label>
             <input
               :value="assetSource.licenseHolder"
               @input="updateSource('licenseHolder', ($event.target as HTMLInputElement).value)"
@@ -172,6 +172,7 @@
               placeholder="Name of the licensor or rights holder"
               class="w-full px-0 py-2 border-0 border-b border-gray-300 text-sm text-ditto-text bg-transparent focus:outline-none focus:border-ditto-purple transition-colors"
             />
+            <p v-if="visited && !assetSource.licenseHolder.trim()" class="text-[13px] text-[#92400e] mt-1.5">Enter who licensed it to you to continue</p>
           </div>
           <div class="sm:max-w-xs">
             <label class="block text-xs font-medium text-ditto-subtext mb-1">Valid Until <span class="text-ditto-subtext/60">(optional)</span></label>
@@ -205,7 +206,7 @@
                footage), so any number of files can be added -->
           <div>
             <label class="block text-xs font-medium text-ditto-subtext mb-1.5">
-              Licence documents
+              Licence documents <span class="text-error">*</span>
               <span v-if="assetSource.licenseDocuments.length" class="text-ditto-subtext/70 font-normal">· {{ assetSource.licenseDocuments.length }} added</span>
             </label>
             <ul v-if="assetSource.licenseDocuments.length" class="space-y-2 mb-2.5">
@@ -243,6 +244,7 @@
               <input ref="licenceInputRef" type="file" multiple accept=".pdf,.jpg,.jpeg,.png" class="hidden" @change="handleLicenceSelect" />
             </div>
           </div>
+          <p v-if="visited && assetSource.licenseDocuments.length === 0" class="text-[13px] text-[#92400e] -mt-1">Add at least one licence document to continue</p>
           <p class="text-xs text-ditto-subtext">Without the licence documents, stores may reject a video that uses licensed material.</p>
         </div>
 
