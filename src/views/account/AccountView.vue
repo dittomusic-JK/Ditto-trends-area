@@ -238,6 +238,12 @@
               <button @click="note(`Verification email sent to ${draft.email}`)" class="text-[13px] font-semibold text-error underline flex-shrink-0">Resend link</button>
             </div>
           </div>
+          <!-- Organisation name: Label and RLS plans only. Optional here; asked for on the first invite. -->
+          <div v-if="isOrganisationPlan">
+            <label class="block text-[13px] font-medium text-ditto-subtext mb-1.5">Organisation name <span class="font-normal text-ditto-subtext/70">(optional)</span></label>
+            <input v-model="accountOrganisation.name" type="text" placeholder="e.g. Goldenboy Entertainment" :class="fieldClass" @change="note(accountOrganisation.name ? 'Organisation name saved' : 'Organisation name cleared')" />
+            <p class="text-xs text-ditto-subtext mt-1.5">How this account appears to people you give access to. Kept separate from your name, which publishing uses.</p>
+          </div>
           <div class="grid grid-cols-2 gap-4">
             <div>
               <label class="block text-[13px] font-medium text-ditto-subtext mb-1.5">Currency</label>
@@ -310,6 +316,7 @@ import { computed, defineComponent, h, reactive, ref } from 'vue'
 import LiquidTabs from '../../components/common/LiquidTabs.vue'
 import Toast from '../../components/ui/Toast.vue'
 import AccountPermissionsTab from './AccountPermissionsTab.vue'
+import { accountOrganisation } from '../../data/accountOrganisation'
 import {
   accountProfile,
   accountSecurity,
@@ -378,6 +385,9 @@ const signOut = (id: string) => { security.sessions = security.sessions.filter(s
 const signOutOthers = () => { security.sessions = security.sessions.filter(s => s.current); note('Signed out everywhere else') }
 
 // ── Settings: profile draft ──
+// Organisation fields only exist on Label and RLS plans
+const isOrganisationPlan = computed(() => /label|rls/i.test(billing.planName))
+
 const draft = reactive({ name: profile.name, email: profile.email, currency: profile.currency.code, country: profile.country })
 const profileDirty = computed(() =>
   draft.name !== profile.name || draft.email !== profile.email || draft.currency !== profile.currency.code || draft.country !== profile.country

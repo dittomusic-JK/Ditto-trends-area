@@ -288,8 +288,9 @@
                 <img src="/img/avatar.jpg" alt="User" class="w-full h-full object-cover" />
               </div>
               <div class="min-w-0">
-                <p class="text-sm font-semibold text-ditto-text truncate">{{ currentOrganisation.name }}</p>
-                <span class="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-ditto-purple/15 text-ditto-purple">{{ currentOrganisation.plan }}</span>
+                <!-- Always the person who's logged in and their own plan; the organisation is the highlighted row below -->
+                <p class="text-sm font-semibold text-ditto-text truncate">{{ accountProfile.name }}</p>
+                <span class="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-ditto-purple/15 text-ditto-purple">{{ ownPlanTag }}</span>
               </div>
             </div>
             <!-- One login, several organisations (DC-123): a single line, expands on click -->
@@ -390,6 +391,8 @@ import { useTheme } from '../../composables/useTheme'
 import { useDemoUser } from '../../composables/useDemoUser'
 import { organisations, type Organisation } from '../../data/accountPermissionsMockData'
 import { currentOrganisation, switchOrganisation } from '../../data/currentOrganisation'
+import { accountProfile } from '../../data/accountMockData'
+import { accountPlan } from '../../data/accountPlan'
 
 const props = defineProps<{
   activeSection?: AppSection
@@ -406,6 +409,7 @@ const emit = defineEmits<{
 }>()
 
 // Organisation switcher: the same login can hold different roles in different accounts
+const ownPlanTag = computed(() => accountPlan.planId === 'label' ? `LABEL ${accountPlan.labelArtists}` : accountPlan.planId.toUpperCase())
 const roleLabel = (role: Organisation['role']) => ({ owner: 'Owner', admin: 'Admin', manager: 'Manager', artist: 'Artist', reporter: 'Reporter' }[role])
 const orgSwitcherOpen = ref(false)
 const pickOrganisation = (org: Organisation) => {

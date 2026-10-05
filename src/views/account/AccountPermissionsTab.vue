@@ -117,10 +117,10 @@
 
         <!-- ── People ── -->
         <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden">
-          <div class="hidden md:grid grid-cols-[minmax(0,1.6fr)_120px_minmax(0,1fr)_120px_44px] gap-4 px-6 py-3 text-xs text-ditto-subtext border-b border-gray-100">
-            <span>Person</span><span>Role</span><span>Access to</span><span>Status</span><span></span>
+          <div class="hidden md:grid grid-cols-[minmax(0,1.5fr)_104px_minmax(0,1fr)_112px_116px_44px] gap-4 px-6 py-3 text-xs text-ditto-subtext border-b border-gray-100">
+            <span>Person</span><span>Role</span><span>Access to</span><span>Status</span><span>Last login</span><span></span>
           </div>
-          <div v-for="m in list" :key="m.id" :class="['grid grid-cols-1 md:grid-cols-[minmax(0,1.6fr)_120px_minmax(0,1fr)_120px_44px] gap-2 md:gap-4 px-6 py-4 items-center border-b border-gray-100 last:border-b-0', m.status === 'expired' ? 'bg-ditto-light-grey/40' : '']">
+          <div v-for="m in list" :key="m.id" :class="['grid grid-cols-1 md:grid-cols-[minmax(0,1.5fr)_104px_minmax(0,1fr)_112px_116px_44px] gap-2 md:gap-4 px-6 py-4 items-center border-b border-gray-100 last:border-b-0', m.status === 'expired' ? 'bg-ditto-light-grey/40' : '']">
             <!-- Person -->
             <div class="flex items-center gap-3 min-w-0">
               <span :class="['w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0', m.status === 'owner' ? 'bg-ditto-purple text-white' : m.status === 'active' ? 'bg-ditto-text text-white' : 'bg-ditto-light-grey text-ditto-subtext border border-dashed border-gray-300']">{{ initials(m.name) }}</span>
@@ -135,21 +135,17 @@
             </div>
             <!-- Scope -->
             <p class="text-sm text-ditto-text truncate" :title="scopeLabel(m)">{{ scopeLabel(m) }}</p>
-            <!-- Status -->
+            <!-- Status: Active or Invited; expired invites keep the sent date (30 Sep decision) -->
             <div class="text-xs">
-              <template v-if="m.status === 'owner' || m.status === 'active'">
-                <span class="inline-flex items-center gap-1.5 text-ditto-text"><span class="w-1.5 h-1.5 rounded-full bg-success"></span>Active</span>
-                <p class="text-ditto-subtext mt-0.5">{{ m.lastActive }}</p>
-              </template>
-              <template v-else-if="m.status === 'pending'">
-                <span class="inline-flex items-center gap-1.5 text-[#92400e]"><span class="w-1.5 h-1.5 rounded-full bg-warning"></span>Invited to join Ditto</span>
-                <p class="text-ditto-subtext mt-0.5">{{ m.invitedOn }}</p>
-              </template>
-              <template v-else>
-                <span class="inline-flex items-center gap-1.5 text-error"><span class="w-1.5 h-1.5 rounded-full bg-error"></span>Invite expired</span>
-                <p class="text-ditto-subtext mt-0.5">Sent {{ m.invitedOn }}</p>
-              </template>
+              <span v-if="m.status === 'owner' || m.status === 'active'" class="inline-flex items-center gap-1.5 text-ditto-text"><span class="w-1.5 h-1.5 rounded-full bg-success"></span>Active</span>
+              <span v-else-if="m.status === 'pending'" class="inline-flex items-center gap-1.5 text-[#92400e]"><span class="w-1.5 h-1.5 rounded-full bg-warning"></span>Invited</span>
+              <span v-else class="inline-flex items-center gap-1.5 text-error"><span class="w-1.5 h-1.5 rounded-full bg-error"></span>Invite expired</span>
             </div>
+            <!-- Last login (its own column), or when the invite went out -->
+            <p class="text-xs text-ditto-subtext">
+              <template v-if="m.status === 'owner' || m.status === 'active'">{{ m.lastActive }}</template>
+              <template v-else>Invite sent {{ m.invitedOn }}</template>
+            </p>
             <!-- Actions -->
             <div class="relative justify-self-end" :ref="el => setMenuRef(m.id, el as HTMLElement | null)">
               <button v-if="m.status !== 'owner'" @click="menuFor = menuFor === m.id ? null : m.id" class="w-9 h-9 rounded-full hover:bg-ditto-light-grey flex items-center justify-center transition-colors" :aria-label="`Options for ${m.name}`">
@@ -159,7 +155,7 @@
               <div v-if="menuFor === m.id" class="absolute right-0 top-full mt-1 z-20 w-56 bg-white border border-gray-200 rounded-2xl shadow-xl p-1.5">
                 <button @click="openInvite(m)" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm text-ditto-text hover:bg-ditto-light-grey transition-colors">Change role or access</button>
                 <button v-if="m.status !== 'active'" @click="resend(m)" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm text-ditto-text hover:bg-ditto-light-grey transition-colors">Resend invite</button>
-                <button @click="removeMember(m)" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm text-error hover:bg-error/5 transition-colors">{{ m.status === 'active' ? 'Remove access' : 'Cancel invite' }}</button>
+                <button @click="removeMember(m)" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm text-error hover:bg-error/5 transition-colors">Remove access</button>
               </div>
             </div>
           </div>
@@ -168,33 +164,57 @@
         <p class="text-xs text-ditto-subtext px-1">People already on Ditto are active as soon as you add them. Anyone else shows as invited until they create a login. Added by and when is kept for every change; the account owner always has full control and can't be removed.</p>
       </div>
 
-      <!-- ── Roles at a glance ── -->
-      <aside class="bg-white rounded-2xl border border-gray-200 p-6">
-        <h3 class="font-satoshi font-black tracking-[-0.03em] text-lg text-ditto-text mb-1">What each role can do</h3>
-        <p class="text-sm text-ditto-subtext mb-5">Pick the smallest role that covers what they need. You can change it any time.</p>
-        <div class="overflow-x-auto -mx-2">
-          <table class="w-full text-xs min-w-[320px]">
-            <thead>
-              <tr class="text-ditto-subtext">
-                <th class="text-left font-medium pb-2 pl-2"></th>
-                <th v-for="r in roles" :key="r.id" class="font-semibold pb-2 text-ditto-text text-center px-1">{{ r.name }}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="cap in capabilities" :key="cap.id" class="border-t border-gray-100">
-                <td class="py-2.5 pl-2 pr-3 text-ditto-text leading-snug">{{ cap.label }}</td>
-                <td v-for="r in roles" :key="r.id" class="py-2.5 text-center">
-                  <template v-if="r.can[cap.id] === 'all'"><svg class="w-4 h-4 text-success inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></template>
-                  <template v-else-if="r.can[cap.id] === 'own'"><span class="inline-block text-[10px] font-semibold px-1.5 py-0.5 rounded bg-ditto-purple/10 text-ditto-purple">Own</span></template>
-                  <template v-else><span class="text-ditto-subtext/40">—</span></template>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+      <!-- ── Roles at a glance: a column on wide screens; below that, a closed disclosure
+           under the list, since the invite panel already lists the chosen role's rights ── -->
+      <aside class="bg-white rounded-2xl border border-gray-200 xl:p-6">
+        <button @click="rolesOpen = !rolesOpen" class="xl:hidden w-full flex items-center justify-between gap-3 px-6 py-4 text-left">
+          <span class="font-satoshi font-black tracking-[-0.03em] text-lg text-ditto-text">What each role can do</span>
+          <svg :class="['w-4 h-4 text-ditto-subtext transition-transform', rolesOpen ? 'rotate-180' : '']" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div :class="[rolesOpen ? 'block' : 'hidden', 'xl:block px-6 pb-6 xl:p-0']">
+          <h3 class="hidden xl:block font-satoshi font-black tracking-[-0.03em] text-lg text-ditto-text mb-1">What each role can do</h3>
+          <p class="text-sm text-ditto-subtext mb-5">Pick the smallest role that covers what they need. You can change it any time.</p>
+          <div class="overflow-x-auto -mx-2">
+            <table class="w-full text-xs min-w-[320px]">
+              <thead>
+                <tr class="text-ditto-subtext">
+                  <th class="text-left font-medium pb-2 pl-2"></th>
+                  <th v-for="r in roles" :key="r.id" class="font-semibold pb-2 text-ditto-text text-center px-1">{{ r.name }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="cap in capabilities" :key="cap.id" class="border-t border-gray-100">
+                  <td class="py-2.5 pl-2 pr-3 text-ditto-text leading-snug">{{ cap.label }}</td>
+                  <td v-for="r in roles" :key="r.id" class="py-2.5 text-center">
+                    <template v-if="r.can[cap.id] === 'all'"><svg class="w-4 h-4 text-success inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></template>
+                    <template v-else-if="r.can[cap.id] === 'own'"><span class="inline-block text-[10px] font-semibold px-1.5 py-0.5 rounded bg-ditto-purple/10 text-ditto-purple">Own</span></template>
+                    <template v-else><span class="text-ditto-subtext/40">—</span></template>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="text-[11px] text-ditto-subtext mt-4 leading-relaxed"><span class="font-semibold text-ditto-text">Own</span> means the artist's own releases and their own revenue split only. Managers and Reporters can be limited to selected artists when you invite them. Access per release is coming later.</p>
         </div>
-        <p class="text-[11px] text-ditto-subtext mt-4 leading-relaxed"><span class="font-semibold text-ditto-text">Own</span> means the artist's own releases and their own revenue split only. Managers and Reporters can be limited to selected artists when you invite them. Access per release is coming later.</p>
       </aside>
     </div>
+
+    <!-- First invite on an account with no organisation name: ask for it before the invite goes (30 Sep decision) -->
+    <Teleport to="body">
+      <div v-if="orgPrompt.open" class="fixed inset-0 z-[100] bg-black/40 flex items-center justify-center p-4" @click.self="orgPrompt.open = false">
+        <div class="w-full max-w-md bg-white rounded-2xl shadow-xl p-7">
+          <h3 class="font-satoshi font-black tracking-[-0.02em] text-xl text-ditto-text mb-2">What's this account called?</h3>
+          <p class="text-sm text-ditto-subtext leading-relaxed mb-5">People you give access to will see this name in their account switcher. It's kept separate from your own name, which publishing uses. You can change it later in Settings.</p>
+          <label class="block text-[13px] font-medium text-ditto-subtext mb-1.5">Organisation name</label>
+          <input v-model="orgPrompt.value" type="text" placeholder="e.g. Goldenboy Entertainment" :class="fieldClass" @keydown.enter="confirmOrganisation" />
+          <p v-if="orgPrompt.tried && !orgPrompt.value.trim()" class="text-xs text-error mt-1.5">Enter a name to continue.</p>
+          <div class="flex items-center gap-3 mt-6">
+            <button @click="confirmOrganisation" class="px-6 py-3 rounded-full bg-ditto-text text-white text-sm font-semibold hover:opacity-90 transition-opacity">Save and send invite</button>
+            <button @click="orgPrompt.open = false" class="px-5 py-3 rounded-full text-sm font-medium text-ditto-subtext hover:text-ditto-text transition-colors">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </Teleport>
   </div>
 </template>
 
@@ -202,6 +222,7 @@
 import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import { roles, capabilities, members as seedMembers, registeredDittoUsers, type Member, type RoleId } from '../../data/accountPermissionsMockData'
 import { artists } from '../../data/artistsMockData'
+import { accountOrganisation } from '../../data/accountOrganisation'
 
 const emit = defineEmits<{ (e: 'note', message: string): void }>()
 
@@ -273,10 +294,29 @@ const scopeError = computed(() => {
   return ''
 })
 
+// Roles panel disclosure (collapsed below the wide breakpoint)
+const rolesOpen = ref(false)
+
+// Organisation name gate: the first invite on a Label / RLS account without one asks for it
+const orgPrompt = reactive({ open: false, value: '', tried: false })
+const confirmOrganisation = () => {
+  orgPrompt.tried = true
+  if (!orgPrompt.value.trim()) return
+  accountOrganisation.name = orgPrompt.value.trim()
+  orgPrompt.open = false
+  submitInvite()
+}
+
 let nextId = 100
 const submitInvite = () => {
   form.submitted = true
   if (emailError.value || scopeError.value) return
+  if (!editing.value && !accountOrganisation.name.trim()) {
+    orgPrompt.value = ''
+    orgPrompt.tried = false
+    orgPrompt.open = true
+    return
+  }
   const scope: Member['scope'] = form.role === 'artist' || form.scope === 'artists' ? [...form.artistIds] : 'account'
   if (editing.value) {
     editing.value.role = form.role
@@ -312,7 +352,7 @@ const removeMember = (m: Member) => {
   const i = list.findIndex(x => x.id === m.id)
   if (i > -1) list.splice(i, 1)
   menuFor.value = null
-  emit('note', m.status === 'active' ? `${m.name} no longer has access` : `Invite to ${m.email} cancelled`)
+  emit('note', m.status === 'active' ? `${m.name} no longer has access` : `Access removed — the invite to ${m.email} no longer works`)
 }
 
 const onDocClick = (e: MouseEvent) => {

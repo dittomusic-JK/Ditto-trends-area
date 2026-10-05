@@ -244,7 +244,7 @@
 </template>
 
 <script setup lang="ts">
-import { currentOrganisation } from '../../data/currentOrganisation'
+import { accountProfile } from '../../data/accountMockData'
 import { computed, ref, inject } from 'vue'
 
 // The side-nav search overlay (GlobalSearch) needs clearance; top nav doesn't
@@ -308,7 +308,7 @@ const statusPillClass = (status: string) => {
 }
 
 // Greeting follows the organisation you're switched into
-const orgShortName = computed(() => currentOrganisation.name.split(' ')[0])
+const orgShortName = computed(() => accountProfile.name.split(' ')[0])
 </script>
 
 <style scoped>

@@ -57,15 +57,7 @@
       </div>
       <div class="min-w-0 flex-1">
         <p class="text-sm font-medium text-ditto-text truncate">{{ slot.fileName }}</p>
-        <p class="text-xs text-ditto-subtext">{{ slot.fileSize }}<template v-if="slot.summary"> · {{ slot.summary }}</template></p>
-        <p class="mt-2 inline-flex items-center gap-1.5 text-[11px] font-medium text-[#006633] bg-[#00e785]/10 px-2.5 py-1 rounded-full">
-          <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          Meets the spec
-        </p>
-        <div class="flex items-center gap-3 mt-2">
-          <button @click="triggerFileInput" class="text-xs font-medium text-ditto-purple hover:underline">Replace</button>
-          <button @click="removeFile" class="text-xs font-medium text-ditto-subtext hover:text-error">Remove</button>
-        </div>
+        <button @click="removeFile" class="mt-2 text-xs font-medium text-ditto-subtext hover:text-error">Remove</button>
       </div>
     </div>
 
