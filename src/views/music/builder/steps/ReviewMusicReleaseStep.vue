@@ -33,6 +33,7 @@
                   <WarnDot v-if="motionFiles.some(f => f.file.status === 'invalid')" tip="Motion artwork doesn't meet Apple's specification — remove or replace it" />
                   <WarnDot v-else-if="motionFiles.length === 1" tip="Apple needs both the 1:1 and the 3:4 version" />
                   <WarnDot v-else-if="!form.selectedStores.includes('apple-music')" tip="Apple Music isn't selected, so this motion artwork won't be delivered" />
+                  <WarnDot v-else-if="motionFiles.some(f => f.file.warning)" :tip="motionFiles.map(f => f.file.warning).filter(Boolean).join(' ')" />
                 </p>
                 <div class="flex gap-2">
                   <div v-for="f in motionFiles" :key="f.label" class="relative w-12 flex-shrink-0 rounded-lg overflow-hidden bg-ditto-light-grey" :class="f.portrait ? 'aspect-[3/4]' : 'aspect-square'" :title="f.file.fileName">
