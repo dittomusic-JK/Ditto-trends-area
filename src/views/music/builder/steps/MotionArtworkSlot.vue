@@ -40,24 +40,27 @@
       </div>
     </div>
 
-    <!-- Valid -->
-    <div v-else-if="slot.status === 'valid'" class="flex gap-3 items-start flex-1">
-      <div class="flex-shrink-0 border border-gray-200 rounded-xl p-1.5 bg-white" :class="ratio === 'portrait' ? 'w-[72px]' : 'w-24'">
+    <!-- Valid: the preview fills the slot, details sit beneath -->
+    <div v-else-if="slot.status === 'valid'" class="flex flex-col flex-1">
+      <div
+        class="w-full mx-auto rounded-xl overflow-hidden bg-ditto-light-grey"
+        :class="ratio === 'portrait' ? 'aspect-[3/4] max-w-[200px]' : 'aspect-square max-w-[240px]'"
+      >
         <video
           v-if="slot.previewUrl && !previewFailed"
           :src="slot.previewUrl"
-          class="w-full rounded-lg bg-black object-cover"
-          :class="ratio === 'portrait' ? 'aspect-[3/4]' : 'aspect-square'"
+          class="w-full h-full object-cover"
           autoplay muted loop playsinline
           @error="previewFailed = true"
         ></video>
-        <div v-else class="w-full rounded-lg bg-ditto-light-grey flex items-center justify-center" :class="ratio === 'portrait' ? 'aspect-[3/4]' : 'aspect-square'" title="ProRes can't preview in the browser.">
-          <svg class="w-5 h-5 text-ditto-subtext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><polygon points="10,8 16,12 10,16"/></svg>
+        <div v-else class="w-full h-full flex flex-col items-center justify-center gap-2 text-ditto-subtext" title="ProRes can't preview in the browser.">
+          <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><polygon points="10,8 16,12 10,16"/></svg>
+          <span class="text-[11px]">No browser preview for ProRes</span>
         </div>
       </div>
-      <div class="min-w-0 flex-1">
-        <p class="text-sm font-medium text-ditto-text truncate">{{ slot.fileName }}</p>
-        <button @click="removeFile" class="mt-2 text-xs font-medium text-ditto-subtext hover:text-error">Remove</button>
+      <div class="flex items-center justify-between gap-3 mt-3 min-w-0">
+        <p class="text-sm font-medium text-ditto-text truncate" :title="slot.fileName">{{ slot.fileName }}</p>
+        <button @click="removeFile" class="flex-shrink-0 text-xs font-medium text-ditto-subtext hover:text-error">Remove</button>
       </div>
     </div>
 
