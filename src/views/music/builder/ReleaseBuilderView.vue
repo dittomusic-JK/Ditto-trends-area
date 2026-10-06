@@ -115,12 +115,10 @@ export interface MotionArtworkFile {
   errors: string[]
   summary: string
   unverified: string
-  /** Advisory only (e.g. H.264 bitrate outside Apple's guide) — never blocks */
-  warning: string
 }
 
 const emptyMotionFile = (): MotionArtworkFile =>
-  ({ file: null, previewUrl: null, fileName: '', fileSize: '', status: '', errors: [], summary: '', unverified: '', warning: '' })
+  ({ file: null, previewUrl: null, fileName: '', fileSize: '', status: '', errors: [], summary: '', unverified: '' })
 
 export interface MotionArtwork {
   enabled: boolean

@@ -44,9 +44,8 @@
         <p class="text-xs font-semibold text-ditto-subtext uppercase tracking-wide mb-4">Apple's specification</p>
         <ul class="space-y-2.5">
           <li v-for="spec in specs" :key="spec.label" class="flex items-start gap-2.5 text-xs leading-snug">
-            <svg class="w-3.5 h-3.5 flex-shrink-0 mt-px" :class="specState(spec.key) === 'fail' ? 'text-error' : specState(spec.key) === 'warn' ? 'text-warning' : specState(spec.key) === 'pass' ? 'text-[#00b368]' : 'text-ditto-subtext/50'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <svg class="w-3.5 h-3.5 flex-shrink-0 mt-px" :class="specState(spec.key) === 'fail' ? 'text-error' : specState(spec.key) === 'pass' ? 'text-[#00b368]' : 'text-ditto-subtext/50'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <template v-if="specState(spec.key) === 'fail'"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></template>
-              <template v-else-if="specState(spec.key) === 'warn'"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="12.5"/><line x1="12" y1="16" x2="12.01" y2="16"/></template>
               <polyline v-else points="20 6 9 17 4 12"/>
             </svg>
             <span :class="specState(spec.key) === 'fail' ? 'text-error' : 'text-ditto-text'"><span class="font-medium">{{ spec.label }}</span> <span class="text-ditto-subtext">— {{ spec.value }}</span></span>
@@ -75,16 +74,15 @@ const specs: { key: MotionSpecKey; label: string; value: string }[] = [
   { key: 'audio', label: 'Audio', value: 'No audio track' },
   { key: 'colour', label: 'Colour profile', value: 'Rec. 709 or sRGB' },
   { key: 'pixels', label: 'Pixel aspect', value: '1:1 (square pixels)' },
-  { key: 'bitrate', label: 'Bitrate', value: '45–100 Mbps for H.264 (advisory)' },
+  { key: 'bitrate', label: 'Bitrate', value: '45–100 Mbps (H.264 exports)' },
 ]
 
 // Spec ticks reflect both files: a row fails if either file failed it, passes once both are valid
 const failedBySlot = reactive<{ square: Set<MotionSpecKey>; portrait: Set<MotionSpecKey> }>({ square: new Set(), portrait: new Set() })
 const hasInvalid = computed(() => ma.value.square.status === 'invalid' || ma.value.portrait.status === 'invalid')
 const bothValid = computed(() => ma.value.square.status === 'valid' && ma.value.portrait.status === 'valid')
-// Bitrate is advisory (Apple's own samples fall outside the guide), so it warns rather than fails
-const specState = (key: MotionSpecKey): 'idle' | 'pass' | 'fail' | 'warn' => {
-  if (failedBySlot.square.has(key) || failedBySlot.portrait.has(key)) return key === 'bitrate' ? 'warn' : 'fail'
+const specState = (key: MotionSpecKey): 'idle' | 'pass' | 'fail' => {
+  if (failedBySlot.square.has(key) || failedBySlot.portrait.has(key)) return 'fail'
   if (bothValid.value || hasInvalid.value) return 'pass'
   return 'idle'
 }

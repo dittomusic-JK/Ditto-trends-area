@@ -57,7 +57,6 @@
       </div>
       <div class="min-w-0 flex-1">
         <p class="text-sm font-medium text-ditto-text truncate">{{ slot.fileName }}</p>
-        <p v-if="slot.warning" class="text-xs text-[#92400e] mt-1 leading-snug">{{ slot.warning }}</p>
         <button @click="removeFile" class="mt-2 text-xs font-medium text-ditto-subtext hover:text-error">Remove</button>
       </div>
     </div>
@@ -113,7 +112,7 @@ const removeFile = () => {
   const m = props.slot
   if (m.previewUrl) URL.revokeObjectURL(m.previewUrl)
   m.file = null; m.previewUrl = null; m.fileName = ''; m.fileSize = ''
-  m.status = ''; m.errors = []; m.summary = ''; m.unverified = ''; m.warning = ''
+  m.status = ''; m.errors = []; m.summary = ''; m.unverified = ''
   previewFailed.value = false
   if (fileInputRef.value) fileInputRef.value.value = ''
   emit('checked', new Set())
@@ -135,7 +134,6 @@ const handleFile = async (file: File) => {
   m.status = 'checking'
   m.errors = []
   m.unverified = ''
-  m.warning = ''
   m.summary = ''
   m.previewUrl = URL.createObjectURL(file)
   progress.value = 0
@@ -173,13 +171,8 @@ const handleFile = async (file: File) => {
     if (probe.pixelAspect && probe.pixelAspect.h !== probe.pixelAspect.v) {
       errors.push(`Pixel aspect ${probe.pixelAspect.h}:${probe.pixelAspect.v} — needs square pixels.`); failed.add('pixels')
     }
-    const isH264 = probe.codecTag === 'avc1' || probe.codecTag === 'avc3'
-    // Apple's guide says 45–100 Mbps for H.264, yet Apple's own sample files sit around
-    // 15 Mbps — so bitrate is advisory only and never blocks the upload.
-    if (isH264 && probe.bitrateMbps !== null && (probe.bitrateMbps < 45 || probe.bitrateMbps > 100)) {
-      m.warning = `Bitrate ${Math.round(probe.bitrateMbps)} Mbps — Apple's guide says 45 to 100 Mbps for H.264. This won't block your release.`
-      failed.add('bitrate')
-    }
+    // Bitrate isn't checked: Apple's guide says 45–100 Mbps for H.264, but Apple's own
+    // sample files sit around 15 Mbps, so the rule rejected Apple's reference material.
 
     // Only what the slot header (resolution) and the spec panel (every rule) don't already say
     m.summary = [
