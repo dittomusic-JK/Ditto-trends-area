@@ -44,8 +44,16 @@
         <span class="basket-row__arrow">→</span>
       </div>
       <div class="basket-row__details">
-        <span class="basket-row__service-name">{{ svc.name }}</span>
+        <span class="basket-row__service-name">
+          {{ svc.name }}
+          <!-- Priority Distro follows the release date; say how to remove it -->
+          <span v-if="svc.name === 'Priority Distro'" class="basket-row__info">
+            <span class="basket-row__info-icon" aria-label="How to remove Priority Distro">i</span>
+            <span class="basket-row__tooltip">Priority Distro is set by your release date. To remove it, edit the release and choose a date more than 10 days away.</span>
+          </span>
+        </span>
         <span v-if="svc.name === 'Pre-release Downloads'" class="basket-row__meta">{{ item.release.releaseDate }}</span>
+        <span v-else-if="svc.name === 'Priority Distro'" class="basket-row__meta">Release within 10 days · {{ item.release.releaseDate }}</span>
       </div>
       <div class="basket-row__actions-cell"></div>
       <div class="basket-row__total">
@@ -173,6 +181,47 @@ const releaseArtworkSrc = (releaseId: string): string => releaseArtworkById[rele
     font-size: 0.8125rem;
     font-weight: 500;
     color: var(--blue);
+  }
+
+  &__info {
+    position: relative;
+    display: inline-flex;
+    margin-left: 0.3rem;
+    vertical-align: middle;
+
+    &:hover .basket-row__tooltip { opacity: 1; visibility: visible; }
+  }
+
+  &__info-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 0.95rem;
+    height: 0.95rem;
+    border-radius: 9999px;
+    background: rgba(146, 64, 14, 0.12);
+    color: #92400e;
+    font-size: 0.6rem;
+    font-weight: 700;
+    cursor: help;
+  }
+
+  &__tooltip {
+    position: absolute;
+    left: 0;
+    top: calc(100% + 0.35rem);
+    z-index: 20;
+    width: 16rem;
+    padding: 0.6rem 0.7rem;
+    border-radius: 0.5rem;
+    background: var(--blue);
+    color: #fff;
+    font-size: $text-xs;
+    font-weight: 400;
+    line-height: 1.4;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.15s, visibility 0.15s;
   }
 
   &__service-detail {

@@ -39,23 +39,26 @@
               :disabled="cell.disabled || !cell.inMonth"
               @click="selectDate(cell.date)"
               :class="[
-                'relative h-8 rounded-lg text-[13px] transition-colors',
+                'relative h-8 text-[13px] transition-colors',
+                // Priority window: a continuous amber band across the 3–9 day cells
+                cell.inMonth && !cell.disabled && cell.priorityOnly && !isSelected(cell.date) ? 'bg-[#fdf1cc] text-[#92400e] font-semibold hover:bg-[#fbe4a3]' : 'rounded-lg',
+                cell.inMonth && !cell.disabled && cell.priorityOnly ? priorityEdgeClass(cell) : '',
                 !cell.inMonth ? 'text-gray-300' :
                 cell.disabled ? 'text-gray-300 cursor-not-allowed' :
-                isSelected(cell.date) ? 'bg-ditto-purple text-white font-bold' :
+                isSelected(cell.date) ? 'bg-ditto-purple text-white font-bold rounded-lg' :
+                cell.priorityOnly ? '' :
                 cell.isToday ? 'text-ditto-purple font-bold ring-1 ring-inset ring-ditto-purple/40' :
                 'text-ditto-text hover:bg-ditto-light-grey'
               ]"
             >
               {{ cell.day }}
-              <span v-if="cell.inMonth && !cell.disabled && cell.priorityOnly" class="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-warning"></span>
+              <!-- Selected inside the window: a lightning mark so the consequence is visible on the date itself -->
+              <svg v-if="cell.inMonth && cell.priorityOnly && isSelected(cell.date)" class="absolute top-0.5 right-0.5 w-2.5 h-2.5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg>
             </button>
           </div>
-          <div class="mt-3 flex justify-end">
-            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-warning/15 text-[#92400e] text-[11px] font-semibold">
-              <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg>
-              Priority Distro Only
-            </span>
+          <div class="mt-3 flex items-start gap-2 text-[11px] text-ditto-subtext leading-snug">
+            <span class="mt-0.5 w-3.5 h-3.5 rounded-[4px] bg-[#fdf1cc] border border-[#f5c451] flex-shrink-0"></span>
+            <span><span class="font-semibold text-[#92400e]">Priority Distro only</span> — dates within 10 days need Priority Distro (£40) to reach stores in time.</span>
           </div>
         </div>
       </div>
@@ -361,6 +364,15 @@ const calendarCells = computed(() => {
 
 const prevMonth = () => { viewMonth.value = new Date(viewMonth.value.getFullYear(), viewMonth.value.getMonth() - 1, 1) }
 const nextMonth = () => { viewMonth.value = new Date(viewMonth.value.getFullYear(), viewMonth.value.getMonth() + 1, 1) }
+
+// Round only the outer corners of the amber band so it reads as one strip per row
+const priorityEdgeClass = (cell: { date: Date }) => {
+  const diff = daysFromToday(cell.date)
+  const col = (cell.date.getDay() + 6) % 7
+  const first = diff === 3 || col === 0
+  const last = diff === 9 || col === 6
+  return [first ? 'rounded-l-lg' : '', last ? 'rounded-r-lg' : ''].join(' ')
+}
 
 const isSelected = (d: Date) =>
   props.form.releaseDate !== null && d.getTime() === props.form.releaseDate.getTime()
