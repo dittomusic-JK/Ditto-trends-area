@@ -48,8 +48,12 @@
           {{ svc.name }}
           <!-- Priority Distro follows the release date; say how to remove it -->
           <span v-if="svc.name === 'Priority Distro'" class="basket-row__info">
-            <span class="basket-row__info-icon" aria-label="How to remove Priority Distro">i</span>
-            <span class="basket-row__tooltip">Priority Distro is set by your release date. To remove it, edit the release and choose a date more than 10 days away.</span>
+            <span
+              class="basket-row__info-icon"
+              aria-label="How to remove Priority Distro"
+              @mouseenter="showPriorityTip"
+              @mouseleave="priorityTip.visible = false"
+            >i</span>
           </span>
         </span>
         <span v-if="svc.name === 'Pre-release Downloads'" class="basket-row__meta">{{ item.release.releaseDate }}</span>
@@ -73,10 +77,20 @@
       @apply="voucherId => $emit('applyVoucher', item.release.id, voucherId)"
       @remove="$emit('removeVoucher', item.release.id)"
     />
-  </div>
+    <!-- The basket table clips overflow for its rounded corners, so the tooltip is fixed to the body -->
+  <Teleport to="body">
+    <span
+      v-if="priorityTip.visible"
+      class="basket-row__tooltip"
+      :style="{ top: priorityTip.top + 'px', left: priorityTip.left + 'px' }"
+      role="tooltip"
+    >Priority Distro is set by your release date. To remove it, edit the release and choose a date more than 10 days away.</span>
+  </Teleport>
+</div>
 </template>
 
 <script setup lang="ts">
+import { reactive } from 'vue'
 import type { BasketItem, VoucherOption } from '../../basketTypes'
 import VoucherPicker from './VoucherPicker.vue'
 
@@ -86,6 +100,15 @@ defineProps<{
   appliedVoucher?: VoucherOption | null
   freedServiceIds?: string[]
 }>()
+
+const TOOLTIP_WIDTH = 256
+const priorityTip = reactive({ visible: false, top: 0, left: 0 })
+function showPriorityTip(e: MouseEvent) {
+  const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
+  priorityTip.top = rect.bottom + 6
+  priorityTip.left = Math.max(8, Math.min(rect.left - 8, window.innerWidth - TOOLTIP_WIDTH - 8))
+  priorityTip.visible = true
+}
 
 defineEmits<{
   edit: [releaseId: string]
@@ -188,8 +211,6 @@ const releaseArtworkSrc = (releaseId: string): string => releaseArtworkById[rele
     display: inline-flex;
     margin-left: 0.3rem;
     vertical-align: middle;
-
-    &:hover .basket-row__tooltip { opacity: 1; visibility: visible; }
   }
 
   &__info-icon {
@@ -199,18 +220,16 @@ const releaseArtworkSrc = (releaseId: string): string => releaseArtworkById[rele
     width: 0.95rem;
     height: 0.95rem;
     border-radius: 9999px;
-    background: rgba(146, 64, 14, 0.12);
-    color: #92400e;
+    background: rgba(98, 105, 132, 0.14);
+    color: #626984;
     font-size: 0.6rem;
     font-weight: 700;
     cursor: help;
   }
 
   &__tooltip {
-    position: absolute;
-    left: 0;
-    top: calc(100% + 0.35rem);
-    z-index: 20;
+    position: fixed;
+    z-index: 1100;
     width: 16rem;
     padding: 0.6rem 0.7rem;
     border-radius: 0.5rem;
@@ -219,9 +238,7 @@ const releaseArtworkSrc = (releaseId: string): string => releaseArtworkById[rele
     font-size: $text-xs;
     font-weight: 400;
     line-height: 1.4;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.15s, visibility 0.15s;
+    pointer-events: none;
   }
 
   &__service-detail {

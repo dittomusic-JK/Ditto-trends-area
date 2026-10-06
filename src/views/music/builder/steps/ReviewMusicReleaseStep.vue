@@ -61,15 +61,15 @@
 
               <!-- Release schedule: distribution type, date and time in one place, so Priority Distro is never a surprise -->
               <div class="mt-6 grid sm:grid-cols-3 gap-3">
-                <div :class="['relative group rounded-xl px-4 py-3', isPriority ? 'bg-[#fdf1cc]' : 'bg-ditto-light-grey']">
-                  <p :class="['text-[11px] font-semibold uppercase tracking-wide mb-1', isPriority ? 'text-[#92400e]/70' : 'text-ditto-subtext']">Distribution</p>
+                <div :class="['relative group rounded-xl px-4 py-3', isPriority ? 'bg-[#efe9ff]' : 'bg-ditto-light-grey']">
+                  <p :class="['text-[11px] font-semibold uppercase tracking-wide mb-1', isPriority ? 'text-[#7f5fe0]' : 'text-ditto-subtext']">Distribution</p>
                   <template v-if="isPriority">
-                    <p class="flex items-center gap-1.5 text-sm font-bold text-[#92400e]">
+                    <p class="flex items-center gap-1.5 text-sm font-bold text-ditto-purple">
                       <svg class="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg>
                       Priority Distro
-                      <span class="inline-flex w-3.5 h-3.5 rounded-full bg-[#92400e]/15 text-[#92400e] items-center justify-center text-[9px] font-bold cursor-help">i</span>
+                      <span class="inline-flex w-3.5 h-3.5 rounded-full bg-[#dcd0ff] text-ditto-purple items-center justify-center text-[9px] font-bold cursor-help">i</span>
                     </p>
-                    <p class="text-xs text-[#92400e]/80 mt-0.5">Release within 10 days · £40</p>
+                    <p class="text-xs text-[#7f5fe0] mt-0.5">Release within 10 days · £40</p>
                     <!-- Hover: how to take it off -->
                     <div class="absolute left-0 top-full mt-1.5 z-10 w-64 p-2.5 bg-ditto-text text-white text-xs rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all leading-snug">
                       Priority Distro is set by your release date. To remove it, choose a date more than 10 days away on the Schedule step.
@@ -238,7 +238,7 @@
             <div class="space-y-2">
               <div v-for="line in orderLines" :key="line.label" class="flex items-center justify-between gap-3 text-sm">
                 <span class="text-ditto-subtext flex items-center gap-1.5 min-w-0">
-                  <svg v-if="line.label === 'Priority Distro'" class="w-3.5 h-3.5 text-[#92400e] flex-shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg>
+                  <svg v-if="line.label === 'Priority Distro'" class="w-3.5 h-3.5 text-ditto-purple flex-shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg>
                   <span class="truncate">{{ line.label }}</span>
                 </span>
                 <span class="font-semibold text-ditto-text tabular-nums">£{{ line.price }}</span>
