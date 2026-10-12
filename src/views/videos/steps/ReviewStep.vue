@@ -215,10 +215,6 @@
             <p class="text-sm text-ditto-text">{{ vevoChannelDisplayName }}</p>
           </div>
           <div>
-            <p class="text-xs text-ditto-subtext">Artist Name:</p>
-            <p class="text-sm text-ditto-text">{{ formData.stores.vevoArtistName || 'Not set' }}</p>
-          </div>
-          <div>
             <p class="text-xs text-ditto-subtext">Biography:</p>
             <p class="text-sm text-ditto-text">{{ formData.stores.vevoBiography ? 'Provided' : 'Not set' }}</p>
           </div>
@@ -422,7 +418,6 @@ interface FormData {
     selected: string[]
     vevoHasChannel: boolean | null
     vevoChannelName: string
-    vevoArtistName: string
     vevoBiography: string
     vevoArtistImage: File | null
     vevoBanner: File | null
@@ -469,10 +464,8 @@ const vevoChannelDisplayName = computed(() => {
     return props.formData.stores.vevoChannelName || 'Not entered'
   }
   if (props.formData.stores.vevoHasChannel === false) {
-    if (props.formData.stores.vevoChannelName) return props.formData.stores.vevoChannelName
-    return props.formData.stores.vevoArtistName
-      ? props.formData.stores.vevoArtistName.replace(/[^A-Za-z0-9]/g, '') + 'VEVO (auto)'
-      : 'Will be auto-generated'
+    const base = props.formData.stores.vevoChannelName.trim().replace(/vevo$/i, '')
+    return base ? base + 'VEVO' : 'Not entered'
   }
   return 'Not configured'
 })

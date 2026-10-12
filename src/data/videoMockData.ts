@@ -206,6 +206,20 @@ export const videoStores = [
   { id: 'amazon', name: 'Amazon Music', logo: '/img/amazonmusic-icon.svg', info: 'Appears alongside the matching track on Amazon Music, accessible to Prime and Unlimited subscribers.' },
 ]
 
+// VEVO channels this account has already set up through Ditto
+export interface VevoChannel {
+  id: string
+  name: string
+  artist: string
+  status: 'Live' | 'Pending'
+}
+
+export const existingVevoChannels: VevoChannel[] = [
+  { id: 'vc-1', name: 'DarkooVEVO', artist: 'Darkoo', status: 'Live' },
+  { id: 'vc-2', name: 'AlmostJoeyVEVO', artist: 'Almost Joey', status: 'Live' },
+  { id: 'vc-3', name: 'RugerVEVO', artist: 'Ruger', status: 'Pending' },
+]
+
 // Spotify Music Releases — user's releases currently live on Spotify
 export interface TrackCredit {
   name: string
