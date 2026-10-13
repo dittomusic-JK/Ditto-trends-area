@@ -115,7 +115,7 @@
             ]">
               <input type="radio" name="vevoHasChannel" :checked="stores.vevoHasChannel === false" @change="updateField('vevoHasChannel', false)" class="mt-0.5 accent-ditto-purple" />
               <div>
-                <p class="text-sm text-ditto-text">No - There is no existing VEVO channel.</p>
+                <p class="text-sm text-ditto-text"><strong>No</strong> — there is no existing VEVO channel.</p>
                 <p class="text-xs text-ditto-subtext mt-0.5">We'll set one up with the channel name you choose below.</p>
               </div>
             </label>
@@ -125,7 +125,8 @@
             ]">
               <input type="radio" name="vevoHasChannel" :checked="stores.vevoHasChannel === true" @change="updateField('vevoHasChannel', true)" class="mt-0.5 accent-ditto-purple" />
               <div>
-                <p class="text-sm text-ditto-text">Yes - There is an existing VEVO channel</p>
+                <p class="text-sm text-ditto-text"><strong>Yes</strong> — there is an existing VEVO channel</p>
+                <p class="text-xs text-ditto-subtext mt-0.5">Whether it was set up through Ditto or elsewhere.</p>
               </div>
             </label>
           </div>
@@ -136,6 +137,7 @@
           <template v-if="existingVevoChannels.length">
             <p class="text-xs font-medium text-ditto-subtext mb-2">Channels set up in Ditto</p>
             <div class="space-y-2">
+              <div :class="['space-y-2', existingVevoChannels.length > 5 ? 'max-h-[300px] overflow-y-auto pr-1 -mr-1' : '']">
               <label
                 v-for="ch in existingVevoChannels"
                 :key="ch.id"
@@ -151,12 +153,13 @@
                 </div>
                 <span :class="['text-[10px] font-semibold px-2 py-0.5 rounded-full', ch.status === 'Live' ? 'bg-[#e6fbf1] text-[#0f8a4f]' : 'bg-ditto-light-grey text-ditto-subtext']">{{ ch.status }}</span>
               </label>
+              </div>
               <label :class="[
                 'flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all',
                 useOtherChannel ? 'border-ditto-purple bg-white' : 'border-gray-200 bg-white/50 hover:border-gray-300'
               ]">
                 <input type="radio" name="vevoExistingChannel" :checked="useOtherChannel" @change="chooseOtherChannel" class="accent-ditto-purple" />
-                <p class="text-sm text-ditto-text">A different channel</p>
+                <p class="text-sm text-ditto-text"><strong>A different channel</strong></p>
               </label>
             </div>
           </template>

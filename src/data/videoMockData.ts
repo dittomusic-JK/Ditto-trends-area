@@ -218,6 +218,10 @@ export const existingVevoChannels: VevoChannel[] = [
   { id: 'vc-1', name: 'DarkooVEVO', artist: 'Darkoo', status: 'Live' },
   { id: 'vc-2', name: 'AlmostJoeyVEVO', artist: 'Almost Joey', status: 'Live' },
   { id: 'vc-3', name: 'RugerVEVO', artist: 'Ruger', status: 'Pending' },
+  { id: 'vc-4', name: 'RemaVEVO', artist: 'Rema', status: 'Live' },
+  { id: 'vc-5', name: 'DavidoVEVO', artist: 'Davido', status: 'Live' },
+  { id: 'vc-6', name: 'RvssianVEVO', artist: 'Rvssian', status: 'Live' },
+  { id: 'vc-7', name: 'JeleelVEVO', artist: 'JELEEL!', status: 'Pending' },
 ]
 
 // Spotify Music Releases — user's releases currently live on Spotify
