@@ -143,12 +143,13 @@
         <p class="text-xs text-ditto-subtext">Your release will not be available in the selected countries.</p>
         <div class="flex flex-wrap items-center gap-2">
           <span
-            v-for="country in form.restrictedCountries"
-            :key="country"
+            v-for="chip in restrictionChips(form.restrictedCountries)"
+            :key="chip.label"
             class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-error/10 text-error"
+            :title="chip.kind === 'continent' ? chip.countries.join(', ') : ''"
           >
-            {{ country }}
-            <button @click="removeCountry(country)" class="hover:opacity-70" :aria-label="'Remove ' + country">
+            {{ chip.label }}
+            <button @click="form.restrictedCountries = withoutChip(form.restrictedCountries, chip)" class="hover:opacity-70" :aria-label="'Remove ' + chip.label">
               <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
           </span>
@@ -318,6 +319,7 @@
 import { computed, ref, watch, onMounted, onUnmounted } from 'vue'
 import { chartRegions } from '../../../../data/releaseBuilderMockData'
 import CountryRestrictionsModal from '../../../videos/steps/CountryRestrictionsModal.vue'
+import { restrictionChips, withoutChip } from '../../../../data/countryRestrictions'
 import type { ReleaseBuilderForm } from '../ReleaseBuilderView.vue'
 
 const props = defineProps<{ form: ReleaseBuilderForm }>()
@@ -402,9 +404,6 @@ onUnmounted(() => document.removeEventListener('click', handleClickOutside))
 
 // ── Country restrictions (same popup as the video builder) ──
 const showCountryModal = ref(false)
-const removeCountry = (country: string) => {
-  props.form.restrictedCountries = props.form.restrictedCountries.filter(c => c !== country)
-}
 
 // ── Extras ──
 const toggleChartRegion = (id: string) => {

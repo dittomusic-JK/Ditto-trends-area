@@ -186,10 +186,11 @@
           <p class="text-[10px] text-ditto-subtext mb-1">Restricted in:</p>
           <div class="flex flex-wrap gap-1">
             <span
-              v-for="country in formData.schedule.restrictedCountries"
-              :key="country"
+              v-for="chip in restrictionChips(formData.schedule.restrictedCountries)"
+              :key="chip.label"
               class="px-2 py-0.5 rounded text-[10px] bg-error/10 text-error"
-            >{{ country }}</span>
+              :title="chip.kind === 'continent' ? chip.countries.join(', ') : ''"
+            >{{ chip.label }}</span>
           </div>
         </div>
       </div>
@@ -325,7 +326,7 @@
             <p class="text-sm text-ditto-text">Country Restrictions</p>
           </div>
           <span class="text-xs font-medium text-ditto-subtext bg-ditto-light-grey px-2.5 py-1 rounded-full">
-            {{ formData.schedule.countryRestrictions && formData.schedule.restrictedCountries.length > 0 ? formData.schedule.restrictedCountries.length + ' countries' : 'None' }}
+            {{ formData.schedule.countryRestrictions && formData.schedule.restrictedCountries.length > 0 ? restrictionSummary(formData.schedule.restrictedCountries).replace(' restricted', '') : 'None' }}
           </span>
         </div>
 
@@ -362,6 +363,7 @@
 </template>
 
 <script setup lang="ts">
+import { restrictionChips, restrictionSummary } from '../../../data/countryRestrictions'
 import { computed } from 'vue'
 import { videoStores, spotifyMusicReleases } from '../../../data/videoMockData'
 
