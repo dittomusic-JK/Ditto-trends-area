@@ -1,6 +1,6 @@
 <template>
   <!-- Mobile Header -->
-  <header class="md:hidden h-16 flex items-center justify-between px-4 border-b border-gray-200 bg-white">
+  <header class="lg:hidden h-16 flex items-center justify-between px-4 border-b border-gray-200 bg-white">
     <button @click="emit('navigate', 'home')" aria-label="Ditto home">
       <img src="/img/logo-2048-black.svg" alt="Ditto" class="h-6 dark:invert" />
     </button>
@@ -22,7 +22,7 @@
 
   <!-- Mobile Slide-out Menu -->
   <Transition name="slide">
-    <div v-if="showMobileMenu" class="md:hidden fixed inset-0 top-16 z-40 bg-white flex flex-col">
+    <div v-if="showMobileMenu" class="lg:hidden fixed inset-0 top-16 z-40 bg-white flex flex-col">
       <div class="flex-1 overflow-y-auto overscroll-contain">
         <!-- Profile (expands into the user subnav) -->
         <button @click="showUserMenu = !showUserMenu" class="w-full flex items-center gap-3 px-5 py-4 text-left bg-gradient-to-r from-ditto-purple/10 to-transparent border-b border-gray-100">
@@ -144,15 +144,15 @@
   </Transition>
   
   <!-- Desktop Header -->
-  <header class="hidden md:flex h-[80px] items-center justify-between px-8 lg:px-12 border-b border-ditto-border-grey bg-white">
+  <header class="hidden lg:flex h-[80px] items-center justify-between px-6 xl:px-12 border-b border-ditto-border-grey bg-white">
     <!-- Logo and Nav -->
-    <div class="flex items-center gap-8">
-      <button @click="emit('navigate', 'home')" aria-label="Ditto home" class="cursor-pointer">
+    <div class="flex items-center gap-6 xl:gap-8">
+      <button @click="emit('navigate', 'home')" aria-label="Ditto home" class="cursor-pointer flex-shrink-0">
         <img src="/img/logo-2048-black.svg" alt="Ditto" class="h-8 dark:invert" />
       </button>
       
       <!-- Nav Items -->
-      <nav class="relative flex items-center gap-6" ref="navRef">
+      <nav class="relative flex items-center gap-4 xl:gap-6 whitespace-nowrap" ref="navRef">
         <template v-for="item in navEntries" :key="item.id">
           <!-- Flat link -->
           <button
@@ -207,20 +207,20 @@
     </div>
     
     <!-- Right side actions -->
-    <div class="flex items-center gap-3">
+    <div class="flex items-center gap-1.5 xl:gap-3 flex-shrink-0">
       <!-- Brand lime: reserved for conversion moments (btn-lime — lime bg, ink text, hover lift) -->
-      <button @click="emit('navigate', 'subscriptions')" class="px-3.5 py-1.5 text-xs font-bold rounded-full bg-[#E6FF3A] text-[#0a0a0a] hover:-translate-y-0.5 transition-transform flex items-center gap-1.5">
+      <button @click="emit('navigate', 'subscriptions')" class="px-2.5 xl:px-3.5 py-1.5 text-xs font-bold rounded-full bg-[#E6FF3A] text-[#0a0a0a] hover:-translate-y-0.5 transition-transform flex items-center gap-1.5">
         <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2z"/></svg>
         Upgrade
       </button>
       
-      <button class="relative w-9 h-9 flex items-center justify-center text-ditto-subtext hover:text-ditto-text transition-colors" @click="emit('toggle-basket')">
+      <button class="relative w-8 xl:w-9 h-9 flex items-center justify-center text-ditto-subtext hover:text-ditto-text transition-colors" @click="emit('toggle-basket')">
         <img src="/img/nav-basket.svg" alt="Basket" class="w-5 h-5 opacity-50 hover:opacity-100 transition-opacity" />
         <span v-if="basketCount > 0" class="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 flex items-center justify-center rounded-full bg-ditto-purple text-white text-[10px] font-bold leading-none">{{ basketCount }}</span>
       </button>
       
       <div class="relative" ref="helpDropdownRef">
-        <button @click="showHelpMenu = !showHelpMenu" class="w-9 h-9 flex items-center justify-center text-ditto-subtext hover:text-ditto-text transition-colors">
+        <button @click="showHelpMenu = !showHelpMenu" class="w-8 xl:w-9 h-9 flex items-center justify-center text-ditto-subtext hover:text-ditto-text transition-colors">
           <img src="/img/nav-help.svg" alt="Help" class="w-5 h-5 opacity-50 hover:opacity-100 transition-opacity" />
         </button>
         <div v-if="showHelpMenu" class="absolute right-0 top-full mt-2 w-56 bg-white rounded-2xl shadow-xl border border-gray-200 py-2 z-50">
@@ -241,7 +241,7 @@
       <div class="relative" ref="createDropdownRef">
         <button 
           @click="showCreateMenu = !showCreateMenu"
-          class="group relative px-4 py-1.5 text-sm font-semibold rounded-full text-white flex items-center gap-2 overflow-hidden transition-all hover:shadow-lg hover:shadow-ditto-purple/30 hover:scale-105 active:scale-100 animate-gradient-shift"
+          class="group relative px-3 xl:px-4 py-1.5 text-sm font-semibold rounded-full text-white flex items-center gap-2 overflow-hidden transition-all hover:shadow-lg hover:shadow-ditto-purple/30 hover:scale-105 active:scale-100 animate-gradient-shift"
           style="background: linear-gradient(135deg, #5f1fff, #8640f4, #a855f7); background-size: 200% 200%"
         >
           <img src="/img/master-distro-icon.svg" alt="" class="w-4 h-4 relative z-10" />
@@ -274,11 +274,11 @@
       
       <!-- User Avatar Dropdown -->
       <div class="relative" ref="avatarDropdownRef">
-        <button @click="showAvatarMenu = !showAvatarMenu" class="flex items-center gap-2">
+        <button @click="showAvatarMenu = !showAvatarMenu" class="flex items-center gap-1.5 xl:gap-2">
           <div class="w-9 h-9 rounded-full bg-ditto-purple overflow-hidden flex items-center justify-center">
             <img src="/img/avatar.jpg" alt="User" class="w-full h-full object-cover" />
           </div>
-          <svg class="w-3 h-3 text-ditto-subtext transition-transform" :class="showAvatarMenu ? 'rotate-180' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <svg class="hidden xl:block w-3 h-3 text-ditto-subtext transition-transform" :class="showAvatarMenu ? 'rotate-180' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
         <div v-if="showAvatarMenu" class="absolute right-0 top-full mt-2 w-64 bg-white rounded-2xl shadow-xl border border-gray-200 py-2 z-50">
           <!-- User Info -->
