@@ -1,6 +1,6 @@
 <template>
   <!-- Mobile Header -->
-  <header class="lg:hidden h-16 flex items-center justify-between px-4 border-b border-gray-200 bg-white">
+  <header class="md:hidden h-16 flex items-center justify-between px-4 border-b border-gray-200 bg-white">
     <button @click="emit('navigate', 'home')" aria-label="Ditto home">
       <img src="/img/logo-2048-black.svg" alt="Ditto" class="h-6 dark:invert" />
     </button>
@@ -22,7 +22,7 @@
 
   <!-- Mobile Slide-out Menu -->
   <Transition name="slide">
-    <div v-if="showMobileMenu" class="lg:hidden fixed inset-0 top-16 z-40 bg-white flex flex-col">
+    <div v-if="showMobileMenu" class="md:hidden fixed inset-0 top-16 z-40 bg-white flex flex-col">
       <div class="flex-1 overflow-y-auto overscroll-contain">
         <!-- Profile (expands into the user subnav) -->
         <button @click="showUserMenu = !showUserMenu" class="w-full flex items-center gap-3 px-5 py-4 text-left bg-gradient-to-r from-ditto-purple/10 to-transparent border-b border-gray-100">
@@ -144,15 +144,15 @@
   </Transition>
   
   <!-- Desktop Header -->
-  <header class="hidden lg:flex h-[80px] items-center justify-between px-6 xl:px-12 border-b border-ditto-border-grey bg-white">
+  <header class="hidden md:flex h-[80px] items-center justify-between px-8 lg:px-12 border-b border-ditto-border-grey bg-white">
     <!-- Logo and Nav -->
-    <div class="flex items-center gap-6 xl:gap-8">
-      <button @click="emit('navigate', 'home')" aria-label="Ditto home" class="cursor-pointer flex-shrink-0">
+    <div class="flex items-center gap-8">
+      <button @click="emit('navigate', 'home')" aria-label="Ditto home" class="cursor-pointer">
         <img src="/img/logo-2048-black.svg" alt="Ditto" class="h-8 dark:invert" />
       </button>
       
       <!-- Nav Items -->
-      <nav class="relative flex items-center gap-4 xl:gap-6 whitespace-nowrap" ref="navRef">
+      <nav class="relative flex items-center gap-6" ref="navRef">
         <template v-for="item in navEntries" :key="item.id">
           <!-- Flat link -->
           <button
