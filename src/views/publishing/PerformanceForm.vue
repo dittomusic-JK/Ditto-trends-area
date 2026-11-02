@@ -11,12 +11,13 @@
           <label class="flex items-center gap-2 text-xs font-medium text-ditto-subtext mb-1.5">
             <span class="step-num">1</span> Date of performance
           </label>
-          <input
-            v-model="draft.date"
-            type="date"
-            :min="subscriptionStart"
-            :max="today"
-            class="w-full px-3.5 py-2.5 border border-gray-200 rounded-lg text-sm text-ditto-text bg-white focus:outline-none focus:border-ditto-purple"
+          <DatePickerDropdown
+            :model-value="draftDate"
+            :min="minDate"
+            :max="maxDate"
+            variant="box"
+            placeholder="Select the date you played"
+            @update:model-value="draft.date = toIso($event)"
           />
           <p class="text-[11px] text-ditto-subtext mt-1.5">From the start of your subscription ({{ formatDate(subscriptionStart) }}) up to today.</p>
         </div>
@@ -177,6 +178,7 @@
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
 import type { Venue, Work, PerformanceDraft } from './livePerformanceTypes'
+import DatePickerDropdown from '../videos/steps/DatePickerDropdown.vue'
 
 const props = withDefaults(defineProps<{
   venues: Venue[]
@@ -207,6 +209,13 @@ const draft = reactive<PerformanceDraft>({
   venue: props.initial?.venue ?? null,
   workIds: [...(props.initial?.workIds ?? [])],
 })
+
+// The picker works in Dates; the draft stays ISO so it round-trips with the list
+const fromIso = (iso: string) => new Date(iso + 'T00:00:00')
+const toIso = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+const draftDate = computed(() => draft.date ? fromIso(draft.date) : null)
+const minDate = fromIso(props.subscriptionStart)
+const maxDate = fromIso(props.today)
 
 const venueQuery = ref(props.initial?.venue?.name ?? '')
 const venueOpen = ref(false)

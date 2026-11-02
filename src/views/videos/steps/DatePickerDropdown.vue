@@ -6,8 +6,10 @@
     <button
       @click="toggleOpen"
       :class="[
-        'w-full flex items-center gap-2.5 border-0 border-b px-0 py-2.5 text-sm bg-transparent transition-colors focus:outline-none',
-        error ? 'border-error' : 'border-gray-300 hover:border-ditto-purple'
+        'w-full flex items-center gap-2.5 text-sm transition-colors focus:outline-none',
+        variant === 'box'
+          ? ['border rounded-lg px-3.5 py-2.5 bg-white', error ? 'border-error' : open ? 'border-ditto-purple' : 'border-gray-200 hover:border-ditto-purple']
+          : ['border-0 border-b px-0 py-2.5 bg-transparent', error ? 'border-error' : 'border-gray-300 hover:border-ditto-purple']
       ]"
     >
       <svg class="w-4 h-4 flex-shrink-0" :class="error ? 'text-error' : 'text-ditto-purple'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
@@ -59,10 +61,18 @@ const props = withDefaults(defineProps<{
   error?: boolean
   /** 'future': only days after today pickable. 'past': only days before today. */
   mode?: 'future' | 'past'
+  /** Explicit inclusive bounds; when either is set they replace `mode` */
+  min?: Date | null
+  max?: Date | null
+  /** 'underline' is the builder field; 'box' matches bordered inputs beside it */
+  variant?: 'underline' | 'box'
 }>(), {
   placeholder: 'Select date',
   error: false,
   mode: 'future',
+  min: null,
+  max: null,
+  variant: 'underline',
 })
 
 const emit = defineEmits<{
@@ -77,10 +87,22 @@ const wrap = ref<HTMLElement | null>(null)
 const viewMonth = ref(new Date(today.getFullYear(), today.getMonth(), 1))
 
 const toggleOpen = () => {
-  if (!open.value && props.modelValue) {
-    viewMonth.value = new Date(props.modelValue.getFullYear(), props.modelValue.getMonth(), 1)
+  if (!open.value) {
+    // Open on the chosen month, else the latest pickable month
+    const anchor = props.modelValue ?? (props.max && props.max < today ? props.max : today)
+    viewMonth.value = new Date(anchor.getFullYear(), anchor.getMonth(), 1)
   }
   open.value = !open.value
+}
+
+const atMidnight = (d: Date) => { const c = new Date(d); c.setHours(0, 0, 0, 0); return c }
+const isDisabled = (date: Date, diff: number) => {
+  if (props.min || props.max) {
+    if (props.min && date < atMidnight(props.min)) return true
+    if (props.max && date > atMidnight(props.max)) return true
+    return false
+  }
+  return props.mode === 'past' ? diff >= 0 : diff <= 0
 }
 
 const monthLabel = computed(() =>
@@ -103,7 +125,7 @@ const calendarCells = computed(() => {
       day: date.getDate(),
       inMonth: date.getMonth() === first.getMonth(),
       isToday: diff === 0,
-      disabled: props.mode === 'past' ? diff >= 0 : diff <= 0,
+      disabled: isDisabled(date, diff),
     })
   }
   return cells
