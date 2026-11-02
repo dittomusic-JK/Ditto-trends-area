@@ -153,7 +153,7 @@
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-5 pt-5 border-t border-gray-100">
       <p class="text-xs text-ditto-subtext min-h-[1rem]">
         <template v-if="summary">{{ summary }}</template>
-        <template v-else>Add a date, a venue and at least one work to {{ cancellable ? 'save' : 'register' }}.</template>
+        <template v-else-if="note">{{ note }}</template>
       </p>
       <div class="flex items-center gap-2 sm:justify-end">
         <button
@@ -188,10 +188,13 @@ const props = withDefaults(defineProps<{
   submitLabel?: string
   cancellable?: boolean
   compact?: boolean
+  /** Shown in the footer until there is a summary to show instead */
+  note?: string
 }>(), {
   submitLabel: 'Register',
   cancellable: false,
   compact: false,
+  note: '',
 })
 
 const emit = defineEmits<{

@@ -62,10 +62,7 @@
               <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/>
             </svg>
           </div>
-          <div class="min-w-0">
-            <h3 class="font-satoshi font-black tracking-[-0.02em] text-base text-ditto-text">Add a performance</h3>
-            <p class="text-xs text-ditto-subtext">Three steps: when, where, and what you played.</p>
-          </div>
+          <h3 class="font-satoshi font-black tracking-[-0.02em] text-base text-ditto-text">Add a performance</h3>
         </div>
         <div class="p-5 sm:p-6 lg:p-8">
           <PerformanceForm
@@ -82,10 +79,7 @@
 
       <!-- ===== Registered performances ===== -->
       <div>
-        <div class="flex items-baseline justify-between gap-3 mb-4">
-          <h3 class="font-satoshi font-black tracking-[-0.03em] text-lg text-ditto-text">Registered performances</h3>
-          <p v-if="performances.length" class="text-xs text-ditto-subtext">Newest first</p>
-        </div>
+        <h3 class="font-satoshi font-black tracking-[-0.03em] text-lg text-ditto-text mb-4">Registered performances</h3>
 
         <!-- Empty state -->
         <div v-if="performances.length === 0" class="bg-white rounded-2xl border-2 border-dashed border-gray-200 px-6 py-12 text-center">
@@ -115,7 +109,6 @@
                     <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
                     {{ perf.venue.city }}
                   </span>
-                  <span class="font-normal text-ditto-subtext">· {{ formatDate(perf.date) }}</span>
                 </p>
                 <div class="flex flex-wrap gap-1.5 mt-1.5">
                   <span v-for="id in perf.workIds" :key="id" class="px-2 py-0.5 rounded-full bg-ditto-light-grey text-xs text-ditto-text">
@@ -147,12 +140,8 @@
             </div>
 
             <!-- Inline edit panel: opens under the row, leaves the form above untouched -->
-            <div v-if="editingId === perf.id" class="px-5 pb-5">
-              <div class="rounded-xl border border-ditto-purple/20 bg-white p-4 sm:p-5">
-                <div class="flex items-center justify-between gap-3 mb-4">
-                  <p class="text-xs font-semibold text-ditto-text">Editing this performance</p>
-                  <p v-if="perf.status === 'Registered'" class="text-[11px] text-ditto-subtext">Saving sends it back to PRS for review.</p>
-                </div>
+            <div v-if="editingId === perf.id" class="px-5 pb-5 pt-1">
+              <div class="border-t border-dashed border-gray-200 pt-5">
                 <PerformanceForm
                   :key="perf.id"
                   :venues="venues"
@@ -165,6 +154,7 @@
                   cancellable
                   compact
                   @submit="saveEdit(perf.id, $event)"
+                  :note="perf.status === 'Registered' ? 'Saving sends this performance back to PRS for review.' : ''"
                   @cancel="editingId = null"
                 />
               </div>
