@@ -4,7 +4,7 @@
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
       <div>
         <h2 class="font-satoshi font-black tracking-[-0.03em] text-xl text-ditto-text">Register Live Performances</h2>
-        <p class="text-sm text-ditto-subtext mt-1">Register your live performances to claim publishing royalties.</p>
+        <p class="text-sm text-ditto-subtext mt-1">Every gig you play earns publishing royalties on your own songs. Register them here to claim them.</p>
       </div>
       <!-- Prototype-only plan toggle -->
       <div class="flex items-center gap-1.5 text-xs text-ditto-subtext flex-shrink-0">
@@ -33,161 +33,59 @@
       </button>
     </div>
 
-    <!-- ===== Pro / Label: registration form ===== -->
+    <!-- ===== Pro / Label ===== -->
     <template v-else>
-      <div class="bg-white rounded-2xl border border-gray-200 p-5 sm:p-6 lg:p-8">
-        <div class="grid grid-cols-1 lg:grid-cols-[minmax(280px,360px)_minmax(0,1fr)] gap-6 lg:gap-10">
-          <!-- Left column: when & where -->
-          <div class="space-y-5">
-          <!-- Date of performance -->
-          <div>
-            <label class="block text-xs font-medium text-ditto-subtext mb-1.5">Date of performance</label>
-            <input
-              v-model="form.date"
-              type="date"
-              :min="subscriptionStart"
-              :max="today"
-              class="w-full px-3.5 py-2.5 border border-gray-200 rounded-lg text-sm text-ditto-text bg-white focus:outline-none focus:border-ditto-purple"
-            />
-            <p class="text-[11px] text-ditto-subtext mt-1.5">From the start of your subscription ({{ formatDate(subscriptionStart) }}) up to today.</p>
+      <!-- At-a-glance strip: the page used to open straight onto a blank form -->
+      <div class="grid grid-cols-3 bg-white rounded-2xl border border-gray-200 divide-x divide-gray-100">
+        <div class="px-4 py-3.5 sm:px-5">
+          <p class="text-[11px] uppercase tracking-wide text-ditto-subtext">Performances</p>
+          <p class="font-satoshi font-black text-2xl text-ditto-text tabular-nums mt-0.5">{{ performances.length }}</p>
+          <p class="text-[11px] text-ditto-subtext">since {{ formatDate(subscriptionStart) }}</p>
+        </div>
+        <div class="px-4 py-3.5 sm:px-5">
+          <p class="text-[11px] uppercase tracking-wide text-ditto-subtext">Works played</p>
+          <p class="font-satoshi font-black text-2xl text-ditto-text tabular-nums mt-0.5">{{ worksPlayed }}</p>
+          <p class="text-[11px] text-ditto-subtext">of {{ eligibleWorks.length }} eligible</p>
+        </div>
+        <div class="px-4 py-3.5 sm:px-5">
+          <p class="text-[11px] uppercase tracking-wide text-ditto-subtext">Awaiting PRS</p>
+          <p class="font-satoshi font-black text-2xl text-ditto-text tabular-nums mt-0.5">{{ submittedCount }}</p>
+          <p class="text-[11px] text-ditto-subtext">{{ submittedCount === 1 ? 'submission' : 'submissions' }} in review</p>
+        </div>
+      </div>
+
+      <!-- Registration card -->
+      <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+        <div class="flex items-center gap-3 px-5 sm:px-6 lg:px-8 py-4 border-b border-gray-100 bg-gradient-to-r from-[#f6f3ff] to-white">
+          <div class="w-9 h-9 rounded-xl bg-white border border-ditto-purple/20 flex items-center justify-center flex-shrink-0">
+            <svg class="w-4 h-4 text-ditto-purple" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/>
+            </svg>
           </div>
-
-          <!-- Venue (searchable) -->
-          <div class="relative" ref="venueRef">
-            <label class="block text-xs font-medium text-ditto-subtext mb-1.5">Venue</label>
-            <div class="relative">
-              <svg class="w-4 h-4 text-ditto-subtext absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-              <input
-                v-model="venueQuery"
-                @focus="venueOpen = true"
-                @input="venueOpen = true; form.venue = null"
-                type="text"
-                placeholder="Search for a venue"
-                class="w-full pl-9 pr-8 py-2 border border-gray-200 rounded-lg text-sm text-ditto-text bg-white focus:outline-none focus:border-ditto-purple"
-              />
-              <button v-if="form.venue" @click="clearVenue" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-ditto-subtext hover:text-ditto-text" aria-label="Clear venue">
-                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12" stroke-linecap="round"/></svg>
-              </button>
-            </div>
-
-            <!-- Dropdown -->
-            <div v-if="venueOpen && venueQuery.trim() && !form.venue" class="absolute left-0 right-0 top-full mt-1.5 bg-white border border-gray-200 rounded-xl shadow-xl z-30 py-1.5 max-h-56 overflow-y-auto">
-              <template v-if="filteredVenues.length > 0">
-                <button
-                  v-for="venue in filteredVenues" :key="venue.id ?? `${venue.name}-${venue.city}`"
-                  @click="selectVenue(venue)"
-                  class="w-full flex items-center gap-2.5 px-3.5 py-2 text-left hover:bg-ditto-light-grey transition-colors"
-                >
-                  <svg class="w-3.5 h-3.5 text-ditto-subtext flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                  <span class="text-sm text-ditto-text truncate">{{ venue.name }}</span>
-                  <span class="text-xs text-ditto-subtext ml-auto flex-shrink-0">{{ venue.city || venue.category }}</span>
-                </button>
-              </template>
-              <p v-else-if="!venuesLoaded" class="px-3.5 py-3 text-xs text-ditto-subtext">Loading venues…</p>
-              <p v-else class="px-3.5 py-3 text-xs text-error">We couldn't find that venue. Please try another venue.</p>
-            </div>
-            <p v-if="form.venue" class="text-[11px] text-success mt-1.5 flex items-center gap-1">
-              <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20,6 9,17 4,12" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              {{ form.venue.name }}{{ form.venue.city ? `, ${form.venue.city}` : '' }}
-            </p>
-          </div>
-          </div>
-
-          <!-- Right column: works performed (searchable listbox) -->
-          <div>
-            <div class="flex items-baseline justify-between gap-3 mb-1.5">
-              <label class="block text-xs font-medium text-ditto-subtext">Works performed</label>
-              <span class="text-[11px] text-ditto-subtext tabular-nums">
-                {{ form.workIds.length > 0 ? `${form.workIds.length} of ${eligibleWorks.length} selected` : `${eligibleWorks.length} eligible works` }}
-              </span>
-            </div>
-
-            <div :class="['rounded-xl border overflow-hidden transition-colors', form.venue ? 'border-gray-200' : 'border-gray-100']">
-              <!-- Search -->
-              <div :class="['relative border-b', form.venue ? 'border-gray-100' : 'border-gray-100 bg-ditto-light-grey/40']">
-                <svg class="w-4 h-4 text-ditto-subtext absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                <input
-                  v-model="worksQuery"
-                  :disabled="!form.venue"
-                  type="text"
-                  placeholder="Search your works by title, artist or Tunecode"
-                  class="w-full pl-10 pr-3.5 py-2.5 text-sm text-ditto-text bg-transparent focus:outline-none placeholder:text-ditto-subtext/70 disabled:cursor-not-allowed"
-                />
-              </div>
-
-              <!-- List -->
-              <div class="max-h-[264px] overflow-y-auto">
-                <p v-if="!form.venue" class="px-4 py-10 text-center text-xs text-ditto-subtext">
-                  Select a venue first — then pick the works you performed.
-                </p>
-                <template v-else>
-                  <button
-                    v-for="work in filteredWorks" :key="work.id"
-                    @click="toggleWork(work.id)"
-                    class="w-full flex items-center gap-3 px-4 py-2 text-left hover:bg-ditto-light-grey transition-colors"
-                  >
-                    <span :class="['w-[18px] h-[18px] rounded border-2 flex items-center justify-center flex-shrink-0 transition-all', form.workIds.includes(work.id) ? 'bg-ditto-purple border-ditto-purple' : 'border-gray-300 bg-white']">
-                      <svg v-if="form.workIds.includes(work.id)" class="w-2.5 h-2.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><polyline points="20,6 9,17 4,12" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    </span>
-                    <span class="flex-1 min-w-0">
-                      <span class="block text-sm text-ditto-text truncate">{{ work.title }}</span>
-                      <span class="block text-xs text-ditto-subtext truncate">{{ work.artist }}</span>
-                    </span>
-                    <span class="text-[10px] text-ditto-subtext font-mono flex-shrink-0">{{ work.tunecode }}</span>
-                  </button>
-                  <p v-if="filteredWorks.length === 0" class="px-4 py-8 text-center text-xs text-ditto-subtext">
-                    No works match "{{ worksQuery }}". Only registered works with a PRS Tunecode can be added.
-                  </p>
-                </template>
-              </div>
-
-              <!-- Footer actions -->
-              <div v-if="form.venue" class="flex items-center justify-between px-4 py-2 border-t border-gray-100 bg-ditto-light-grey/30">
-                <button
-                  v-if="worksQuery.trim() && filteredWorks.length > 0"
-                  @click="addAllShown"
-                  class="text-[11px] font-medium text-ditto-purple hover:underline"
-                >Add all {{ filteredWorks.length }} shown</button>
-                <span v-else class="text-[11px] text-ditto-subtext">Registered works with a PRS Tunecode</span>
-                <button
-                  v-if="form.workIds.length > 0"
-                  @click="form.workIds = []"
-                  class="text-[11px] font-medium text-ditto-subtext hover:text-ditto-text"
-                >Clear selection</button>
-              </div>
-            </div>
-
-            <!-- Selected chips -->
-            <div v-if="form.workIds.length > 0" class="flex flex-wrap gap-1.5 mt-2.5">
-              <span
-                v-for="id in form.workIds" :key="id"
-                class="inline-flex items-center gap-1 pl-2.5 pr-1.5 py-1 rounded-full bg-ditto-purple/10 text-ditto-purple text-xs font-medium"
-              >
-                {{ workById(id)?.title }}
-                <button @click="toggleWork(id)" class="hover:bg-ditto-purple/15 rounded-full p-0.5" aria-label="Remove work">
-                  <svg class="w-2.5 h-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12" stroke-linecap="round"/></svg>
-                </button>
-              </span>
-            </div>
+          <div class="min-w-0">
+            <h3 class="font-satoshi font-black tracking-[-0.02em] text-base text-ditto-text">Add a performance</h3>
+            <p class="text-xs text-ditto-subtext">Three steps: when, where, and what you played.</p>
           </div>
         </div>
-
-        <!-- Register -->
-        <div class="flex justify-end mt-5 pt-5 border-t border-gray-100">
-          <button
-            @click="register"
-            :disabled="!canRegister"
-            :class="[
-              'px-6 py-2.5 text-sm font-medium rounded-full transition-all',
-              canRegister ? 'bg-ditto-purple btn-pop-purple text-white hover:opacity-95' : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-            ]"
-          >Register</button>
+        <div class="p-5 sm:p-6 lg:p-8">
+          <PerformanceForm
+            :venues="venues"
+            :venues-loaded="venuesLoaded"
+            :eligible-works="eligibleWorks"
+            :subscription-start="subscriptionStart"
+            :today="today"
+            submit-label="Register"
+            @submit="register"
+          />
         </div>
       </div>
 
       <!-- ===== Registered performances ===== -->
       <div>
-        <h3 class="font-satoshi font-black tracking-[-0.03em] text-lg text-ditto-text mb-4">Registered performances</h3>
+        <div class="flex items-baseline justify-between gap-3 mb-4">
+          <h3 class="font-satoshi font-black tracking-[-0.03em] text-lg text-ditto-text">Registered performances</h3>
+          <p v-if="performances.length" class="text-xs text-ditto-subtext">Newest first</p>
+        </div>
 
         <!-- Empty state -->
         <div v-if="performances.length === 0" class="bg-white rounded-2xl border-2 border-dashed border-gray-200 px-6 py-12 text-center">
@@ -201,36 +99,74 @@
         </div>
 
         <!-- List -->
-        <div v-else class="bg-white rounded-2xl border border-gray-200 divide-y divide-gray-50">
-          <div v-for="perf in performances" :key="perf.id" class="flex items-start gap-4 px-5 py-4">
-            <!-- Date block -->
-            <div class="w-12 text-center flex-shrink-0 pt-0.5">
-              <p class="text-lg font-bold text-ditto-text leading-none">{{ dayOf(perf.date) }}</p>
-              <p class="text-[10px] uppercase tracking-wide text-ditto-subtext mt-1">{{ monthOf(perf.date) }} {{ yearOf(perf.date) }}</p>
-            </div>
+        <div v-else class="bg-white rounded-2xl border border-gray-200 divide-y divide-gray-100">
+          <div v-for="perf in performances" :key="perf.id" :class="editingId === perf.id ? 'bg-[#faf9ff]' : ''">
+            <div class="flex items-start gap-4 px-5 py-4">
+              <!-- Calendar tile -->
+              <div class="w-12 rounded-xl border border-gray-200 bg-white overflow-hidden text-center flex-shrink-0">
+                <p class="text-[9px] font-bold uppercase tracking-wide text-white bg-ditto-purple py-0.5">{{ monthOf(perf.date) }}</p>
+                <p class="text-lg font-bold text-ditto-text leading-none py-1.5">{{ dayOf(perf.date) }}</p>
+              </div>
 
-            <div class="flex-1 min-w-0">
-              <p class="text-sm font-semibold text-ditto-text">{{ perf.venue.name }} <span class="font-normal text-ditto-subtext">· {{ perf.venue.city }}</span></p>
-              <div class="flex flex-wrap gap-1.5 mt-1.5">
-                <span v-for="id in perf.workIds" :key="id" class="px-2 py-0.5 rounded-full bg-ditto-light-grey text-xs text-ditto-text">
-                  {{ workById(id)?.title }}
-                </span>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-semibold text-ditto-text flex items-center gap-1.5 flex-wrap">
+                  {{ perf.venue.name }}
+                  <span class="font-normal text-ditto-subtext inline-flex items-center gap-1">
+                    <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    {{ perf.venue.city }}
+                  </span>
+                  <span class="font-normal text-ditto-subtext">· {{ formatDate(perf.date) }}</span>
+                </p>
+                <div class="flex flex-wrap gap-1.5 mt-1.5">
+                  <span v-for="id in perf.workIds" :key="id" class="px-2 py-0.5 rounded-full bg-ditto-light-grey text-xs text-ditto-text">
+                    {{ workById(id)?.title }}
+                  </span>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-2 flex-shrink-0">
+                <StatusPill :variant="perf.status === 'Registered' ? 'success' : 'warning'" :label="perf.status" />
+                <div class="relative group">
+                  <button
+                    @click="toggleEdit(perf.id)"
+                    :class="['p-1.5 rounded-lg transition-colors', editingId === perf.id ? 'bg-[#efe9ff] text-ditto-purple' : 'text-ditto-subtext hover:text-ditto-purple']"
+                    :aria-expanded="editingId === perf.id"
+                    aria-label="Edit performance"
+                  >
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                  </button>
+                  <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 px-2 py-1 bg-ditto-text text-white text-[10px] rounded whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-20">{{ editingId === perf.id ? 'Close' : 'Edit' }}</div>
+                </div>
+                <div class="relative group">
+                  <button @click="deletePerformance(perf.id)" class="p-1.5 text-error/70 hover:text-error transition-colors" aria-label="Delete performance">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3,6 5,6 21,6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+                  </button>
+                  <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 px-2 py-1 bg-ditto-text text-white text-[10px] rounded whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-20">Delete</div>
+                </div>
               </div>
             </div>
 
-            <div class="flex items-center gap-2 flex-shrink-0">
-              <StatusPill :variant="perf.status === 'Registered' ? 'success' : 'warning'" :label="perf.status" />
-              <div class="relative group">
-                <button @click="editPerformance(perf)" class="p-1.5 text-ditto-subtext hover:text-ditto-purple transition-colors" aria-label="Edit performance">
-                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                </button>
-                <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 px-2 py-1 bg-ditto-text text-white text-[10px] rounded whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-20">Edit</div>
-              </div>
-              <div class="relative group">
-                <button @click="deletePerformance(perf.id)" class="p-1.5 text-error/70 hover:text-error transition-colors" aria-label="Delete performance">
-                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3,6 5,6 21,6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
-                </button>
-                <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 px-2 py-1 bg-ditto-text text-white text-[10px] rounded whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-20">Delete</div>
+            <!-- Inline edit panel: opens under the row, leaves the form above untouched -->
+            <div v-if="editingId === perf.id" class="px-5 pb-5">
+              <div class="rounded-xl border border-ditto-purple/20 bg-white p-4 sm:p-5">
+                <div class="flex items-center justify-between gap-3 mb-4">
+                  <p class="text-xs font-semibold text-ditto-text">Editing this performance</p>
+                  <p v-if="perf.status === 'Registered'" class="text-[11px] text-ditto-subtext">Saving sends it back to PRS for review.</p>
+                </div>
+                <PerformanceForm
+                  :key="perf.id"
+                  :venues="venues"
+                  :venues-loaded="venuesLoaded"
+                  :eligible-works="eligibleWorks"
+                  :subscription-start="subscriptionStart"
+                  :today="today"
+                  :initial="{ date: perf.date, venue: perf.venue, workIds: perf.workIds }"
+                  submit-label="Save changes"
+                  cancellable
+                  compact
+                  @submit="saveEdit(perf.id, $event)"
+                  @cancel="editingId = null"
+                />
               </div>
             </div>
           </div>
@@ -252,12 +188,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import StatusPill from '../../components/common/StatusPill.vue'
-
-interface Venue { name: string; city: string; id?: string; category?: string; address?: string }
-interface Work { id: string; title: string; artist: string; tunecode: string }
-interface Performance { id: number; date: string; venue: Venue; workIds: string[]; status: 'Registered' | 'Submitted' }
+import PerformanceForm from './PerformanceForm.vue'
+import type { Venue, Work, Performance, PerformanceDraft } from './livePerformanceTypes'
 
 // ---- Demo plan (prototype-only switcher) ----
 const plan = ref<'Pro' | 'Starter'>('Pro')
@@ -328,76 +262,6 @@ const eligibleWorks: Work[] = [
 
 const workById = (id: string) => eligibleWorks.find(w => w.id === id)
 
-// ---- Form state ----
-const form = reactive<{ date: string; venue: Venue | null; workIds: string[] }>({
-  date: '',
-  venue: null,
-  workIds: [],
-})
-
-const venueQuery = ref('')
-const venueOpen = ref(false)
-const worksQuery = ref('')
-const venueRef = ref<HTMLElement | null>(null)
-
-// Ranked search over the full registry: name prefix > word prefix > name
-// contains > city/address matches. Accent-insensitive.
-const fold = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
-
-const filteredVenues = computed(() => {
-  const q = fold(venueQuery.value.trim())
-  if (!q) return []
-  const starts: Venue[] = []
-  const wordStarts: Venue[] = []
-  const contains: Venue[] = []
-  const place: Venue[] = []
-  for (const v of venues.value) {
-    const name = fold(v.name)
-    if (name.startsWith(q)) starts.push(v)
-    else if (name.includes(' ' + q)) wordStarts.push(v)
-    else if (name.includes(q)) contains.push(v)
-    else if (fold(v.city).startsWith(q) || (v.address && fold(v.address).includes(q))) place.push(v)
-    if (starts.length >= 8) break
-  }
-  return [...starts, ...wordStarts, ...contains, ...place].slice(0, 8)
-})
-
-const selectVenue = (venue: Venue) => {
-  form.venue = venue
-  venueQuery.value = venue.name
-  venueOpen.value = false
-}
-
-const clearVenue = () => {
-  form.venue = null
-  venueQuery.value = ''
-  form.workIds = []
-  worksQuery.value = ''
-}
-
-const toggleWork = (id: string) => {
-  const idx = form.workIds.indexOf(id)
-  idx > -1 ? form.workIds.splice(idx, 1) : form.workIds.push(id)
-}
-
-// Works search: title, artist or tunecode, same accent-insensitive fold
-const filteredWorks = computed(() => {
-  const q = fold(worksQuery.value.trim())
-  if (!q) return eligibleWorks
-  return eligibleWorks.filter(w =>
-    fold(w.title).includes(q) || fold(w.artist).includes(q) || fold(w.tunecode).includes(q)
-  )
-})
-
-const addAllShown = () => {
-  for (const w of filteredWorks.value) {
-    if (!form.workIds.includes(w.id)) form.workIds.push(w.id)
-  }
-}
-
-const dateValid = computed(() => !!form.date && form.date >= subscriptionStart && form.date <= today)
-const canRegister = computed(() => dateValid.value && !!form.venue && form.workIds.length > 0)
-
 // ---- Registered performances ----
 let nextId = 100
 const performances = ref<Performance[]>([
@@ -405,30 +269,41 @@ const performances = ref<Performance[]>([
   { id: 2, date: '2026-06-27', venue: { name: 'Band on the Wall', city: 'Manchester' }, workIds: ['w3', 'w6'], status: 'Submitted' },
 ])
 
-const register = () => {
-  if (!canRegister.value || !form.venue) return
+const worksPlayed = computed(() => new Set(performances.value.flatMap(p => p.workIds)).size)
+const submittedCount = computed(() => performances.value.filter(p => p.status === 'Submitted').length)
+
+const register = (draft: PerformanceDraft) => {
+  if (!draft.venue) return
   performances.value.unshift({
     id: nextId++,
-    date: form.date,
-    venue: form.venue,
-    workIds: [...form.workIds],
+    date: draft.date,
+    venue: draft.venue,
+    workIds: [...draft.workIds],
     status: 'Submitted',
   })
   showToast('Live performance registered')
-  form.date = ''
-  clearVenue()
 }
 
-const editPerformance = (perf: Performance) => {
-  form.date = perf.date
-  form.venue = perf.venue
-  venueQuery.value = perf.venue.name
-  form.workIds = [...perf.workIds]
-  performances.value = performances.value.filter(p => p.id !== perf.id)
-  window.scrollTo({ top: 0, behavior: 'smooth' })
+// Edit opens in place under the row. The registration form above keeps
+// whatever is half-typed in it (Deepthi's concern from the review thread).
+const editingId = ref<number | null>(null)
+const toggleEdit = (id: number) => { editingId.value = editingId.value === id ? null : id }
+
+const saveEdit = (id: number, draft: PerformanceDraft) => {
+  const perf = performances.value.find(p => p.id === id)
+  if (!perf || !draft.venue) return
+  const changed = perf.date !== draft.date || perf.venue.name !== draft.venue.name
+    || perf.workIds.length !== draft.workIds.length || perf.workIds.some(w => !draft.workIds.includes(w))
+  perf.date = draft.date
+  perf.venue = draft.venue
+  perf.workIds = [...draft.workIds]
+  if (changed) perf.status = 'Submitted'
+  editingId.value = null
+  showToast(changed ? 'Performance updated' : 'No changes made')
 }
 
 const deletePerformance = (id: number) => {
+  if (editingId.value === id) editingId.value = null
   performances.value = performances.value.filter(p => p.id !== id)
   showToast('Performance removed')
 }
@@ -437,9 +312,8 @@ const deletePerformance = (id: number) => {
 const formatDate = (iso: string) => new Date(iso + 'T00:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
 const dayOf = (iso: string) => new Date(iso + 'T00:00:00').getDate()
 const monthOf = (iso: string) => new Date(iso + 'T00:00:00').toLocaleDateString('en-GB', { month: 'short' })
-const yearOf = (iso: string) => new Date(iso + 'T00:00:00').getFullYear().toString().slice(-2)
 
-// ---- Toast + click-outside ----
+// ---- Toast ----
 const toast = ref('')
 let toastTimer: ReturnType<typeof setTimeout> | undefined
 const showToast = (msg: string) => {
@@ -447,12 +321,4 @@ const showToast = (msg: string) => {
   if (toastTimer) clearTimeout(toastTimer)
   toastTimer = setTimeout(() => { toast.value = '' }, 3200)
 }
-
-const handleClickOutside = (e: MouseEvent) => {
-  const t = e.target as Node
-  if (venueRef.value && !venueRef.value.contains(t)) venueOpen.value = false
-}
-
-onMounted(() => document.addEventListener('click', handleClickOutside))
-onUnmounted(() => document.removeEventListener('click', handleClickOutside))
 </script>
