@@ -155,6 +155,14 @@
             </div>
           </template>
           <p v-else class="px-6 py-5 text-sm text-ditto-subtext flex items-center gap-2">No uploaded tracks yet <WarnDot tip="Tracks not uploaded" /></p>
+          <!-- Time-synced lyrics, per track -->
+          <div v-if="timedLyricsTracks.length" class="px-6 py-3.5 border-t border-gray-100 bg-ditto-light-grey/40">
+            <p class="text-[11px] font-semibold uppercase tracking-wide text-ditto-subtext mb-2">Time-synced lyrics</p>
+            <div v-for="t in timedLyricsTracks" :key="'tl-' + t.id" class="flex items-center justify-between gap-3 text-sm py-1">
+              <span class="text-ditto-text truncate">{{ t.title }} <span class="text-ditto-subtext">· {{ t.timedLyricsPurchased ? 'already purchased' : t.timedLyricsSource === 'own' ? 'your lyrics' : 'generated from audio' }}</span></span>
+              <span :class="['tabular-nums flex-shrink-0', t.timedLyricsPurchased ? 'text-xs font-semibold text-[#0f8a4f]' : 'font-semibold text-ditto-text']">{{ t.timedLyricsPurchased ? 'Included' : '£' + TIMED_LYRICS_PRICE }}</span>
+            </div>
+          </div>
         </section>
 
         <!-- Stores + AI disclosure -->
@@ -273,7 +281,7 @@
 
 <script setup lang="ts">
 import { computed, defineComponent, h } from 'vue'
-import { standardStores, chartRegions, computeReleaseType, isTrackMetadataComplete } from '../../../../data/releaseBuilderMockData'
+import { standardStores, chartRegions, computeReleaseType, isTrackMetadataComplete, TIMED_LYRICS_PRICE } from '../../../../data/releaseBuilderMockData'
 import type { BuilderTrack } from '../../../../data/releaseBuilderMockData'
 import type { ReleaseBuilderForm } from '../ReleaseBuilderView.vue'
 
@@ -434,6 +442,8 @@ const aiTaggedTracks = computed(() => props.form.tracks.filter(t => aiCreditLabe
 
 const selectedStoreDefs = computed(() => standardStores.filter(s => props.form.selectedStores.includes(s.id)))
 
+const timedLyricsTracks = computed(() => props.form.tracks.filter(t => t.timedLyrics || t.timedLyricsPurchased))
+
 const orderLines = computed(() => {
   const lines: { label: string; price: number }[] = []
   if (props.form.distributionType === 'priority') lines.push({ label: 'Priority Distro', price: 40 })
@@ -443,6 +453,7 @@ const orderLines = computed(() => {
   }
   if (props.form.preReleaseDownloads) lines.push({ label: 'Pre-release downloads', price: 40 })
   if (props.form.advancedStores.includes('beatport')) lines.push({ label: 'Beatport Distribution & Label Setup', price: 49 })
+  for (const t of props.form.tracks) if (t.timedLyrics && !t.timedLyricsPurchased) lines.push({ label: `Time-synced lyrics: ${t.title}`, price: TIMED_LYRICS_PRICE })
   return lines
 })
 

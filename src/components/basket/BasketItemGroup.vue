@@ -58,6 +58,7 @@
         </span>
         <span v-if="svc.name === 'Pre-release Downloads'" class="basket-row__meta">{{ item.release.releaseDate }}</span>
         <span v-else-if="svc.name === 'Priority Distro'" class="basket-row__meta">Release within 10 days · {{ item.release.releaseDate }}</span>
+        <span v-else-if="svc.detail" class="basket-row__meta">{{ svc.detail }}</span>
       </div>
       <div class="basket-row__actions-cell"></div>
       <div class="basket-row__total">

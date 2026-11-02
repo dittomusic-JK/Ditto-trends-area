@@ -84,7 +84,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed } from 'vue'
-import { isTrackMetadataComplete, computeReleaseType, chartRegions } from '../../../data/releaseBuilderMockData'
+import { isTrackMetadataComplete, computeReleaseType, chartRegions, TIMED_LYRICS_PRICE } from '../../../data/releaseBuilderMockData'
 import type { BuilderTrack, ArtistEntry } from '../../../data/releaseBuilderMockData'
 import { useBasketStore } from '../../../composables/useBasketStore'
 import type { BasketItem, BasketService } from '../../../basketTypes'
@@ -347,6 +347,9 @@ const handleComplete = () => {
   }
   if (formData.preReleaseDownloads) pushService('Pre-release Downloads', 40)
   if (formData.advancedStores.includes('beatport')) pushService('Beatport Label Setup', 65)
+  for (const t of formData.tracks) {
+    if (t.timedLyrics && !t.timedLyricsPurchased) pushService(`Time-synced lyrics: ${t.title}`, TIMED_LYRICS_PRICE, t.timedLyricsSource === 'own' ? 'Your lyrics' : 'Generated from audio')
+  }
 
   const item: BasketItem = {
     release: {

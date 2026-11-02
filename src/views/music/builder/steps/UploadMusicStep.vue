@@ -137,6 +137,8 @@ const addTrack = () => {
     durationSec,
     mockFiles[i],
   )
+  // Demo: the second mock track arrives with time-synced lyrics already bought (a re-release)
+  if (i === 1) track.timedLyricsPurchased = true
   props.form.tracks.push(track)
   if (!props.form.title) props.form.title = track.title
   // The licensing reminder appears the first time audio lands

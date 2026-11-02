@@ -1,3 +1,20 @@
+<!--
+  Time-synced lyrics (DC-137, Yuliya 30 Oct 2026): paid per-track add-on in Edit track.
+  Discussion points from the requirements page, with the position this design takes:
+
+  1. Free for RLS, paid for subscribers?
+     Recommendation: paid for everyone at launch, with RLS getting it bundled into the
+     plan later if the Musixmatch cost allows. One price keeps the row, basket and
+     confirmation identical across plans, and a bundle is easy to add as a plan flag.
+  2. Priced per release or per track?
+     Recommendation: per track. The work (and the Musixmatch cost) scales per track,
+     the control lives on the track, and "already purchased" only makes sense per track.
+     The basket shows one line per track: "Time-synced lyrics: Track title".
+  3. Should the user choose between uploaded lyrics and AI-generated?
+     Recommendation: yes, but as a secondary choice revealed once the toggle is on,
+     defaulting to "Generate from audio". Artists who care about exact wording pick
+     "Use my lyrics", which opens the lyrics field; everyone else gets the zero-effort path.
+-->
 <template>
   <div class="px-6 pb-6 pt-5 border-t border-gray-200 bg-ditto-light-grey/30">
     <!-- ── Track preview ── -->
@@ -160,6 +177,56 @@
       <label class="block text-sm font-medium text-ditto-text mb-1.5">ISRC</label>
       <input v-model="track.customIsrcValue" type="text" placeholder="e.g. GBAYE2600123" :class="fieldClass(false)" />
     </div>
+    <div v-if="track.addLyrics" class="mt-3">
+      <label class="block text-sm font-medium text-ditto-text mb-1.5">Lyrics</label>
+      <textarea ref="lyricsRef" v-model="track.lyrics" rows="5" placeholder="Paste the full lyrics, one line per sung line…" class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm text-ditto-text bg-white focus:outline-none focus:border-ditto-purple transition-colors"></textarea>
+    </div>
+
+    <!-- ── Paid add-on: time-synced lyrics (DC-137) ── -->
+    <div :class="['mt-6 rounded-2xl border p-4 sm:p-5', timedOn ? 'border-ditto-purple/40 bg-ditto-purple/[0.04]' : 'border-gray-200 bg-white']">
+      <div class="flex items-start justify-between gap-4">
+        <div class="min-w-0 flex-1">
+          <div class="flex items-center flex-wrap gap-2">
+            <p class="text-sm font-semibold text-ditto-text">Add time-synced lyrics</p>
+            <span v-if="track.timedLyricsPurchased" class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#e6fbf1] text-[#0f8a4f]">Purchased</span>
+            <span v-else class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-ditto-purple/10 text-ditto-purple">£{{ TIMED_LYRICS_PRICE }} per track</span>
+          </div>
+          <p class="text-xs text-ditto-subtext mt-1.5 leading-relaxed">
+            <template v-if="track.timedLyricsPurchased">Time-synced lyrics are already included for this track.</template>
+            <template v-else>Make your music more engaging and accessible to listeners by allowing them to follow the lyrics in real time while listening to the track. You can submit lyrics yourself or we will generate them from the audio.</template>
+          </p>
+        </div>
+        <IosToggle :model-value="timedOn" :disabled="track.timedLyricsPurchased" @update:model-value="track.timedLyrics = $event" />
+      </div>
+      <!-- Secondary choice once it's on -->
+      <div v-if="track.timedLyrics && !track.timedLyricsPurchased" class="mt-4 pt-4 border-t border-ditto-purple/15">
+        <p class="text-xs font-medium text-ditto-subtext mb-2">Where should the lyrics come from?</p>
+        <div class="grid sm:grid-cols-2 gap-2">
+          <button
+            type="button"
+            @click="chooseSource('generate')"
+            :class="['text-left rounded-xl border px-4 py-3 transition-colors', track.timedLyricsSource === 'generate' ? 'border-ditto-purple bg-white' : 'border-gray-200 bg-white/60 hover:border-gray-300']"
+          >
+            <span class="flex items-center gap-2 text-sm font-medium text-ditto-text">
+              <span :class="['w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0', track.timedLyricsSource === 'generate' ? 'border-ditto-purple' : 'border-gray-300']"><span v-if="track.timedLyricsSource === 'generate'" class="w-2 h-2 rounded-full bg-ditto-purple"></span></span>
+              Generate from audio
+            </span>
+            <span class="block text-[11px] text-ditto-subtext mt-1 pl-6">We transcribe and time the lyrics for you. You'll get to review them.</span>
+          </button>
+          <button
+            type="button"
+            @click="chooseSource('own')"
+            :class="['text-left rounded-xl border px-4 py-3 transition-colors', track.timedLyricsSource === 'own' ? 'border-ditto-purple bg-white' : 'border-gray-200 bg-white/60 hover:border-gray-300']"
+          >
+            <span class="flex items-center gap-2 text-sm font-medium text-ditto-text">
+              <span :class="['w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0', track.timedLyricsSource === 'own' ? 'border-ditto-purple' : 'border-gray-300']"><span v-if="track.timedLyricsSource === 'own'" class="w-2 h-2 rounded-full bg-ditto-purple"></span></span>
+              Use my lyrics
+            </span>
+            <span class="block text-[11px] text-ditto-subtext mt-1 pl-6">{{ track.lyrics.trim() ? 'We time the lyrics you\'ve added above.' : 'Opens the lyrics field so you can paste them in.' }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
 
     <!-- ── Track credits ── -->
     <div class="mt-9">
@@ -257,8 +324,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, defineComponent, h, onUnmounted } from 'vue'
-import { copyrightYears, isTrackMetadataComplete, songwriterRoles, productionRoles, performerRoles, allCreditRoles } from '../../../../data/releaseBuilderMockData'
+import { computed, ref, defineComponent, h, onUnmounted, nextTick } from 'vue'
+import { copyrightYears, isTrackMetadataComplete, songwriterRoles, productionRoles, performerRoles, allCreditRoles, TIMED_LYRICS_PRICE } from '../../../../data/releaseBuilderMockData'
 import type { BuilderTrack, TrackArtists } from '../../../../data/releaseBuilderMockData'
 import VideoArtistsStep from '../../../videos/steps/VideoArtistsStep.vue'
 import SearchableSelect from '../../../videos/steps/SearchableSelect.vue'
@@ -277,6 +344,17 @@ const emit = defineEmits<{
 }>()
 
 // Same underline field idiom as the rest of the builder
+// Time-synced lyrics: locked on once bought; "Use my lyrics" opens the lyrics field
+const timedOn = computed(() => props.track.timedLyricsPurchased || props.track.timedLyrics)
+const lyricsRef = ref<HTMLTextAreaElement | null>(null)
+const chooseSource = (source: 'own' | 'generate') => {
+  props.track.timedLyricsSource = source
+  if (source === 'own' && !props.track.lyrics.trim()) {
+    props.track.addLyrics = true
+    nextTick(() => lyricsRef.value?.focus())
+  }
+}
+
 const fieldClass = (hasError: boolean) =>
   [
     'w-full px-0 py-2.5 border-0 border-b text-sm text-ditto-text bg-transparent focus:outline-none transition-colors',
@@ -301,15 +379,17 @@ const FieldTip = defineComponent({
 
 // iOS-style green toggle, matching the shared artists step
 const IosToggle = defineComponent({
-  props: { modelValue: { type: Boolean, required: true } },
+  props: { modelValue: { type: Boolean, required: true }, disabled: { type: Boolean, default: false } },
   emits: ['update:modelValue'],
   setup(p, { emit: e }) {
     return () => h('button', {
       type: 'button',
-      onClick: () => e('update:modelValue', !p.modelValue),
+      disabled: p.disabled,
+      onClick: () => { if (!p.disabled) e('update:modelValue', !p.modelValue) },
       class: [
         'w-[51px] h-[31px] rounded-full relative transition-colors flex-shrink-0',
         p.modelValue ? 'bg-[#34c759]' : 'bg-[#e9e9eb]',
+        p.disabled ? 'opacity-60 cursor-not-allowed' : '',
       ],
       'aria-pressed': p.modelValue,
     }, [

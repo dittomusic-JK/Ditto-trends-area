@@ -53,6 +53,13 @@ export interface BuilderTrack {
   customIsrc: boolean
   customIsrcValue: string
   addLyrics: boolean
+  /** Lyrics text, when the user supplies their own */
+  lyrics: string
+  /** Paid add-on: time-synced lyrics (DC-137). Price per track, see TIMED_LYRICS_PRICE */
+  timedLyrics: boolean
+  timedLyricsSource: 'own' | 'generate'
+  /** Already bought on a previous order for this track: control is locked on */
+  timedLyricsPurchased: boolean
   fingerprint: boolean
   explicit: boolean
   copyrightHolder: string
@@ -67,6 +74,9 @@ export interface BuilderTrack {
   metadataTouched: boolean
 }
 
+/** Time-synced lyrics, per track. Price is a placeholder until pricing is agreed (DC-137). */
+export const TIMED_LYRICS_PRICE = 15
+
 export const makeBuilderTrack = (id: string, title: string, duration: string, durationSec: number, audioFile: string): BuilderTrack => ({
   id,
   title,
@@ -80,6 +90,10 @@ export const makeBuilderTrack = (id: string, title: string, duration: string, du
   customIsrc: false,
   customIsrcValue: '',
   addLyrics: false,
+  lyrics: '',
+  timedLyrics: false,
+  timedLyricsSource: 'generate',
+  timedLyricsPurchased: false,
   fingerprint: false,
   explicit: false,
   copyrightHolder: '',
