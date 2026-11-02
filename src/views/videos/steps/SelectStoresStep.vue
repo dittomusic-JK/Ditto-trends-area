@@ -94,6 +94,7 @@
         <div class="flex items-center gap-2 mb-1">
           <img src="/img/vevo-icon.svg" alt="VEVO" class="w-5 h-5 object-contain" />
           <h3 class="text-sm font-semibold text-ditto-text">VEVO Channel Setup</h3>
+          <button v-if="existingVevoChannels.length" @click="emit('manageChannels')" class="ml-auto text-xs font-medium text-ditto-purple hover:underline">Manage channels</button>
         </div>
         <p class="text-xs text-ditto-subtext mb-4">Create or link an existing VEVO channel.</p>
 
@@ -151,7 +152,7 @@
                   <p class="text-sm font-medium text-ditto-text truncate">{{ ch.name }}</p>
                   <p class="text-xs text-ditto-subtext">{{ ch.artist }}</p>
                 </div>
-                <span :class="['text-[10px] font-semibold px-2 py-0.5 rounded-full', ch.status === 'Live' ? 'bg-[#e6fbf1] text-[#0f8a4f]' : 'bg-ditto-light-grey text-ditto-subtext']">{{ ch.status }}</span>
+                <span :class="['text-[10px] font-semibold px-2 py-0.5 rounded-full', ch.status === 'Live' ? 'bg-[#e6fbf1] text-[#0f8a4f]' : ch.status === 'Pending' ? 'bg-[#fdf1cc] text-[#92400e]' : 'bg-error/10 text-error']">{{ vevoStatusLabel[ch.status] }}</span>
               </label>
               </div>
               <label :class="[
@@ -370,7 +371,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
-import { videoStores, spotifyMusicReleases, userHasSpotifyReleases, existingVevoChannels } from '../../../data/videoMockData'
+import { videoStores, spotifyMusicReleases, userHasSpotifyReleases, existingVevoChannels, vevoStatusLabel } from '../../../data/videoMockData'
 
 interface StoresData {
   selected: string[]
@@ -392,6 +393,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'update:stores', stores: StoresData): void
   (e: 'linkRelease'): void
+  (e: 'manageChannels'): void
 }>()
 
 const storeList = videoStores

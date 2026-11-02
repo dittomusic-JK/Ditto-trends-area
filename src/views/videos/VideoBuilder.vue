@@ -105,6 +105,7 @@
         v-model:stores="formData.stores"
         :is-lyric-video="formData.metadata.isLyricVideo"
         @link-release="handleLinkReleaseRedirect"
+        @manage-channels="$emit('manage-channels')"
       />
 
       <!-- Step 4: Schedule -->
@@ -171,13 +172,18 @@ import ReviewStep from './steps/ReviewStep.vue'
 
 const props = defineProps<{
   initialTitle: string
+  /** Open on a given step (the VEVO channels catalogue lands on Select Stores) */
+  startStep?: number
+  /** Store to tick on open, e.g. 'vevo' from "Create a channel" */
+  preselectStore?: string
 }>()
 
 defineEmits<{
   (e: 'back'): void
+  (e: 'manage-channels'): void
 }>()
 
-const currentStep = ref(0)
+const currentStep = ref(props.startStep ?? 0)
 
 // Steps the user has moved on from — required errors only show after that
 // (fields validate on leaving, not while the step is first being filled in).
@@ -342,6 +348,10 @@ const getStepNumberClasses = (index: number): string => {
 }
 
 const canGoBack = computed(() => currentStep.value > 0)
+
+if (props.preselectStore && !formData.stores.selected.includes(props.preselectStore)) {
+  formData.stores.selected.push(props.preselectStore)
+}
 
 const navigateToStep = (index: number) => {
   visitedSteps.add(currentStep.value)

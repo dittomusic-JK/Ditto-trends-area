@@ -1,3 +1,5 @@
+import { reactive } from 'vue'
+
 export interface VideoRelease {
   id: string
   title: string
@@ -206,23 +208,39 @@ export const videoStores = [
   { id: 'amazon', name: 'Amazon Music', logo: '/img/amazonmusic-icon.svg', info: 'Appears alongside the matching track on Amazon Music, accessible to Prime and Unlimited subscribers.' },
 ]
 
-// VEVO channels this account has already set up through Ditto
+// VEVO channels this account has set up through Ditto. Reactive so an edit in the
+// channels catalogue shows up in the builder's channel picker straight away.
 export interface VevoChannel {
   id: string
+  /** Full channel name including the VEVO suffix */
   name: string
   artist: string
-  status: 'Live' | 'Pending'
+  status: 'Pending' | 'Live' | 'Rejected'
+  createdAt: string
+  biography: string
+  /** Artist image (JPEG, 5000 x 5000 min). URL once uploaded, null until then */
+  artistImage: string | null
+  /** Channel art (PNG, 2560 x 1440 min) */
+  channelArt: string | null
+  /** Videos delivered to this channel. A channel with linked videos can't be deleted */
+  linkedVideoIds: string[]
 }
 
-export const existingVevoChannels: VevoChannel[] = [
-  { id: 'vc-1', name: 'DarkooVEVO', artist: 'Darkoo', status: 'Live' },
-  { id: 'vc-2', name: 'AlmostJoeyVEVO', artist: 'Almost Joey', status: 'Live' },
-  { id: 'vc-3', name: 'RugerVEVO', artist: 'Ruger', status: 'Pending' },
-  { id: 'vc-4', name: 'RemaVEVO', artist: 'Rema', status: 'Live' },
-  { id: 'vc-5', name: 'DavidoVEVO', artist: 'Davido', status: 'Live' },
-  { id: 'vc-6', name: 'RvssianVEVO', artist: 'Rvssian', status: 'Live' },
-  { id: 'vc-7', name: 'JeleelVEVO', artist: 'JELEEL!', status: 'Pending' },
-]
+export const vevoStatusLabel: Record<VevoChannel['status'], string> = {
+  Pending: 'Pending set-up',
+  Live: 'Live',
+  Rejected: 'Rejected',
+}
+
+export const existingVevoChannels = reactive<VevoChannel[]>([
+  { id: 'vc-1', name: 'DarkooVEVO', artist: 'Darkoo', status: 'Live', createdAt: '2025-03-14', biography: 'London-based Afroswing artist. Breakout single "Gangsta" went platinum in the UK.', artistImage: 'https://prod-ditto-music-release-content.s3.eu-west-2.amazonaws.com/04326032/artwork/transforms/darkoo-sexy-girl-summer-artwork-684334c523bdc995981350-small.jpg', channelArt: null, linkedVideoIds: ['vr-001', 'vr-003', 'vr-004', 'vr-005', 'vr-006', 'vr-007'] },
+  { id: 'vc-2', name: 'AlmostJoeyVEVO', artist: 'Almost Joey', status: 'Live', createdAt: '2025-09-02', biography: 'Indie pop from Manchester.', artistImage: null, channelArt: null, linkedVideoIds: ['vr-002'] },
+  { id: 'vc-3', name: 'RugerVEVO', artist: 'Ruger', status: 'Pending', createdAt: '2026-10-28', biography: '', artistImage: null, channelArt: null, linkedVideoIds: [] },
+  { id: 'vc-4', name: 'RemaVEVO', artist: 'Rema', status: 'Live', createdAt: '2025-11-20', biography: 'Afrorave pioneer.', artistImage: null, channelArt: null, linkedVideoIds: [] },
+  { id: 'vc-5', name: 'DavidoVEVO', artist: 'Davido', status: 'Live', createdAt: '2026-01-08', biography: '', artistImage: null, channelArt: null, linkedVideoIds: [] },
+  { id: 'vc-6', name: 'RvssianVEVO', artist: 'Rvssian', status: 'Rejected', createdAt: '2026-09-15', biography: '', artistImage: null, channelArt: null, linkedVideoIds: [] },
+  { id: 'vc-7', name: 'JeleelVEVO', artist: 'JELEEL!', status: 'Pending', createdAt: '2026-10-30', biography: '', artistImage: null, channelArt: null, linkedVideoIds: [] },
+])
 
 // Spotify Music Releases — user's releases currently live on Spotify
 export interface TrackCredit {

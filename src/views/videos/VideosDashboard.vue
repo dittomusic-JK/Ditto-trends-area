@@ -20,6 +20,19 @@
         </button>
       </div>
 
+      <!-- VEVO channels catalogue entry -->
+      <button
+        @click="openChannels"
+        class="w-full sm:w-auto flex items-center gap-3 px-4 py-3 mb-6 rounded-2xl border border-gray-200 hover:border-ditto-purple hover:bg-ditto-light-grey/60 transition-colors text-left group"
+      >
+        <img src="/img/vevo-icon.svg" alt="" class="w-6 h-6 object-contain flex-shrink-0" />
+        <span class="flex-1 min-w-0">
+          <span class="block text-sm font-semibold text-ditto-text">VEVO channels</span>
+          <span class="block text-xs text-ditto-subtext"><template v-if="vevoChannels.length">{{ vevoChannels.length }} {{ vevoChannels.length === 1 ? 'channel' : 'channels' }}<template v-if="pendingChannels"> · {{ pendingChannels }} pending set-up</template> · Edit or remove</template><template v-else>None yet · Set one up with your first video</template></span>
+        </span>
+        <svg class="w-4 h-4 text-ditto-subtext group-hover:text-ditto-purple flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+
       <!-- Snapshot Analytics -->
       <div v-if="!isNewUser" class="mb-8">
         <p class="text-sm text-ditto-subtext mb-4">Here's a snapshot of your video performance this week.</p>
@@ -231,7 +244,16 @@
   <VideoBuilder
     v-else-if="currentView === 'builder'"
     :initial-title="builderTitle"
+    :start-step="builderStartStep"
+    :preselect-store="builderPreselectStore"
     @back="currentView = 'list'"
+    @manage-channels="openChannels"
+  />
+  <VevoChannelsView
+    v-else-if="currentView === 'channels'"
+    @back="currentView = 'list'"
+    @create-channel="createChannel"
+    @open-video="openVideo"
   />
 </template>
 
@@ -247,7 +269,8 @@ import CreateReleaseModal from '../music/builder/CreateMusicReleaseModal.vue'
 import GlobalSearch from '../../components/layout/GlobalSearch.vue'
 import VideoBuilder from './VideoBuilder.vue'
 import VideoDetailView from './VideoDetailView.vue'
-import { videoReleases } from '../../data/videoMockData'
+import VevoChannelsView from './VevoChannelsView.vue'
+import { videoReleases, existingVevoChannels } from '../../data/videoMockData'
 import type { VideoRelease } from '../../data/videoMockData'
 import { useDemoUser } from '../../composables/useDemoUser'
 import { accountPlan } from '../../data/accountPlan'
@@ -287,7 +310,21 @@ const { isNewUser } = useDemoUser()
 const searchQuery = ref('')
 const activeStatus = ref('all')
 const showCreateModal = ref(false)
-const currentView = ref<'list' | 'builder' | 'detail'>('list')
+const currentView = ref<'list' | 'builder' | 'detail' | 'channels'>('list')
+
+// VEVO channels catalogue (edit / delete), shared with the builder's channel picker
+const vevoChannels = existingVevoChannels
+const pendingChannels = computed(() => vevoChannels.filter(c => c.status === 'Pending').length)
+const openChannels = () => { currentView.value = 'channels' }
+// "Create a channel" lands in the builder's Select Stores step with VEVO pre-selected
+const builderStartStep = ref(0)
+const builderPreselectStore = ref('')
+const createChannel = () => {
+  builderTitle.value = ''
+  builderStartStep.value = 2
+  builderPreselectStore.value = 'vevo'
+  currentView.value = 'builder'
+}
 const openedVideo = ref<VideoRelease | null>(null)
 
 // Finished videos open the detail area; drafts go back into the builder
@@ -312,6 +349,8 @@ const deleteVideo = (video: VideoRelease) => {
 
 const editVideo = (video: VideoRelease) => {
   builderTitle.value = displayTitle(video.title)
+  builderStartStep.value = 0
+  builderPreselectStore.value = ''
   currentView.value = 'builder'
 }
 
@@ -343,6 +382,8 @@ const formatViews = (views: number): string => {
 const handleCreateVideo = (title: string) => {
   showCreateModal.value = false
   builderTitle.value = title
+  builderStartStep.value = 0
+  builderPreselectStore.value = ''
   currentView.value = 'builder'
 }
 
