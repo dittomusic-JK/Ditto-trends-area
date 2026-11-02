@@ -237,6 +237,12 @@ button[aria-label="Basket"] img,
 .dark .bg-\[\#efeffc\] { background-color: #1e1e27; }
 .dark .bg-\[\#e8e8ff\] { background-color: #262636; }
 .dark .border-\[\#e4e4ef\] { border-color: #2e2e3a; }
+/* Lavender tints (selected chips, step numerals, active icon buttons) */
+.dark .bg-\[\#efe9ff\] { background-color: #2a2340; }
+.dark .hover\:bg-\[\#efe9ff\]:hover { background-color: #2a2340; }
+/* Card header wash and the row-being-edited tint (live performances) */
+.dark .from-\[\#f6f3ff\] { --tw-gradient-from: #211b33 var(--tw-gradient-from-position); --tw-gradient-to: rgb(33 27 51 / 0) var(--tw-gradient-to-position); --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to); }
+.dark .bg-\[\#faf9ff\] { background-color: #1b1824; }
 /* Selected artist / release row tint (pink on light, deep violet on dark) */
 .dark .bg-\[\#FDF2F8\] { background-color: #251b33; }
 /* Status pill tints: keep the hue, lift the text for dark surfaces */

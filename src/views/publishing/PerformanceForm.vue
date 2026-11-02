@@ -315,4 +315,5 @@ onUnmounted(() => document.removeEventListener('click', handleClickOutside))
   font-weight: 700;
   line-height: 1;
 }
+.dark .step-num { background: #2a2340; }
 </style>

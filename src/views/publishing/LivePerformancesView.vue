@@ -56,7 +56,7 @@
 
       <!-- Registration card -->
       <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden">
-        <div class="flex items-center gap-3 px-5 sm:px-6 lg:px-8 py-4 border-b border-gray-100 bg-gradient-to-r from-[#f6f3ff] to-white">
+        <div class="flex items-center gap-3 px-5 sm:px-6 lg:px-8 py-4 border-b border-gray-100 bg-gradient-to-r from-[#f6f3ff] to-transparent">
           <div class="w-9 h-9 rounded-xl bg-white border border-ditto-purple/20 flex items-center justify-center flex-shrink-0">
             <svg class="w-4 h-4 text-ditto-purple" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/>
