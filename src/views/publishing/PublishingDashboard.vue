@@ -2,8 +2,14 @@
   <div class="relative px-4 py-4 sm:px-6 sm:py-6 lg:px-16 lg:py-8 w-full max-w-full box-border">
     <GlobalSearch />
     <!-- Header -->
+    <!-- The Live Performances tab takes over the page header with its own mark -->
     <h1 class="font-satoshi font-black text-xl sm:text-3xl lg:text-[42px] tracking-[-0.03em] text-ditto-text mb-6">
-      Publishing <span>📝</span>
+      <template v-if="activeTab === 'live' && !isNewUser">
+        <img src="/img/products/live-performances.webp" alt="" class="h-8 sm:h-10 lg:h-12 w-auto inline-block align-middle mr-2 sm:mr-3 -mt-1" />Live Performances
+      </template>
+      <template v-else>
+        <img src="/img/products/publishing.svg" alt="" class="h-8 sm:h-10 lg:h-12 w-auto inline-block align-middle mr-2 sm:mr-3 -mt-1" />Publishing
+      </template>
     </h1>
 
     <!-- New user: publishing kicks in after the first release -->

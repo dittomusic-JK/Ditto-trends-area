@@ -2,10 +2,8 @@
   <div class="space-y-6">
     <!-- Heading + demo plan switcher -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-      <div>
-        <h2 class="font-satoshi font-black tracking-[-0.03em] text-xl text-ditto-text">Register Live Performances</h2>
-        <p class="text-sm text-ditto-subtext mt-1">Every gig you play earns publishing royalties on your own songs. Register them here to claim them.</p>
-      </div>
+      <!-- The page H1 already reads "Live Performances" on this tab, so no repeat here -->
+      <p class="text-sm text-ditto-subtext">Every gig you play earns publishing royalties on your own songs. Register them here to claim them.</p>
       <!-- Prototype-only plan toggle -->
       <div class="flex items-center gap-1.5 text-xs text-ditto-subtext flex-shrink-0">
         <span class="mr-1">Demo:</span>
