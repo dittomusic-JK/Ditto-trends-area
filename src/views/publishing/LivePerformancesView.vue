@@ -8,7 +8,7 @@
       <div class="flex items-center gap-1.5 text-xs text-ditto-subtext flex-shrink-0">
         <span class="mr-1">Demo:</span>
         <button
-          v-for="p in (['Pro', 'Starter'] as const)" :key="p"
+          v-for="p in (['Pro', 'Starter', 'No works'] as const)" :key="p"
           @click="plan = p"
           :class="['px-3 py-1 rounded-full transition-colors', plan === p ? 'bg-ditto-purple text-white' : 'bg-ditto-light-grey text-ditto-subtext hover:text-ditto-text']"
         >{{ p }}</button>
@@ -29,6 +29,61 @@
       <button class="px-6 py-2.5 bg-ditto-purple btn-pop-purple text-white text-sm font-medium rounded-full hover:opacity-95 transition-all">
         Upgrade Plan
       </button>
+    </div>
+
+    <!-- ===== Pro / Label, but nothing to register against yet ===== -->
+    <!-- Only works registered through Publishing with a PRS Tunecode can be
+         claimed, so a fresh publishing user has nothing to pick from. -->
+    <div v-else-if="eligibleWorks.length === 0" class="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+      <div class="flex items-center gap-3 px-5 sm:px-6 lg:px-8 py-4 border-b border-gray-100 bg-gradient-to-r from-[#f6f3ff] to-transparent">
+        <div class="w-9 h-9 rounded-xl bg-white border border-ditto-purple/20 flex items-center justify-center flex-shrink-0">
+          <svg class="w-4 h-4 text-ditto-purple" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/>
+          </svg>
+        </div>
+        <h3 class="font-satoshi font-black tracking-[-0.02em] text-base text-ditto-text">Register your works first</h3>
+      </div>
+      <div class="p-5 sm:p-6 lg:p-8 grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_280px] gap-6 lg:gap-10 items-start">
+        <div>
+          <p class="text-sm text-ditto-text max-w-xl">
+            Live performance royalties are paid against your registered works. You don't have any works with a PRS Tunecode yet, so there's nothing to claim a performance against.
+          </p>
+          <ol class="mt-5 space-y-3">
+            <li class="flex items-start gap-3">
+              <span class="step-num mt-0.5">1</span>
+              <div>
+                <p class="text-sm font-medium text-ditto-text">Register a work in My Works</p>
+                <p class="text-xs text-ditto-subtext mt-0.5">Title, writers and splits. Takes a couple of minutes per song.</p>
+              </div>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="step-num mt-0.5">2</span>
+              <div>
+                <p class="text-sm font-medium text-ditto-text">Wait for the PRS Tunecode</p>
+                <p class="text-xs text-ditto-subtext mt-0.5">Usually issued within a few weeks. The work shows as eligible here as soon as it arrives.</p>
+              </div>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="step-num mt-0.5">3</span>
+              <div>
+                <p class="text-sm font-medium text-ditto-text">Come back and register the gig</p>
+                <p class="text-xs text-ditto-subtext mt-0.5">Any performance from {{ formatDate(subscriptionStart) }} onwards can still be claimed once the work is eligible.</p>
+              </div>
+            </li>
+          </ol>
+          <div class="flex flex-wrap items-center gap-3 mt-6">
+            <button @click="emit('add-work')" class="px-6 py-2.5 bg-ditto-purple btn-pop-purple text-white text-sm font-medium rounded-full hover:opacity-95 transition-all">
+              Register a work
+            </button>
+            <button @click="emit('open-works')" class="text-sm font-medium text-ditto-purple hover:underline">View My Works</button>
+          </div>
+        </div>
+        <!-- Keep the gigs list warm: jot them down now, claim later -->
+        <div class="rounded-xl border border-dashed border-gray-200 bg-ditto-light-grey/30 p-4">
+          <p class="text-xs font-semibold text-ditto-text">Played recently?</p>
+          <p class="text-xs text-ditto-subtext mt-1">Keep hold of the date and venue. You'll need both to register the performance once your works are eligible.</p>
+        </div>
+      </div>
     </div>
 
     <!-- ===== Pro / Label ===== -->
@@ -182,7 +237,12 @@ import PerformanceForm from './PerformanceForm.vue'
 import type { Venue, Work, Performance, PerformanceDraft } from './livePerformanceTypes'
 
 // ---- Demo plan (prototype-only switcher) ----
-const plan = ref<'Pro' | 'Starter'>('Pro')
+const plan = ref<'Pro' | 'Starter' | 'No works'>('Pro')
+
+const emit = defineEmits<{
+  (e: 'add-work'): void
+  (e: 'open-works'): void
+}>()
 
 // ---- Eligibility window ----
 const subscriptionStart = '2026-01-10'
@@ -205,7 +265,7 @@ onMounted(async () => {
 
 // ---- Works: registered publishing works with a valid PRS Tunecode ----
 // Sized like a working label catalog so the picker proves out at scale.
-const eligibleWorks: Work[] = [
+const workCatalogue: Work[] = [
   { id: 'w1', title: 'Solar', artist: 'Darkoo & Ruger', tunecode: '203481KV' },
   { id: 'w2', title: 'My Baby (Obimo)', artist: 'Almost Joey', tunecode: '198237DM' },
   { id: 'w3', title: 'Favourite Girl', artist: 'Darkoo & Dess Dior', tunecode: '175920QT' },
@@ -248,7 +308,9 @@ const eligibleWorks: Work[] = [
   { id: 'w40', title: 'Last Train North', artist: 'Vies & Moreau', tunecode: '269960EC' },
 ]
 
-const workById = (id: string) => eligibleWorks.find(w => w.id === id)
+// 'No works' demo: a Pro user whose publishing catalogue is still empty
+const eligibleWorks = computed<Work[]>(() => plan.value === 'No works' ? [] : workCatalogue)
+const workById = (id: string) => workCatalogue.find(w => w.id === id)
 
 // ---- Registered performances ----
 let nextId = 100
@@ -310,3 +372,21 @@ const showToast = (msg: string) => {
   toastTimer = setTimeout(() => { toast.value = '' }, 3200)
 }
 </script>
+
+<style scoped>
+.step-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.125rem;
+  height: 1.125rem;
+  border-radius: 9999px;
+  background: #efe9ff;
+  color: var(--ditto-purple);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.dark .step-num { background: #2a2340; }
+</style>

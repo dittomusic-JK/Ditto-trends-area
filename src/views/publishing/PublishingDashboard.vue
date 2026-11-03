@@ -344,7 +344,7 @@
     </div>
 
     <!-- ===================== Register Live Performances ===================== -->
-    <LivePerformancesView v-else-if="!isNewUser && activeTab === 'live'" />
+    <LivePerformancesView v-else-if="!isNewUser && activeTab === 'live'" @add-work="startAddWork" @open-works="activeTab = 'works'" />
 
     <!-- Toast -->
     <transition
