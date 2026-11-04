@@ -5,7 +5,7 @@
       <!-- Welcome Header -->
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
         <h1 class="font-satoshi font-black text-xl sm:text-3xl lg:text-[42px] tracking-[-0.03em] text-ditto-text">
-          My Videos
+          <img src="/img/products/music-video-distro.svg" alt="" class="h-8 sm:h-10 lg:h-12 w-auto inline-block align-middle mr-2 sm:mr-3 -mt-1" />My Videos
         </h1>
         <button
           @click="startCreate"

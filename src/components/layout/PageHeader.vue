@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col sm:flex-row sm:flex-wrap sm:items-center sm:justify-between gap-3 mb-4 sm:mb-6 w-full max-w-full">
     <h1 class="font-satoshi font-black text-xl sm:text-3xl lg:text-[42px] tracking-[-0.03em] text-ditto-text text-center sm:text-left">
-      Analytics & Trends <span>📈</span>
+      <img src="/img/products/analytics-trends.svg" alt="" class="h-8 sm:h-10 lg:h-12 w-auto inline-block align-middle mr-2 sm:mr-3 -mt-1" />Analytics & Trends
     </h1>
 
     <!-- Side mode: controls drop to a second row so the search sits flush right -->

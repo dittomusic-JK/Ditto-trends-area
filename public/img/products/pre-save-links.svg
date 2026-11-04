@@ -1,0 +1,36 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="60"
+  height="60"
+  viewBox="0 0 60 60"
+>
+  <g transform="rotate(-15 28 40)">
+    <rect x="1" y="26" width="54" height="28" rx="14" fill="#fff" />
+    <rect x="3" y="28" width="50" height="24" rx="12" fill="#0a0a0a" />
+    <rect x="5" y="30" width="46" height="20" rx="10" fill="#a06bff" />
+    <rect x="11" y="34" width="15" height="12" rx="6" fill="#0a0a0a" />
+    <rect x="14" y="37" width="9" height="6" rx="3" fill="#a06bff" />
+    <rect x="29" y="34" width="15" height="12" rx="6" fill="#0a0a0a" />
+    <rect x="32" y="37" width="9" height="6" rx="3" fill="#a06bff" />
+    <rect x="20" y="38.5" width="15" height="3" rx="1.5" fill="#0a0a0a" />
+  </g>
+  <g transform="rotate(4 44 18)">
+    <g fill="#fff">
+      <rect x="29" y="6" width="29" height="28" rx="6.54" />
+      <rect x="34" y="1" width="7" height="13" rx="3.5" />
+      <rect x="46" y="1" width="7" height="13" rx="3.5" />
+    </g>
+    <rect x="31" y="8" width="25" height="24" rx="4.54" fill="#0a0a0a" />
+    <rect x="33" y="10" width="21" height="20" rx="2.54" fill="#c89bff" />
+    <path
+      d="M35.54 10h15.92A2.54 2.54 0 0 1 54 12.54V17H33v-4.46A2.54 2.54 0 0 1 35.54 10Z"
+      fill="#e6ff3a"
+    />
+    <g fill="#0a0a0a">
+      <rect x="33" y="17" width="21" height="2" />
+      <rect x="36" y="3" width="3" height="10" rx="1.5" />
+      <rect x="48" y="3" width="3" height="10" rx="1.5" />
+      <rect x="41" y="22" width="5" height="5" rx="1" />
+    </g>
+  </g>
+</svg>

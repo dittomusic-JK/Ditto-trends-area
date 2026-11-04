@@ -11,7 +11,7 @@
         All releases
       </button>
       <h1 class="font-satoshi font-black text-xl sm:text-3xl lg:text-[42px] tracking-[-0.03em] text-ditto-text">
-        Your Releases <span>💿</span>
+        <img src="/img/products/distro.svg" alt="" class="h-8 sm:h-10 lg:h-12 w-auto inline-block align-middle mr-2 sm:mr-3 -mt-1" />Your Releases
       </h1>
     </div>
 

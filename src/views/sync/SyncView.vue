@@ -3,7 +3,7 @@
     <GlobalSearch />
     <!-- Header -->
     <h1 class="font-satoshi font-black text-xl sm:text-3xl lg:text-[42px] tracking-[-0.03em] text-ditto-text mb-2">
-      Apply for Sync <span>🎬</span>
+      <img src="/img/products/sync.svg" alt="" class="h-8 sm:h-10 lg:h-12 w-auto inline-block align-middle mr-2 sm:mr-3 -mt-1" />Apply for Sync
     </h1>
     <p class="text-base text-ditto-subtext max-w-2xl mb-6">
       Pitch your music for film, TV, advertising and games. Browse live briefs from music supervisors and submit your tracks directly.
