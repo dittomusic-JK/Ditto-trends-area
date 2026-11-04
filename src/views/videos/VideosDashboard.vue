@@ -90,7 +90,7 @@
           @click="startCreate"
           class="aspect-video rounded-2xl bg-white shadow-[0_2px_14px_rgba(16,31,60,0.08)] hover:shadow-[0_12px_32px_rgba(95,31,255,0.18)] hover:-translate-y-1 flex flex-col items-center justify-center gap-3 transition-all duration-200 group"
         >
-          <img src="/img/suite/music-video-distro.svg" alt="" class="w-11 h-11 group-hover:scale-105 transition-transform" />
+          <img src="/img/products/music-video-distro-new.svg" alt="" class="w-12 h-12 group-hover:scale-105 transition-transform" />
           <span class="text-center">
             <span class="block text-sm font-bold text-ditto-text">New video</span>
             <span class="block text-xs text-ditto-subtext mt-1">Get your videos on VEVO &amp; more</span>
