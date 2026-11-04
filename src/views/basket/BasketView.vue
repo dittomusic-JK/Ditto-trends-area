@@ -2,7 +2,7 @@
   <div class="basket-view relative">
     <GlobalSearch />
     <div class="basket-view__container">
-      <h1 class="basket-view__title">Basket</h1>
+      <h1 class="basket-view__title"><img src="/img/products/basket.svg" alt="" class="basket-view__title-mark" />Basket</h1>
       <p class="basket-view__subtitle">You're almost there! Checkout to confirm your releases.</p>
 
       <!-- Empty state -->
@@ -461,4 +461,7 @@ function handleCheckout() {
     }
   }
 }
+
+.basket-view__title-mark { height: 2.5rem; width: auto; display: inline-block; vertical-align: middle; margin: -0.25rem 0.75rem 0 0; }
+@media (max-width: 640px) { .basket-view__title-mark { height: 2rem; margin-right: 0.5rem; } }
 </style>

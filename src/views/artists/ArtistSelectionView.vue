@@ -2,7 +2,7 @@
   <div class="p-6 lg:p-8">
     <!-- Header -->
     <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
-      <h1 class="text-2xl lg:text-3xl font-bold text-white">Your Artists 🎤</h1>
+      <h1 class="text-2xl lg:text-3xl font-bold text-white"><img src="/img/products/artists.svg" alt="" class="h-8 lg:h-10 w-auto inline-block align-middle mr-2 -mt-1" />Your Artists</h1>
       
       <!-- Filter Tabs & Search -->
       <div class="flex flex-col lg:flex-row items-stretch lg:items-center gap-4">

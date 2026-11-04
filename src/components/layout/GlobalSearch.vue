@@ -38,7 +38,7 @@
           @click="goPage(page)"
           class="w-full flex items-center gap-3 px-4 py-2 text-left hover:bg-ditto-light-grey transition-colors"
         >
-          <span class="w-8 h-8 rounded-lg bg-ditto-light-grey flex items-center justify-center text-base flex-shrink-0">{{ page.emoji }}</span>
+          <span class="w-8 h-8 rounded-lg bg-ditto-light-grey flex items-center justify-center flex-shrink-0"><img :src="page.icon" alt="" class="w-5 h-5" /></span>
           <span class="text-sm font-medium text-ditto-text">{{ page.label }}</span>
         </button>
       </template>
@@ -53,7 +53,7 @@
             @click="goPage(page)"
             class="w-full flex items-center gap-3 px-4 py-2 text-left hover:bg-ditto-light-grey transition-colors"
           >
-            <span class="w-8 h-8 rounded-lg bg-ditto-light-grey flex items-center justify-center text-base flex-shrink-0">{{ page.emoji }}</span>
+            <span class="w-8 h-8 rounded-lg bg-ditto-light-grey flex items-center justify-center flex-shrink-0"><img :src="page.icon" alt="" class="w-5 h-5" /></span>
             <span class="text-sm font-medium text-ditto-text">{{ page.label }}</span>
           </button>
         </template>
@@ -134,27 +134,27 @@ const inputRef = ref<HTMLInputElement | null>(null)
 
 interface PageEntry {
   label: string
-  emoji: string
+  icon: string
   section: string
   royaltiesSection?: string
   keywords: string
 }
 
 const pages: PageEntry[] = [
-  { label: 'Home', emoji: '🏠', section: 'home', keywords: 'home hub dashboard start' },
-  { label: 'Your Releases', emoji: '💿', section: 'music', keywords: 'music releases catalog albums singles eps' },
-  { label: 'New release', emoji: '➕', section: 'music-builder', keywords: 'create upload distribute new release builder' },
-  { label: 'Your Artists', emoji: '🎤', section: 'artists', keywords: 'artists profiles roster contracts' },
-  { label: 'My Videos', emoji: '🎬', section: 'videos', keywords: 'videos vevo music video' },
-  { label: 'Royalties & Sales', emoji: '💰', section: 'royalties', keywords: 'royalties sales earnings money income streams revenue' },
-  { label: 'Collaborations', emoji: '🤝', section: 'royalties', royaltiesSection: 'collaborations', keywords: 'collaborations splits share royalties' },
-  { label: 'Reports', emoji: '📊', section: 'royalties', royaltiesSection: 'reports', keywords: 'reports statements csv royalties' },
-  { label: 'Payouts', emoji: '🏦', section: 'royalties', royaltiesSection: 'payouts', keywords: 'payouts withdraw balance bank money' },
-  { label: 'Analytics', emoji: '📈', section: 'analytics', keywords: 'analytics trends streams audience playlists stats data' },
-  { label: 'Publishing', emoji: '📝', section: 'publishing', keywords: 'publishing works songwriter cowriters live performances' },
-  { label: 'Sync', emoji: '🎞️', section: 'sync', keywords: 'sync licensing film tv games pitching' },
-  { label: 'Neighbouring Rights', emoji: '🛡️', section: 'neighbouring-rights', keywords: 'neighbouring rights registration collection societies broadcast' },
-  { label: 'Basket', emoji: '🛒', section: 'basket', keywords: 'basket cart checkout order' },
+  { label: 'Home', icon: '/img/products/welcome.svg', section: 'home', keywords: 'home hub dashboard start' },
+  { label: 'Your Releases', icon: '/img/products/catalogue.svg', section: 'music', keywords: 'music releases catalog albums singles eps' },
+  { label: 'New release', icon: '/img/products/distro.svg', section: 'music-builder', keywords: 'create upload distribute new release builder' },
+  { label: 'Your Artists', icon: '/img/products/artists.svg', section: 'artists', keywords: 'artists profiles roster contracts' },
+  { label: 'My Videos', icon: '/img/products/music-video-distro.svg', section: 'videos', keywords: 'videos vevo music video' },
+  { label: 'Royalties & Sales', icon: '/img/products/royalties.svg', section: 'royalties', keywords: 'royalties sales earnings money income streams revenue' },
+  { label: 'Collaborations', icon: '/img/products/splits.svg', section: 'royalties', royaltiesSection: 'collaborations', keywords: 'collaborations splits share royalties' },
+  { label: 'Reports', icon: '/img/products/reports.svg', section: 'royalties', royaltiesSection: 'reports', keywords: 'reports statements csv royalties' },
+  { label: 'Payouts', icon: '/img/products/payouts.svg', section: 'royalties', royaltiesSection: 'payouts', keywords: 'payouts withdraw balance bank money' },
+  { label: 'Analytics', icon: '/img/products/analytics-trends.svg', section: 'analytics', keywords: 'analytics trends streams audience playlists stats data' },
+  { label: 'Publishing', icon: '/img/products/publishing.svg', section: 'publishing', keywords: 'publishing works songwriter cowriters live performances' },
+  { label: 'Sync', icon: '/img/products/sync.svg', section: 'sync', keywords: 'sync licensing film tv games pitching' },
+  { label: 'Neighbouring Rights', icon: '/img/products/neighbouring-rights.svg', section: 'neighbouring-rights', keywords: 'neighbouring rights registration collection societies broadcast' },
+  { label: 'Basket', icon: '/img/products/basket.svg', section: 'basket', keywords: 'basket cart checkout order' },
 ]
 
 const q = computed(() => query.value.trim().toLowerCase())

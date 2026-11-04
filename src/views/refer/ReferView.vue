@@ -3,7 +3,7 @@
     <!-- Page header -->
     <div class="mb-6 lg:mb-8">
       <h1 class="font-satoshi font-black text-xl sm:text-3xl lg:text-[42px] tracking-tight text-ditto-text mb-2">
-        Refer a <span class="text-ditto-purple">Friend</span>
+        <img src="/img/products/refer-a-friend.svg" alt="" class="h-8 sm:h-10 lg:h-12 w-auto inline-block align-middle mr-2 sm:mr-3 -mt-1" />Refer a <span class="text-ditto-purple">Friend</span>
       </h1>
       <p class="text-sm sm:text-base text-ditto-subtext max-w-xl">
         ${{ REWARD_PER_REFERRAL }} cash for you, {{ FRIEND_DISCOUNT_PERCENT }}% off Pro for them — every time a friend joins. No limit on how many.

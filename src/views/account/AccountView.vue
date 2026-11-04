@@ -2,7 +2,7 @@
   <div class="max-w-[1160px]">
     <!-- Header: title left, member info right; tabs on their own row beneath (Royalties pattern) -->
     <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-5">
-      <h1 class="font-satoshi font-black text-xl sm:text-3xl lg:text-[42px] tracking-tight text-ditto-text">Your Account</h1>
+      <h1 class="font-satoshi font-black text-xl sm:text-3xl lg:text-[42px] tracking-tight text-ditto-text"><img src="/img/products/account.svg" alt="" class="h-8 sm:h-10 lg:h-12 w-auto inline-block align-middle mr-2 sm:mr-3 -mt-1" />Your Account</h1>
       <div class="sm:text-right">
         <p class="text-sm font-semibold text-ditto-text">{{ profile.name }}</p>
         <p class="text-xs text-ditto-subtext">{{ billing.planName }} · Member since {{ profile.memberSince }}</p>

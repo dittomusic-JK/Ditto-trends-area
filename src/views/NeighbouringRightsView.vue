@@ -1,7 +1,7 @@
 <template>
   <div class="nr">
     <h1 class="nr__title">
-      Neighbouring <strong>Rights</strong>
+      <img src="/img/products/neighbouring-rights.svg" alt="" class="nr__title-mark" />Neighbouring <strong>Rights</strong>
     </h1>
     <p class="nr__subtitle">
       Register your sound recordings with collection societies worldwide. We'll handle the claims and collect neighbouring rights royalties on your behalf.
@@ -344,4 +344,7 @@ const handleRegisterTrack = (trackId: string) => {
     color: var(--ditto-grey);
   }
 }
+
+.nr__title-mark { height: 2.5rem; width: auto; display: inline-block; vertical-align: middle; margin: -0.25rem 0.75rem 0 0; }
+@media (max-width: 640px) { .nr__title-mark { height: 2rem; margin-right: 0.5rem; } }
 </style>
