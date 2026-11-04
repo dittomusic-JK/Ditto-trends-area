@@ -370,9 +370,9 @@ provide('appNav', {
   openArtist: handleSearchArtist,
 })
 
-// Videos dropdown: VEVO Channels and Lyric Video Maker land inside the Videos section
-const videosViewRequest = ref<'channels' | 'lyric' | null>(null)
-const handleOpenVideosView = (view: 'channels' | 'lyric') => {
+// Videos dropdown: VEVO Channels lands inside the Videos section (Lyric Video Maker is the site tool)
+const videosViewRequest = ref<'channels' | null>(null)
+const handleOpenVideosView = (view: 'channels') => {
   videosViewRequest.value = view
   appSection.value = 'videos'
 }

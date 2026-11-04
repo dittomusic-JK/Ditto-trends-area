@@ -405,7 +405,7 @@ const emit = defineEmits<{
   (e: 'create-music'): void
   (e: 'toggle-basket'): void
   (e: 'open-live-performances'): void
-  (e: 'open-videos-view', view: 'channels' | 'lyric'): void
+  (e: 'open-videos-view', view: 'channels'): void
   (e: 'open-royalties', section: string): void
 }>()
 
@@ -527,7 +527,7 @@ const navEntries = computed<NavEntry[]>(() => [
     items: [
       { label: 'My Videos', active: props.activeSection === 'videos', action: () => emit('navigate', 'videos') },
       { label: 'VEVO Channels', action: () => emit('open-videos-view', 'channels') },
-      { label: 'Lyric Video Maker', action: () => emit('open-videos-view', 'lyric') },
+      { label: 'Lyric Video Maker', action: () => window.open('https://dittomusic.com/en/tools/lyric-video', '_blank', 'noopener') },
     ],
   },
   { id: 'royalties', type: 'link', label: 'Royalties', active: props.activeSection === 'royalties', action: () => emit('navigate', 'royalties') },

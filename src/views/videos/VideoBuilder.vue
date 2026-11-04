@@ -176,8 +176,6 @@ const props = defineProps<{
   startStep?: number
   /** Store to tick on open, e.g. 'vevo' from "Create a channel" */
   preselectStore?: string
-  /** From the Lyric Video Maker: flags the metadata as a lyric video */
-  lyricVideo?: boolean
 }>()
 
 defineEmits<{
@@ -233,7 +231,7 @@ const formData = reactive({
     secondaryGenre: '',
     language: 'English',
     isrc: '',
-    isLyricVideo: !!props.lyricVideo,
+    isLyricVideo: false,
     isExplicit: false,
     is18Plus: false,
     videoType: 'official' as 'official' | 'live',
