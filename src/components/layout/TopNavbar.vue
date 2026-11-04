@@ -405,6 +405,7 @@ const emit = defineEmits<{
   (e: 'create-music'): void
   (e: 'toggle-basket'): void
   (e: 'open-live-performances'): void
+  (e: 'open-videos-view', view: 'channels' | 'lyric'): void
   (e: 'open-royalties', section: string): void
 }>()
 
@@ -521,7 +522,14 @@ interface NavEntry {
 const navEntries = computed<NavEntry[]>(() => [
   { id: 'artists', type: 'link', label: 'Artists', active: props.activeSection === 'artists', action: () => emit('navigate', 'artists') },
   { id: 'music', type: 'link', label: 'Music', active: props.activeSection === 'music', action: () => emit('navigate', 'music') },
-  { id: 'videos', type: 'link', label: 'Videos', active: props.activeSection === 'videos', action: () => emit('navigate', 'videos') },
+  {
+    id: 'videos', type: 'dropdown', label: 'Videos', active: props.activeSection === 'videos',
+    items: [
+      { label: 'My Videos', active: props.activeSection === 'videos', action: () => emit('navigate', 'videos') },
+      { label: 'VEVO Channels', action: () => emit('open-videos-view', 'channels') },
+      { label: 'Lyric Video Maker', action: () => emit('open-videos-view', 'lyric') },
+    ],
+  },
   { id: 'royalties', type: 'link', label: 'Royalties', active: props.activeSection === 'royalties', action: () => emit('navigate', 'royalties') },
   { id: 'analytics', type: 'link', label: 'Analytics', active: props.activeSection === 'analytics', action: () => emit('navigate', 'analytics') },
   {

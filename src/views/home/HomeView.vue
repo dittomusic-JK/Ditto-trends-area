@@ -5,7 +5,7 @@
     <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-12">
       <div>
         <h1 class="font-satoshi font-black text-xl sm:text-3xl lg:text-[42px] tracking-[-0.03em] text-ditto-text">
-          {{ isNewUser ? `Welcome, ${orgShortName}!` : `Hey, ${orgShortName}!` }} <img src="/img/products/welcome.svg" alt="" class="h-8 sm:h-10 lg:h-12 w-auto inline-block align-middle ml-2 sm:ml-3 -mt-1" />
+          {{ isNewUser ? `Welcome, ${orgShortName}!` : `Hey, ${orgShortName}!` }}
         </h1>
         <p class="text-sm text-ditto-subtext mt-1.5">{{ isNewUser ? "Let's get your first release out into the world." : "Here's what's happening with your music." }}</p>
       </div>

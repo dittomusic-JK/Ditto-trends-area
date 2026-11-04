@@ -20,10 +20,11 @@
         </button>
       </div>
 
-      <!-- VEVO channels catalogue entry -->
+      <!-- VEVO channels catalogue entry + lyric video nudge -->
+      <div class="flex flex-col sm:flex-row sm:flex-wrap gap-3 mb-6">
       <button
         @click="openChannels"
-        class="w-full sm:w-auto flex items-center gap-3 px-4 py-3 mb-6 rounded-2xl border border-gray-200 hover:border-ditto-purple hover:bg-ditto-light-grey/60 transition-colors text-left group"
+        class="w-full sm:w-auto flex items-center gap-3 px-4 py-3 rounded-2xl border border-gray-200 hover:border-ditto-purple hover:bg-ditto-light-grey/60 transition-colors text-left group"
       >
         <img src="/img/vevo-icon.svg" alt="" class="w-6 h-6 object-contain flex-shrink-0" />
         <span class="flex-1 min-w-0">
@@ -32,6 +33,19 @@
         </span>
         <svg class="w-4 h-4 text-ditto-subtext group-hover:text-ditto-purple flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
       </button>
+      <!-- Not got a video yet? The lyric video maker makes one from a released track -->
+      <button
+        @click="openLyricMaker"
+        class="w-full sm:w-auto flex items-center gap-3 px-4 py-3 rounded-2xl border border-dashed border-ditto-purple/40 bg-[#faf9ff] hover:border-ditto-purple hover:bg-[#f6f3ff] transition-colors text-left group"
+      >
+        <img src="/img/products/lyric-video.svg" alt="" class="w-7 h-7 object-contain flex-shrink-0" />
+        <span class="flex-1 min-w-0">
+          <span class="block text-sm font-semibold text-ditto-text">Not got a video yet?</span>
+          <span class="block text-xs text-ditto-subtext">Try our Lyric Video Maker. Pick a track, choose a look, done.</span>
+        </span>
+        <svg class="w-4 h-4 text-ditto-subtext group-hover:text-ditto-purple flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+      </div>
 
       <!-- Snapshot Analytics -->
       <div v-if="!isNewUser" class="mb-8">
@@ -246,8 +260,14 @@
     :initial-title="builderTitle"
     :start-step="builderStartStep"
     :preselect-store="builderPreselectStore"
-    @back="currentView = 'list'"
+    :lyric-video="builderLyricVideo"
+    @back="currentView = 'list'; builderLyricVideo = false"
     @manage-channels="openChannels"
+  />
+  <LyricVideoMakerView
+    v-else-if="currentView === 'lyric'"
+    @back="currentView = 'list'"
+    @generate="startLyricVideo"
   />
   <VevoChannelsView
     v-else-if="currentView === 'channels'"
@@ -270,6 +290,7 @@ import GlobalSearch from '../../components/layout/GlobalSearch.vue'
 import VideoBuilder from './VideoBuilder.vue'
 import VideoDetailView from './VideoDetailView.vue'
 import VevoChannelsView from './VevoChannelsView.vue'
+import LyricVideoMakerView from './LyricVideoMakerView.vue'
 import { videoReleases, existingVevoChannels } from '../../data/videoMockData'
 import type { VideoRelease } from '../../data/videoMockData'
 import { useDemoUser } from '../../composables/useDemoUser'
@@ -278,10 +299,13 @@ import { hasVideoDistribution, VIDEO_ADDON_PRICE } from '../../data/subscription
 
 const props = defineProps<{
   autoOpenCreate?: boolean
+  /** Top-nav Videos dropdown: land on the channels catalogue or the lyric video maker */
+  openView?: 'channels' | 'lyric' | null
 }>()
 
 const emit = defineEmits<{
   (e: 'create-consumed'): void
+  (e: 'view-consumed'): void
   (e: 'view-analytics', video: VideoRelease): void
   (e: 'open-subscriptions'): void
 }>()
@@ -310,12 +334,28 @@ const { isNewUser } = useDemoUser()
 const searchQuery = ref('')
 const activeStatus = ref('all')
 const showCreateModal = ref(false)
-const currentView = ref<'list' | 'builder' | 'detail' | 'channels'>('list')
+const currentView = ref<'list' | 'builder' | 'detail' | 'channels' | 'lyric'>('list')
 
 // VEVO channels catalogue (edit / delete), shared with the builder's channel picker
 const vevoChannels = existingVevoChannels
 const pendingChannels = computed(() => vevoChannels.filter(c => c.status === 'Pending').length)
 const openChannels = () => { currentView.value = 'channels' }
+const openLyricMaker = () => { currentView.value = 'lyric' }
+watch(() => props.openView, (v) => {
+  if (!v) return
+  currentView.value = v
+  emit('view-consumed')
+}, { immediate: true })
+// Lyric Video Maker hands off to the builder with the lyric flag and a title
+const builderLyricVideo = ref(false)
+const startLyricVideo = (payload: { trackId: string; styleId: string; backgroundId: string }) => {
+  void payload
+  builderTitle.value = ''
+  builderStartStep.value = 0
+  builderPreselectStore.value = ''
+  builderLyricVideo.value = true
+  currentView.value = 'builder'
+}
 // "Create a channel" lands in the builder's Select Stores step with VEVO pre-selected
 const builderStartStep = ref(0)
 const builderPreselectStore = ref('')

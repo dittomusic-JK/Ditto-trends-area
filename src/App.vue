@@ -2,12 +2,12 @@
   <div class="min-h-screen bg-white w-full max-w-full" :data-ditto-colors-light-dark-mode="isDark ? 'dark' : 'light'">
     <!-- Top Navigation (in side-nav exploration mode it only provides the mobile header) -->
     <div :class="navStyle === 'side' ? 'md:hidden' : ''">
-      <TopNavbar :active-section="appSection" :royalties-section="royaltiesCurrentSection" @navigate="handleNavbarNavigate" @create-video="handleCreateVideo" @create-music="startMusicRelease" @toggle-basket="showMiniBasket = true" @open-live-performances="handleOpenLivePerformances" @open-royalties="handleOpenRoyalties" />
+      <TopNavbar :active-section="appSection" :royalties-section="royaltiesCurrentSection" @navigate="handleNavbarNavigate" @create-video="handleCreateVideo" @create-music="startMusicRelease" @toggle-basket="showMiniBasket = true" @open-live-performances="handleOpenLivePerformances" @open-royalties="handleOpenRoyalties" @open-videos-view="handleOpenVideosView" />
     </div>
 
     <div :class="navStyle === 'side' ? 'md:flex md:items-start' : ''">
     <!-- Alternative nav exploration (?nav=side): collapsible left rail -->
-    <SideNav v-if="navStyle === 'side'" :active-section="appSection" :royalties-section="royaltiesCurrentSection" @navigate="handleNavbarNavigate" @create-video="handleCreateVideo" @create-music="startMusicRelease" @toggle-basket="showMiniBasket = true" @open-live-performances="handleOpenLivePerformances" @open-royalties="handleOpenRoyalties" />
+    <SideNav v-if="navStyle === 'side'" :active-section="appSection" :royalties-section="royaltiesCurrentSection" @navigate="handleNavbarNavigate" @create-video="handleCreateVideo" @create-music="startMusicRelease" @toggle-basket="showMiniBasket = true" @open-live-performances="handleOpenLivePerformances" @open-royalties="handleOpenRoyalties" @open-videos-view="handleOpenVideosView" />
     <div :class="navStyle === 'side' ? 'flex-1 min-w-0 md:[--header-h:0px]' : ''" :data-nav="navStyle === 'side' ? 'side' : null">
     <!-- Home hub (root, reached via the Ditto logo) -->
     <HomeView v-if="appSection === 'home'" @navigate="(s: string) => handleNavbarNavigate(s as AppSection)" />
@@ -149,7 +149,9 @@
     <VideosDashboard
       v-if="appSection === 'videos'"
       :auto-open-create="videoCreateRequested"
+      :open-view="videosViewRequest"
       @create-consumed="videoCreateRequested = false"
+      @view-consumed="videosViewRequest = null"
       @view-analytics="handleViewVideoAnalytics"
       @open-subscriptions="handleNavbarNavigate('subscriptions')"
     />
@@ -367,6 +369,13 @@ provide('appNav', {
   openRelease: handleSearchRelease,
   openArtist: handleSearchArtist,
 })
+
+// Videos dropdown: VEVO Channels and Lyric Video Maker land inside the Videos section
+const videosViewRequest = ref<'channels' | 'lyric' | null>(null)
+const handleOpenVideosView = (view: 'channels' | 'lyric') => {
+  videosViewRequest.value = view
+  appSection.value = 'videos'
+}
 
 // Lets "Rights Management > Register Live Performances" open Publishing on the live tab.
 const publishingLiveRequest = ref(false)
