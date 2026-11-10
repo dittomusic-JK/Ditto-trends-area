@@ -497,6 +497,40 @@
       </div>
     </section>
 
+    <!-- ══ Product marks ══ -->
+    <section id="marks" class="mb-14 scroll-mt-6">
+      <h2 class="font-satoshi font-black tracking-[-0.03em] text-2xl text-ditto-text mb-1">Product marks</h2>
+      <p class="text-sm text-ditto-subtext mb-2 max-w-3xl">
+        The sticker icons that replace emojis across the dashboard. All live in <code class="text-xs bg-ditto-light-grey px-1.5 py-0.5 rounded">/img/products/</code>.
+        Click a tile to copy its path, or use the download link to pull the file over.
+      </p>
+      <ul class="text-xs text-ditto-subtext mb-6 space-y-1 max-w-3xl">
+        <li><span class="font-semibold text-ditto-text">Page headers:</span> 48px desktop, 40px tablet, 32px phone, left of the title.</li>
+        <li><span class="font-semibold text-ditto-text">Search rows and small tiles:</span> 20px inside a 32px grey square.</li>
+        <li><span class="font-semibold text-ditto-text">Never</span> inline in body copy, never recoloured, never used as a status.</li>
+      </ul>
+      <div v-for="group in productMarkGroups" :key="group.label" class="mb-6">
+        <h3 class="text-sm font-bold text-ditto-text mb-3">{{ group.label }}</h3>
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+          <div v-for="m in group.marks" :key="m.file" class="rounded-2xl border border-gray-200 bg-white p-4 flex flex-col items-center text-center">
+            <button @click="copy(`/img/products/${m.file}`)" class="w-full flex flex-col items-center gap-3 group" :title="`Copy /img/products/${m.file}`">
+              <span class="h-14 flex items-center justify-center">
+                <img :src="`/img/products/${m.file}`" alt="" class="h-12 w-auto max-w-[72px] object-contain group-hover:scale-105 transition-transform" />
+              </span>
+              <span class="block">
+                <span class="block text-sm font-semibold text-ditto-text">{{ m.name }}</span>
+                <span class="block text-[11px] text-ditto-subtext mt-0.5">{{ m.use }}</span>
+              </span>
+            </button>
+            <div class="mt-3 pt-3 border-t border-gray-100 w-full flex items-center justify-between gap-2">
+              <code class="text-[10px] text-ditto-subtext truncate">{{ m.file }}</code>
+              <a :href="`/img/products/${m.file}`" :download="m.file" class="text-[11px] font-medium text-ditto-purple hover:underline flex-shrink-0">Download</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- ══ Gradients ══ -->
     <section id="gradients" class="mb-14 scroll-mt-6">
       <h2 class="font-satoshi font-black tracking-[-0.03em] text-2xl text-ditto-text mb-1">Gradient recipes</h2>
@@ -548,6 +582,35 @@ import NewUserEmptyState from '../../components/common/NewUserEmptyState.vue'
 import { useCountUp } from '../../composables/useCountUp'
 import { releaseCatalog } from '../../data/releaseDetailMockData'
 
+// Product marks: the sticker icons used in page headers and search, grouped by where they appear
+const productMarkGroups = [
+  { label: 'Page headers', marks: [
+    { name: 'Your Releases', file: 'catalogue.svg', use: 'Music header, search' },
+    { name: 'Your Artists', file: 'artists.svg', use: 'Artists header, search' },
+    { name: 'My Videos', file: 'music-video-distro.svg', use: 'Videos header, search' },
+    { name: 'Royalties & Sales', file: 'royalties.svg', use: 'Royalties header, search' },
+    { name: 'Analytics & Trends', file: 'analytics-trends.svg', use: 'Analytics header, search' },
+    { name: 'Publishing', file: 'publishing.svg', use: 'Publishing header, search' },
+    { name: 'Live Performances', file: 'live-performances.webp', use: 'Publishing > Live tab header' },
+    { name: 'Apply for Sync', file: 'sync.svg', use: 'Sync header, search' },
+    { name: 'Neighbouring Rights', file: 'neighbouring-rights.svg', use: 'NR header, search' },
+    { name: 'Basket', file: 'basket.svg', use: 'Basket header, search' },
+    { name: 'Your Account', file: 'account.svg', use: 'Account header' },
+    { name: 'Refer a Friend', file: 'refer-a-friend.svg', use: 'Refer header' },
+  ] },
+  { label: 'Actions and search rows', marks: [
+    { name: 'New release', file: 'distro.svg', use: 'New release card, search' },
+    { name: 'New video', file: 'music-video-distro-new.svg', use: 'New video card' },
+    { name: 'Reports', file: 'reports.svg', use: 'Search row' },
+    { name: 'Payouts', file: 'payouts.svg', use: 'Search row' },
+    { name: 'Lyric Video Maker', file: 'lyric-video.svg', use: 'My Videos nudge' },
+  ] },
+  { label: 'Available, not yet placed', marks: [
+    { name: 'AI Mastering', file: 'ai-mastering.svg', use: 'Marketing set' },
+    { name: 'Pre-Save Links', file: 'pre-save-links.svg', use: 'Marketing set' },
+  ] },
+]
+
 const sections = [
   { id: 'colours', label: 'Colours' },
   { id: 'type', label: 'Typography' },
@@ -566,6 +629,7 @@ const sections = [
   { id: 'feedback', label: 'Feedback' },
   { id: 'motion', label: 'Motion' },
   { id: 'icons', label: 'Iconography' },
+  { id: 'marks', label: 'Product marks' },
   { id: 'gradients', label: 'Gradients' },
   { id: 'gotchas', label: 'Gotchas' },
 ]
