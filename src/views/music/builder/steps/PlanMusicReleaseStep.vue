@@ -140,7 +140,7 @@
         <button @click="form.countryRestrictions = true" :class="ynClass(form.countryRestrictions)">Yes</button>
       </div>
       <div v-if="form.countryRestrictions" class="mt-5 space-y-3">
-        <p class="text-xs text-ditto-subtext">Your release will not be available in the selected countries.</p>
+        <p class="text-xs text-ditto-subtext">{{ form.restrictedCountries.length ? 'Your release will not be distributed to:' : 'Distributing to every country. Untick any you want to leave out.' }}</p>
         <div class="flex flex-wrap items-center gap-2">
           <span
             v-for="chip in restrictionChips(form.restrictedCountries)"
@@ -158,7 +158,7 @@
             class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium border border-gray-200 text-ditto-text hover:border-ditto-purple hover:text-ditto-purple transition-colors"
           >
             <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            {{ form.restrictedCountries.length ? 'Edit countries' : 'Select countries' }}
+            {{ form.restrictedCountries.length ? 'Edit countries' : 'Choose countries' }}
           </button>
         </div>
       </div>

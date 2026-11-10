@@ -6,7 +6,11 @@
         <div class="flex items-start justify-between gap-4">
           <div>
             <h3 class="font-satoshi font-black text-lg tracking-[-0.02em] text-ditto-text">Country restrictions</h3>
-            <p class="text-xs text-ditto-subtext mt-1">Select the continents or countries where this release should <span class="font-semibold text-ditto-text">not</span> be available.</p>
+            <p class="text-xs text-ditto-subtext mt-1">Every country is selected by default. Untick the continents or countries you <span class="font-semibold text-ditto-text">don't</span> want this release distributed to.</p>
+            <!-- One total, at the top: no per-continent counts -->
+            <p class="mt-2.5 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold" :class="selected.length ? 'bg-[#efe9ff] text-ditto-purple' : 'bg-ditto-light-grey text-ditto-text'">
+              {{ includedCount }} of {{ total }} countries selected
+            </p>
           </div>
           <button @click="$emit('close')" class="w-8 h-8 -mt-1 -mr-1 rounded-full hover:bg-ditto-light-grey flex items-center justify-center transition-colors flex-shrink-0" aria-label="Close">
             <svg class="w-4 h-4 text-ditto-subtext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -36,7 +40,6 @@
               <span v-else-if="state(continent) === 'some'" class="w-2 h-0.5 bg-white rounded"></span>
             </span>
             {{ continent }}
-            <span v-if="state(continent) === 'some'" class="text-[10px] text-ditto-subtext">{{ pickedIn(continent) }}/{{ countriesIn(continent).length }}</span>
           </button>
         </div>
 
@@ -64,8 +67,6 @@
           >
             <svg :class="['w-3.5 h-3.5 text-ditto-subtext transition-transform', isOpen(group.continent) ? 'rotate-90' : '']" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
             <span class="text-xs font-semibold text-ditto-text">{{ group.continent }}</span>
-            <span class="text-[11px] text-ditto-subtext">{{ pickedIn(group.continent) }} of {{ countriesIn(group.continent).length }}</span>
-            <span v-if="state(group.continent) === 'all'" class="ml-auto text-[10px] font-semibold px-2 py-0.5 rounded-full bg-ditto-purple/10 text-ditto-purple">All restricted</span>
           </button>
           <div v-if="isOpen(group.continent)" class="pl-5">
             <label
@@ -73,9 +74,9 @@
               :key="country.code"
               class="flex items-center gap-3 px-3 py-2 rounded-xl cursor-pointer hover:bg-ditto-light-grey transition-colors select-none"
             >
-              <input type="checkbox" class="sr-only" :checked="selected.includes(country.name)" @change="toggle(country.name)" />
-              <span :class="['w-5 h-5 rounded border flex items-center justify-center transition-colors flex-shrink-0', selected.includes(country.name) ? 'border-ditto-purple bg-ditto-purple' : 'border-gray-300 bg-white']">
-                <svg v-if="selected.includes(country.name)" class="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              <input type="checkbox" class="sr-only" :checked="isIncluded(country.name)" @change="toggle(country.name)" />
+              <span :class="['w-5 h-5 rounded border flex items-center justify-center transition-colors flex-shrink-0', isIncluded(country.name) ? 'border-ditto-purple bg-ditto-purple' : 'border-gray-300 bg-white']">
+                <svg v-if="isIncluded(country.name)" class="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
               </span>
               <span class="text-base leading-none">{{ country.flag }}</span>
               <span class="text-sm text-ditto-text">{{ country.name }}</span>
@@ -87,10 +88,10 @@
       <!-- Footer -->
       <div class="px-6 py-4 border-t border-gray-100 flex items-center justify-between gap-4">
         <div class="flex items-center gap-3">
-          <p class="text-xs text-ditto-subtext">{{ restrictionSummary(selected) }}</p>
-          <button v-if="selected.length" @click="$emit('update:selected', [])" class="text-xs text-ditto-purple font-medium hover:underline">Clear all</button>
+          <button v-if="selected.length" @click="$emit('update:selected', [])" class="text-xs text-ditto-purple font-medium hover:underline">Select all</button>
+          <p v-if="includedCount === 0" class="text-xs text-error">Select at least one country.</p>
         </div>
-        <button @click="$emit('close')" class="px-7 py-2.5 bg-ditto-purple text-white text-sm font-medium rounded-full hover:bg-ditto-purple/90 transition-colors">Done</button>
+        <button @click="$emit('close')" :disabled="includedCount === 0" class="px-7 py-2.5 bg-ditto-purple text-white text-sm font-medium rounded-full hover:bg-ditto-purple/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">Done</button>
       </div>
     </div>
   </div>
@@ -98,11 +99,13 @@
 
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue'
-import { continents, countriesIn, continentState, restrictableCountries, restrictionSummary } from '../../../data/countryRestrictions'
+import { continents, countriesIn, restrictableCountries } from '../../../data/countryRestrictions'
 import type { Continent } from '../../../data/countryRestrictions'
 
-// Shared between the video and music builders. The value stays a flat list of
-// country names; continent ticks are derived from it (full, partial or none).
+// Shared between the video and music builders. Matches the live web and mobile
+// release builders: a tick means "distribute here" and everything starts ticked.
+// The stored value is still the flat list of EXCLUDED country names (`selected`),
+// so nothing downstream changes; ticks are derived as "not in that list".
 const props = defineProps<{ selected: string[] }>()
 
 const emit = defineEmits<{
@@ -114,8 +117,16 @@ const query = ref('')
 const searchRef = ref<HTMLInputElement | null>(null)
 onMounted(() => searchRef.value?.focus())
 
-const state = (c: Continent) => continentState(c, props.selected)
-const pickedIn = (c: Continent) => countriesIn(c).filter(x => props.selected.includes(x.name)).length
+const total = restrictableCountries.length
+const includedCount = computed(() => total - props.selected.length)
+const isIncluded = (name: string) => !props.selected.includes(name)
+// Continent tick state, in terms of INCLUDED countries
+const state = (c: Continent): 'none' | 'some' | 'all' => {
+  const names = countriesIn(c).map(x => x.name)
+  if (!names.length) return 'none'
+  const inc = names.filter(isIncluded).length
+  return inc === names.length ? 'all' : inc === 0 ? 'none' : 'some'
+}
 
 // Groups follow the search: a query shows only matching countries and opens their groups
 const groups = computed(() => {
@@ -128,8 +139,8 @@ const groups = computed(() => {
     .filter(g => g.countries.length)
 })
 
-// Collapsed by default; groups with a selection start open, search opens every match
-const open = reactive(new Set<Continent>(continents.filter(c => continentState(c, props.selected) !== 'none')))
+// Collapsed by default; groups with an exclusion start open, search opens every match
+const open = reactive(new Set<Continent>(continents.filter(c => countriesIn(c).length && state(c) !== 'all')))
 const isOpen = (c: Continent) => !!query.value.trim() || open.has(c)
 const toggleOpen = (c: Continent) => { open.has(c) ? open.delete(c) : open.add(c) }
 
@@ -138,18 +149,18 @@ const toggle = (name: string) => {
   else emit('update:selected', [...props.selected, name])
 }
 
-// Tick: every country in the continent. Untick (from full or partial): clear them all.
+// Fully ticked continent: untick excludes every country in it. Partial or empty: tick includes them all.
 const toggleContinent = (c: Continent) => {
   const names = countriesIn(c).map(x => x.name)
   if (!names.length) return
   if (state(c) === 'all') {
-    emit('update:selected', props.selected.filter(n => !names.includes(n)))
-  } else {
     const merged = [...props.selected]
     for (const n of names) if (!merged.includes(n)) merged.push(n)
     // keep the list in catalogue order so chips and groups read consistently
     emit('update:selected', restrictableCountries.map(x => x.name).filter(n => merged.includes(n)))
     open.add(c)
+  } else {
+    emit('update:selected', props.selected.filter(n => !names.includes(n)))
   }
 }
 </script>

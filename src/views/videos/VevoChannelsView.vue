@@ -28,7 +28,7 @@
       </div>
       <button
         v-if="channels.length"
-        @click="$emit('create-channel')"
+        @click="openCreate"
         class="flex items-center gap-2 px-5 py-2.5 bg-ditto-purple btn-pop-purple text-white text-sm font-medium rounded-full hover:opacity-95 transition-opacity flex-shrink-0"
       >
         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -43,7 +43,7 @@
       </div>
       <p class="text-base font-semibold text-ditto-text mb-1">No VEVO channels yet</p>
       <p class="text-sm text-ditto-subtext max-w-sm mx-auto mb-6">A VEVO channel puts your videos on YouTube under your own artist channel, with monetisation and analytics. You set one up while creating a video release.</p>
-      <button @click="$emit('create-channel')" class="px-6 py-2.5 bg-ditto-purple btn-pop-purple text-white text-sm font-medium rounded-full hover:opacity-95 transition-opacity">Create a channel</button>
+      <button @click="openCreate" class="px-6 py-2.5 bg-ditto-purple btn-pop-purple text-white text-sm font-medium rounded-full hover:opacity-95 transition-opacity">Create a channel</button>
     </div>
 
     <!-- List -->
@@ -184,6 +184,34 @@
       </div>
     </div>
 
+    <!-- ── Create channel popup: the builder's Channel Details form, verbatim ── -->
+    <div v-if="creating" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-4" @click.self="creating = false">
+      <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col">
+        <div class="px-7 pt-7 pb-4 flex items-start justify-between gap-4">
+          <div>
+            <h2 class="font-satoshi font-black text-xl tracking-[-0.03em] text-ditto-text">Create a channel</h2>
+            <p class="text-xs text-ditto-subtext mt-1">Set up a new VEVO channel through Ditto.</p>
+          </div>
+          <button @click="creating = false" class="w-8 h-8 -mt-1 -mr-1 rounded-full hover:bg-ditto-light-grey flex items-center justify-center" aria-label="Close">
+            <svg class="w-4 h-4 text-ditto-subtext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+
+        <div class="px-7 pb-2 overflow-y-auto space-y-5">
+          <div class="p-3 rounded-lg bg-warning/10 border border-warning/20 flex items-start gap-2">
+            <svg class="w-4 h-4 text-warning flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+            <p class="text-xs text-warning leading-relaxed"><strong>Please note that your VEVO channel will take a minimum of 10 days to be setup.</strong> It may take longer depending on VEVO's current timescales.</p>
+          </div>
+          <VevoChannelDetails :stores="newChannel" @update="(key, value) => ((newChannel as any)[key] = value)" />
+        </div>
+
+        <div class="px-7 py-5 flex items-center justify-end gap-3 border-t border-gray-100 mt-4">
+          <button @click="creating = false" class="px-5 py-2.5 rounded-full border border-gray-200 text-sm font-medium text-ditto-text hover:bg-ditto-light-grey transition-colors">Cancel</button>
+          <button @click="saveCreate" :disabled="!newChannelValid" class="px-6 py-2.5 rounded-full bg-ditto-purple btn-pop-purple text-white text-sm font-semibold hover:opacity-95 disabled:opacity-40 disabled:cursor-not-allowed transition-all">Create channel</button>
+        </div>
+      </div>
+    </div>
+
     <!-- ── Delete confirmation ── -->
     <div v-if="channelToDelete" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-4" @click.self="channelToDelete = null">
       <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md px-8 py-7">
@@ -226,6 +254,8 @@
 import { computed, reactive, ref } from 'vue'
 import { existingVevoChannels, vevoStatusLabel, videoReleases } from '../../data/videoMockData'
 import type { VevoChannel, VideoRelease } from '../../data/videoMockData'
+import VevoChannelDetails from './steps/VevoChannelDetails.vue'
+import type { VevoChannelDetailsData } from './steps/VevoChannelDetails.vue'
 
 defineEmits<{
   (e: 'back'): void
@@ -243,6 +273,37 @@ const statusText = (s: VevoChannel['status']) =>
   s === 'Live' ? 'text-[#0f8a4f]' : s === 'Pending' ? 'text-[#92400e]' : 'text-error'
 
 const linkedVideos = (ch: VevoChannel) => videoReleases.filter(v => ch.linkedVideoIds.includes(v.id))
+
+// ── Create (popup with the builder's Channel Details form) ──
+const creating = ref(false)
+const newChannel = reactive<VevoChannelDetailsData>({ vevoChannelName: '', vevoBiography: '', vevoArtistImage: null, vevoBanner: null })
+const openCreate = () => {
+  Object.assign(newChannel, { vevoChannelName: '', vevoBiography: '', vevoArtistImage: null, vevoBanner: null })
+  creating.value = true
+}
+const newChannelFinalName = computed(() => {
+  const base = newChannel.vevoChannelName.trim().replace(/vevo$/i, '')
+  return base ? base + 'VEVO' : ''
+})
+const newChannelValid = computed(() =>
+  /^[A-Za-z0-9]+$/.test(newChannel.vevoChannelName.trim()) && newChannelFinalName.value.length <= 20
+)
+const saveCreate = () => {
+  if (!newChannelValid.value) return
+  const name = newChannelFinalName.value
+  channels.unshift({
+    id: `vc-${Date.now()}`,
+    name,
+    artist: name.replace(/VEVO$/, ''),
+    status: 'Pending',
+    createdAt: new Date().toISOString().slice(0, 10),
+    biography: newChannel.vevoBiography.trim(),
+    artistImage: newChannel.vevoArtistImage ? URL.createObjectURL(newChannel.vevoArtistImage) : null,
+    channelArt: newChannel.vevoBanner ? URL.createObjectURL(newChannel.vevoBanner) : null,
+    linkedVideoIds: [],
+  })
+  creating.value = false
+}
 
 // ── Edit ──
 const editing = ref<VevoChannel | null>(null)

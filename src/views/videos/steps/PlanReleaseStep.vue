@@ -74,7 +74,7 @@
       </div>
       <!-- Same country popup as the music builder -->
       <div v-if="schedule.countryRestrictions" class="space-y-3">
-        <p class="text-xs text-ditto-subtext">Your video will not be available in the selected countries.</p>
+        <p class="text-xs text-ditto-subtext">{{ schedule.restrictedCountries.length ? 'Your video will not be distributed to:' : 'Distributing to every country. Untick any you want to leave out.' }}</p>
         <div class="flex flex-wrap items-center gap-2">
           <span
             v-for="chip in restrictionChips(schedule.restrictedCountries)"
@@ -92,7 +92,7 @@
             class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium border border-gray-200 text-ditto-text hover:border-ditto-purple hover:text-ditto-purple transition-colors"
           >
             <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            {{ schedule.restrictedCountries.length ? 'Edit countries' : 'Select countries' }}
+            {{ schedule.restrictedCountries.length ? 'Edit countries' : 'Choose countries' }}
           </button>
         </div>
       </div>
