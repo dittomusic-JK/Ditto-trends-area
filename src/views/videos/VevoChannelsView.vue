@@ -197,7 +197,7 @@
           </button>
         </div>
 
-        <div class="px-7 pb-2 overflow-y-auto space-y-5">
+        <div ref="createBody" class="px-7 pb-2 overflow-y-auto space-y-5">
           <div class="p-3 rounded-lg bg-warning/10 border border-warning/20 flex items-start gap-2">
             <svg class="w-4 h-4 text-warning flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
             <p class="text-xs text-warning leading-relaxed"><strong>Please note that your VEVO channel will take a minimum of 10 days to be setup.</strong> It may take longer depending on VEVO's current timescales.</p>
@@ -207,10 +207,22 @@
 
         <div class="px-7 py-5 flex items-center justify-end gap-3 border-t border-gray-100 mt-4">
           <button @click="creating = false" class="px-5 py-2.5 rounded-full border border-gray-200 text-sm font-medium text-ditto-text hover:bg-ditto-light-grey transition-colors">Cancel</button>
-          <button @click="saveCreate" :disabled="!newChannelValid" class="px-6 py-2.5 rounded-full bg-ditto-purple btn-pop-purple text-white text-sm font-semibold hover:opacity-95 disabled:opacity-40 disabled:cursor-not-allowed transition-all">Create channel</button>
+          <button @click="saveCreate" class="px-6 py-2.5 rounded-full bg-ditto-purple btn-pop-purple text-white text-sm font-semibold hover:opacity-95 transition-all">Create channel</button>
         </div>
       </div>
     </div>
+
+    <!-- Toast: the form runs below the fold, so an incomplete submit says why -->
+    <transition
+      enter-active-class="transition duration-200 ease-out" enter-from-class="opacity-0 translate-y-2" enter-to-class="opacity-100 translate-y-0"
+      leave-active-class="transition duration-150 ease-in" leave-from-class="opacity-100" leave-to-class="opacity-0 translate-y-2"
+    >
+      <div v-if="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[110] bg-ditto-text text-white text-sm font-medium px-4 py-3 rounded-xl shadow-lg flex items-center gap-2">
+        <svg v-if="toastKind === 'warn'" class="w-4 h-4 text-warning flex-shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+        <svg v-else class="w-4 h-4 text-success flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20,6 9,17 4,12" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        {{ toast }}
+      </div>
+    </transition>
 
     <!-- ── Delete confirmation ── -->
     <div v-if="channelToDelete" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-4" @click.self="channelToDelete = null">
@@ -288,8 +300,23 @@ const newChannelFinalName = computed(() => {
 const newChannelValid = computed(() =>
   /^[A-Za-z0-9]+$/.test(newChannel.vevoChannelName.trim()) && newChannelFinalName.value.length <= 20
 )
+const createBody = ref<HTMLElement | null>(null)
+const toast = ref('')
+const toastKind = ref<'ok' | 'warn'>('ok')
+let toastTimer: ReturnType<typeof setTimeout> | undefined
+const showToast = (msg: string, kind: 'ok' | 'warn' = 'ok') => {
+  toast.value = msg; toastKind.value = kind
+  if (toastTimer) clearTimeout(toastTimer)
+  toastTimer = setTimeout(() => { toast.value = '' }, 3200)
+}
 const saveCreate = () => {
-  if (!newChannelValid.value) return
+  if (!newChannelValid.value) {
+    // Say what's missing and bring the field back into view
+    showToast(newChannel.vevoChannelName.trim() ? 'Fix the channel name to continue' : 'Add a channel name to continue', 'warn')
+    createBody.value?.scrollTo({ top: 0, behavior: 'smooth' })
+    createBody.value?.querySelector<HTMLInputElement>('input[type="text"]')?.focus({ preventScroll: true })
+    return
+  }
   const name = newChannelFinalName.value
   channels.unshift({
     id: `vc-${Date.now()}`,
@@ -303,6 +330,7 @@ const saveCreate = () => {
     linkedVideoIds: [],
   })
   creating.value = false
+  showToast(`${name} created. Set-up takes a minimum of 10 days.`)
 }
 
 // ── Edit ──
