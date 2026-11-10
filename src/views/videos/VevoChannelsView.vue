@@ -207,7 +207,12 @@
 
         <div class="px-7 py-5 flex items-center justify-end gap-3 border-t border-gray-100 mt-4">
           <button @click="creating = false" class="px-5 py-2.5 rounded-full border border-gray-200 text-sm font-medium text-ditto-text hover:bg-ditto-light-grey transition-colors">Cancel</button>
-          <button @click="saveCreate" class="px-6 py-2.5 rounded-full bg-ditto-purple btn-pop-purple text-white text-sm font-semibold hover:opacity-95 transition-all">Create channel</button>
+          <!-- Looks inactive until the form is valid, but still takes the click so the toast can say why -->
+          <button
+            @click="saveCreate"
+            :aria-disabled="!newChannelValid"
+            :class="['px-6 py-2.5 rounded-full text-sm font-semibold transition-all', newChannelValid ? 'bg-ditto-purple btn-pop-purple text-white hover:opacity-95' : 'bg-gray-100 text-gray-400 cursor-not-allowed']"
+          >Create channel</button>
         </div>
       </div>
     </div>
