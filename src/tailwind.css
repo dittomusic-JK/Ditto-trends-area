@@ -247,6 +247,7 @@ button[aria-label="Basket"] img,
 .dark .bg-\[\#FDF2F8\] { background-color: #251b33; }
 /* Status pill tints: keep the hue, lift the text for dark surfaces */
 .dark .bg-\[\#fffbeb\] { background-color: #2e2612; }
+.dark .bg-\[\#fdf1cc\] { background-color: #2e2612; }
 .dark .text-\[\#92400e\] { color: #f0b429; }
 .dark .text-\[\#006633\] { color: #3fe0a0; }
 .dark .text-\[\#d92121\] { color: #ff7070; }

@@ -1,371 +1,179 @@
 <template>
+  <!-- Stage 5 (BA-172). Structure and classes mirror the music builder's
+       ReviewMusicReleaseStep: error banner, hero card, schedule tiles, details
+       grid, section cards and the summary rail with Complete Release. -->
   <div>
-    <!-- Header: Title + Complete Button -->
-    <div class="flex items-start justify-between mb-6">
-      <h2 class="font-satoshi font-black tracking-[-0.03em] text-2xl lg:text-3xl text-ditto-text">Review Your Release</h2>
-      <button
-        @click="$emit('complete')"
-        :disabled="errorStages.length > 0"
-        :class="[
-          'px-6 py-2.5 text-sm font-medium rounded-full transition-all flex-shrink-0',
-          errorStages.length === 0
-            ? 'bg-ditto-purple text-white hover:bg-ditto-purple/90'
-            : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-        ]"
-      >Complete Release</button>
+    <!-- Error banner: names every stage with validation errors -->
+    <div v-if="errorStages.length" class="rounded-xl border border-[#f5c451]/70 bg-[#fdf1cc] text-ditto-text text-sm font-semibold text-center px-6 py-3.5 mb-8">
+      There are errors on {{ errorStagesLabel }} of the release builder.
+      <button class="underline underline-offset-2 hover:opacity-80" @click="$emit('goToStep', errorStages[0])">Repair</button> to complete your release.
     </div>
 
-    <!-- Error Banner -->
-    <div v-if="errorStages.length > 0" class="mb-6 py-3 px-5 rounded-lg bg-warning/10 border border-warning/20">
-      <p class="text-sm text-warning">
-        A few things need fixing in
-        <template v-for="(stage, i) in errorStages" :key="stage.index">
-          <button @click="$emit('goToStep', stage.index)" class="font-medium underline hover:no-underline">
-            Step {{ stage.index + 1 }}</button><template v-if="i < errorStages.length - 1">, </template>
-        </template>
-        before you can submit.
-      </p>
+    <div class="mb-8">
+      <h1 class="font-satoshi font-black text-2xl lg:text-[32px] tracking-[-0.03em] text-ditto-text">Review Your Release</h1>
+      <p class="text-sm text-ditto-subtext mt-1.5">Check everything over before it goes to stores. You can still edit any stage.</p>
     </div>
 
-    <!-- Summary Card -->
-    <div class="rounded-2xl border border-gray-200 overflow-hidden mb-4">
-      <!-- Main: Thumbnail left + Metadata right -->
-      <div class="flex flex-col sm:flex-row p-6 gap-6">
-        <!-- Thumbnail -->
-        <div class="w-full sm:w-56 flex-shrink-0">
-          <div class="aspect-video rounded-xl bg-gray-900 overflow-hidden flex items-center justify-center">
-            <div v-if="!formData.thumbnailFile" class="text-center p-4">
-              <svg class="w-10 h-10 text-white/30 mx-auto mb-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                <rect x="2" y="4" width="20" height="16" rx="2"/><polygon points="10,8 16,12 10,16"/>
-              </svg>
-              <p class="text-xs text-white/40">No thumbnail</p>
+    <div class="grid lg:grid-cols-[minmax(0,1fr)_320px] gap-6 lg:gap-8 items-start">
+      <!-- ── Main column ── -->
+      <div class="space-y-6 min-w-0">
+
+        <!-- Release hero: thumbnail, identity, schedule and details -->
+        <section class="rounded-2xl border border-gray-200 p-6 lg:p-7">
+          <div class="flex flex-col sm:flex-row gap-6 lg:gap-8">
+            <div class="flex-shrink-0 w-full sm:w-[240px] lg:w-[260px]">
+              <div class="rounded-xl overflow-hidden bg-gray-100 aspect-video shadow-[0_10px_28px_rgba(16,31,60,0.14)]">
+                <img v-if="thumbnailUrl" :src="thumbnailUrl" alt="Video thumbnail" class="w-full h-full object-cover" />
+                <div v-else class="w-full h-full flex flex-col items-center justify-center gap-2 text-ditto-subtext">
+                  <svg class="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                  <span class="text-xs font-medium">No thumbnail uploaded</span>
+                </div>
+              </div>
             </div>
-            <div v-else class="w-full h-full bg-gradient-to-br from-ditto-purple/20 to-ditto-purple/5 flex items-center justify-center">
-              <svg class="w-10 h-10 text-ditto-purple/40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/>
-              </svg>
+
+            <div class="flex-1 min-w-0 flex flex-col justify-center">
+              <div class="flex items-center flex-wrap gap-x-2 gap-y-1 mb-2.5">
+                <span class="px-2.5 py-1 rounded-full bg-ditto-purple/10 text-ditto-purple text-[11px] font-semibold">{{ videoTypeLabel }}</span>
+                <span v-if="formData.metadata.primaryGenre" class="text-xs text-ditto-subtext">{{ formData.metadata.primaryGenre }}</span>
+              </div>
+              <h2 :class="['font-satoshi font-black text-2xl lg:text-[28px] tracking-[-0.03em] leading-tight flex items-center gap-2', formData.metadata.title ? 'text-ditto-text' : 'text-ditto-subtext']">
+                {{ formData.metadata.title || '[Untitled]' }}
+                <WarnDot v-if="!formData.metadata.title" tip="Video title not set" />
+              </h2>
+              <p :class="['mt-1 text-sm font-medium flex items-center gap-1.5', artistNames ? 'text-ditto-purple' : 'text-ditto-subtext']">
+                {{ artistNames || '[Untitled]' }}
+                <WarnDot v-if="!artistNames" tip="Video artists not set" />
+              </p>
             </div>
           </div>
-          <!-- File info under thumbnail -->
-          <div class="mt-2 space-y-1">
-            <div class="flex items-center gap-1.5">
-              <svg class="w-3 h-3 text-ditto-subtext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23,7 16,12 23,17"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
-              <p class="text-[10px] text-ditto-subtext truncate">{{ formData.videoFile?.name || 'No video uploaded' }}</p>
+
+          <!-- Release schedule -->
+          <div class="mt-6 grid sm:grid-cols-3 gap-3">
+            <div class="rounded-xl px-4 py-3 bg-ditto-light-grey">
+              <p class="text-[11px] font-semibold uppercase tracking-wide text-ditto-subtext mb-1">Release date</p>
+              <p v-if="formData.schedule.releaseDate" class="text-sm font-bold text-ditto-text">{{ longDate(formData.schedule.releaseDate) }}</p>
+              <p v-else class="text-sm text-ditto-subtext flex items-center gap-1.5">Not set <WarnDot tip="Date not set" /></p>
             </div>
-            <div class="flex items-center gap-1.5">
-              <svg class="w-3 h-3 text-ditto-subtext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>
-              <p class="text-[10px] text-ditto-subtext truncate">{{ formData.thumbnailFile?.name || 'No thumbnail uploaded' }}</p>
+            <div class="rounded-xl px-4 py-3 bg-ditto-light-grey">
+              <p class="text-[11px] font-semibold uppercase tracking-wide text-ditto-subtext mb-1">Original release date</p>
+              <p :class="['text-sm', originalDateLabel === 'N/A' ? 'text-ditto-subtext' : 'font-bold text-ditto-text']">{{ originalDateLabel }}</p>
             </div>
-            <div class="flex items-center gap-1.5">
-              <svg class="w-3 h-3 text-ditto-subtext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 8v8M8 12h8"/></svg>
-              <p class="text-[10px] text-ditto-subtext truncate">{{ formData.artworkFile?.name || 'No album artwork uploaded' }}</p>
+            <div class="rounded-xl px-4 py-3 bg-ditto-light-grey">
+              <p class="text-[11px] font-semibold uppercase tracking-wide text-ditto-subtext mb-1">Timed release</p>
+              <p :class="['text-sm', formData.schedule.timedRelease ? 'font-bold text-ditto-text' : 'text-ditto-subtext']">{{ formData.schedule.timedRelease ? formatReleaseTime(formData.schedule.releaseTime) : 'N/A' }}</p>
             </div>
           </div>
-        </div>
 
-        <!-- Title + Metadata Grid -->
-        <div class="flex-1 min-w-0">
-          <h3 class="font-satoshi font-black tracking-[-0.03em] text-xl text-ditto-text mb-0.5">
-            {{ formData.metadata.title || '[Untitled]' }}
-          </h3>
-          <p class="text-sm text-ditto-purple mb-4">
-            {{ artistNames || '[No artists]' }}
-          </p>
+          <!-- Release details -->
+          <dl class="mt-6 grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-4">
+            <div v-for="item in metaItems" :key="item.label" class="min-w-0">
+              <dt class="text-[11px] font-semibold uppercase tracking-wide text-ditto-subtext">{{ item.label }}</dt>
+              <dd class="mt-0.5 text-sm font-medium text-ditto-text flex items-center gap-1.5 min-w-0">
+                <span v-if="item.value" class="truncate" :title="item.value">{{ item.value }}</span>
+                <span v-else-if="!item.tip" class="text-ditto-subtext font-normal">N/A</span>
+                <template v-if="item.tip">
+                  <span v-if="!item.value" class="text-ditto-subtext font-normal">Not set</span>
+                  <WarnDot :tip="item.tip" />
+                </template>
+              </dd>
+            </div>
+          </dl>
+        </section>
 
-          <!-- Two-column metadata -->
-          <div class="grid grid-cols-2 gap-x-8 gap-y-2.5">
-            <div>
-              <p class="text-xs text-ditto-subtext">Primary Genre:</p>
-              <p class="text-sm text-ditto-text">{{ formData.metadata.primaryGenre || 'Not set' }}</p>
-            </div>
-            <div>
-              <p class="text-xs text-ditto-subtext">Price Band:</p>
-              <p class="text-sm text-ditto-text capitalize">{{ formData.stores.priceBand }}</p>
-            </div>
-            <div>
-              <p class="text-xs text-ditto-subtext">Secondary Genre:</p>
-              <p class="text-sm text-ditto-text">{{ formData.metadata.secondaryGenre || 'None' }}</p>
-            </div>
-            <div>
-              <p class="text-xs text-ditto-subtext flex items-center gap-1">
-                Release Date:
-                <svg v-if="!formData.schedule.releaseDate" class="w-3 h-3 text-warning" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
-                </svg>
-              </p>
-              <p class="text-sm text-ditto-text">
-                {{ formData.schedule.releaseDate ? formatDate(formData.schedule.releaseDate) : 'Not set' }}
-              </p>
-            </div>
-            <div>
-              <p class="text-xs text-ditto-subtext">Language:</p>
-              <p class="text-sm text-ditto-text">{{ formData.metadata.language }}</p>
-            </div>
-            <div>
-              <p class="text-xs text-ditto-subtext flex items-center gap-1">
-                Copyright:
-                <svg v-if="!formData.metadata.copyrightHolder" class="w-3 h-3 text-warning" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
-                </svg>
-              </p>
-              <p class="text-sm text-ditto-text">{{ formData.metadata.copyrightHolder ? `${formData.metadata.copyrightHolder} (${formData.metadata.copyrightYear})` : 'Not set' }}</p>
-            </div>
-            <div>
-              <p class="text-xs text-ditto-subtext">Timed Release:</p>
-              <p class="text-sm text-ditto-text">
-                {{ formData.schedule.timedRelease ? formatReleaseTime(formData.schedule.releaseTime) : 'No' }}
-              </p>
-            </div>
-            <div>
-              <p class="text-xs text-ditto-subtext flex items-center gap-1">
-                Production:
-                <svg v-if="!formData.metadata.pCopyrightHolder" class="w-3 h-3 text-warning" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
-                </svg>
-              </p>
-              <p class="text-sm text-ditto-text">{{ formData.metadata.pCopyrightHolder ? `${formData.metadata.pCopyrightHolder} (${formData.metadata.productionYear})` : 'Not set' }}</p>
-            </div>
-            <div>
-              <p class="text-xs text-ditto-subtext">Label:</p>
-              <p class="text-sm text-ditto-text">{{ formData.metadata.recordLabel }}</p>
-            </div>
-            <div>
-              <p class="text-xs text-ditto-subtext">ISRC:</p>
-              <p class="text-sm text-ditto-text">{{ formData.metadata.isrc || 'Auto-assign' }}</p>
-            </div>
-            <div>
-              <p class="text-xs text-ditto-subtext">Video Type:</p>
-              <p class="text-sm text-ditto-text">{{ formData.metadata.videoType === 'live' ? 'Live Performance' : 'Official Video' }}{{ formData.metadata.isLyricVideo ? ' (Lyric)' : '' }}</p>
-            </div>
-            <div v-if="formData.schedule.hasOriginalDate && formData.schedule.originalReleaseDate">
-              <p class="text-xs text-ditto-subtext">Original Release:</p>
-              <p class="text-sm text-ditto-text">{{ formatDate(formData.schedule.originalReleaseDate) }}</p>
-            </div>
+        <!-- Stores -->
+        <section class="rounded-2xl border border-gray-200 p-6">
+          <div class="flex items-baseline gap-3 mb-4">
+            <h3 class="font-satoshi font-black text-lg tracking-[-0.02em] text-ditto-text">Stores</h3>
+            <span class="text-sm text-ditto-subtext">{{ formData.stores.selected.length }} selected</span>
+            <WarnDot v-if="!formData.stores.selected.length" tip="No stores selected" />
           </div>
-        </div>
-      </div>
-
-      <!-- Content Flags -->
-      <div class="border-t border-gray-200 px-6 py-3">
-        <div class="flex flex-wrap gap-2">
-          <span v-if="formData.metadata.isExplicit" class="px-2.5 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wider bg-error/10 text-error border border-error/20">Explicit</span>
-          <span v-if="formData.metadata.is18Plus" class="px-2.5 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wider bg-warning/10 text-warning border border-warning/20">18+</span>
-          <span v-if="formData.metadata.isLyricVideo" class="px-2.5 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wider bg-info/10 text-info border border-info/20">Lyric Video</span>
-          <span v-if="formData.metadata.aiTransparency" class="px-2.5 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wider bg-ditto-purple/10 text-ditto-purple border border-ditto-purple/20">AI Content</span>
-          <span v-if="formData.assetSource.type" class="px-2.5 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wider bg-ditto-light-grey text-ditto-subtext border border-gray-200">{{ assetSourceLabel }}</span>
-          <span v-if="!formData.metadata.isExplicit && !formData.metadata.is18Plus && !formData.metadata.isLyricVideo && !formData.metadata.aiTransparency && !formData.assetSource.type" class="text-xs text-ditto-subtext">No content flags set</span>
-        </div>
-      </div>
-
-      <!-- Stores -->
-      <div class="border-t border-gray-200 px-6 py-4">
-        <p class="text-xs font-medium text-ditto-subtext uppercase tracking-wide mb-2">Selected Stores</p>
-        <div class="flex flex-wrap gap-2">
-          <span
-            v-for="storeId in formData.stores.selected"
-            :key="storeId"
-            class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-ditto-light-grey text-ditto-text"
-          >
-            <img :src="getStoreLogo(storeId)" :alt="getStoreName(storeId)" class="w-4 h-4 object-contain" />
-            {{ getStoreName(storeId) }}
-          </span>
-          <span v-if="formData.stores.selected.length === 0" class="text-xs text-warning">No stores selected</span>
-        </div>
-
-        <!-- Linked Spotify Release -->
-        <div v-if="linkedSpotifyRelease" class="mt-3 flex items-center gap-2 p-2 rounded-lg bg-ditto-light-grey">
-          <img :src="linkedSpotifyRelease.artwork" :alt="linkedSpotifyRelease.title" class="w-8 h-8 rounded object-cover" />
-          <div class="min-w-0">
-            <p class="text-xs font-medium text-ditto-text truncate">Linked: {{ linkedSpotifyRelease.title }} &mdash; {{ linkedSpotifyTrackTitle }}</p>
-            <p class="text-[10px] text-ditto-subtext">{{ linkedSpotifyRelease.artist }} (Spotify)</p>
-          </div>
-        </div>
-
-        <!-- Country Restrictions -->
-        <div v-if="formData.schedule.countryRestrictions && formData.schedule.restrictedCountries.length > 0" class="mt-3">
-          <p class="text-[10px] text-ditto-subtext mb-1">Restricted in:</p>
-          <div class="flex flex-wrap gap-1">
+          <div v-if="formData.stores.selected.length" class="flex items-center flex-wrap gap-2">
             <span
-              v-for="chip in restrictionChips(formData.schedule.restrictedCountries)"
-              :key="chip.label"
-              class="px-2 py-0.5 rounded text-[10px] bg-error/10 text-error"
-              :title="chip.kind === 'continent' ? chip.countries.join(', ') : ''"
-            >{{ chip.label }}</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- VEVO Channel Card -->
-    <div v-if="formData.stores.selected.includes('vevo')" class="rounded-2xl border border-gray-200 overflow-hidden mb-4">
-      <div class="px-6 py-4 bg-ditto-light-grey/50 border-b border-gray-200 flex items-center justify-between">
-        <div class="flex items-center gap-2">
-          <img src="/img/vevo-icon.svg" alt="VEVO" class="w-5 h-5 object-contain" />
-          <p class="text-sm font-semibold text-ditto-text">VEVO Channel</p>
-        </div>
-        <button @click="$emit('goToStep', 2)" class="text-xs text-ditto-purple hover:underline">Edit</button>
-      </div>
-      <div class="px-6 py-4">
-        <div class="grid grid-cols-2 gap-x-8 gap-y-2.5">
-          <div>
-            <p class="text-xs text-ditto-subtext">Channel Status:</p>
-            <p class="text-sm text-ditto-text">{{ formData.stores.vevoHasChannel === true ? 'Linking existing' : formData.stores.vevoHasChannel === false ? 'Creating new' : 'Not configured' }}</p>
-          </div>
-          <div>
-            <p class="text-xs text-ditto-subtext">Channel Name:</p>
-            <p class="text-sm text-ditto-text">{{ vevoChannelDisplayName }}</p>
-          </div>
-          <div>
-            <p class="text-xs text-ditto-subtext">Biography:</p>
-            <p class="text-sm text-ditto-text">{{ formData.stores.vevoBiography ? 'Provided' : 'Not set' }}</p>
-          </div>
-          <div>
-            <p class="text-xs text-ditto-subtext">Artist Image:</p>
-            <p class="text-sm" :class="formData.stores.vevoArtistImage ? 'text-success' : 'text-ditto-subtext'">
-              {{ formData.stores.vevoArtistImage ? formData.stores.vevoArtistImage.name : 'Not uploaded' }}
-            </p>
-          </div>
-          <div>
-            <p class="text-xs text-ditto-subtext">YouTube Banner:</p>
-            <p class="text-sm" :class="formData.stores.vevoBanner ? 'text-success' : 'text-ditto-subtext'">
-              {{ formData.stores.vevoBanner ? formData.stores.vevoBanner.name : 'Not uploaded' }}
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Credits Card -->
-    <div class="rounded-2xl border border-gray-200 overflow-hidden mb-4">
-      <div class="px-6 py-4 bg-ditto-light-grey/50 border-b border-gray-200 flex items-center justify-between">
-        <p class="text-sm font-semibold text-ditto-text">Credits</p>
-        <button @click="$emit('goToStep', 1)" class="text-xs text-ditto-purple hover:underline">Edit</button>
-      </div>
-      <div class="px-6 py-4">
-        <div v-if="filledCredits.length > 0" class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-          <div
-            v-for="credit in filledCredits"
-            :key="credit.id"
-            class="flex items-center justify-between py-1.5"
-          >
-            <p class="text-sm text-ditto-text">{{ credit.name }}</p>
-            <span class="text-xs text-ditto-subtext bg-ditto-light-grey px-2 py-0.5 rounded">{{ credit.role }}</span>
-          </div>
-        </div>
-        <p v-else class="text-sm text-ditto-subtext">No credits filled in yet.</p>
-      </div>
-    </div>
-
-    <!-- Artists Card -->
-    <div class="rounded-2xl border border-gray-200 overflow-hidden mb-6">
-      <div class="px-6 py-4 bg-ditto-light-grey/50 border-b border-gray-200 flex items-center justify-between">
-        <p class="text-sm font-semibold text-ditto-text">Artists</p>
-        <button @click="$emit('goToStep', 1)" class="text-xs text-ditto-purple hover:underline">Edit</button>
-      </div>
-      <div class="px-6 py-4 space-y-3">
-        <!-- Primary -->
-        <div>
-          <p class="text-xs font-medium text-ditto-subtext uppercase tracking-wide mb-1.5">Primary</p>
-          <div v-if="formData.artists.primary.length > 0" class="flex flex-wrap gap-2">
-            <span v-for="a in formData.artists.primary" :key="a.id" class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-ditto-purple/10 text-xs font-medium text-ditto-text">
-              <span class="w-5 h-5 rounded-full bg-ditto-purple flex items-center justify-center text-[8px] font-bold text-white">{{ a.initials }}</span>
-              {{ a.name }}
+              v-for="storeId in formData.stores.selected"
+              :key="storeId"
+              class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-ditto-light-grey text-ditto-text"
+            >
+              <img :src="getStoreLogo(storeId)" :alt="getStoreName(storeId)" class="w-4 h-4 object-contain" />
+              {{ getStoreName(storeId) }}
             </span>
           </div>
-          <p v-else class="text-xs text-warning">No primary artists added</p>
-        </div>
-        <!-- Featured -->
-        <div v-if="formData.artists.featured.length > 0">
-          <p class="text-xs font-medium text-ditto-subtext uppercase tracking-wide mb-1.5">Featured</p>
-          <div class="flex flex-wrap gap-2">
-            <span v-for="a in formData.artists.featured" :key="a.id" class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-info/10 text-xs font-medium text-ditto-text">
-              <span class="w-5 h-5 rounded-full bg-info flex items-center justify-center text-[8px] font-bold text-white">{{ a.initials }}</span>
-              {{ a.name }}
-            </span>
+          <p v-else class="text-sm text-[#92400e]">No stores selected</p>
+
+          <!-- Linked release: shown when Spotify is selected -->
+          <div v-if="formData.stores.selected.includes('spotify')" class="mt-5 pt-5 border-t border-gray-100">
+            <p class="text-[11px] font-semibold uppercase tracking-wide text-ditto-subtext mb-2">Linked release</p>
+            <div v-if="linkedSpotifyRelease" class="flex items-center gap-3">
+              <img :src="linkedSpotifyRelease.artwork" :alt="linkedSpotifyRelease.title" class="w-12 h-12 rounded-lg object-cover flex-shrink-0" />
+              <div class="min-w-0">
+                <p class="text-xs text-ditto-subtext">Linked on Spotify to:</p>
+                <p class="text-sm font-semibold text-ditto-text truncate">{{ linkedSpotifyRelease.title }} - {{ linkedSpotifyTrackTitle }}</p>
+                <p class="text-xs text-ditto-purple truncate">{{ linkedSpotifyRelease.artist }}</p>
+              </div>
+            </div>
+            <p v-else class="text-sm text-[#92400e] flex items-center gap-1.5">Music release is not linked for Spotify <WarnDot tip="Music release is not linked for Spotify" /></p>
           </div>
-        </div>
-        <!-- Remixer -->
-        <div v-if="formData.artists.remixer.length > 0">
-          <p class="text-xs font-medium text-ditto-subtext uppercase tracking-wide mb-1.5">Remixer</p>
-          <div class="flex flex-wrap gap-2">
-            <span v-for="a in formData.artists.remixer" :key="a.id" class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-warning/10 text-xs font-medium text-ditto-text">
-              <span class="w-5 h-5 rounded-full bg-warning flex items-center justify-center text-[8px] font-bold text-white">{{ a.initials }}</span>
-              {{ a.name }}
-            </span>
+
+          <!-- VEVO channel: shown when VEVO is selected -->
+          <div v-if="formData.stores.selected.includes('vevo')" class="mt-5 pt-5 border-t border-gray-100">
+            <p class="text-[11px] font-semibold uppercase tracking-wide text-ditto-subtext mb-2">VEVO channel</p>
+            <div v-if="vevoChannel" class="flex items-center gap-3">
+              <span class="w-12 h-12 rounded-lg bg-ditto-light-grey flex items-center justify-center flex-shrink-0">
+                <img src="/img/vevo-icon.svg" alt="" class="w-6 h-6 object-contain" />
+              </span>
+              <p class="text-sm font-semibold text-ditto-text truncate">{{ vevoChannel.name }}</p>
+              <StatusPill v-if="vevoChannel.status" :variant="vevoChannel.status === 'Live' ? 'success' : vevoChannel.status === 'Rejected' ? 'danger' : 'warning'" :label="vevoStatusLabel[vevoChannel.status]" />
+            </div>
+            <p v-else class="text-sm text-[#92400e] flex items-center gap-1.5">VEVO channel not set <WarnDot tip="VEVO channel not set" /></p>
           </div>
-        </div>
+        </section>
       </div>
-    </div>
 
-    <!-- Extras Card -->
-    <div class="rounded-2xl border border-gray-200 overflow-hidden mb-6">
-      <div class="px-6 py-4 bg-ditto-light-grey/50 border-b border-gray-200 flex items-center justify-between">
-        <p class="text-sm font-semibold text-ditto-text">Extras</p>
-        <button @click="$emit('goToStep', 3)" class="text-xs text-ditto-purple hover:underline">Edit</button>
-      </div>
-      <div class="px-6 py-4 space-y-3">
-        <!-- Timed Release -->
-        <div class="flex items-center justify-between py-1.5">
-          <div class="flex items-center gap-2">
-            <svg class="w-4 h-4 text-ditto-subtext flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/>
-            </svg>
-            <p class="text-sm text-ditto-text">Timed Release</p>
-          </div>
-          <span class="text-xs font-medium text-ditto-subtext bg-ditto-light-grey px-2.5 py-1 rounded-full">
-            {{ formData.schedule.timedRelease ? formatReleaseTime(formData.schedule.releaseTime) : 'Off' }}
-          </span>
-        </div>
+      <!-- ── Summary rail ── -->
+      <aside class="lg:sticky lg:top-24 rounded-2xl border border-gray-200 p-6">
+        <h3 class="font-satoshi font-black text-lg tracking-[-0.02em] text-ditto-text">Summary</h3>
+        <p class="text-xs text-ditto-subtext mt-0.5">{{ videoTypeLabel }} · {{ formData.stores.selected.length }} {{ formData.stores.selected.length === 1 ? 'store' : 'stores' }}</p>
 
-        <!-- Country Restrictions -->
-        <div class="flex items-center justify-between py-1.5 border-t border-gray-100">
-          <div class="flex items-center gap-2">
-            <svg class="w-4 h-4 text-ditto-subtext flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/>
-            </svg>
-            <p class="text-sm text-ditto-text">Country Restrictions</p>
-          </div>
-          <span class="text-xs font-medium text-ditto-subtext bg-ditto-light-grey px-2.5 py-1 rounded-full">
-            {{ formData.schedule.countryRestrictions && formData.schedule.restrictedCountries.length > 0 ? restrictionSummary(formData.schedule.restrictedCountries).replace(' restricted', '') : 'None' }}
-          </span>
-        </div>
+        <ul class="mt-5 -mx-2 space-y-0.5">
+          <li v-for="stage in stages" :key="stage.index">
+            <button class="w-full flex items-center justify-between gap-3 px-2 py-2 rounded-lg hover:bg-ditto-light-grey text-left transition-colors group" @click="$emit('goToStep', stage.index)">
+              <span class="flex items-center gap-2.5 text-sm">
+                <span v-if="stage.error" class="w-5 h-5 rounded-full bg-warning text-white flex items-center justify-center flex-shrink-0">
+                  <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+                </span>
+                <span v-else class="w-5 h-5 rounded-full bg-[#e6fbf1] text-[#0f8a4f] flex items-center justify-center flex-shrink-0">
+                  <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </span>
+                <span :class="stage.error ? 'font-semibold text-ditto-text' : 'text-ditto-text'">{{ stage.label }}</span>
+              </span>
+              <span :class="['text-xs', stage.error ? 'font-semibold text-[#92400e]' : 'text-ditto-subtext opacity-0 group-hover:opacity-100 transition-opacity']">{{ stage.error ? 'Needs attention' : 'Edit' }}</span>
+            </button>
+          </li>
+        </ul>
 
-        <!-- Original Release Date -->
-        <div class="flex items-center justify-between py-1.5 border-t border-gray-100">
-          <div class="flex items-center gap-2">
-            <svg class="w-4 h-4 text-ditto-subtext flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
-            </svg>
-            <p class="text-sm text-ditto-text">Re-release (Original Date)</p>
-          </div>
-          <span class="text-xs font-medium text-ditto-subtext bg-ditto-light-grey px-2.5 py-1 rounded-full">
-            {{ formData.schedule.hasOriginalDate && formData.schedule.originalReleaseDate ? formatDate(formData.schedule.originalReleaseDate) : 'No' }}
-          </span>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- Bottom Complete button -->
-    <div class="flex justify-center mt-6">
-      <button
-        @click="$emit('complete')"
-        :disabled="errorStages.length > 0"
-        :class="[
-          'px-10 py-3 text-sm font-medium rounded-full transition-all',
-          errorStages.length === 0
-            ? 'bg-ditto-purple text-white hover:bg-ditto-purple/90'
-            : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-        ]"
-      >Complete Release</button>
+        <button
+          @click="$emit('complete')"
+          :disabled="hasErrors"
+          :class="[
+            'mt-6 w-full flex items-center justify-center gap-2 px-6 py-3 text-sm font-semibold rounded-full transition-all',
+            hasErrors ? 'bg-[#aaaacc]/40 text-white cursor-not-allowed' : 'bg-ditto-purple btn-pop-purple text-white hover:opacity-95'
+          ]"
+        >
+          <svg v-if="hasErrors" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          Complete Release
+        </button>
+        <p class="text-[11px] text-ditto-subtext text-center mt-3 leading-relaxed">
+          {{ hasErrors ? 'Fix the stages marked above to complete your release.' : 'Completing adds this release to your basket.' }}
+        </p>
+      </aside>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { restrictionChips, restrictionSummary } from '../../../data/countryRestrictions'
-import { computed } from 'vue'
-import { videoStores, spotifyMusicReleases } from '../../../data/videoMockData'
+import { computed, defineComponent, h, onUnmounted, watch, ref } from 'vue'
+import { videoStores, spotifyMusicReleases, existingVevoChannels, vevoStatusLabel } from '../../../data/videoMockData'
+import type { VevoChannel } from '../../../data/videoMockData'
+import StatusPill from '../../../components/common/StatusPill.vue'
 
 interface FormData {
   videoFile: File | null
@@ -439,14 +247,84 @@ defineEmits<{
   (e: 'complete'): void
 }>()
 
-const stepNames = ['Upload', 'Details', 'Stores', 'Schedule', 'Review']
+// Same warning dot as the music builder's Review (hover shows the reason)
+const WarnDot = defineComponent({
+  props: { tip: { type: String, default: 'Missing' } },
+  setup(p) {
+    return () => h('span', { class: 'inline-flex w-4 h-4 rounded-full bg-warning text-white items-center justify-center flex-shrink-0 cursor-help', title: p.tip, 'aria-label': p.tip }, [
+      h('svg', { class: 'w-2.5 h-2.5', viewBox: '0 0 24 24', fill: 'currentColor', innerHTML: '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>' }),
+    ])
+  },
+})
 
-const assetSourceLabel = computed(() => {
-  const labels: Record<string, string> = {
-    'original': 'Original',
-    'licensed': 'Licensed',
-  }
-  return labels[props.formData.assetSource.type] || ''
+// Stages 1-4 with validation errors (mirrors the step bar)
+const errorStages = computed(() =>
+  props.stepErrors.map((err, i) => (err && i < 4 ? i : -1)).filter(i => i !== -1)
+)
+const hasErrors = computed(() => errorStages.value.length > 0)
+
+// "Stage 2" / "Stage 1, 2, 3 and 4" (wording per BA-172)
+const errorStagesLabel = computed(() => {
+  const nums = errorStages.value.map(i => i + 1)
+  if (nums.length === 1) return `Stage ${nums[0]}`
+  return `Stage ${nums.slice(0, -1).join(', ')} and ${nums[nums.length - 1]}`
+})
+
+const stageLabels = ['Upload', 'Details', 'Stores', 'Schedule']
+const stages = computed(() => stageLabels.map((label, index) => ({ label, index, error: !!props.stepErrors[index] })))
+
+// Thumbnail preview from the uploaded file
+const thumbnailUrl = ref('')
+watch(() => props.formData.thumbnailFile, (file) => {
+  if (thumbnailUrl.value) URL.revokeObjectURL(thumbnailUrl.value)
+  thumbnailUrl.value = file ? URL.createObjectURL(file) : ''
+}, { immediate: true })
+onUnmounted(() => { if (thumbnailUrl.value) URL.revokeObjectURL(thumbnailUrl.value) })
+
+const videoTypeLabel = computed(() => props.formData.metadata.videoType === 'live' ? 'Live Performance' : 'Official Video')
+
+const longDate = (d: Date) => d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })
+const originalDateLabel = computed(() =>
+  props.formData.schedule.hasOriginalDate && props.formData.schedule.originalReleaseDate
+    ? formatDate(props.formData.schedule.originalReleaseDate)
+    : 'N/A'
+)
+
+// Source: label, or the reason it is incomplete
+const sourceItem = computed(() => {
+  const src = props.formData.assetSource
+  if (!src.type) return { value: '', tip: 'Video source not selected' }
+  if (src.type === 'licensed' && !src.licenseDocuments.length) return { value: 'Licensed', tip: 'License document not uploaded' }
+  return { value: src.type === 'licensed' ? 'Licensed' : 'Original', tip: '' }
+})
+
+// Details grid. `tip` set = show the warning dot; no value and no tip = N/A
+const metaItems = computed(() => {
+  const m = props.formData.metadata
+  const band = props.formData.stores.priceBand
+  return [
+    { label: 'Video Type', value: videoTypeLabel.value, tip: '' },
+    { label: 'Primary Genre', value: m.primaryGenre, tip: m.primaryGenre ? '' : 'Primary Genre not set' },
+    { label: 'Secondary Genre', value: m.secondaryGenre, tip: '' },
+    { label: 'Language', value: m.language, tip: '' },
+    { label: '© Copyright Holder', value: m.copyrightHolder ? `${m.copyrightYear} ${m.copyrightHolder}` : '', tip: m.copyrightHolder ? '' : '© Copyright Holder not set' },
+    { label: '℗ Copyright Holder', value: m.pCopyrightHolder ? `${m.productionYear} ${m.pCopyrightHolder}` : '', tip: m.pCopyrightHolder ? '' : '℗ Copyright Holder not set' },
+    { label: 'Price Band', value: band.charAt(0).toUpperCase() + band.slice(1), tip: '' },
+    { label: 'Label', value: m.recordLabel, tip: '' },
+    { label: 'Source', value: sourceItem.value.value, tip: sourceItem.value.tip },
+  ]
+})
+
+// VEVO channel: name plus status. An existing Ditto channel carries its own
+// status; a new one starts as Pending set-up; a channel typed in from
+// elsewhere has no Ditto status to show.
+const vevoChannel = computed<{ name: string; status: VevoChannel['status'] | null } | null>(() => {
+  const st = props.formData.stores
+  const name = st.vevoChannelName.trim()
+  if (st.vevoHasChannel === null || !name) return null
+  if (st.vevoHasChannel === false) return { name: name.replace(/vevo$/i, '') + 'VEVO', status: 'Pending' }
+  const known = existingVevoChannels.find(c => c.name === name)
+  return { name, status: known ? known.status : null }
 })
 
 const artistNames = computed(() => {
@@ -455,58 +333,6 @@ const artistNames = computed(() => {
     ...props.formData.artists.featured.map(a => a.name),
   ]
   return all.join(', ')
-})
-
-const filledCredits = computed(() => {
-  return props.formData.credits.filter(c => c.name.trim())
-})
-
-const vevoChannelDisplayName = computed(() => {
-  if (props.formData.stores.vevoHasChannel === true) {
-    return props.formData.stores.vevoChannelName || 'Not entered'
-  }
-  if (props.formData.stores.vevoHasChannel === false) {
-    const base = props.formData.stores.vevoChannelName.trim().replace(/vevo$/i, '')
-    return base ? base + 'VEVO' : 'Not entered'
-  }
-  return 'Not configured'
-})
-
-const errorStages = computed(() => {
-  const errors: { index: number; name: string; message: string }[] = []
-
-  const c = props.formData.contentChecks
-  const contentConfirmed = c.video && c.thumbnail && c.artwork && (!props.formData.metadata.isLyricVideo || c.noLyrics)
-  const uploadIssues = []
-  if (!props.formData.videoFile) uploadIssues.push('video not uploaded')
-  if (!props.formData.thumbnailFile) uploadIssues.push('thumbnail not uploaded')
-  if (!props.formData.artworkFile) uploadIssues.push('album artwork not uploaded')
-  if (!contentConfirmed) uploadIssues.push('content not confirmed')
-  if (!props.formData.assetSource.type) uploadIssues.push('video source not selected')
-  if (uploadIssues.length > 0) {
-    errors.push({ index: 0, name: stepNames[0], message: uploadIssues.join(', ') })
-  }
-
-  const metaIssues = []
-  if (!props.formData.metadata.title) metaIssues.push('title missing')
-  if (props.formData.metadata.copyrightHolder.length < 2) metaIssues.push('copyright holder not set')
-  if (props.formData.metadata.pCopyrightHolder.length < 2) metaIssues.push('production copyright not set')
-  if (!props.formData.metadata.primaryGenre) metaIssues.push('primary genre not selected')
-  if (props.formData.artists.primary.length === 0) metaIssues.push('no primary artists')
-  if (props.formData.credits.slice(0, 4).some(c => !c.name.trim() || (c.category !== 'composer' && !c.role))) metaIssues.push('required credits incomplete')
-  if (metaIssues.length > 0) {
-    errors.push({ index: 1, name: stepNames[1], message: metaIssues.join(', ') })
-  }
-
-  if (props.formData.stores.selected.length === 0) {
-    errors.push({ index: 2, name: stepNames[2], message: 'no stores selected' })
-  }
-
-  if (!props.formData.schedule.releaseDate) {
-    errors.push({ index: 3, name: stepNames[3], message: 'release date not set' })
-  }
-
-  return errors
 })
 
 const formatDate = (date: Date) => {

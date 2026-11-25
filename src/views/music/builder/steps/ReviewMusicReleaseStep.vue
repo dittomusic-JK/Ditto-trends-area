@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- Error banner: names every stage with validation errors -->
-    <div v-if="errorStages.length" class="rounded-xl bg-warning/90 text-ditto-text text-sm font-semibold text-center px-6 py-3.5 mb-8">
+    <div v-if="errorStages.length" class="rounded-xl border border-[#f5c451]/70 bg-[#fdf1cc] text-ditto-text text-sm font-semibold text-center px-6 py-3.5 mb-8">
       There are errors on {{ errorStagesLabel }} of the release builder.
       <button class="underline underline-offset-2 hover:opacity-80" @click="$emit('go-to-step', errorStages[0])">Repair</button> them to complete your release.
     </div>
