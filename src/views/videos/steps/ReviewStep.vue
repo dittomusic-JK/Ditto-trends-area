@@ -121,7 +121,7 @@
                 <img src="/img/vevo-icon.svg" alt="" class="w-6 h-6 object-contain" />
               </span>
               <p class="text-sm font-semibold text-ditto-text truncate">{{ vevoChannel.name }}</p>
-              <StatusPill v-if="vevoChannel.status" :variant="vevoChannel.status === 'Live' ? 'success' : vevoChannel.status === 'Rejected' ? 'danger' : 'warning'" :label="vevoStatusLabel[vevoChannel.status]" />
+              <StatusPill :variant="vevoChannel.status === 'Live' ? 'success' : vevoChannel.status === 'Rejected' ? 'danger' : 'warning'" :label="vevoStatusLabel[vevoChannel.status]" />
             </div>
             <p v-else class="text-sm text-[#92400e] flex items-center gap-1.5">VEVO channel not set <WarnDot tip="VEVO channel not set" /></p>
           </div>
@@ -316,15 +316,15 @@ const metaItems = computed(() => {
 })
 
 // VEVO channel: name plus status. An existing Ditto channel carries its own
-// status; a new one starts as Pending set-up; a channel typed in from
-// elsewhere has no Ditto status to show.
-const vevoChannel = computed<{ name: string; status: VevoChannel['status'] | null } | null>(() => {
+// status. A new one, or one from outside Ditto, still has to be set up in
+// Ditto, so both start as Pending set-up.
+const vevoChannel = computed<{ name: string; status: VevoChannel['status'] } | null>(() => {
   const st = props.formData.stores
   const name = st.vevoChannelName.trim()
   if (st.vevoHasChannel === null || !name) return null
   if (st.vevoHasChannel === false) return { name: name.replace(/vevo$/i, '') + 'VEVO', status: 'Pending' }
   const known = existingVevoChannels.find(c => c.name === name)
-  return { name, status: known ? known.status : null }
+  return { name, status: known ? known.status : 'Pending' }
 })
 
 const artistNames = computed(() => {

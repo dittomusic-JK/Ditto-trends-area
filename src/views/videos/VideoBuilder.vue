@@ -297,6 +297,8 @@ const validateStep = (stepIndex: number): boolean => {
         formData.credits.slice(0, 4).every(c => c.name.trim() !== '' && (c.category === 'composer' || c.role !== ''))
     case 2: {
       if (formData.stores.selected.length === 0) return false
+      // Spotify needs a linked music release (linked on the Details step)
+      if (formData.stores.selected.includes('spotify') && !(formData.stores.spotifyReleaseId && formData.stores.spotifyTrackId)) return false
       // VEVO: an existing channel needs its name; a new one needs an alphanumeric
       // channel name that stays within 20 characters once "VEVO" is appended
       if (!formData.stores.selected.includes('vevo')) return true
