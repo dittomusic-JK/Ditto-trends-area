@@ -32,10 +32,6 @@
             </div>
 
             <div class="flex-1 min-w-0 flex flex-col justify-center">
-              <div class="flex items-center flex-wrap gap-x-2 gap-y-1 mb-2.5">
-                <span class="px-2.5 py-1 rounded-full bg-ditto-purple/10 text-ditto-purple text-[11px] font-semibold">{{ videoTypeLabel }}</span>
-                <span v-if="formData.metadata.primaryGenre" class="text-xs text-ditto-subtext">{{ formData.metadata.primaryGenre }}</span>
-              </div>
               <h2 :class="['font-satoshi font-black text-2xl lg:text-[28px] tracking-[-0.03em] leading-tight flex items-center gap-2', formData.metadata.title ? 'text-ditto-text' : 'text-ditto-subtext']">
                 {{ formData.metadata.title || '[Untitled]' }}
                 <WarnDot v-if="!formData.metadata.title" tip="Video title not set" />
